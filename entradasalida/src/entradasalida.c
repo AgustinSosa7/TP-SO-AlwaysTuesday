@@ -10,17 +10,20 @@ int main(/*int argc, char* argv[]*/) {
 if (entradasalida_logger == NULL) {
 	perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
 	exit(EXIT_FAILURE);
+	}
 
 
 entradasalida_log_debug = log_create("entradasalida.log","ENTRADASALIDA_LOG",1,LOG_LEVEL_TRACE);
 if (entradasalida_log_debug == NULL) {
 	perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
 	exit(EXIT_FAILURE);
+	}
 
 entradasalida_config = config_create("home/utnso/tp-2024-1c-AlwaysTuesday/entradasalida/entradasalida.config");
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");
 	exit(EXIT_FAILURE);
+	}
 
 TIPO_INTERFAZ = config_get_string_value(entradasalida_config,"TIPO_INTERFAZ");
 TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
