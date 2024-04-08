@@ -26,10 +26,4 @@ char ** INSTANCIAS_RECURSOS; // POR FAVOR REVISAR EL TIPO EN EL ENUNCIADO
 int GRADO_MULTIPROGRAMACION;
 
 
-/**
-* @fn    decir_hola
-* @brief Imprime un saludo al nombre que se pase por parámetro por consola.
-*/
-void decir_hola(char* quien);
-
 #endif
