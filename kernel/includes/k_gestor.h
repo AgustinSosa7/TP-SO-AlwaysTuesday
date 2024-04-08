@@ -1,0 +1,29 @@
+#ifndef K_GESTOR_H_
+#define K_GESTOR_H_
+
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <commons/log.h>
+#include <commons/config.h>
+
+
+extern t_log* kernel_logger;
+extern t_log* kernel_log_debug;
+extern t_config* kernel_config;
+
+
+extern int PUERTO_ESCUCHA;
+extern char* IP_MEMORIA;
+extern int PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char* a los int
+extern char* IP_CPU;
+extern int PUERTO_CPU_DISPATCH;
+extern int PUERTO_CPU_INTERRUPT;
+extern char* ALGORITMO_PLANIFICACION;
+extern int QUANTUM;
+extern char** RECURSOS;    // REVISAR EL TIPO EN EL ENUNCIADO 
+extern char ** INSTANCIAS_RECURSOS; // POR FAVOR REVISAR EL TIPO EN EL ENUNCIADO
+extern int GRADO_MULTIPROGRAMACION;
+
+#endif
