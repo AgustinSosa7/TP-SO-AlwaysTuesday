@@ -1,13 +1,10 @@
 #ifndef CPU_H_
 #define CPU_H_
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "cpu_gestor.h"
+#include "inicializar_cpu.h"
 
-#include <commons/log.h>
-#include <commons/config.h>
-
-// Variables GLOBALES
+//Variables GLOBALES
 
 t_log* cpu_logger;
 t_log* cpu_log_debug;
@@ -20,10 +17,13 @@ int PUERTO_ESCUCHA_INTERRUPT;
 int CANTIDAD_ENTRADAS;
 char* ALGORITMO_TLB;
 
+
+
+
 /**
 * @fn    decir_hola
 * @brief Imprime un saludo al nombre que se pase por parámetro por consola.
 */
-void decir_hola(char* quien);
+//void decir_hola(char* quien);
 
 #endif
