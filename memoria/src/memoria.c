@@ -2,10 +2,9 @@
 #include <stdio.h>
 #include <memoria.h>
 
-int main(/*int argc, char* argv[]*/) {
-    //decir_hola("Memoria");
-    //return 0;
+int main() {
 
+//Inicializar memoria
 memoria_logger = log_create("memoria.log","MEMORIA_LOG",1,LOG_LEVEL_INFO);
 if (memoria_logger == NULL) {
 	perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
@@ -30,6 +29,21 @@ TAM_MEMORIA = config_get_int_value(memoria_config,"TAM_MEMORIA");
 TAM_PAGINA = config_get_int_value(memoria_config,"TAM_PAGINA");
 PATH_INSTRUCCIONES = config_get_string_value(memoria_config,"PATH_INSTRUCCIONES");
 RETARDO_RESPUESTA = config_get_int_value(memoria_config,"RETARDO_RESPUESTA");
+
+// Iniciar servidor de memoria
+
+fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, "MEMORIA INICIADA!"); // Crear shared
+
+// Esperar conexion de ENTRADASALIDA
+
+// Esperar conexion de CPU
+
+log_info(memoria_logger, "ESperando a CPU...");
+fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"CPU"); 
+
+// Esperar conexion de KERNEL
+
+// Finalizar MEMORIA
 
 return EXIT_SUCCESS;
 }

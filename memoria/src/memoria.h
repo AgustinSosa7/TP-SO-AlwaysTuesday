@@ -13,6 +13,11 @@ t_log* memoria_logger;
 t_log* memoria_log_debug;
 t_config* memoria_config;
 
+int fd_memoria;
+int fd_entradasalida;  // Estos cuatro falta pasarlos tambien al m_gestor.h poniendoles el extern al prinicipio.
+int fd_cpu;
+int fd_kernel;
+
 int PUERTO_ESCUCHA;         //Quizas en crear_concxion() los toma como char*
 int TAM_MEMORIA;
 int TAM_PAGINA;
