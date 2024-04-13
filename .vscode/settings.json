@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "inicializar_memoria.h": "c",
+        "m_gestor.h": "c",
+        "memoria.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

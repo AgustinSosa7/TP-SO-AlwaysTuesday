@@ -1,11 +1,8 @@
 #ifndef MEMORIA_H_
 #define MEMORIA_H_
 
-#include <stdlib.h>
-#include <stdio.h>
-
-#include <commons/log.h>
-#include <commons/config.h>
+#include "m.gestor.h"
+#include "inicializar_memoria.h"
 
 // Variables GLOBALES
 
@@ -15,14 +12,17 @@ t_config* memoria_config;
 
 int fd_memoria;
 int fd_entradasalida;  // Estos cuatro falta pasarlos tambien al m_gestor.h poniendoles el extern al prinicipio.
-int fd_cpu;
+int fd_cpu;             // Soy Ruka, uds dejaron esto acá? Estoy modularizando la Mem. PD: lo agregué
 int fd_kernel;
 
-int PUERTO_ESCUCHA;         //Quizas en crear_concxion() los toma como char*
+char* PUERTO_ESCUCHA;
+char* IP_FILESYSTEM;
+char* PUERTO_FILESYSTEM;
 int TAM_MEMORIA;
 int TAM_PAGINA;
 char* PATH_INSTRUCCIONES;
 int RETARDO_RESPUESTA;
+char* ALGORITMO_REEMPLAZO;
 
 
 /**
@@ -31,4 +31,4 @@ int RETARDO_RESPUESTA;
 */
 void decir_hola(char* quien);
 
-#endif
+#endif /* MEMORIA_H_*/
