@@ -6,6 +6,18 @@ int main(/*int argc, char* argv[]*/) {
    // decir_hola("una Interfaz de Entrada/Salida");
    // return 0;
 
+
+	//Inicializar Estructuras EntradaSalida. OJO PUERTO_ESCUCHA, 
+	fd_entradasalida = iniciar_servidor(PUERTO_ESCUCHA, entradasalida_logger,"EntradaSalida iniciado!");
+
+	//Conectarme como cliente a Memoria
+	fd_memoria = crear_conexion(IP_MEMORIA);
+
+	//Esperar conexión Kernel
+	fd_kernel = esperar_cliente(fd_entradasalida,entradasalida_logger,"EntradaSalida");
+
+
+	//Creo que esto estaba desde antes, lo metiero los profes
    entradasalida_logger = log_create("entradasalida.log","ENTRADASALIDA_LOG",1,LOG_LEVEL_INFO);
 if (entradasalida_logger == NULL) {
 	perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");

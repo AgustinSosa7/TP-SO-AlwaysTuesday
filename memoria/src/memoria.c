@@ -12,6 +12,8 @@ inicializar_memoria();
 fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, "MEMORIA INICIADA!"); // Crear shared
 
 // Esperar conexion de ENTRADASALIDA
+log_info(memoria_logger, "Esperando a EntradaSalida...");
+fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
 
 // Esperar conexion de CPU
 
