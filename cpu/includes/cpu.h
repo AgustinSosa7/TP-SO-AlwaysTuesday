@@ -20,7 +20,7 @@ char* IP_MEMORIA;
 int PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char*
 int PUERTO_ESCUCHA_DISPATCH;
 int PUERTO_ESCUCHA_INTERRUPT;
-int CANTIDAD_ENTRADAS;
+int CANTIDAD_ENTRADAS_TLB;
 char* ALGORITMO_TLB;
 
 

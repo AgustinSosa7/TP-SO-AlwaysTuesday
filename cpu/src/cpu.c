@@ -1,4 +1,5 @@
 #include "../includes/cpu.h"
+#include <../src/utils/utils_connections.h>
 
 int main() {
 
@@ -10,7 +11,7 @@ fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, "CPU - D
 
 // Iniciar server de CPU - INTERRUPT
 
-fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT cpu_logger, "CPU - INTERRUPT INICIADO!!");
+fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT, cpu_logger, "CPU - INTERRUPT INICIADO!!");
 
 
 // Conectarnos como cliente a MEMORIA
