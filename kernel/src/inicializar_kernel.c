@@ -1,11 +1,13 @@
 #include <../includes/inicializar_kernel.h>
 
+
+
 void inicializar_kernel(){
-    void inicializar_logs();
-    void inicializar_configs();
+    kernel_logger = inicializar_logs();
+    kernel_config =  inicializar_configs();
 }
 
-void inicializar_logs(){
+t_log* inicializar_logs(void){
 kernel_logger = log_create("kernel.log","KERNEL_LOG",1,LOG_LEVEL_INFO);
 if (kernel_logger == NULL) {
 	perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
@@ -20,17 +22,17 @@ if (kernel_log_debug == NULL) {
     }
 }    
     
-void inicializar_configs() {
+t_config* inicializar_configs(void) {
 
-kernel_config = config_create("home/utnso/tp-2024-1c-AlwaysTuesday/kernel/kernel.config");
+kernel_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/kernel.config");
 if (kernel_config == NULL) {
 	perror("Error al intentar cargar el config.");
 	exit(EXIT_FAILURE);
-    }    
+    } 
 
-PUERTO_ESCUCHA = config_get_int_value(kernel_config,"PUERTO_ESCUCHA");
+PUERTO_ESCUCHA = config_get_string_value(kernel_config,"PUERTO_ESCUCHA");
 IP_MEMORIA = config_get_string_value(kernel_config,"IP_MEMORIA");
-PUERTO_MEMORIA = config_get_int_value(kernel_config,"PUERTO_MEMORIA");
+PUERTO_MEMORIA = config_get_string_value(kernel_config,"PUERTO_MEMORIA");
 IP_CPU = config_get_string_value(kernel_config,"IP_CPU");
 PUERTO_CPU_DISPATCH= config_get_int_value(kernel_config,"PUERTO_CPU_DISPATCH");
 PUERTO_CPU_INTERRUPT = config_get_int_value(kernel_config,"PUERTO_CPU_INTERRUPT");

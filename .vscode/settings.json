@@ -2,7 +2,16 @@
     "files.associations": {
         "inicializar_memoria.h": "c",
         "m_gestor.h": "c",
-        "memoria.h": "c"
+        "memoria.h": "c",
+        "kernel.h": "c",
+        "hello.h": "c",
+        "list.h": "c",
+        "utils_connections.h": "c",
+        "string.h": "c",
+        "cstdlib": "c",
+        "k_gestor.h": "c",
+        "inicializar_kernel.h": "c",
+        "config.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -14,9 +14,9 @@ extern t_log* kernel_log_debug;
 extern t_config* kernel_config;
 
 
-extern int PUERTO_ESCUCHA;
+extern char* PUERTO_ESCUCHA;
 extern char* IP_MEMORIA;
-extern int PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char* a los int
+extern char* PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char* a los int
 extern char* IP_CPU;
 extern int PUERTO_CPU_DISPATCH;
 extern int PUERTO_CPU_INTERRUPT;
