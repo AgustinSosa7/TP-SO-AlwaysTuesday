@@ -1,12 +1,12 @@
-#include "./includes/inicializar_memoria.h"
+#include "../includes/inicializar_memoria.h"
 
 void inicializar_memoria(){
-    _iniciar_log();
+    _iniciar_log();  //memoria_logger = _iniciar_log();
     _iniciar_config();
     _imprimir_config();
 }
 
-void _iniciar_log(){
+void _iniciar_log(){  // t_log* _iniciar_log()
     memoria_logger = log_create("cliente.log", "CL_LOG", 1, LOG_LEVEL_INFO);
     if (memoria_logger == NULL){
         perror("Algo raro paso con el log. No se pudo crear o encontrar el archivo.");

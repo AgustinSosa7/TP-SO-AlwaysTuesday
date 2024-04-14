@@ -1,7 +1,7 @@
 #ifndef MEMORIA_H_
 #define MEMORIA_H_
 
-#include "m.gestor.h"
+#include "m_gestor.h"
 #include "inicializar_memoria.h"
 
 // Variables GLOBALES

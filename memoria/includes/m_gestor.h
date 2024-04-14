@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <Shared.h>
+//#include "../utils/src/utils/utils_connections.h"
+#include <../src/utils/utils_connections.h>
 
 #include <commons/log.h>
-#include <commons/config.g>
+#include <commons/config.h>
 
 
 //Variables GLOBALES
