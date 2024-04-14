@@ -52,8 +52,8 @@ void eliminar_paquete(t_paquete* paquete);
 void* recibir_buffer(int*, int);
 
 int iniciar_servidor(char* puerto, t_log* logger, char* msj_server);
-int esperar_cliente(int);
-t_list* recibir_paquete(int);
+int esperar_cliente(int); //pipe
+t_list* recibir_paquete(int); 
 void recibir_mensaje(int);
 int recibir_operacion(int);
 
