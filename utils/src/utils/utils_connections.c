@@ -124,7 +124,7 @@ int iniciar_servidor(char* puerto, t_log* logger, char* msj_server)
 
 	int socket_servidor;
 
-	struct addrinfo hints, *servinfo, *p;
+	struct addrinfo hints, *servinfo/*, p*/;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
