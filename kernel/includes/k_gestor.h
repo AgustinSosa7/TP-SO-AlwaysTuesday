@@ -13,6 +13,11 @@ extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;
 extern t_config* kernel_config;
 
+int fd_memoria;
+int fd_entradasalida;
+int fd_cpu_dispatch;
+int fd_cpu_interrupt;
+
 
 extern char* PUERTO_ESCUCHA;
 extern char* IP_MEMORIA;
