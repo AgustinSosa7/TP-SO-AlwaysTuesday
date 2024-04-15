@@ -25,6 +25,9 @@ log_info(cpu_logger, "Conexion con MEMORIA exitosa!!");
 // Esperar al cliente KERNEL en su puerto INTERRUPT
 
 
+// Atender los mensajes de MEMORIA
+
+atender_cpu_memoria();
 
 return EXIT_SUCCESS;
 }
