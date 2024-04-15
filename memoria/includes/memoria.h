@@ -15,7 +15,7 @@ int fd_entradasalida;  // Estos cuatro falta pasarlos tambien al m_gestor.h poni
 int fd_cpu;             // Soy Ruka, uds dejaron esto acá? Estoy modularizando la Mem. PD: lo agregué
 int fd_kernel;
 
-char* PUERTO_ESCUCHA;
+int PUERTO_ESCUCHA;
 char* IP_FILESYSTEM;
 char* PUERTO_FILESYSTEM;
 int TAM_MEMORIA;

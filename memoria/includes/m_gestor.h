@@ -17,7 +17,7 @@ extern t_log* memoria_logger;
 extern t_log* memoria_log_debug;
 extern t_config* memoria_config;
 
-extern char* PUERTO_ESCUCHA;
+extern int PUERTO_ESCUCHA;
 extern char* IP_FILESYSTEM;
 extern char* PUERTO_FILESYSTEM;
 extern int TAM_MEMORIA;
