@@ -3,6 +3,9 @@
 
 #include "cpu_gestor.h"
 #include "inicializar_cpu.h"
+#include "cpu_kernel_dispatch.h"
+#include "cpu_kernel_interrupt.h"
+#include "cpu_memoria.h"
 
 //Variables GLOBALES
 
@@ -26,10 +29,6 @@ char* ALGORITMO_TLB;
 
 
 
-/**
-* @fn    decir_hola
-* @brief Imprime un saludo al nombre que se pase por parámetro por consola.
-*/
-//void decir_hola(char* quien);
+
 
 #endif
