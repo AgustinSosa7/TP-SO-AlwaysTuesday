@@ -28,7 +28,7 @@ log_info(entradasalida_log_debug, "Se inicializo el kernel debug logger"); //Sac
 
 
 
-entradasalida_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/entradasalida.config");
+entradasalida_config = config_create("/home/utnso/tp-2024-1c-AlwaysTuesday/entradasalida/entradasalida.config");
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");
 	exit(EXIT_FAILURE);

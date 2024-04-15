@@ -22,7 +22,7 @@ void _iniciar_log(){  // t_log* _iniciar_log()
 
 
 void _iniciar_config(){
-    memoria_config = config_create("./memoria.config");
+    memoria_config = config_create("/home/utnso/tp-2024-1c-AlwaysTuesday/memoria/memoria.config");
     if (memoria_config == NULL){
         perror("Error al intentar cargar el config.");
         exit(EXIT_FAILURE);
