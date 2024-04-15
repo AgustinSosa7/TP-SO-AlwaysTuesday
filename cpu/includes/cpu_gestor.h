@@ -1,9 +1,9 @@
 #ifndef CPU_GESTOR_H
 # define CPU_GESTOR_H
 
-
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h> 
 // y las shared?
 #include <commons/log.h>
 #include <commons/config.h>
