@@ -10,10 +10,10 @@ void atender_cpu_memoria(){
             //
             break;
         case -1:
-            log_error(cpu_logger, "Desconexion de Memoria"):       
+            log_error(cpu_logger, "Desconexion de Memoria");      
             control_key = 0;
         default:
-            log_warning(cpu_logger, "Operacion desconocida de Memoria")
+            log_warning(cpu_logger, "Operacion desconocida de Memoria");
             break;
         }
     }

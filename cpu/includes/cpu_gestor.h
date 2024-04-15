@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h> 
-// y las shared?
+
+#include <../src/utils/utils_connections.h>
 #include <commons/log.h>
 #include <commons/config.h>
 

@@ -6,6 +6,7 @@
 #include "cpu_kernel_dispatch.h"
 #include "cpu_kernel_interrupt.h"
 #include "cpu_memoria.h"
+//#include <../src/utils/utils_connections.h>
 
 //Variables GLOBALES
 
