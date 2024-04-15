@@ -28,7 +28,7 @@ void _iniciar_config(){
         exit(EXIT_FAILURE);
     }
     
-    PUERTO_ESCUCHA = config_get_string_value(memoria_config, "PUERTO_ESCUCHA");
+    PUERTO_ESCUCHA = config_get_int_value(memoria_config, "PUERTO_ESCUCHA");
     IP_FILESYSTEM = config_get_string_value(memoria_config,"IP_FILESYSTEM");
     PUERTO_FILESYSTEM = config_get_string_value(memoria_config,"PUERTO_FILESYSTEM");
     TAM_MEMORIA = config_get_int_value(memoria_config, "TAM_MEMORIA");
@@ -39,6 +39,6 @@ void _iniciar_config(){
 }
 
 void _imprimir_config(){
-    log_trace(memoria_log_debug, "MEMORIA PUERTO_ESCUCHA: %s", PUERTO_ESCUCHA);
+    log_trace(memoria_log_debug, "MEMORIA PUERTO_ESCUCHA: %d", PUERTO_ESCUCHA);
 }
 

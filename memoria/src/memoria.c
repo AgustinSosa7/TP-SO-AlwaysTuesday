@@ -17,10 +17,12 @@ fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA")
 
 // Esperar conexion de CPU
 
-log_info(memoria_logger, "ESperando a CPU...");
+log_info(memoria_logger, "Esperando a CPU...");
 fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"CPU"); 
 
 // Esperar conexion de KERNEL
+log_info(memoria_logger, "ESperando a Kernel...");
+fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"KERNEL"); 
 
 // Finalizar MEMORIA
 
