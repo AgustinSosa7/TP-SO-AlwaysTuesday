@@ -24,7 +24,7 @@ void inicializar_logs(){
 }
 
 void iniciar_config(){
-    cpu_config = config_create("/home/utnso/tp-2024-1c-AlwaysTuesday/cpu/cpu.config");
+    cpu_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/cpu/cpu.config");
     if (cpu_config == NULL) {
         perror("Error al intentar cargar el config.");
         exit(EXIT_FAILURE);

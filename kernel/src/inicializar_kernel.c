@@ -31,7 +31,7 @@ log_info(kernel_log_debug, "Se inicializo el kernel debug logger"); //Sacar even
     
 void inicializar_configs(void) {
 
-kernel_config = config_create("/home/utnso/tp-2024-1c-AlwaysTuesday/kernel/kernel.config");
+kernel_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/kernel.config");
 if (kernel_config == NULL) {
 	perror("Error al intentar cargar el config.");
 	exit(EXIT_FAILURE);
