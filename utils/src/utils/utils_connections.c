@@ -20,7 +20,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	return magic;
 }
 
-int crear_conexion(char *ip, char* puerto)
+int crear_conexion(char *ip, int puerto)
 {
 	struct addrinfo hints;
 	struct addrinfo *server_info;
@@ -30,7 +30,7 @@ int crear_conexion(char *ip, char* puerto)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(ip, puerto, &hints, &server_info);
+	getaddrinfo(ip, PUERTO, &hints, &server_info);
 
 	// Ahora vamos a crear el socket.
 	//int socket_cliente = 0;
@@ -117,7 +117,7 @@ void liberar_conexion(int socket_cliente)
 // CONEXIONES DE SERVIDOR
 
 
-int iniciar_servidor(char* puerto, t_log* logger, char* msj_server)
+int iniciar_servidor(int puerto, t_log* logger, char* msj_server)
 {
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
 	//assert(!"no implementado!");
@@ -148,14 +148,14 @@ int iniciar_servidor(char* puerto, t_log* logger, char* msj_server)
 	return socket_servidor;
 }
 
-int esperar_cliente(int socket_servidor)
+int esperar_cliente(int socket_servidor, t_log* logger, char* msj)
 {
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
+	//assert(!"no implementado!");
 
 	// Aceptamos un nuevo cliente
-	int socket_cliente;
-	log_info(logger, "Se conecto un cliente!");
+	int socket_cliente = accept(socket_servidor,NULL,NULL);
+	log_info(logger, "Se conecto %s!", msj);
 
 	return socket_cliente;
 }

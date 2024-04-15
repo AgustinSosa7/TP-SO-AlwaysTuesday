@@ -4,6 +4,9 @@
 #include "k_gestor.h"
 #include "inicializar_kernel.h"
 
+#include <../src/utils/hello.h>
+#include <../src/utils/utils_connections.h>
+
 // Variables GLOBALES
 
 t_log* kernel_logger;
@@ -17,9 +20,9 @@ int fd_cpu_dispatch;
 int fd_cpu_interrupt;
 
 
-char* PUERTO_ESCUCHA;
+int PUERTO_ESCUCHA;
 char* IP_MEMORIA;
-char* PUERTO_MEMORIA;
+int PUERTO_MEMORIA;
 char* IP_CPU;
 int PUERTO_CPU_DISPATCH;
 int PUERTO_CPU_INTERRUPT;

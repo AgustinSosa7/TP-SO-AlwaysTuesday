@@ -39,7 +39,7 @@ extern t_log* logger;
 
 // FUNCIONES CLIENTE
 
-int crear_conexion(char* ip, char* puerto);
+int crear_conexion(char* ip, int puerto);
 void enviar_mensaje(char* mensaje, int socket_cliente);
 t_paquete* crear_paquete(void);
 void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio);
@@ -51,8 +51,8 @@ void eliminar_paquete(t_paquete* paquete);
 // FUNCIONES SERVIDOR
 void* recibir_buffer(int*, int);
 
-int iniciar_servidor(char* puerto, t_log* logger, char* msj_server);
-int esperar_cliente(int); //pipe
+int iniciar_servidor(int puerto, t_log* logger, char* msj_server);
+int esperar_cliente(int, t_log*, char*);
 t_list* recibir_paquete(int); 
 void recibir_mensaje(int);
 int recibir_operacion(int);

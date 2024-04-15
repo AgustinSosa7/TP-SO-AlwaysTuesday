@@ -7,6 +7,9 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
+#include <../src/utils/hello.h>
+#include <../src/utils/utils_connections.h>
+
 // Variables GLOBALES
 
 t_log* entradasalida_logger;
