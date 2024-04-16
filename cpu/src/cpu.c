@@ -8,8 +8,10 @@ int main() {
 
     // Conectarnos como cliente a MEMORIA
 
-    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA); 
-
+    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);  //cerrar
+    
+    // realizarHandshakeCliente(fd_memoria, MEMORIA);
+    
     log_info(cpu_logger, "Conexion con MEMORIA exitosa!!"); 
 
     // Iniciar server de CPU - DISPATCH
@@ -21,18 +23,14 @@ int main() {
     fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, "CPU - INTERRUPT INICIADO!!");
 
 
-    // Conectarnos como cliente a MEMORIA
-
-    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);  //cerrar
-
-    log_info(cpu_logger, "Conexion con MEMORIA exitosa!!"); 
-
-
+    
     // Esperar al cliente KERNEL 
     log_info(cpu_logger, "Esperando a Kernel");
 
     // Esperar al cliente KERNEL en su puerto DISPATCH
     fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch,cpu_logger,"KERNEL - Dispatch"); //cerrar
+    
+    // realizarHandshakeServidor(fd_kernel_dispatch,CPU_DISPATCH);
 
     // Esperar al cliente KERNEL en su puerto INTERRUPT
     fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL - Interrupt"); //cerrar

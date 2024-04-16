@@ -17,6 +17,15 @@
 
 #define PUERTO "4444"
 
+
+typedef enum 
+{
+	MEMORIA,
+	CPU_DISPATCH,
+	CPU_INTERRUPT,
+	KERNEL
+} server_code;
+
 typedef enum
 {
 	MENSAJE,

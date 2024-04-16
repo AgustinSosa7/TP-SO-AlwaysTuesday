@@ -212,3 +212,34 @@ t_list* recibir_paquete(int socket_cliente)
 	free(buffer);
 	return valores;
 }
+
+void recibirHandshakeServidor(int fd_conexion, int32_t moduloServidor){
+	size_t bytes;
+
+	int32_t handshake;
+	int32_t resultOk = 0;
+	int32_t resultError = -1;
+
+	bytes = recv(fd_conexion, &handshake, sizeof(int32_t), MSG_WAITALL);
+	if (handshake == moduloServidor) {
+    bytes = send(fd_conexion, &resultOk, sizeof(int32_t), 0);
+	} else {
+    bytes = send(fd_conexion, &resultError, sizeof(int32_t), 0);
+	}
+}
+
+void realizarHandshakeCliente(int fd_conexion, int32_t moduloServidor){ // Quizas ver que podemos retornar aca y cambiar el void a bool(?
+	size_t bytes;
+
+	int32_t handshake = moduloServidor;
+	int32_t result;
+
+	bytes = send(fd_conexion, &handshake, sizeof(int32_t), 0);
+	bytes = recv(fd_conexion, &result, sizeof(int32_t), MSG_WAITALL);
+
+	if (result == 0) {
+    // Handshake OK  podriamos tirar un log, pidiendolo por parámetro
+	} else {
+    // Handshake ERROR
+}
+}
