@@ -48,10 +48,4 @@ void imprimir_configs(){
 	log_info(entradasalida_log_debug, "Se inicializan las configs..."); //Sacar eventualmente
 
 }
-	//Inicializar Estructuras EntradaSalida. OJO PUERTO_ESCUCHA, 
-	//fd_entradasalida = iniciar_servidor(PUERTO_ESCUCHA, entradasalida_logger,"EntradaSalida iniciado!");
-
-	//Conectarme como cliente a Memoria
-	//fd_memoria = crear_conexion(IP_MEMORIA);
-//Conectarme como cliente a Kernel
-	fd_kernel = crear_conexion(IP_KERNEL,PUERTO_KERNEL);
+	
