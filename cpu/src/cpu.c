@@ -21,15 +21,13 @@ int main() {
     fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, "CPU - INTERRUPT INICIADO!!");
 
 
-<<<<<<< HEAD
-=======
     // Conectarnos como cliente a MEMORIA
 
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);  //cerrar
 
     log_info(cpu_logger, "Conexion con MEMORIA exitosa!!"); 
 
->>>>>>> refs/remotes/origin/main
+
     // Esperar al cliente KERNEL 
     log_info(cpu_logger, "Esperando a Kernel");
 
