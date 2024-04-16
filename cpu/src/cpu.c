@@ -21,14 +21,23 @@ int main() {
     fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, "CPU - INTERRUPT INICIADO!!");
 
 
+<<<<<<< HEAD
+=======
+    // Conectarnos como cliente a MEMORIA
+
+    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);  //cerrar
+
+    log_info(cpu_logger, "Conexion con MEMORIA exitosa!!"); 
+
+>>>>>>> refs/remotes/origin/main
     // Esperar al cliente KERNEL 
     log_info(cpu_logger, "Esperando a Kernel");
 
     // Esperar al cliente KERNEL en su puerto DISPATCH
-    fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch,cpu_logger,"KERNEL - Dispatch");
+    fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch,cpu_logger,"KERNEL - Dispatch"); //cerrar
 
     // Esperar al cliente KERNEL en su puerto INTERRUPT
-    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL - Interrupt");
+    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL - Interrupt"); //cerrar
 
     //Atender los mensajes de Kernel - Dispatch
     pthread_t hilo_kernel_dispatch;
