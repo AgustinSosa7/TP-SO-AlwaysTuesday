@@ -18,7 +18,8 @@ saludar_cliente(&fd_cpu);
 
 // Esperar conexion de KERNEL
 log_info(memoria_logger, "Esperando a Kernel...");
-fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"KERNEL"); 
+fd_kernel = esperar_cliente(fd_memoria, memoria_logger,"KERNEL"); 
+saludar_cliente(&fd_kernel);
 
 // Esperar conexion de ENTRADASALIDA
 log_info(memoria_logger, "Esperando a EntradaSalida...");
