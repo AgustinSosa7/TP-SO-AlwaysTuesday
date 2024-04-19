@@ -25,10 +25,5 @@ char* PATH_BASE_DIALFS;
 int BLOCK_SIZE;
 int BLOCK_COUNT;
 
-/**
-* @fn    decir_hola
-* @brief Imprime un saludo al nombre que se pase por parámetro por consola.
-*/
-void decir_hola(char* quien);
 
 #endif

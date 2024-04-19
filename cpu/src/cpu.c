@@ -23,17 +23,17 @@ int main() {
 
     fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
 
-    log_info(memoria_logger, "Esperando a DISPATCH...");
+    log_info(cpu_logger, "Esperando a DISPATCH...");
     fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch, cpu_logger,"DISPATCH");
-    saludar_cliente(&fd_kernel_dispatch);
+    saludar_cliente(&fd_kernel_dispatch, cpu_logger);
 
     // Iniciar server de CPU - INTERRUPT
 
     fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, IP_CPU);
 
-    log_info(memoria_logger, "Esperando a INTERRUPT...");
+    log_info(cpu_logger, "Esperando a INTERRUPT...");
     fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"INTERRUPT");
-    saludar_cliente(&fd_kernel_interrupt);
+    saludar_cliente(&fd_kernel_interrupt, cpu_logger);
 
     
     //Atender los mensajes de Kernel - Dispatch

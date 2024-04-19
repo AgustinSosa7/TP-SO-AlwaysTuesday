@@ -28,12 +28,6 @@ int RETARDO_RESPUESTA;
 char* ALGORITMO_REEMPLAZO;
 
 
-/**
-* @fn    decir_hola
-* @brief Imprime un saludo al nombre que se pase por parámetro por consola.
-*/
-void decir_hola(char* quien);
-int server_escucha();
-void saludar_cliente(void *void_args);
+
 
 #endif /* MEMORIA_H_*/

@@ -272,3 +272,26 @@ void enviar_handshake(int conexion){
 	send(conexion, coso_a_enviar, sizeof(int),0);
 	free(coso_a_enviar);
 }
+
+void saludar_cliente(void *void_args, t_log* logger){
+	int* conexion = (int*) void_args;
+
+	int code_op = recibir_operacion(*conexion);
+	switch (code_op) {
+		case HANDSHAKE:
+			void* coso_a_enviar = malloc(sizeof(int));
+			int respuesta = 1;
+			memcpy(coso_a_enviar, &respuesta, sizeof(int));
+			send(*conexion, coso_a_enviar, sizeof(int),0);
+			free(coso_a_enviar);
+
+			//procesar_conexion(conexion);
+			break;
+		case -1:
+			log_error(logger, "Desconexion en HANDSHAKE");
+			break;
+		default:
+			log_error(logger, "ERROR EN HANDSHAKE: Operacion desconocida");
+			break;
+	}
+}

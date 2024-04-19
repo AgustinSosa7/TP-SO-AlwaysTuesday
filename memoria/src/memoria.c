@@ -14,17 +14,17 @@ fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, IP_MEMORIA);  //Te
 // Esperar conexion de CPU
 log_info(memoria_logger, "Esperando a CPU...");
 fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"CPU");
-saludar_cliente(&fd_cpu);
+saludar_cliente(&fd_cpu, memoria_logger);
 
 // Esperar conexion de KERNEL
 log_info(memoria_logger, "Esperando a Kernel...");
 fd_kernel = esperar_cliente(fd_memoria, memoria_logger,"KERNEL"); 
-saludar_cliente(&fd_kernel);
+saludar_cliente(&fd_kernel, memoria_logger);
 
 // Esperar conexion de ENTRADASALIDA
 log_info(memoria_logger, "Esperando a EntradaSalida...");
 fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
-saludar_cliente(&fd_entradasalida);
+saludar_cliente(&fd_entradasalida, memoria_logger);
 
 
 // Finalizar MEMORIA
@@ -33,25 +33,4 @@ return EXIT_SUCCESS;
 }
 
 
-void saludar_cliente(void *void_args){
-	int* conexion = (int*) void_args;
 
-	int code_op = recibir_operacion(*conexion);
-	switch (code_op) {
-		case HANDSHAKE:
-			void* coso_a_enviar = malloc(sizeof(int));
-			int respuesta = 1;
-			memcpy(coso_a_enviar, &respuesta, sizeof(int));
-			send(*conexion, coso_a_enviar, sizeof(int),0);
-			free(coso_a_enviar);
-
-			//procesar_conexion(conexion);
-			break;
-		case -1:
-			log_error(memoria_logger, "Desconexion en HANDSHAKE");
-			break;
-		default:
-			log_error(memoria_logger, "ERROR EN HANDSHAKE: Operacion desconocida");
-			break;
-	}
-}
