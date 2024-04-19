@@ -4,7 +4,6 @@
 #include "k_gestor.h"
 #include "inicializar_kernel.h"
 
-#include <../src/utils/hello.h>
 #include <../src/utils/utils_connections.h>
 
 // Variables GLOBALES

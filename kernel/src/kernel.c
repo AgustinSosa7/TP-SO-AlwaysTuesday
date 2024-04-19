@@ -9,18 +9,20 @@ int main()
     inicializar_kernel();
 
     // Conectarse con Memoria
-    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+    log_info(kernel_logger, "Creando conexion con MEMORIA...");
+    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, kernel_logger);
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", kernel_logger);
     log_warning(kernel_logger, "HANDSHAKE CON MEMORIA [EXITOSO]");
 
     // Conectarse con CPU
+    log_info(kernel_logger, "Creando conexion con CPU...");
     //  DISPATCH
-    fd_cpu_dispatch = crear_conexion(IP_CPU, PUERTO_CPU_DISPATCH);
+    fd_cpu_dispatch = crear_conexion(IP_CPU, PUERTO_CPU_DISPATCH, kernel_logger);
     gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU", kernel_logger);
     log_warning(kernel_logger, "HANDSHAKE DISPATCH CON CPU [EXITOSO]"); 
 
     // INTERRUPT
-    fd_cpu_interrupt = crear_conexion(IP_CPU, PUERTO_CPU_INTERRUPT);
+    fd_cpu_interrupt = crear_conexion(IP_CPU, PUERTO_CPU_INTERRUPT, kernel_logger);
     gestionar_handshake_como_cliente(fd_cpu_interrupt, "CPU", kernel_logger);
     log_warning(kernel_logger, "HANDSHAKE INTERRUPT CON CPU [EXITOSO]"); 
 

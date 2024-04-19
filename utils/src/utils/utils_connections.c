@@ -20,7 +20,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	return magic;
 }
 
-int crear_conexion(char* ip, char* puerto)
+int crear_conexion(char* ip, char* puerto, t_log* logger)
 {
 	struct addrinfo hints;
 	struct addrinfo *server_info;
@@ -40,6 +40,11 @@ int crear_conexion(char* ip, char* puerto)
 
 	// Ahora que tenemos el socket, vamos a conectarlo
 	connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+
+	if(socket_cliente == -1){
+		log_error(logger, "No se pudo realizar la conexion correctamente.");
+		exit(EXIT_FAILURE);
+	}
 
 	freeaddrinfo(server_info);
 
@@ -160,7 +165,7 @@ int esperar_cliente(int socket_servidor, t_log* logger, const char* msj)
 
     int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 
-    log_info(logger, "Cliente conectado a %s", msj);
+    log_warning(logger, "Cliente conectado a %s", msj);
 
     return socket_cliente;
 }

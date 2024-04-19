@@ -7,11 +7,9 @@ int main() {
 
 
     // Conectarnos como cliente a MEMORIA
-
-    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);  //cerrar
-    
-    gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);
-    
+    log_info(cpu_logger, "Creando conexion con MEMORIA...");
+    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  //cerrar
+    gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
     log_warning(cpu_logger, "HANDSHAKE CON MEMORIA [EXITOSO]"); 
 
 
