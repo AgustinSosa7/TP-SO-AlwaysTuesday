@@ -10,17 +10,17 @@ int main() {
 
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);  //cerrar
     
-    // realizarHandshakeCliente(fd_memoria, MEMORIA);
+    gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);
     
     log_info(cpu_logger, "Conexion con MEMORIA exitosa!!"); 
 
     // Iniciar server de CPU - DISPATCH
 
-    fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, "CPU - DISPATCH INICIADO!!");
+   // fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, "CPU - DISPATCH INICIADO!!");
 
     // Iniciar server de CPU - INTERRUPT
 
-    fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, "CPU - INTERRUPT INICIADO!!");
+    // fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, "CPU - INTERRUPT INICIADO!!");
 
 
     
