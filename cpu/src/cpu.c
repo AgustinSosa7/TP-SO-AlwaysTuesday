@@ -14,27 +14,28 @@ int main() {
     
     log_warning(cpu_logger, "HANDSHAKE CON MEMORIA [EXITOSO]"); 
 
+
+    // Conectarnos como cliente a MEMORIA
+
+    log_info(cpu_logger, "Esperando a Kernel");
+
     // Iniciar server de CPU - DISPATCH
 
-    fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, "CPU - DISPATCH INICIADO!!");
+    fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
+
+    log_info(memoria_logger, "Esperando a DISPATCH...");
+    fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch, cpu_logger,"DISPATCH");
+    saludar_cliente(&fd_kernel_dispatch);
 
     // Iniciar server de CPU - INTERRUPT
 
-    // fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, "CPU - INTERRUPT INICIADO!!");
+    fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, IP_CPU);
 
+    log_info(memoria_logger, "Esperando a INTERRUPT...");
+    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"INTERRUPT");
+    saludar_cliente(&fd_kernel_interrupt);
 
     
-    // Esperar al cliente KERNEL 
-    log_info(cpu_logger, "Esperando a Kernel");
-
-    // Esperar al cliente KERNEL en su puerto DISPATCH
-    //fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch,cpu_logger,"KERNEL - Dispatch"); //cerrar
-    
-    // realizarHandshakeServidor(fd_kernel_dispatch,CPU_DISPATCH);
-
-    // Esperar al cliente KERNEL en su puerto INTERRUPT
-//    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL - Interrupt"); //cerrar
-
     //Atender los mensajes de Kernel - Dispatch
     //pthread_t hilo_kernel_dispatch;
     //pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);

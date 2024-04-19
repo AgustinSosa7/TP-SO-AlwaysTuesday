@@ -31,6 +31,7 @@ void iniciar_config(){
     }
 
     IP_MEMORIA = config_get_string_value(cpu_config,"IP_MEMORIA");
+    IP_CPU = config_get_string_value(cpu_config, "IP_CPU"); 
     PUERTO_MEMORIA = config_get_string_value(cpu_config,"PUERTO_MEMORIA");
     PUERTO_ESCUCHA_DISPATCH = config_get_string_value(cpu_config,"PUERTO_ESCUCHA_DISPATCH");
     PUERTO_ESCUCHA_INTERRUPT = config_get_string_value(cpu_config,"PUERTO_ESCUCHA_INTERRUPT");

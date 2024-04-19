@@ -21,6 +21,7 @@ int fd_kernel_interrupt;
 int fd_memoria;
 
 char* IP_MEMORIA;
+char* IP_CPU;
 char* PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char*
 int PUERTO_ESCUCHA_DISPATCH;
 int PUERTO_ESCUCHA_INTERRUPT;
