@@ -14,8 +14,7 @@ fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, IP_MEMORIA);  //Te
 // Esperar conexion de CPU
 log_info(memoria_logger, "Esperando a CPU...");
 fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"CPU");
-// gestionar_handshake_como_server(fd_memoria, memoria_logger);
-server_escucha();
+saludar_cliente(&fd_cpu);
 
 // Esperar conexion de KERNEL
 log_info(memoria_logger, "Esperando a Kernel...");
@@ -32,25 +31,8 @@ return EXIT_SUCCESS;
 }
 
 
-int server_escucha(){
-	server_name = "Memoria";
-	log_info(memoria_logger, "Iniciando servidor %s",server_name);
-	while(1) {
-		int cliente_socket = esperar_cliente(fd_memoria, memoria_logger, server_name );
-		if(cliente_socket != -1){
-			pthread_t hilo_cliente;
-			int *args = malloc(sizeof(int));
-			*args = cliente_socket;
-			pthread_create(&hilo_cliente, NULL, (void*) saludar_cliente, args); // Pasamos args directamente
-			log_info(memoria_logger, "[THREAD] Creo hilo para atender");
-			pthread_detach(hilo_cliente);
-		}
-	}
-	return EXIT_SUCCESS;
-}
 void saludar_cliente(void *void_args){
 	int* conexion = (int*) void_args;
-	//int cliente_socket = *args;
 
 	int code_op = recibir_operacion(*conexion);
 	switch (code_op) {

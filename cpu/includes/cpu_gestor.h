@@ -25,7 +25,7 @@ extern int fd_kernel_interrupt;
 extern int fd_memoria;
 
 extern char* IP_MEMORIA;
-extern int PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char*
+extern char* PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char*
 extern int PUERTO_ESCUCHA_DISPATCH;
 extern int PUERTO_ESCUCHA_INTERRUPT;
 extern int CANTIDAD_ENTRADAS_TLB;

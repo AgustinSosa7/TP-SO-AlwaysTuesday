@@ -12,7 +12,7 @@ int main() {
     
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);
     
-    log_info(cpu_logger, "Conexion con MEMORIA exitosa!!"); 
+    log_warning(cpu_logger, "HANDSHAKE CON MEMORIA [EXITOSO]"); 
 
     // Iniciar server de CPU - DISPATCH
 
@@ -28,28 +28,28 @@ int main() {
     log_info(cpu_logger, "Esperando a Kernel");
 
     // Esperar al cliente KERNEL en su puerto DISPATCH
-    fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch,cpu_logger,"KERNEL - Dispatch"); //cerrar
+    //fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch,cpu_logger,"KERNEL - Dispatch"); //cerrar
     
     // realizarHandshakeServidor(fd_kernel_dispatch,CPU_DISPATCH);
 
     // Esperar al cliente KERNEL en su puerto INTERRUPT
-    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL - Interrupt"); //cerrar
+//    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL - Interrupt"); //cerrar
 
     //Atender los mensajes de Kernel - Dispatch
-    pthread_t hilo_kernel_dispatch;
-    pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
-    pthread_detach(hilo_kernel_dispatch);
-
-    //Atender los mensajes de Kernel - Interrupt
-    pthread_t hilo_kernel_interrupt;
-    pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
-    pthread_detach(hilo_kernel_interrupt);
-
-    //Atender los mensajes de Memoria
-    pthread_t hilo_memoria;
-    pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
-    pthread_join(hilo_memoria, NULL);
-
+    //pthread_t hilo_kernel_dispatch;
+    //pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
+    //pthread_detach(hilo_kernel_dispatch);
+//
+    ////Atender los mensajes de Kernel - Interrupt
+    //pthread_t hilo_kernel_interrupt;
+    //pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
+    //pthread_detach(hilo_kernel_interrupt);
+//
+    ////Atender los mensajes de Memoria
+    //pthread_t hilo_memoria;
+    //pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
+    //pthread_join(hilo_memoria, NULL);
+//
 
     return EXIT_SUCCESS;
 }
