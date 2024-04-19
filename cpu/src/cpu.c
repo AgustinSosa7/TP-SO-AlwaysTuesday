@@ -16,7 +16,7 @@ int main() {
 
     // Iniciar server de CPU - DISPATCH
 
-   // fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, "CPU - DISPATCH INICIADO!!");
+    fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, "CPU - DISPATCH INICIADO!!");
 
     // Iniciar server de CPU - INTERRUPT
 

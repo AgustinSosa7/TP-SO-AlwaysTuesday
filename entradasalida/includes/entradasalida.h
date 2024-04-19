@@ -14,13 +14,13 @@ int fd_entradasalida;  //Agregar estos 3 a en el es_gestor.h
 int fd_memoria;
 int fd_kernel;      
 
-int PUERTO_ESCUCHA;     //Agregar al es_gestor.h
+char* PUERTO_ESCUCHA;     //Agregar al es_gestor.h
 char* TIPO_INTERFAZ;
 int TIEMPO_UNIDAD_TRABAJO; //Quizas en crear_concxion() los toma como char*
 char* IP_KERNEL;
-int PUERTO_KERNEL;
+char* PUERTO_KERNEL;
 char* IP_MEMORIA;
-int PUERTO_MEMORIA;
+char* PUERTO_MEMORIA;
 char* PATH_BASE_DIALFS;
 int BLOCK_SIZE;
 int BLOCK_COUNT;
