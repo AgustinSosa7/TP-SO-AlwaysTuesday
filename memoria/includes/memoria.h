@@ -15,7 +15,10 @@ int fd_entradasalida;  // Estos cuatro falta pasarlos tambien al m_gestor.h poni
 int fd_cpu;             // Soy Ruka, uds dejaron esto acá? Estoy modularizando la Mem. PD: lo agregué
 int fd_kernel;
 
-int PUERTO_ESCUCHA;
+char* server_name;
+
+char* IP_MEMORIA;
+char* PUERTO_ESCUCHA;
 char* IP_FILESYSTEM;
 char* PUERTO_FILESYSTEM;
 int TAM_MEMORIA;
@@ -25,10 +28,6 @@ int RETARDO_RESPUESTA;
 char* ALGORITMO_REEMPLAZO;
 
 
-/**
-* @fn    decir_hola
-* @brief Imprime un saludo al nombre que se pase por parámetro por consola.
-*/
-void decir_hola(char* quien);
+
 
 #endif /* MEMORIA_H_*/

@@ -37,12 +37,13 @@ if (kernel_config == NULL) {
 	exit(EXIT_FAILURE);
     } 
 
-PUERTO_ESCUCHA = config_get_int_value(kernel_config,"PUERTO_ESCUCHA");
+PUERTO_ESCUCHA = config_get_string_value(kernel_config,"PUERTO_ESCUCHA");
 IP_MEMORIA = config_get_string_value(kernel_config,"IP_MEMORIA");
-PUERTO_MEMORIA = config_get_int_value(kernel_config,"PUERTO_MEMORIA");
+IP_KERNEL = config_get_string_value(kernel_config,"IP_MEMORIA");
+PUERTO_MEMORIA = config_get_string_value(kernel_config,"PUERTO_MEMORIA");
 IP_CPU = config_get_string_value(kernel_config,"IP_CPU");
-PUERTO_CPU_DISPATCH= config_get_int_value(kernel_config,"PUERTO_CPU_DISPATCH");
-PUERTO_CPU_INTERRUPT = config_get_int_value(kernel_config,"PUERTO_CPU_INTERRUPT");
+PUERTO_CPU_DISPATCH= config_get_string_value(kernel_config,"PUERTO_CPU_DISPATCH");
+PUERTO_CPU_INTERRUPT = config_get_string_value(kernel_config,"PUERTO_CPU_INTERRUPT");
 ALGORITMO_PLANIFICACION = config_get_string_value(kernel_config,"ALGORITMO_PLANIFICACION");
 QUANTUM = config_get_int_value(kernel_config,"QUANTUM");
 RECURSOS = config_get_array_value(kernel_config, "RECURSOS"); // REVISAR POR FAVOR EL TIPO DE DATO QUE SE MANEJA (kernel.h)
@@ -51,17 +52,17 @@ GRADO_MULTIPROGRAMACION = config_get_int_value(kernel_config,"GRADO_MULTIPROGRAM
 
 log_info(kernel_log_debug, "Se inicializan las configs..."); //Sacar eventualmente
 
-log_info(kernel_log_debug, "PUERTO_ESCUCHA: %d", PUERTO_ESCUCHA); //Sacar eventualmente
+log_info(kernel_log_debug, "PUERTO_ESCUCHA: %s", PUERTO_ESCUCHA); //Sacar eventualmente
 log_info(kernel_log_debug, "IP_MEMORIA: %s", IP_MEMORIA); //Sacar eventualmente
-log_info(kernel_log_debug, "PUERTO_MEMORIA: %d", PUERTO_MEMORIA); //Sacar eventualmente
+log_info(kernel_log_debug, "PUERTO_MEMORIA: %s", PUERTO_MEMORIA); //Sacar eventualmente
 log_info(kernel_log_debug, "IP_CPU: %s", IP_CPU); //Sacar eventualmente
-log_info(kernel_log_debug, "PUERTO_CPU_DISPATCH: %d", PUERTO_CPU_DISPATCH); //Sacar eventualmente
-log_info(kernel_log_debug, "PUERTO_CPU_INTERRUPT: %d", PUERTO_CPU_INTERRUPT); //Sacar eventualmente
-log_info(kernel_log_debug, "ALGORITMO_PLANIFICACION: %s", ALGORITMO_PLANIFICACION); //Sacar eventualmente
-log_info(kernel_log_debug, "QUANTUM: %d", QUANTUM); //Sacar eventualmente
-log_info(kernel_log_debug, "Falta RECURSOS"); //Sacar eventualmente
-log_info(kernel_log_debug, "Falta INSTANCIAS_RECURSOS"); //Sacar eventualmente
-log_info(kernel_log_debug, "GRADO_MULTIPROGRAMACION: %d", GRADO_MULTIPROGRAMACION); //Sacar eventualmente
+log_info(kernel_log_debug, "PUERTO_CPU_DISPATCH: %s", PUERTO_CPU_DISPATCH); //Sacar eventualmente
+log_info(kernel_log_debug, "PUERTO_CPU_INTERRUPT: %s", PUERTO_CPU_INTERRUPT); //Sacar eventualmente
+//log_info(kernel_log_debug, "ALGORITMO_PLANIFICACION: %s", ALGORITMO_PLANIFICACION); //Sacar eventualmente
+//log_info(kernel_log_debug, "QUANTUM: %d", QUANTUM); //Sacar eventualmente
+//log_info(kernel_log_debug, "Falta RECURSOS:" %d); //Sacar eventualmente
+//log_info(kernel_log_debug, "Falta INSTANCIAS_RECURSOS: %d", INSTANCIAS_RECURSOS); //Sacar eventualmente
+//log_info(kernel_log_debug, "GRADO_MULTIPROGRAMACION: %d", GRADO_MULTIPROGRAMACION); //Sacar eventualmente
 
 log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualmente
 

@@ -6,7 +6,6 @@
 #include "cpu_kernel_dispatch.h"
 #include "cpu_kernel_interrupt.h"
 #include "cpu_memoria.h"
-//#include <../src/utils/utils_connections.h>
 
 //Variables GLOBALES
 
@@ -21,14 +20,12 @@ int fd_kernel_interrupt;
 int fd_memoria;
 
 char* IP_MEMORIA;
-int PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char*
-int PUERTO_ESCUCHA_DISPATCH;
-int PUERTO_ESCUCHA_INTERRUPT;
+char* IP_CPU;
+char* PUERTO_MEMORIA; 
+char* PUERTO_ESCUCHA_DISPATCH;
+char* PUERTO_ESCUCHA_INTERRUPT;
 int CANTIDAD_ENTRADAS_TLB;
 char* ALGORITMO_TLB;
-
-
-
 
 
 

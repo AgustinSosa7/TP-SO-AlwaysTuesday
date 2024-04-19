@@ -20,7 +20,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	return magic;
 }
 
-int crear_conexion(char *ip, int puerto)
+int crear_conexion(char* ip, char* puerto, t_log* logger)
 {
 	struct addrinfo hints;
 	struct addrinfo *server_info;
@@ -30,7 +30,7 @@ int crear_conexion(char *ip, int puerto)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(ip, PUERTO, &hints, &server_info);
+	getaddrinfo(ip, puerto, &hints, &server_info);
 
 	// Ahora vamos a crear el socket.
 	//int socket_cliente = 0;
@@ -40,6 +40,11 @@ int crear_conexion(char *ip, int puerto)
 
 	// Ahora que tenemos el socket, vamos a conectarlo
 	connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+
+	if(socket_cliente == -1){
+		log_error(logger, "No se pudo realizar la conexion correctamente.");
+		exit(EXIT_FAILURE);
+	}
 
 	freeaddrinfo(server_info);
 
@@ -117,59 +122,78 @@ void liberar_conexion(int socket_cliente)
 // CONEXIONES DE SERVIDOR
 
 
-int iniciar_servidor(int puerto, t_log* logger, char* msj_server)
+int iniciar_servidor(char* puerto, t_log* logger, char* ip)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	//assert(!"no implementado!");
-
-	int socket_servidor;
-
-	struct addrinfo hints, *servinfo/*, p*/;
-
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
-
-	getaddrinfo(NULL, PUERTO, &hints, &servinfo);
-
-	// Creamos el socket de escucha del servidor
-	socket_servidor = socket(servinfo->ai_family,
-							servinfo->ai_socktype,
-							servinfo->ai_protocol);
-	// Asociamos el socket a un puerto
-	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
-	// Escuchamos las conexiones entrantes
-	listen(socket_servidor, SOMAXCONN);
-
-	freeaddrinfo(servinfo);
-	log_info(logger, "SERVER: %s",msj_server);
-
-	return socket_servidor;
-}
-
-int esperar_cliente(int socket_servidor, t_log* logger, char* msj)
-{
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	//assert(!"no implementado!");
-
-	// Aceptamos un nuevo cliente
-	int socket_cliente = accept(socket_servidor,NULL,NULL);
-	log_info(logger, "Se conecto %s!", msj);
-
-	return socket_cliente;
-}
-
-int recibir_operacion(int socket_cliente)
-{
-	int cod_op;
-	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) > 0)
-		return cod_op;
-	else
-	{
-		close(socket_cliente);
+	if(puerto == NULL) {
+		printf("No encuentra el puerto");
 		return -1;
 	}
+
+		struct addrinfo hints;
+		struct addrinfo *server_info;
+
+		memset(&hints, 0, sizeof(hints));
+
+		hints.ai_family = AF_UNSPEC;    // No importa si uso IPv4 o IPv6
+		hints.ai_flags = AI_PASSIVE;		// Asigna el address del localhost: 127.0.0.1
+		hints.ai_socktype = SOCK_STREAM;  // Indica que usaremos el protocolo TCP
+
+		getaddrinfo(ip, puerto, &hints, &server_info);  // Si IP es NULL, usa el localhost
+
+		int server_socket = socket(server_info->ai_family, server_info->ai_socktype,server_info->ai_protocol);
+
+		int activado = 1;
+		setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &activado, sizeof(activado));
+
+		if(server_socket == -1 || bind(server_socket, server_info->ai_addr, server_info->ai_addrlen) == -1){
+			freeaddrinfo(server_info);
+			printf("fallo el bindeo");
+			return -1;
+		}
+		freeaddrinfo(server_info);
+		if(listen(server_socket, BACKLOG) == -1){
+			printf("fallo el listen");
+			return -1;
+		}
+		return server_socket;
+}
+
+int esperar_cliente(int socket_servidor, t_log* logger, const char* msj)
+{
+	struct sockaddr_in dir_cliente;
+    socklen_t tam_direccion = sizeof(struct sockaddr_in);
+
+    int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
+
+    log_warning(logger, "Cliente conectado a %s", msj);
+
+    return socket_cliente;
+}
+
+
+int recibir_operacion(int socket_cliente) // @suppress("No return")
+{
+	int cod_op;
+
+	int bytesRecibidos = recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL);
+
+	if(bytesRecibidos > 0) {
+	    if(bytesRecibidos != sizeof(int)) {
+	        printf("Recibidos %d bytes, esperaba %zu bytes\n", bytesRecibidos, sizeof(int));
+	    }
+	    return cod_op;
+	} else if (bytesRecibidos == 0) {
+		// El cliente cerró la conexión
+		printf("El cliente cerró la conexión.\n");
+		close(socket_cliente);
+		return -1;
+	} else {
+		// Ocurrió un error al recibir datos
+		printf("Error al recibir el codigo de operacion\n");
+		close(socket_cliente);
+		return -2;
+	}
+
 }
 
 void* recibir_buffer(int* size, int socket_cliente)
@@ -213,33 +237,66 @@ t_list* recibir_paquete(int socket_cliente)
 	return valores;
 }
 
-void recibirHandshakeServidor(int fd_conexion, int32_t moduloServidor){
-	size_t bytes;
+void gestionar_handshake_como_server(int conexion, t_log* logger){
+	int code_op = recibir_operacion(conexion);
+	printf("codigo de operacion: %d como handhaske servidor \n", code_op);
+	switch (code_op) {
+		case HANDSHAKE:
+			void* coso_a_enviar = malloc(sizeof(int));
+			int respuesta = 1;
+			memcpy(coso_a_enviar, &respuesta, sizeof(int));
+			send(conexion, coso_a_enviar, sizeof(int),0);
+			free(coso_a_enviar);
 
-	int32_t handshake;
-	int32_t resultOk = 0;
-	int32_t resultError = -1;
-
-	bytes = recv(fd_conexion, &handshake, sizeof(int32_t), MSG_WAITALL);
-	if (handshake == moduloServidor) {
-    bytes = send(fd_conexion, &resultOk, sizeof(int32_t), 0);
-	} else {
-    bytes = send(fd_conexion, &resultError, sizeof(int32_t), 0);
+			break;
+		case -1:
+			log_error(logger, "Desconexion en HANDSHAKE\n");
+			exit(EXIT_FAILURE);
+			break;
+		default:
+			log_error(logger, "ERROR EN HANDSHAKE: Operacion desconocida\n");
+			exit(EXIT_FAILURE);
+			break;
 	}
 }
 
-void realizarHandshakeCliente(int fd_conexion, int32_t moduloServidor){ // Quizas ver que podemos retornar aca y cambiar el void a bool(?
-	size_t bytes;
 
-	int32_t handshake = moduloServidor;
-	int32_t result;
-
-	bytes = send(fd_conexion, &handshake, sizeof(int32_t), 0);
-	bytes = recv(fd_conexion, &result, sizeof(int32_t), MSG_WAITALL);
-
-	if (result == 0) {
-    // Handshake OK  podriamos tirar un log, pidiendolo por parámetro
-	} else {
-    // Handshake ERROR
+void gestionar_handshake_como_cliente(int fd_conexion, char* modulo_destino, t_log* logger){ 
+	enviar_handshake(fd_conexion);
+	int respuesta_handshake = recibir_operacion(fd_conexion);
+	if(respuesta_handshake != 1){
+		log_error(logger, "Error en handshake con %s", modulo_destino);
+		exit(EXIT_FAILURE);
 }
+}
+
+void enviar_handshake(int conexion){
+	void* coso_a_enviar = malloc(sizeof(int));
+	int saludar = HANDSHAKE;
+	memcpy(coso_a_enviar, &saludar, sizeof(int));
+	send(conexion, coso_a_enviar, sizeof(int),0);
+	free(coso_a_enviar);
+}
+
+void saludar_cliente(void *void_args, t_log* logger){
+	int* conexion = (int*) void_args;
+
+	int code_op = recibir_operacion(*conexion);
+	switch (code_op) {
+		case HANDSHAKE:
+			void* coso_a_enviar = malloc(sizeof(int));
+			int respuesta = 1;
+			memcpy(coso_a_enviar, &respuesta, sizeof(int));
+			send(*conexion, coso_a_enviar, sizeof(int),0);
+			free(coso_a_enviar);
+
+			//procesar_conexion(conexion);
+			break;
+		case -1:
+			log_error(logger, "Desconexion en HANDSHAKE");
+			break;
+		default:
+			log_error(logger, "ERROR EN HANDSHAKE: Operacion desconocida");
+			break;
+	}
 }

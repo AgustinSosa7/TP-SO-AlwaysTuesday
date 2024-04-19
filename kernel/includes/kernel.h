@@ -4,7 +4,6 @@
 #include "k_gestor.h"
 #include "inicializar_kernel.h"
 
-#include <../src/utils/hello.h>
 #include <../src/utils/utils_connections.h>
 
 // Variables GLOBALES
@@ -20,16 +19,17 @@ int fd_cpu_dispatch;
 int fd_cpu_interrupt;
 
 
-int PUERTO_ESCUCHA;
+char* PUERTO_ESCUCHA;
 char* IP_MEMORIA;
-int PUERTO_MEMORIA;
+char* PUERTO_MEMORIA;
 char* IP_CPU;
-int PUERTO_CPU_DISPATCH;
-int PUERTO_CPU_INTERRUPT;
+char* PUERTO_CPU_DISPATCH;
+char* PUERTO_CPU_INTERRUPT;
 char* ALGORITMO_PLANIFICACION;
 int QUANTUM;
 char** RECURSOS;    // REVISAR EL TIPO EN EL ENUNCIADO 
 char ** INSTANCIAS_RECURSOS; // POR FAVOR REVISAR EL TIPO EN EL ENUNCIADO
 int GRADO_MULTIPROGRAMACION;
+char * IP_KERNEL;
 
 #endif
