@@ -39,6 +39,7 @@ if (kernel_config == NULL) {
 
 PUERTO_ESCUCHA = config_get_string_value(kernel_config,"PUERTO_ESCUCHA");
 IP_MEMORIA = config_get_string_value(kernel_config,"IP_MEMORIA");
+IP_KERNEL = config_get_string_value(kernel_config,"IP_MEMORIA");
 PUERTO_MEMORIA = config_get_string_value(kernel_config,"PUERTO_MEMORIA");
 IP_CPU = config_get_string_value(kernel_config,"IP_CPU");
 PUERTO_CPU_DISPATCH= config_get_string_value(kernel_config,"PUERTO_CPU_DISPATCH");

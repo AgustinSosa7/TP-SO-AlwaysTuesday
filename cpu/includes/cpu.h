@@ -22,8 +22,8 @@ int fd_memoria;
 
 char* IP_MEMORIA;
 char* PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char*
-int PUERTO_ESCUCHA_DISPATCH;
-int PUERTO_ESCUCHA_INTERRUPT;
+char* PUERTO_ESCUCHA_DISPATCH;
+char* PUERTO_ESCUCHA_INTERRUPT;
 int CANTIDAD_ENTRADAS_TLB;
 char* ALGORITMO_TLB;
 

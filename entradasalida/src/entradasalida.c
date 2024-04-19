@@ -7,14 +7,16 @@ int main() {
 //Conectarme como cliente a Memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
   
-  gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);
+  gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", entradasalida_logger);
     
-  log_warning(cpu_logger, "HANDSHAKE CON MEMORIA [EXITOSO]"); 
+  log_warning(entradasalida_logger, "HANDSHAKE CON MEMORIA [EXITOSO]"); 
 
 
 //Conectarme como cliente a Kernel
 	fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
-  log_info(entradasalida_logger, "Conexion con KERNEL exitosa.");
+  gestionar_handshake_como_cliente(fd_kernel, "MEMORIA", entradasalida_logger);
+    
+  log_warning(entradasalida_logger, "HANDSHAKE CON MEMORIA [EXITOSO]"); 
 
 return EXIT_SUCCESS;
 }
