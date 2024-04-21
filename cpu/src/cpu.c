@@ -23,7 +23,7 @@ int main() {
 
     log_info(cpu_logger, "Esperando a DISPATCH...");
     fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch, cpu_logger,"DISPATCH");
-    saludar_cliente(&fd_kernel_dispatch, cpu_logger);
+    gestionar_handshake_como_server(&fd_kernel_dispatch, cpu_logger);
 
     // Iniciar server de CPU - INTERRUPT
 
@@ -31,7 +31,7 @@ int main() {
 
     log_info(cpu_logger, "Esperando a INTERRUPT...");
     fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"INTERRUPT");
-    saludar_cliente(&fd_kernel_interrupt, cpu_logger);
+    gestionar_handshake_como_server(&fd_kernel_interrupt, cpu_logger);
 
     
     //Atender los mensajes de Kernel - Dispatch

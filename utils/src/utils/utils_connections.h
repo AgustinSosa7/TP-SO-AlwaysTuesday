@@ -64,6 +64,4 @@ int recibir_operacion(int);
 
 void gestionar_handshake_como_server(int conexion, t_log* logger);
 
-void saludar_cliente(void *void_args, t_log* logger);
-
 #endif /* UTILS_CONNECTIONS_H_ */
