@@ -3,6 +3,12 @@
 
 // CONEXIONES DE CLIENTE 
 
+void gestionar_conexion_como_cliente(char* ip, char* puerto, t_log* logger, char* modulo){
+    log_info(logger, "Creando conexion con %s...", modulo);
+    int socket = crear_conexion(ip, puerto, logger);  
+    gestionar_handshake_como_cliente(socket, modulo, logger);    
+    log_warning(logger, "HANDSHAKE CON %s [EXITOSO]", modulo); 
+}
 
 
 void* serializar_paquete(t_paquete* paquete, int bytes)
@@ -121,11 +127,18 @@ void liberar_conexion(int socket_cliente)
 
 // CONEXIONES DE SERVIDOR
 
+void gestionar_conexion_como_server(char* ip, char* puerto, t_log* logger, char* modulo){
+	int socket = iniciar_servidor(puerto, logger, ip);
+    log_info(logger, "Esperando a %s...", modulo);
+    int socket_cliente = esperar_cliente(socket, logger,"DISPATCH");
+    gestionar_handshake_como_server(socket_cliente, logger);
+}
+
 
 int iniciar_servidor(char* puerto, t_log* logger, char* ip)
 {
 	if(puerto == NULL) {
-		printf("No encuentra el puerto");
+		log_error(logger,"No encuentra el puerto");
 		return -1;
 	}
 
@@ -147,12 +160,12 @@ int iniciar_servidor(char* puerto, t_log* logger, char* ip)
 
 		if(server_socket == -1 || bind(server_socket, server_info->ai_addr, server_info->ai_addrlen) == -1){
 			freeaddrinfo(server_info);
-			printf("fallo el bindeo");
+			log_error(logger,"fallo el bindeo");
 			return -1;
 		}
 		freeaddrinfo(server_info);
 		if(listen(server_socket, BACKLOG) == -1){
-			printf("fallo el listen");
+			log_error(logger,"fallo el listen");
 			return -1;
 		}
 		return server_socket;
@@ -239,7 +252,7 @@ t_list* recibir_paquete(int socket_cliente)
 
 void gestionar_handshake_como_server(int conexion, t_log* logger){
 	int code_op = recibir_operacion(conexion);
-	printf("codigo de operacion: %d como handhaske servidor \n", code_op);
+	// printf("codigo de operacion: %d como handhaske servidor \n", code_op);
 	switch (code_op) {
 		case HANDSHAKE:
 			void* coso_a_enviar = malloc(sizeof(int));

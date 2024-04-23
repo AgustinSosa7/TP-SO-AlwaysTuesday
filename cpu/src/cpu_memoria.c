@@ -1,5 +1,6 @@
 #include "../includes/cpu_memoria.h"
 
+
 void atender_cpu_memoria(){
     bool control_key = 1;
     while (control_key) {
