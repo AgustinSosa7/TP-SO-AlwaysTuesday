@@ -42,7 +42,7 @@ extern t_log* logger;
 
 // FUNCIONES CLIENTE
 
-void gestionar_conexion_como_cliente(char* ip, char* puerto, t_log* logger, char* modulo);
+void gestionar_conexion_como_cliente(char* ip, char* puerto, t_log* logger, const char* modulo);
 int crear_conexion(char* ip, char* puerto, t_log* logger);
 void enviar_mensaje(char* mensaje, int socket_cliente);
 t_paquete* crear_paquete(void);
@@ -51,13 +51,14 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void liberar_conexion(int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 
-void gestionar_handshake_como_cliente(int fd_conexion, char* modulo_destino, t_log* logger);
+void gestionar_handshake_como_cliente(int fd_conexion, const char* modulo_destino, t_log* logger);
 void enviar_handshake(int conexion);
 
 // FUNCIONES SERVIDOR
 void* recibir_buffer(int*, int);
 
-void gestionar_conexion_como_server(char* ip, char* puerto, t_log* logger, char* modulo);
+void gestionar_conexion_como_server(char* ip, char* puerto, t_log* logger, const char* modulo);
+void gestionar_conexion_como_server_memoria(int fd_memoria, t_log* logger, const char* modulo);
 int iniciar_servidor(char* puerto, t_log* logger, char* msj_server);
 int esperar_cliente(int, t_log*, const char*);
 t_list* recibir_paquete(int); 

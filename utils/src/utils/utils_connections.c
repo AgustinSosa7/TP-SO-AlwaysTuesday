@@ -3,7 +3,7 @@
 
 // CONEXIONES DE CLIENTE 
 
-void gestionar_conexion_como_cliente(char* ip, char* puerto, t_log* logger, char* modulo){
+void gestionar_conexion_como_cliente(char* ip, char* puerto, t_log* logger, const char* modulo){
     log_info(logger, "Creando conexion con %s...", modulo);
     int socket = crear_conexion(ip, puerto, logger);  
     gestionar_handshake_como_cliente(socket, modulo, logger);    
@@ -127,10 +127,16 @@ void liberar_conexion(int socket_cliente)
 
 // CONEXIONES DE SERVIDOR
 
-void gestionar_conexion_como_server(char* ip, char* puerto, t_log* logger, char* modulo){
+void gestionar_conexion_como_server(char* ip, char* puerto, t_log* logger, const char* modulo){
 	int socket = iniciar_servidor(puerto, logger, ip);
     log_info(logger, "Esperando a %s...", modulo);
-    int socket_cliente = esperar_cliente(socket, logger,"DISPATCH");
+    int socket_cliente = esperar_cliente(socket, logger, modulo);
+    gestionar_handshake_como_server(socket_cliente, logger);
+}
+
+void gestionar_conexion_como_server_memoria(int fd_memoria, t_log* logger, const char* modulo){
+    log_info(logger, "Esperando a %s...", modulo);
+    int socket_cliente = esperar_cliente(fd_memoria, logger, modulo);
     gestionar_handshake_como_server(socket_cliente, logger);
 }
 
@@ -274,7 +280,7 @@ void gestionar_handshake_como_server(int conexion, t_log* logger){
 }
 
 
-void gestionar_handshake_como_cliente(int fd_conexion, char* modulo_destino, t_log* logger){ 
+void gestionar_handshake_como_cliente(int fd_conexion, const char* modulo_destino, t_log* logger){ 
 	enviar_handshake(fd_conexion);
 	int respuesta_handshake = recibir_operacion(fd_conexion);
 	if(respuesta_handshake != 1){

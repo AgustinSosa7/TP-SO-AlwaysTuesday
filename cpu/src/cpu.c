@@ -26,11 +26,12 @@ int main() {
 
     // Iniciar server de CPU - INTERRUPT
 
-    fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, IP_CPU);
+    gestionar_conexion_como_server(IP_CPU, PUERTO_ESCUCHA_INTERRUPT, cpu_logger, "INTERRUPT");
 
-    log_info(cpu_logger, "Esperando a INTERRUPT...");
-    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"INTERRUPT");
-    gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger);
+    //fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, IP_CPU);
+    //log_info(cpu_logger, "Esperando a INTERRUPT...");
+    //fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"INTERRUPT");
+    //gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger);
 
     
     //Atender los mensajes de Kernel - Dispatch
