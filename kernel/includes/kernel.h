@@ -3,6 +3,10 @@
 
 #include "k_gestor.h"
 #include "inicializar_kernel.h"
+#include "kernel_cpu_dispatch.h"
+#include "kernel_cpu_interrupt.h"
+#include "kernel_entradaSalida.h"
+#include "kernel_memoria.h"
 
 #include <../src/utils/utils_connections.h>
 

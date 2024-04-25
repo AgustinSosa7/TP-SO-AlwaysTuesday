@@ -11,7 +11,10 @@
         "cstdlib": "c",
         "k_gestor.h": "c",
         "inicializar_kernel.h": "c",
-        "config.h": "c"
+        "config.h": "c",
+        "Kernel_cpu_dispatch.C": "cpp",
+        "kernel_entradasalida.h": "c",
+        "kernel_cpu_interrupt.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
