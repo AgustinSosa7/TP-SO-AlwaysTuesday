@@ -134,6 +134,7 @@ void gestionar_conexion_como_server(char* ip, char* puerto, t_log* logger, const
     gestionar_handshake_como_server(socket_cliente, logger);
 }
 
+
 void gestionar_conexion_como_server_memoria(int fd_memoria, t_log* logger, const char* modulo){
     log_info(logger, "Esperando a %s...", modulo);
     int socket_cliente = esperar_cliente(fd_memoria, logger, modulo);

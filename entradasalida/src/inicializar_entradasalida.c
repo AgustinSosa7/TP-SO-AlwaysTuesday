@@ -14,8 +14,6 @@ if (entradasalida_logger == NULL) {
 	exit(EXIT_FAILURE);
 	}
 
-log_info(entradasalida_logger, "Se inicializo el kernel logger"); //Sacar eventualmente
-
 
 entradasalida_log_debug = log_create("entradasalida_log_debug.log","ENTRADASALIDA_LOG_DEBUG",1,LOG_LEVEL_TRACE);
 if (entradasalida_log_debug == NULL) {
@@ -23,16 +21,17 @@ if (entradasalida_log_debug == NULL) {
 	exit(EXIT_FAILURE);
 	}
 
-log_info(entradasalida_log_debug, "Se inicializo el kernel debug logger"); //Sacar eventualmente
- }
 
 void inicializar_configs(){
+
 entradasalida_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/entradasalida.config");
+
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");
 	exit(EXIT_FAILURE);
 	}
 
+	NOMBRE_INTERFAZ = config_get_string_value(entradasalida_config,"NOMBRE_INTERFAZ");
 	TIPO_INTERFAZ = config_get_string_value(entradasalida_config,"TIPO_INTERFAZ");
 	TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
 	IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
@@ -44,8 +43,5 @@ if (entradasalida_config == NULL) {
 	BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
 
 }
-void imprimir_configs(){
-	log_info(entradasalida_log_debug, "Se inicializan las configs..."); //Sacar eventualmente
 
-}
 	
