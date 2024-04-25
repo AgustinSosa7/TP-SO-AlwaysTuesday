@@ -1,4 +1,6 @@
 #include "../includes/kernel_entradaSalida.h"
+#include <../src/utils/utils_connections.h>
+
 
 
 void atender_kernel_entradaSalida(){
@@ -11,10 +13,10 @@ void atender_kernel_entradaSalida(){
             //
             break;
         case -1:
-            log_error(cpu_logger, "Desconexion de ENTRADASALIDA");      
+          //  log_error(logger, "Desconexion de ENTRADASALIDA");      
             control_key = 0;
         default:
-            log_warning(cpu_logger, "Operacion desconocida de ENTRADASALIDA");
+           // log_warning(logger, "Operacion desconocida de ENTRADASALIDA");
             break;
         }
     }

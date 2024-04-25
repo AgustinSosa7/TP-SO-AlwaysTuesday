@@ -20,10 +20,9 @@ if (entradasalida_log_debug == NULL) {
 	perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
 	exit(EXIT_FAILURE);
 	}
-
+}
 
 void inicializar_configs(){
-
 entradasalida_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/entradasalida.config");
 
 if (entradasalida_config == NULL) {
@@ -41,7 +40,8 @@ if (entradasalida_config == NULL) {
 	PATH_BASE_DIALFS = config_get_string_value(entradasalida_config,"PATH_BASE_DIALFS");
 	BLOCK_SIZE = config_get_int_value(entradasalida_config,"BLOCK_SIZE");
 	BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
-
 }
 
-	
+void imprimir_configs(){
+    log_info(entradasalida_logger, "NOMBRE_INTERFAZ: %s",NOMBRE_INTERFAZ);
+}

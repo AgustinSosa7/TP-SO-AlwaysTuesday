@@ -11,10 +11,10 @@ void atender_kernel_cpu_dispatch(){
             //
             break;
         case -1:
-            log_error(cpu_logger, "Desconexion de CPU - DISPATCH");      
+          //  log_error(logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;
         default:
-            log_warning(cpu_logger, "Operacion desconocida de CPU - DISPATCH");
+           // log_warning(logger, "Operacion desconocida de CPU - DISPATCH");
             break;
         }
     }

@@ -11,10 +11,10 @@ void atender_kernel_cpu_interrupt(){
             //
             break;
         case -1:
-            log_error(cpu_logger, "Desconexion de CPU - INTERRUPT");      
+           // log_error(logger, "Desconexion de CPU - INTERRUPT");      
             control_key = 0;
         default:
-            log_warning(cpu_logger, "Operacion desconocida de CPU - INTERRUPT");
+           // log_warning(logger, "Operacion desconocida de CPU - INTERRUPT");
             break;
         }
     }

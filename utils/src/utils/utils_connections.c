@@ -3,13 +3,6 @@
 
 // CONEXIONES DE CLIENTE 
 
-void gestionar_conexion_como_cliente(char* ip, char* puerto, t_log* logger, const char* modulo){
-    log_info(logger, "Creando conexion con %s...", modulo);
-    int socket = crear_conexion(ip, puerto, logger);  
-    gestionar_handshake_como_cliente(socket, modulo, logger);    
-    log_warning(logger, "HANDSHAKE CON %s [EXITOSO]", modulo); 
-}
-
 
 void* serializar_paquete(t_paquete* paquete, int bytes)
 {
@@ -126,14 +119,6 @@ void liberar_conexion(int socket_cliente)
 }
 
 // CONEXIONES DE SERVIDOR
-
-void gestionar_conexion_como_server(char* ip, char* puerto, t_log* logger, const char* modulo){
-	int socket = iniciar_servidor(puerto, logger, ip);
-    log_info(logger, "Esperando a %s...", modulo);
-    int socket_cliente = esperar_cliente(socket, logger, modulo);
-    gestionar_handshake_como_server(socket_cliente, logger);
-}
-
 
 void gestionar_conexion_como_server_memoria(int fd_memoria, t_log* logger, const char* modulo){
     log_info(logger, "Esperando a %s...", modulo);

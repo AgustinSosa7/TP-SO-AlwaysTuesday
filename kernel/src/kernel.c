@@ -7,37 +7,54 @@ int main()
     // Inicializar KERNEL
     inicializar_kernel();
 
-    // Conectarse con Memoria
-    gestionar_conexion_como_cliente(IP_MEMORIA, PUERTO_MEMORIA, kernel_logger, "MEMORIA");
+        // Conectarse con Memoria
+    log_info(kernel_logger, "Creando conexion con MEMORIA...");
+    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, kernel_logger);
+    gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", kernel_logger);
+    log_warning(kernel_logger, "HANDSHAKE CON MEMORIA [EXITOSO]");
 
-    // Conectarse con CPU - DISPATCH
-    gestionar_conexion_como_cliente(IP_CPU, PUERTO_CPU_DISPATCH, kernel_logger, "CPU-DISPATCH");
+    // Conectarse con CPU
+    log_info(kernel_logger, "Creando conexion con CPU...");
+    //  DISPATCH
+    fd_cpu_dispatch = crear_conexion(IP_CPU, PUERTO_CPU_DISPATCH, kernel_logger);
+    gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU", kernel_logger);
+    log_warning(kernel_logger, "HANDSHAKE DISPATCH CON CPU [EXITOSO]"); 
 
-    // Conectarse con CPU- INTERRUPT
-    gestionar_conexion_como_cliente(IP_CPU, PUERTO_CPU_INTERRUPT, kernel_logger, "CPU-INTERRUPT");
+    // INTERRUPT
+    fd_cpu_interrupt = crear_conexion(IP_CPU, PUERTO_CPU_INTERRUPT, kernel_logger);
+    gestionar_handshake_como_cliente(fd_cpu_interrupt, "CPU", kernel_logger);
+    log_warning(kernel_logger, "HANDSHAKE INTERRUPT CON CPU [EXITOSO]"); 
 
     // INICIAR EL SERVIDOR PARA ENTRADA Y SALIDA.
-    gestionar_conexion_como_server(IP_KERNEL, PUERTO_ESCUCHA, kernel_logger, "ENTRADASALIDA");
+    fd_kernel = iniciar_servidor(PUERTO_ESCUCHA, kernel_logger, IP_KERNEL);
+
+    log_info(kernel_logger, "Esperando a Entradasalida...");
+    fd_entradasalida = esperar_cliente(fd_kernel, kernel_logger, "ENTRADASALIDA");
+    gestionar_handshake_como_server(fd_entradasalida, kernel_logger);
+
+    
+/////////////////////////--ATENDER-MENSAJES--//////////////////////
+
+    //Atender los mensajes de MEMORIA
+    pthread_t hilo_memoria;
+    pthread_create(&hilo_memoria, NULL, (void*) atender_kernel_memoria, NULL);
+    pthread_join(hilo_memoria, NULL);
 
     //Atender los mensajes de CPU - DISPATCH
     pthread_t hilo_cpu_dispatch;
-    pthread_create(&hilo_cpu_dispatch, NULL, (void*), NULL);
+    pthread_create(&hilo_cpu_dispatch, NULL, (void*)atender_kernel_cpu_dispatch, NULL);
     pthread_detach(hilo_cpu_dispatch);
 
    //Atender los mensajes de CPU - INTERRUPT
     pthread_t hilo_cpu_interrupt;
-    pthread_create(&hilo_cpu_interrupt, NULL, (void*), NULL);
+    pthread_create(&hilo_cpu_interrupt, NULL, (void*)atender_kernel_cpu_interrupt, NULL);
     pthread_detach(hilo_cpu_interrupt);
 
    //Atender los mensajes de ENTRADA SALIDA
     pthread_t hilo_entradaSalida;
-    pthread_create(&hilo_entradaSalida, NULL, (void*), NULL);
+    pthread_create(&hilo_entradaSalida, NULL, (void*)atender_kernel_entradaSalida, NULL);
     pthread_detach(hilo_entradaSalida);
 
-    //Atender los mensajes de MEMORIA
-    pthread_t hilo_memoria;
-    pthread_create(&hilo_memoria, NULL, (void*), NULL);
-    pthread_join(hilo_memoria, NULL);
     return EXIT_SUCCESS;
 }
 
