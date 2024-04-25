@@ -19,9 +19,10 @@ extern int fd_entradasalida;
 extern int fd_memoria;
 extern int fd_kernel;      
 
-extern char* PUERTO_ESCUCHA;     
+extern char* PUERTO_ESCUCHA;  
+extern char* NOMBRE_INTERFAZ;   
 extern char* TIPO_INTERFAZ;
-extern int TIEMPO_UNIDAD_TRABAJO; //Quizas en crear_concxion() los toma como char*
+extern int TIEMPO_UNIDAD_TRABAJO; 
 extern char* IP_KERNEL;
 extern char* PUERTO_KERNEL;
 extern char* IP_MEMORIA;
