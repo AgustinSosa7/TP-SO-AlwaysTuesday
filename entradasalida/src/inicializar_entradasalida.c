@@ -32,16 +32,47 @@ if (entradasalida_config == NULL) {
 
 	NOMBRE_INTERFAZ = config_get_string_value(entradasalida_config,"NOMBRE_INTERFAZ");
 	TIPO_INTERFAZ = config_get_string_value(entradasalida_config,"TIPO_INTERFAZ");
-	TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
-	IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
-	PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
-	IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
-	PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");
-	PATH_BASE_DIALFS = config_get_string_value(entradasalida_config,"PATH_BASE_DIALFS");
-	BLOCK_SIZE = config_get_int_value(entradasalida_config,"BLOCK_SIZE");
-	BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
+	recibir_configs(TIPO_INTERFAZ);
+}
+void recibir_configs(char* TIPO_INTERFAZ){
+
+	 if (strcmp(TIPO_INTERFAZ, "GEN") == 0) {
+            TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
+			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
+			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
+
+    } else if (strcmp(TIPO_INTERFAZ, "STDIN") == 0) {
+			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
+			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
+			IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
+			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");    
+
+    } else if (strcmp(TIPO_INTERFAZ, "STDOUT") == 0) {
+			TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
+			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
+			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
+			IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
+			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");   
+
+	} else if (strcmp(TIPO_INTERFAZ, "FS") == 0) {
+			TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
+			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
+			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
+			IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
+			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");
+			PATH_BASE_DIALFS = config_get_string_value(entradasalida_config,"PATH_BASE_DIALFS");
+			BLOCK_SIZE = config_get_int_value(entradasalida_config,"BLOCK_SIZE");
+			BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
+		//	RETRASO_COMPACTACION = config_get_int_value(entradasalida_config,"RETRASO_COMPACTACION");
+	
+		} else {
+	        printf("Tipo de interfaz desconocida.");
+			EXIT_FAILURE;    
+			}
 }
 
 void imprimir_configs(){
     log_info(entradasalida_logger, "NOMBRE_INTERFAZ: %s",NOMBRE_INTERFAZ);
+	log_info(entradasalida_logger, "TIPO_INTERFAZ: %s",TIPO_INTERFAZ);
+
 }
