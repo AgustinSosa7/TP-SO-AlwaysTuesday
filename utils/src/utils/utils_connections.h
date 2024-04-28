@@ -24,7 +24,7 @@ typedef enum
 	MENSAJE,
 	PAQUETE,
 	HANDSHAKE,
-	ATENDER_INSTRUCCION_INTERFAZ_KERNEL
+	ATENDER_PETICION_INTERFAZ_KERNEL
 }op_code;
 
 typedef struct
@@ -85,7 +85,7 @@ void buffer_add_string(t_buffer *buffer, uint32_t length, char *string);
 void buffer_read(t_buffer *buffer, void *data, uint32_t size);
 uint32_t buffer_read_uint32(t_buffer *buffer);
 uint8_t buffer_read_uint8(t_buffer *buffer);
-char* buffer_read_string(t_buffer *buffer, uint32_t *length);
+char *buffer_read_string(t_buffer *buffer, uint32_t length);
 
 
 

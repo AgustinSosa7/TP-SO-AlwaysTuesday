@@ -2,6 +2,20 @@
 
 
 // CONEXIONES DE CLIENTE 
+void* serializar_paquete(t_paquete* paquete, int bytes) //Tengo que tener el paquete ya armado.
+{														//Lo unico que hago aca es transformar el paquete
+	void * magic = malloc(bytes);                       //a bytes para enviarlo dentro del socket.
+	int desplazamiento = 0;
+
+	memcpy(magic + desplazamiento, &(paquete->codigo_operacion), sizeof(int));
+	desplazamiento+= sizeof(int);
+	memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(int));
+	desplazamiento+= sizeof(int);
+	memcpy(magic + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
+	desplazamiento+= paquete->buffer->size;
+
+	return magic;
+}
 
 int crear_conexion(char* ip, char* puerto, t_log* logger)
 {
@@ -281,7 +295,7 @@ void enviar_handshake(int conexion){
 t_buffer *buffer_create(uint32_t size){  // debo enviarle el size del buffer completo ya calculado
 	t_buffer* buffer = malloc(sizeof(t_buffer));
 	buffer->offset = 0; 
-	buffer->size = size // el size es la suma de lo que ocupe el stream.
+	buffer->size = size; // el size es la suma de lo que ocupe el stream.
 	buffer->stream = malloc(buffer->size);
 	return buffer;
 };
@@ -293,8 +307,8 @@ void buffer_destroy(t_buffer *buffer){
 };
 
 // Agrega un stream al buffer en la posición actual y avanza el offset
-void buffer_add(t_buffer *buffer, void *data, uint32_t size){  // REVISAR 
-	memcpy(buffer->stream + offset, &data, sizeof(size));
+void buffer_add(t_buffer *buffer, void *data, uint32_t size){  
+	memcpy(buffer->stream + buffer-> offset, &data, size);
 	buffer->offset += sizeof(size);
 };
 
@@ -310,6 +324,7 @@ void buffer_add_uint8(t_buffer *buffer, uint8_t data){
 
 // Agrega string al buffer con un uint32_t adelante indicando su longitud
 void buffer_add_string(t_buffer *buffer, uint32_t length, char *string){
+	buffer_add(buffer, &length, sizeof(uint32_t));
 	buffer_add(buffer, &string, length);
 };
 
@@ -318,20 +333,20 @@ void buffer_add_string(t_buffer *buffer, uint32_t length, char *string){
 //    t_buffer* buffer;
 //} t_paquete;
 
-void* serializar_paquete(t_paquete* paquete, int bytes)
-{
-	void * magic = malloc(bytes);
-	int desplazamiento = 0;
-
-	memcpy(magic + desplazamiento, &(paquete->codigo_operacion), sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
-	desplazamiento+= paquete->buffer->size;
-
-	return magic;
-}
+//void* serializar_paquete(t_paquete* paquete, int bytes) //Tengo que tener el paquete ya armado. 
+//{														//Lo unico que hago aca es transformar el paquete
+//	void * magic = malloc(bytes);                       //a bytes para enviarlo dentro del socket.
+//	int desplazamiento = 0;
+//
+//	memcpy(magic + desplazamiento, &(paquete->codigo_operacion), sizeof(int));
+//	desplazamiento+= sizeof(int);
+//	memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(int));
+//	desplazamiento+= sizeof(int);
+//	memcpy(magic + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
+//	desplazamiento+= paquete->buffer->size;
+//
+//	return magic;
+//}
 // Por último enviamos
 // send(unSocket, magic, buffer->size + sizeof(uint8_t) + sizeof(uint32_t), 0);
 
@@ -340,30 +355,39 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 
 
 // Guarda size bytes del principio del buffer en la dirección data y avanza el offset
-void buffer_read(t_buffer *buffer, void *data, uint32_t size){// REVISAR
-	memcpy(&data, buffer->stream, sizeof(size));
-	buffer->stream+= sizeof(size);
+void buffer_read(t_buffer *buffer, void *data, uint32_t size){
+	memcpy(&data, buffer->stream + buffer->offset, size);
+	buffer->offset = sizeof(size);
 };
 
 // Lee un uint32_t del buffer y avanza el offset
 uint32_t buffer_read_uint32(t_buffer *buffer){
 	uint32_t lectura;
-	buffer_read(buffer, &lectura, uint32_t);
+	buffer_read(buffer, &lectura, sizeof(uint32_t));
 	return lectura;
 };
 
 // Lee un uint8_t del buffer y avanza el offset
 uint8_t buffer_read_uint8(t_buffer *buffer){
 	uint8_t lectura;
-	buffer_read(buffer, &lectura, uint8_t);
+	buffer_read(buffer, &lectura, sizeof(uint8_t));
 	return lectura;
 };
 
 // Lee un string y su longitud del buffer y avanza el offset
-char* buffer_read_string(t_buffer *buffer, uint32_t *length){ // REVISAR 
+char *buffer_read_string(t_buffer *buffer, uint32_t tamanio){ // REVISAR 
 	char* lectura;
-	uint32_t tamanio;
-	buffer_read(buffer, &tamanio, uint32_t);
-	buffer_read(buffer, &lectura, tamanio);
+	buffer_read(buffer, &lectura, tamanio);  //Se me complica poner el malloc aca.
 	return lectura;
 };
+
+t_paquete* deserializar_paquete(int unSocket){ //Antes de llamar a la funcion llamar a 	int cod_op = recibir_operacion(unSocket);
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	paquete->buffer = malloc(sizeof(t_buffer));
+
+	recv(unSocket, &(paquete->buffer->size), sizeof(uint32_t), 0);
+	paquete->buffer->stream = malloc(paquete->buffer->size);
+	recv(unSocket, paquete->buffer->stream, paquete->buffer->size, 0);
+
+	return paquete;
+}
