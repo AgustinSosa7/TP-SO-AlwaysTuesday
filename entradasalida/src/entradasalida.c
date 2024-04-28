@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "../includes/entradasalida.h"
 
 int main() {
@@ -17,48 +19,16 @@ inicializar_entradasalida();
   gestionar_handshake_como_cliente(fd_kernel, "MEMORIA", entradasalida_logger);
   log_warning(entradasalida_logger, "HANDSHAKE CON KERNEL [EXITOSO]"); 
 
+/////////////////////////--ATENDER-MENSAJES--//////////////////////
+
+//Atender los mensajes de KERNEL
+    pthread_t hilo_kernel;
+    pthread_create(&hilo_kernel, NULL, (void*)atender_entradasalida_kernel, NULL);
+    pthread_detach(hilo_kernel);
+
+
 return EXIT_SUCCESS;
 }
-
-//Interfaz Genérica
-
-//void procesar_peticion(char *peticion, parametros) {
-//
-//    switch (peticion) {
-//      case IO_GEN_SLEEP: { int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * parametros.UnidadesDeTrabajo;
-//                           sleep(tiempo_espera);
-//                           break;}
-//      case IO_STDIN_READ :
-//            // Lógica para manejar operaciones para STDIN
-//            break;
-//      case IO_STDOUT_WRITE :
-//            // Lógica para manejar operaciones para STDOUT
-//            break;
-//      case IO_FS_CREATE :
-//            // Lógica para manejar operaciones para DialFS
-//            break;
-//      case IO_FS_DELETE :
-//            // Lógica para manejar operaciones para DialFS
-//            break;
-//      case IO_FS_TRUNCATE :
-//            // Lógica para manejar operaciones para DialFS
-//            break;   
-//      case IO_FS_WRITE :
-//            // Lógica para manejar operaciones para DialFS
-//            break;
-//      case IO_FS_READ :
-//            // Lógica para manejar operaciones para DialFS
-//            break;                                                         
-//      default:
-//            //log_error(logger,"Interfaz %s: Tipo de interfaz no soportado. Proceso enviado a EXIT.\n", NOMBRE_INTERFAZ);
-//            exit(EXIT_FAILURE);
-//    }
-//}
- 
- 
-
-	
-
 
 
 

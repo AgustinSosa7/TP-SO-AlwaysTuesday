@@ -87,6 +87,8 @@ uint32_t buffer_read_uint32(t_buffer *buffer);
 uint8_t buffer_read_uint8(t_buffer *buffer);
 char *buffer_read_string(t_buffer *buffer, uint32_t length);
 
+t_paquete* deserializar_paquete(int unSocket);
+
 
 
 #endif /* UTILS_CONNECTIONS_H_ */

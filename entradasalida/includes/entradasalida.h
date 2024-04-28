@@ -3,6 +3,7 @@
 
 #include "es_gestor.h"
 #include "inicializar_entradasalida.h"
+#include "entradasalida_kernel.h"
 
 // Variables GLOBALES
 

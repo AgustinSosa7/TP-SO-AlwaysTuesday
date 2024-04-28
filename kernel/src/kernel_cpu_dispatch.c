@@ -38,10 +38,44 @@ t_peticion* peticion_deserializar(t_buffer* buffer){
     peticion->interfaz = malloc(tamanio_string);
     peticion->interfaz = buffer_read_string(buffer, tamanio_string);
 
-    peticion->parametros = buffer_read_uint32(buffer);
+    peticion->parametros = leer_parametros(buffer,peticion->interfaz);
 
     return peticion;
 } 
+
+t_peticion_param* leer_parametros(t_buffer* buffer, char* instruccion){
+
+    t_peticion_param* parametros = malloc(sizeof(t_peticion_param*));
+
+    if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
+        parametros->tiempo_espera = buffer_read_uint32(buffer);
+        return parametros;
+      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
+      {
+            return parametros;
+      }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
+      {
+            return parametros;
+      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      {
+            return parametros;
+      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      {
+            return parametros;
+      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      {
+            return parametros; 
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
+      {
+            return parametros; 
+      }else if (strcmp(instruccion,"IO_FS_READ") == 0)
+      {
+            return parametros;
+      }else{
+            //log_error(kernel_logger,"Interfaz %s: Instruccion no encontrada. Proceso enviado a EXIT.\n", NOMBRE_INTERFAZ);
+            exit(EXIT_FAILURE);
+      }
+}
 
 /*void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb){  //Faltaría crear el PCB
 	t_paquete* un_paquete = crear_super_paquete(EJECUTAR_PROCESO_KC); //Ejecutar, ver si tiene ese nombre;
