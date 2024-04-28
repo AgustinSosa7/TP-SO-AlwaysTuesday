@@ -5,10 +5,13 @@ void atender_kernel_cpu_dispatch(){
     bool control_key = 1;
     while (control_key) {
         int cod_op = recibir_operacion(fd_cpu_dispatch);
+    //  t_buffer* unBuffer;
+	//	log_info(kernel_logger, "Se recibio algo de CPU_Dispatch");
+	//	unBuffer = recibir_paquete(fd_cpu_dispatcher);
         switch (cod_op)
         {
-        case MENSAJE:
-            //
+        case ATENDER_INSTRUCCION_INTERFAZ_KERNEL:
+            
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
