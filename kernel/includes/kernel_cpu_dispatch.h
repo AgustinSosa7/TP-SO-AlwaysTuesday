@@ -5,6 +5,18 @@
 #include "k_gestor.h"
 
 
+//typedef struct{
+//    int AX;
+//    int BX;
+//    int CX;
+//    int DX;
+//}t_registros;
+//typedef struct{
+//    int ticket;
+//    int program_counter;
+//    t_registros registros_CPU;
+//    int pid;
+//}t_pcb;
 
 typedef struct{
     uint32_t tiempo_espera;
@@ -22,4 +34,5 @@ typedef struct{
 void atender_kernel_cpu_dispatch();
 t_peticion* peticion_deserializar(t_buffer* buffer);
 t_peticion_param* leer_parametros(t_buffer* buffer, char* instruccion);
+//void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb);
 #endif 
