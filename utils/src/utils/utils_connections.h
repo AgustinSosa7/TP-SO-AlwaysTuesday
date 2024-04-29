@@ -24,7 +24,9 @@ typedef enum
 	MENSAJE,
 	PAQUETE,
 	HANDSHAKE,
-	ATENDER_PETICION_INTERFAZ_KERNEL
+	ATENDER_PETICION_INTERFAZ_KERNEL,
+	//---- KERNEL - CPU
+	EJECUTAR_PROCESO_KC
 }op_code;
 
 typedef struct
@@ -55,6 +57,10 @@ void eliminar_paquete(t_paquete* paquete);
 
 void gestionar_handshake_como_cliente(int fd_conexion, const char* modulo_destino, t_log* logger);
 void enviar_handshake(int conexion);
+//Funciones Superpaquete
+t_paquete* crear_super_paquete(op_code code_op);
+void cargar_int_al_super_paquete(t_paquete* paquete, int numero);
+void cargar_choclo_al_super_paquete(t_paquete* paquete, void* choclo, int size);
 
 // FUNCIONES SERVIDOR
 void* recibir_buffer(int*, int);

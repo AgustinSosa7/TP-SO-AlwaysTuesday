@@ -6,6 +6,7 @@ void atender_cpu_kernel_dispatch(){
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_dispatch);
+		t_buffer* unBuffer;
 		switch (cod_op) {
             case MENSAJE:
                 //recibir_mensaje(cliente_fd);
@@ -13,6 +14,11 @@ void atender_cpu_kernel_dispatch(){
             case PAQUETE:
                 //
                 break;
+			case EJECUTAR_PROCESO_KC: //Me debe llegar: [---][PID][Ticket][PC_program_counter][AX][BX][CX][DX]
+				//unBuffer = recibiendo_super_paquete(fd_kernel_dispatch);
+				//ejecutar_en_un_hilo_nuevo_detach((void*)atender_proceso_del_kernel, unBuffer);
+				log_info(cpu_logger, "Se ejecuta algo XD");
+			break;
             case -1:
                 log_error(cpu_logger, "Desconexión de KERNEL - Dispatch");
                 control_key = 0;

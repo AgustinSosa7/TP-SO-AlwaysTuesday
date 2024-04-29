@@ -116,6 +116,47 @@ void liberar_conexion(int socket_cliente)
 	close(socket_cliente);
 }
 
+// Funciones del Super_Paquete
+t_paquete* crear_super_paquete(op_code code_op)   //Unica diff con el crear_paquete es el cod de op.
+{
+	t_paquete* super_paquete = malloc(sizeof(t_paquete));
+	super_paquete->codigo_operacion = code_op;
+	crear_buffer(super_paquete);
+	return  super_paquete;
+}  
+
+void cargar_int_al_super_paquete(t_paquete* paquete, int numero){  //Ver que hacer con el off set Ruka
+	if(paquete->buffer->size == 0){
+		paquete->buffer->stream = malloc(sizeof(int));
+		memcpy(paquete->buffer->stream, &numero, sizeof(int));
+	}else{
+		paquete->buffer->stream = realloc(paquete->buffer->stream,
+											paquete->buffer->size + sizeof(int));
+		/**/
+		memcpy(paquete->buffer->stream + paquete->buffer->size, &numero, sizeof(int));
+	}
+
+	paquete->buffer->size += sizeof(int);
+}
+
+void cargar_choclo_al_super_paquete(t_paquete* paquete, void* choclo, int size){
+	if(paquete->buffer->size == 0){
+		paquete->buffer->stream = malloc(sizeof(int) + size);
+		memcpy(paquete->buffer->stream, &size, sizeof(int));
+		memcpy(paquete->buffer->stream + sizeof(int), choclo, size);
+	}else{
+		paquete->buffer->stream = realloc(paquete->buffer->stream,
+												paquete->buffer->size + sizeof(int) + size);
+
+		memcpy(paquete->buffer->stream + paquete->buffer->size, &size, sizeof(int));
+		memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), choclo, size);
+	}
+
+	paquete->buffer->size += sizeof(int);
+	paquete->buffer->size += size;
+}
+
+
 // CONEXIONES DE SERVIDOR
 
 void gestionar_conexion_como_server_memoria(int fd_memoria, t_log* logger, const char* modulo){

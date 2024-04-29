@@ -77,11 +77,11 @@ t_peticion_param* leer_parametros(t_buffer* buffer, char* instruccion){
       }
 }
 
-/*void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb){  //Faltaría crear el PCB
+void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb){  //Faltaría crear el PCB
 	t_paquete* un_paquete = crear_super_paquete(EJECUTAR_PROCESO_KC); //Ejecutar, ver si tiene ese nombre;
 	cargar_int_al_super_paquete(un_paquete, una_pcb->ticket);
 	cargar_int_al_super_paquete(un_paquete, una_pcb->program_counter);
-	cargar_choclo_al_super_paquete(un_paquete, &(una_pcb->registros_CPU->AX), sizeof(uint32_t));
+	cargar_choclo_al_super_paquete(un_paquete, &(una_pcb->registros_CPU->AX), sizeof(uint32_t)); //Cambiamos nombres?
 	cargar_choclo_al_super_paquete(un_paquete, &(una_pcb->registros_CPU->BX), sizeof(uint32_t));
 	cargar_choclo_al_super_paquete(un_paquete, &(una_pcb->registros_CPU->CX), sizeof(uint32_t));
 	cargar_choclo_al_super_paquete(un_paquete, &(una_pcb->registros_CPU->DX), sizeof(uint32_t));
@@ -89,4 +89,4 @@ t_peticion_param* leer_parametros(t_buffer* buffer, char* instruccion){
 
 	enviar_paquete(un_paquete, fd_cpu_dispatch);
 	eliminar_paquete(un_paquete);
-}*/  //Resumen: Ver el nombre de las funciones y ver si son lo mismo :D
+} //Resumen: Ver el nombre de las funciones y ver si son lo mismo :D
