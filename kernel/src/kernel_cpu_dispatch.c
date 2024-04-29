@@ -5,8 +5,8 @@ void atender_kernel_cpu_dispatch(){
     bool control_key = 1;
     while (control_key) {
         int cod_op = recibir_operacion(fd_cpu_dispatch);
-        t_paquete* paquete = deserializar_paquete(fd_cpu_dispatch);
-		log_info(kernel_logger, "Se recibio algo de CPU_Dispatch");
+        t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
+	  log_info(kernel_logger, "Se recibio algo de CPU_Dispatch");
 
         switch (cod_op)
         {

@@ -5,7 +5,7 @@ void atender_entradasalida_kernel(){
     bool control_key = 1;
     while (control_key) {
         int cod_op = recibir_operacion(fd_kernel);
-        t_paquete* paquete = deserializar_paquete(fd_kernel);
+        t_paquete* paquete = recibir_paquete(fd_kernel);
 	  log_info(entradasalida_logger, "Se recibio algo de Kernel..");
 
         switch (cod_op)
