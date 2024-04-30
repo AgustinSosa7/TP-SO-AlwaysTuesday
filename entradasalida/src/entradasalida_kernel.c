@@ -16,9 +16,9 @@ void atender_entradasalida_kernel(){
             free(peticion);
             enviar_mensaje("Peticion exitosa!", fd_kernel);
             break;
-        case RECONOCER_TIPO_INSTRUCCION:
-      //      char* tipo_instruccion = recibir_tipo_instruccion(paquete);
-      //      validar_tipo_instruccion(tipo_instruccion);    
+        case RECONOCER_INSTRUCCION:
+            char* instruccion = recibir_instruccion(paquete);
+            validar_instruccion(instruccion);    
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
@@ -72,24 +72,22 @@ void procesar_peticion(char* instruccion, t_peticion_param* parametros) {
       }
 }      
 
-//char* recibir_tipo_instruccion(t_paquete* paquete){
-//      char* tipo_instruccion;
-//      leer_string_del_paquete(paquete, &tipo_instruccion);
-//return tipo_instruccion;
-//}
-//
-//void validar_tipo_instruccion(char* tipo_instruccion){
-//      
-//}
-//int estaEnLista(int elemento, int lista[], int longitud) {
-//    int i;
-//    for (i = 0; i < longitud; i++) {
-//        if (lista[i] == elemento) {
-//            return 1; // Retorna 1 si el elemento está en la lista
-//        }
-//    }
-//    return 0; // Retorna 0 si el elemento no está en la lista
-//}
-//int longitud = sizeof(lista) / sizeof(lista[0]);
-//int lista[] = {1, 2, 3, 4, 5};
-//t_list*
+char* recibir_instruccion(t_paquete* paquete){
+      char* instruccion;
+      leer_string_del_paquete(paquete, &instruccion);
+      return instruccion;
+}
+
+void validar_tipo_instruccion(char* instruccion){
+      if(list_any_satisfy(INSTRUCCIONES_POSIBLES, (void*)la_instruccion_esta_en_la_lista)){
+            enviar_mensaje(true, fd_kernel); //Acepto a la instruccion.
+      }else{
+            enviar_mensaje(false, fd_kernel); //No la acepto.
+            }
+}
+
+bool la_instruccion_esta_en_la_lista(char* instruccion_posible, char* instruccion){
+      if(strcmp(instruccion_posible,instruccion)==0){
+            return true;
+      }else{return false;}
+}
