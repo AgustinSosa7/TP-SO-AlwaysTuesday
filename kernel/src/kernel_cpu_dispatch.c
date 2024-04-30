@@ -11,7 +11,7 @@ void atender_kernel_cpu_dispatch(){
         switch (cod_op)
         {
         case ATENDER_PETICION_INTERFAZ_KERNEL:
-            t_peticion* peticion = peticion_deserializar(paquete->buffer); //Ya tengo en peticion todos los datos qe necesito.
+            t_peticion* peticion = peticion_deserializar(paquete); //Ya tengo en peticion todos los datos qe necesito.
             
             free(peticion);
             break;
@@ -27,28 +27,23 @@ void atender_kernel_cpu_dispatch(){
 }
 
 
-t_peticion* peticion_deserializar(t_buffer* buffer){
+t_peticion* peticion_deserializar(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));;
 
-    uint32_t tamanio_string = buffer_read_uint32(buffer);  //Se podria mejorar la manera de leer los strings.
-    peticion->instruccion = malloc(tamanio_string);
-    peticion->instruccion = buffer_read_string(buffer, tamanio_string);
-
-    tamanio_string = buffer_read_uint32(buffer);
-    peticion->interfaz = malloc(tamanio_string);
-    peticion->interfaz = buffer_read_string(buffer, tamanio_string);
-
-    peticion->parametros = leer_parametros(buffer,peticion->interfaz);
+    leer_string_del_paquete(paquete, &peticion->instruccion);
+    leer_string_del_paquete(paquete, &peticion->interfaz);
+    
+    peticion->parametros = leer_parametros(paquete,peticion->interfaz);
 
     return peticion;
 } 
 
-t_peticion_param* leer_parametros(t_buffer* buffer, char* instruccion){
+t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
 
     t_peticion_param* parametros = malloc(sizeof(t_peticion_param*));
 
     if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-        parametros->tiempo_espera = buffer_read_uint32(buffer);
+        leer_del_paquete(paquete, (void**)&parametros->tiempo_espera, sizeof(int));
         return parametros;
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {

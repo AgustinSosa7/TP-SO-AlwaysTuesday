@@ -11,7 +11,7 @@ void atender_entradasalida_kernel(){
         switch (cod_op)
         {
         case ATENDER_PETICION_INTERFAZ_KERNEL:
-            t_peticion* peticion = peticion_deserializar(paquete->buffer); //Ya tengo en peticion todos los datos que necesito.
+            t_peticion* peticion = peticion_deserializar(paquete); //Ya tengo en peticion todos los datos que necesito.
             procesar_peticion(peticion->instruccion, peticion->parametros);
             free(peticion);
             break;
@@ -26,14 +26,11 @@ void atender_entradasalida_kernel(){
     }
 }
 
-t_peticion* peticion_deserializar(t_buffer* buffer){
-    t_peticion* peticion = malloc(sizeof(t_peticion));;
+t_peticion* peticion_deserializar(t_paquete* paquete){
+    t_peticion* peticion = malloc(sizeof(t_peticion));
 
-    uint32_t tamanio_string = buffer_read_uint32(buffer);  //Se podria mejorar la manera de leer los strings.
-    peticion->instruccion = malloc(tamanio_string);
-    peticion->instruccion = buffer_read_string(buffer, tamanio_string);
-
-    peticion->parametros->tiempo_espera = buffer_read_uint32(buffer);
+    leer_string_del_paquete(paquete, &peticion->instruccion);
+    leer_del_paquete(paquete, (void**)&peticion->parametros->tiempo_espera, sizeof(int));
 
     return peticion;
 } 

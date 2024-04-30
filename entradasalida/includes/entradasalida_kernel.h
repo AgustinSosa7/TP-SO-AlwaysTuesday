@@ -7,7 +7,7 @@
 
 
 typedef struct{
-    u_int32_t tiempo_espera;
+    int tiempo_espera;
     char* archivo;
     char* registro1;
     char* registro2;
@@ -21,7 +21,7 @@ typedef struct{
 
 
 void atender_entradasalida_kernel();
-t_peticion* peticion_deserializar(t_buffer* buffer);
+t_peticion* peticion_deserializar(t_paquete* paquete);
 void procesar_peticion(char* instruccion, t_peticion_param* parametros);
 
 #endif 

@@ -32,7 +32,7 @@ typedef struct{
 } t_peticion;
 
 void atender_kernel_cpu_dispatch();
-t_peticion* peticion_deserializar(t_buffer* buffer);
-t_peticion_param* leer_parametros(t_buffer* buffer, char* instruccion);
+t_peticion* peticion_deserializar(t_paquete* paquete);
+t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion);
 //void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb);
 #endif 
