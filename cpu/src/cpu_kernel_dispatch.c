@@ -6,7 +6,7 @@ void atender_cpu_kernel_dispatch(){
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_dispatch);
-		t_buffer* unBuffer;
+	//	t_buffer* unBuffer;
 		switch (cod_op) {
             case MENSAJE:
                 //recibir_mensaje(cliente_fd);
