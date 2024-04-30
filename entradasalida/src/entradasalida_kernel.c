@@ -11,9 +11,14 @@ void atender_entradasalida_kernel(){
         switch (cod_op)
         {
         case ATENDER_PETICION_INTERFAZ_KERNEL:
-            t_peticion* peticion = peticion_deserializar(paquete); //Ya tengo en peticion todos los datos que necesito.
+            t_peticion* peticion = recibir_peticion(paquete); //Ya tengo en peticion todos los datos que necesito.
             procesar_peticion(peticion->instruccion, peticion->parametros);
             free(peticion);
+            enviar_mensaje("Peticion exitosa!", fd_kernel);
+            break;
+        case RECONOCER_TIPO_INSTRUCCION:
+      //      char* tipo_instruccion = recibir_tipo_instruccion(paquete);
+      //      validar_tipo_instruccion(tipo_instruccion);    
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
@@ -26,7 +31,7 @@ void atender_entradasalida_kernel(){
     }
 }
 
-t_peticion* peticion_deserializar(t_paquete* paquete){
+t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
 
     leer_string_del_paquete(paquete, &peticion->instruccion);
@@ -66,3 +71,25 @@ void procesar_peticion(char* instruccion, t_peticion_param* parametros) {
             exit(EXIT_FAILURE);
       }
 }      
+
+//char* recibir_tipo_instruccion(t_paquete* paquete){
+//      char* tipo_instruccion;
+//      leer_string_del_paquete(paquete, &tipo_instruccion);
+//return tipo_instruccion;
+//}
+//
+//void validar_tipo_instruccion(char* tipo_instruccion){
+//      
+//}
+//int estaEnLista(int elemento, int lista[], int longitud) {
+//    int i;
+//    for (i = 0; i < longitud; i++) {
+//        if (lista[i] == elemento) {
+//            return 1; // Retorna 1 si el elemento está en la lista
+//        }
+//    }
+//    return 0; // Retorna 0 si el elemento no está en la lista
+//}
+//int longitud = sizeof(lista) / sizeof(lista[0]);
+//int lista[] = {1, 2, 3, 4, 5};
+//t_list*

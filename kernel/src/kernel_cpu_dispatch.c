@@ -11,9 +11,14 @@ void atender_kernel_cpu_dispatch(){
         switch (cod_op)
         {
         case ATENDER_PETICION_INTERFAZ_KERNEL:
-            t_peticion* peticion = peticion_deserializar(paquete); //Ya tengo en peticion todos los datos qe necesito.
-            
-            free(peticion);
+            t_peticion* peticion = recibir_peticion(paquete); 
+            validar_peticion(peticion);
+            enviar_peticion_a_interfaz(peticion);
+            eliminar_peticion(peticion);
+            // enviar_proceso_a_blocked
+            char* peticion_exitosa = recibir_mensaje(fd_entradasalida);
+            log_error(kernel_logger, "%s", peticion_exitosa);
+            // desbloquear_proceso
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
@@ -27,7 +32,7 @@ void atender_kernel_cpu_dispatch(){
 }
 
 
-t_peticion* peticion_deserializar(t_paquete* paquete){
+t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));;
 
     leer_string_del_paquete(paquete, &peticion->instruccion);
@@ -66,11 +71,58 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       }else if (strcmp(instruccion,"IO_FS_READ") == 0)
       {
             return parametros;
-      }else{
-            //log_error(kernel_logger,"Interfaz %s: Instruccion no encontrada. Proceso enviado a EXIT.\n", NOMBRE_INTERFAZ);
-            exit(EXIT_FAILURE);
       }
 }
+
+void enviar_peticion_a_interfaz(t_peticion* peticion){ 
+      t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
+      agregar_string_a_paquete(paquete, peticion->instruccion);
+      agregar_a_paquete(paquete, peticion->parametros, sizeof(t_peticion_param));
+      enviar_paquete(paquete, fd_entradasalida);
+      eliminar_paquete(paquete);
+}            
+
+void eliminar_peticion(t_peticion* peticion){
+      free(peticion->instruccion);
+      free(peticion->interfaz);
+      free(peticion->parametros->archivo);
+      free(peticion->parametros->registro1);
+      free(peticion->parametros->registro2);
+      free(peticion->parametros->registro3);
+      free(peticion->parametros);
+      free(peticion);
+
+}
+
+void validar_peticion(t_peticion* peticion){
+      char* interfaz = peticion->interfaz;
+      char* instruccion = peticion->instruccion;
+
+//      existe_la_interfaz(interfaz);
+//      esta_conectada_la_interfaz(interfaz);
+      validar_interfaz_admite_instruccion(interfaz, instruccion);
+}
+
+//void existe_la_interfaz(interfaz){
+//      
+//}         //Supongo que esto se va a poder hacer cuando este creado el pcb(?
+//
+//void esta_conectada_la_interfaz(char* interfaz){
+//
+//}
+
+void validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
+      enviar_mensaje(instruccion, fd_entradasalida);
+      char* acepta_la_instruccion = recibir_mensaje(fd_cpu_dispatch);
+      if(strcmp(acepta_la_instruccion, "Acepto la instruccion")!=0)
+      {
+      log_error(kernel_logger,"Interfaz %s: No reconozco esta instruccion. Proceso enviado a EXIT.\n", interfaz);
+      EXIT_FAILURE;
+      }
+}
+
+
+
 
 //void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb){  //Faltaría crear el PCB
 //	t_paquete* un_paquete = crear_super_paquete(EJECUTAR_PROCESO_KC); //Ejecutar, ver si tiene ese nombre;

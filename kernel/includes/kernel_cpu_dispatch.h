@@ -32,7 +32,13 @@ typedef struct{
 } t_peticion;
 
 void atender_kernel_cpu_dispatch();
-t_peticion* peticion_deserializar(t_paquete* paquete);
+t_peticion* recibir_peticion(t_paquete* paquete);
 t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion);
+void validar_peticion(t_peticion* peticion);
+//void existe_la_interfaz(char* interfaz);
+//void esta_conectada_la_interfaz(char* interfaz);
+void validar_interfaz_admite_instruccion(char* interfaz, char* instruccion);
+void enviar_peticion_a_interfaz(t_peticion* peticion);
+void eliminar_peticion(t_peticion* peticion);
 //void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb);
 #endif 
