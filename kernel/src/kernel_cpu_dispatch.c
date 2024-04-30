@@ -16,8 +16,8 @@ void atender_kernel_cpu_dispatch(){
             enviar_peticion_a_interfaz(peticion);
             eliminar_peticion(peticion);
             // enviar_proceso_a_blocked
-            char* peticion_exitosa = recibir_mensaje(fd_entradasalida);
-            log_error(kernel_logger, "%s", peticion_exitosa);
+            recibir_mensaje_fin_peticion();
+
             // desbloquear_proceso
             break;
         case -1:
@@ -72,15 +72,7 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       {
             return parametros;
       }
-}
-
-void enviar_peticion_a_interfaz(t_peticion* peticion){ 
-      t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
-      agregar_string_a_paquete(paquete, peticion->instruccion);
-      agregar_a_paquete(paquete, peticion->parametros, sizeof(t_peticion_param));
-      enviar_paquete(paquete, fd_entradasalida);
-      eliminar_paquete(paquete);
-}            
+}           
 
 void eliminar_peticion(t_peticion* peticion){
       free(peticion->instruccion);
@@ -94,13 +86,6 @@ void eliminar_peticion(t_peticion* peticion){
 
 }
 
-//bool existe_la_interfaz(interfaz){
-//      
-//}         //Supongo que esto se va a poder hacer cuando este creado el pcb(?
-//
-//bool esta_conectada_la_interfaz(char* interfaz){
-//
-//}
 
 
 

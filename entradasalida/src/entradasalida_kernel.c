@@ -77,9 +77,9 @@ char* recibir_instruccion(t_paquete* paquete){
 
 void validar_tipo_instruccion(char* instruccion){
       if(list_any_satisfy(INSTRUCCIONES_POSIBLES, (void*)la_instruccion_esta_en_la_lista)){
-            enviar_mensaje(true, fd_kernel); //Acepto a la instruccion.
+            enviar_mensaje("Acepto la instruccion", fd_kernel); //Acepto a la instruccion.
       }else{
-            enviar_mensaje(false, fd_kernel); //No la acepto.
+            enviar_mensaje("No acepto la instruccion", fd_kernel); //No la acepto.
             }
 }
 

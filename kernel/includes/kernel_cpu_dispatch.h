@@ -34,7 +34,6 @@ typedef struct{
 void atender_kernel_cpu_dispatch();
 t_peticion* recibir_peticion(t_paquete* paquete);
 t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion);
-void enviar_peticion_a_interfaz(t_peticion* peticion);
 void eliminar_peticion(t_peticion* peticion);
 //void _enviar_pcb_a_CPU_por_dispatch(t_pcb* una_pcb);
 #endif 
