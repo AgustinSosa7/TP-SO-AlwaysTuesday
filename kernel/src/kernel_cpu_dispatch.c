@@ -94,16 +94,6 @@ void eliminar_peticion(t_peticion* peticion){
 
 }
 
-void validar_peticion(t_peticion* peticion){
-      char* interfaz = peticion->interfaz;
-      char* instruccion = peticion->instruccion;
-
-      if(/*existe_la_interfaz(interfaz) && esta_conectada_la_interfaz(interfaz) && */validar_interfaz_admite_instruccion(interfaz, instruccion)){
-//      }else{
-//            enviar_proceso_a_exit
-//      }
-}
-
 //bool existe_la_interfaz(interfaz){
 //      
 //}         //Supongo que esto se va a poder hacer cuando este creado el pcb(?
@@ -112,19 +102,6 @@ void validar_peticion(t_peticion* peticion){
 //
 //}
 
-bool validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
-      t_paquete* paquete = crear_paquete(RECONOCER_INSTRUCCION);
-      agregar_string_a_paquete(paquete, peticion->instruccion);
-      enviar_paquete(paquete, fd_entradasalida);
-      eliminar_paquete(paquete);
-      bool acepta_la_instruccion = recibir_mensaje(fd_cpu_dispatch);
-      if(acepta_la_instruccion){
-            return true;
-      }else{
-            log_error(kernel_logger,"Interfaz %s: No reconozco esta instruccion. Proceso enviado a EXIT.\n", interfaz);
-            EXIT_FAILURE;
-      }
-}
 
 
 

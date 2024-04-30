@@ -63,12 +63,9 @@ void procesar_peticion(char* instruccion, t_peticion_param* parametros) {
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {
             /* code */
-      }else if (strcmp(instruccion,"IO_FS_READ") == 0)
+      }else //la instruccion que llego fue IO_FS_READ
       {
             /* code */
-      }else{
-            //log_error(entradasalida_logger,"Interfaz %s: Tipo de interfaz no soportado. Proceso enviado a EXIT.\n", NOMBRE_INTERFAZ);
-            exit(EXIT_FAILURE);
       }
 }      
 
