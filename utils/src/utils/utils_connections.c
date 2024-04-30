@@ -222,6 +222,11 @@ void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio)
 	paquete->buffer->size += tamanio;
 }
 
+void agregar_string_a_paquete(t_paquete* paquete, void* valor)
+{
+	int tamaño_instruccion = string_length(valor);
+    agregar_a_paquete(paquete, valor, tamaño_instruccion);
+}
 
 
 ////////////////////// DESERIALIZACION //////////////
