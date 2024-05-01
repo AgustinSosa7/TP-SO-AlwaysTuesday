@@ -3,6 +3,7 @@
 
 #include "m_gestor.h"
 #include "inicializar_memoria.h"
+#include "memoria_procesos.h"
 
 // Variables GLOBALES
 
@@ -17,14 +18,21 @@ int fd_kernel;
 
 char* server_name;
 
-char* IP_MEMORIA;
+//
+t_list* lista_de_instrucciones;
+
+//CONFIG
 char* PUERTO_ESCUCHA;
-char* IP_FILESYSTEM;
-char* PUERTO_FILESYSTEM;
 int TAM_MEMORIA;
 int TAM_PAGINA;
 char* PATH_INSTRUCCIONES;
 int RETARDO_RESPUESTA;
+
+
+/// EVALUAR SI REALMENTE SE UTILIZAN EN ESTE TP. (Me parece que no)
+char* IP_MEMORIA;
+char* IP_FILESYSTEM;
+char* PUERTO_FILESYSTEM;
 char* ALGORITMO_REEMPLAZO;
 
 
