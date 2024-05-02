@@ -66,8 +66,8 @@ void* serializar_paquete(t_paquete* paquete, int bytes);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void enviar_mensaje(char* mensaje, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
-void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio);
-void agregar_string_a_paquete(t_paquete* paquete, void* valor);
+void agregar_algo_a_paquete(t_paquete* paquete, void* valor);
+void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 
 
 // DESERIALIZACION
@@ -75,8 +75,8 @@ int recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
 char* recibir_mensaje(int socket_cliente);
-void leer_del_paquete(t_paquete* paquete, void* *valor, int tamanio);
-void leer_string_del_paquete(t_paquete* paquete, char* *valor);
+void leer_algo_del_paquete(void* stream, void* valor);
+void leer_string_del_paquete(void* stream, char* valor);
 
 
 //Funciones Superpaquete

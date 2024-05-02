@@ -188,21 +188,22 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 
 void enviar_mensaje(char* mensaje, int socket_cliente)
 {
-	t_paquete* paquete = malloc(sizeof(t_paquete));
+//	t_paquete* paquete = malloc(sizeof(t_paquete));
+//	paquete->codigo_operacion = MENSAJE;
+//	paquete->buffer = malloc(sizeof(t_buffer));
+	t_paquete* paquete = crear_paquete(MENSAJE);
 
-	paquete->codigo_operacion = MENSAJE;
-	paquete->buffer = malloc(sizeof(t_buffer));
-	paquete->buffer->size = strlen(mensaje) + 1;
-	paquete->buffer->stream = malloc(paquete->buffer->size);
-	memcpy(paquete->buffer->stream, mensaje, paquete->buffer->size);
+//	paquete->buffer->size = strlen(mensaje) + 1;
+//	paquete->buffer->stream = malloc(paquete->buffer->size);
+//	memcpy(paquete->buffer->stream, mensaje, paquete->buffer->size);
+	agregar_string_a_paquete(paquete, mensaje);
 
-	int bytes = paquete->buffer->size + 2*sizeof(int);
+//	int bytes = paquete->buffer->size + 2*sizeof(int);
+//	void* a_enviar = serializar_paquete(paquete, bytes);
+//	send(socket_cliente, a_enviar, bytes, 0);
+//	free(a_enviar);
+	enviar_paquete(paquete, socket_cliente);
 
-	void* a_enviar = serializar_paquete(paquete, bytes);
-
-	send(socket_cliente, a_enviar, bytes, 0);
-
-	free(a_enviar);
 	eliminar_paquete(paquete);
 }
 
@@ -213,21 +214,25 @@ void eliminar_paquete(t_paquete* paquete)
 	free(paquete);
 }
 
-void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio)
+void agregar_algo_a_paquete(t_paquete* paquete, void* valor)
 {
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + tamanio);
+	size_t tamanio = sizeof(valor);
+	paquete->buffer->size += tamanio;
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
+	paquete->buffer->offset += tamanio; 
+}
 
-	memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), valor, tamanio);
+void agregar_string_a_paquete(t_paquete* paquete, char* valor) 
+{
+	int tamanio = strlen(valor) + 1;  // +1 por el /0
+	agregar_algo_a_paquete(paquete, &tamanio);
 
 	paquete->buffer->size += tamanio;
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size);
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
+	paquete->buffer->offset += tamanio; 
 }
-
-void agregar_string_a_paquete(t_paquete* paquete, void* valor)
-{
-	int tamaño_instruccion = string_length(valor);
-    agregar_a_paquete(paquete, valor, tamaño_instruccion);
-}
-
 
 ////////////////////// DESERIALIZACION //////////////
 
@@ -274,27 +279,26 @@ t_paquete* recibir_paquete(int unSocket)
 
 char* recibir_mensaje(int socket_cliente)
 {	
-	char* mensaje;
+	char* mensaje = malloc(sizeof(char));
 	t_paquete* paquete = recibir_paquete(socket_cliente);
-	leer_string_del_paquete(paquete, &mensaje);
+	leer_string_del_paquete(paquete->buffer->stream, mensaje);
 	
 	return mensaje;
 }
 
-void leer_del_paquete(t_paquete* paquete, void* *valor, int tamanio)
+void leer_algo_del_paquete(void* stream, void* valor)
 {
-	memcpy(*valor, paquete->buffer->stream, tamanio);
-
-	paquete->buffer->stream += tamanio;
+	size_t tamanio = sizeof(valor);
+	memcpy(valor, &stream, tamanio);
+	stream += tamanio;
 }
 
-void leer_string_del_paquete(t_paquete* paquete, char* *valor)
+void leer_string_del_paquete(void* stream, char* valor) 
 {
 	int tamanio;
-	leer_del_paquete(paquete, (void**)&tamanio, sizeof(int));
-	memcpy(*valor, &paquete->buffer->stream, sizeof(tamanio));
-
-	paquete->buffer->stream += tamanio;
+	leer_algo_del_paquete(stream, &tamanio);
+	valor = realloc(valor, tamanio); // Ver de cambiar a malloc para cuidar a la memoria.
+	leer_algo_del_paquete(stream, &valor);
 }
 
 
