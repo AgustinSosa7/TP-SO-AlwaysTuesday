@@ -6,6 +6,10 @@ int main() {
 
 //Inicializar MEMORIA
 inicializar_memoria();
+lista_de_instrucciones = list_create();
+leer_archivo_pseudocodigo("PLANI1.txt",lista_de_instrucciones);
+
+
 // Iniciar servidor de memoria
 
 fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, IP_MEMORIA);  //Tercer argumento, ip del server
