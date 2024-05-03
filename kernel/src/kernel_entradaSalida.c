@@ -44,10 +44,11 @@ void validar_peticion(t_peticion* peticion){
 
 bool validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
       t_paquete* paquete = crear_paquete(RECONOCER_INSTRUCCION);
-      agregar_string_a_paquete(paquete,instruccion);
+      agregar_string_a_paquete(paquete, instruccion);
       enviar_paquete(paquete, fd_entradasalida);
       eliminar_paquete(paquete);
-      bool acepta_la_instruccion = recibir_mensaje(fd_entradasalida);
+      bool acepta_la_instruccion;
+      recv(fd_entradasalida, &acepta_la_instruccion, sizeof(bool), MSG_WAITALL);
       if(acepta_la_instruccion){
             return true;
       }else{
@@ -59,12 +60,12 @@ bool validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
 void enviar_peticion_a_interfaz(t_peticion* peticion){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, peticion->instruccion);
-      agregar_a_paquete(paquete, peticion->parametros, sizeof(t_peticion_param));
+      agregar_algo_a_paquete(paquete, peticion->parametros);
       enviar_paquete(paquete, fd_entradasalida);
       eliminar_paquete(paquete);
 } 
 
 void recibir_mensaje_fin_peticion(){
-    char* peticion_exitosa = recibir_mensaje(fd_entradasalida);
-    log_error(kernel_logger, "%s", peticion_exitosa);
+    bool fin_peticion;
+    recv(fd_entradasalida, &fin_peticion, sizeof(bool), MSG_WAITALL);
 }

@@ -11,6 +11,7 @@
 
 #include <../src/utils/utils_connections.h>
 
+
 // Variables GLOBALES
 
 t_log* kernel_logger;

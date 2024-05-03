@@ -14,11 +14,11 @@ void atender_entradasalida_kernel(){
             t_peticion* peticion = recibir_peticion(paquete); //Ya tengo en peticion todos los datos que necesito.
             procesar_peticion(peticion->instruccion, peticion->parametros);
             free(peticion);
-            enviar_mensaje("Peticion exitosa!", fd_kernel);
+            finalizar_peticion(fd_kernel);
             break;
         case RECONOCER_INSTRUCCION:
             char* instruccion = recibir_instruccion(paquete);
-            validar_instruccion(instruccion);    
+            validar_tipo_instruccion(instruccion);    
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
@@ -77,9 +77,17 @@ char* recibir_instruccion(t_paquete* paquete){
 
 void validar_tipo_instruccion(char* instruccion){
       if(list_any_satisfy(INSTRUCCIONES_POSIBLES, (void*)la_instruccion_esta_en_la_lista)){
-            enviar_mensaje("Acepto la instruccion", fd_kernel); //Acepto a la instruccion.
+            void* coso_a_enviar = malloc(sizeof(bool));
+	      bool saludar = true;
+	      memcpy(coso_a_enviar, &saludar, sizeof(int));
+	      send(fd_kernel, coso_a_enviar, sizeof(int),0);
+	      free(coso_a_enviar);
       }else{
-            enviar_mensaje("No acepto la instruccion", fd_kernel); //No la acepto.
+            void* coso_a_enviar = malloc(sizeof(bool));
+	      bool saludar = true;
+	      memcpy(coso_a_enviar, &saludar, sizeof(int));
+	      send(fd_kernel, coso_a_enviar, sizeof(int),0);
+	      free(coso_a_enviar);
             }
 }
 
@@ -87,4 +95,8 @@ bool la_instruccion_esta_en_la_lista(char* instruccion_posible, char* instruccio
       if(strcmp(instruccion_posible,instruccion)==0){
             return true;
       }else{return false;}
+}
+
+void finalizar_peticion(){
+      send(fd_kernel, true, sizeof(bool), 0);
 }

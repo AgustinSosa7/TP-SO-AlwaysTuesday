@@ -10,6 +10,19 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
+typedef struct{
+    int tiempo_espera;
+    char* archivo;
+    char* registro1;
+    char* registro2;
+    char* registro3; 
+} t_peticion_param;
+typedef struct{
+    char* instruccion;
+    char* interfaz;
+    t_peticion_param* parametros;
+} t_peticion;
+
 
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

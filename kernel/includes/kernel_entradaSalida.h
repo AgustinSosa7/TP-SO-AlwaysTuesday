@@ -1,20 +1,9 @@
 #ifndef KERNEL_ENTRADASALIDA_H
 #define KERNEL_ENTRADASALIDA_H
 
+#include <../src/utils/utils_connections.h>
 #include "k_gestor.h"
 
-typedef struct{
-    int tiempo_espera;
-    char* archivo;
-    char* registro1;
-    char* registro2;
-    char* registro3; 
-} t_peticion_param;
-typedef struct{
-    char* instruccion;
-    char* interfaz;
-    t_peticion_param* parametros;
-} t_peticion;
 
 void atender_kernel_entradaSalida();
 void validar_peticion(t_peticion* peticion);

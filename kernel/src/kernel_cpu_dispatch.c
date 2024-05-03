@@ -17,7 +17,6 @@ void atender_kernel_cpu_dispatch(){
             eliminar_peticion(peticion);
             // enviar_proceso_a_blocked
             recibir_mensaje_fin_peticion();
-
             // desbloquear_proceso
             break;
         case -1:
@@ -33,10 +32,11 @@ void atender_kernel_cpu_dispatch(){
 
 
 t_peticion* recibir_peticion(t_paquete* paquete){
-    t_peticion* peticion = malloc(sizeof(t_peticion));;
+    t_peticion* peticion = malloc(sizeof(t_peticion));
+    void* stream = paquete->buffer->stream;
 
-    leer_string_del_paquete(paquete, &peticion->instruccion);
-    leer_string_del_paquete(paquete, &peticion->interfaz);
+    leer_string_del_paquete(stream, peticion->instruccion);
+    leer_string_del_paquete(stream, peticion->interfaz);
     
     peticion->parametros = leer_parametros(paquete,peticion->interfaz);
 
@@ -46,9 +46,10 @@ t_peticion* recibir_peticion(t_paquete* paquete){
 t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
 
     t_peticion_param* parametros = malloc(sizeof(t_peticion_param*));
+    void* stream = paquete->buffer->stream;
 
     if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-        leer_del_paquete(paquete, (void**)&parametros->tiempo_espera, sizeof(int));
+        leer_algo_del_paquete(stream, &parametros->tiempo_espera);
         return parametros;
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {

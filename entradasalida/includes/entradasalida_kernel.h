@@ -28,6 +28,7 @@ void procesar_peticion(char* instruccion, t_peticion_param* parametros);
 char* recibir_instruccion(t_paquete* paquete);
 void validar_instruccion(char* tipo_instruccion);
 bool la_instruccion_esta_en_la_lista(char* instruccion_posible, char* instruccion);
+void finalizar_peticion();
 
 
 
