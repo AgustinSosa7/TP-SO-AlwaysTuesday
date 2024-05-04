@@ -1,5 +1,30 @@
 #include "utils_connections.h"
 
+// Funciones de Listas
+
+bool contains_string(t_list* lista, char* elemento){
+	bool funcion_de_ayuda(void* elemento_posible){
+            return son_el_mismo_string(elemento_posible, elemento);
+      	}
+      return list_any_satisfy(lista, funcion_de_ayuda);
+}
+
+bool son_el_mismo_string(char* elemento_posible, char* elemento){
+      return (strcmp(elemento_posible, elemento)==0);
+}
+
+bool contains_algo(t_list* lista, void* elemento){
+	bool funcion_de_ayuda(void* elemento_posible){
+            return son_lo_mismo(elemento_posible, elemento);
+      	}
+
+      return list_any_satisfy(lista, funcion_de_ayuda);
+}
+
+bool son_lo_mismo(void* elemento_posible, void* elemento){
+      return (elemento_posible == elemento);
+}
+
 
 // CONEXIONES DE CLIENTE 
 int crear_conexion(char* ip, char* puerto, t_log* logger)
@@ -186,25 +211,22 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 	free(a_enviar);
 }
 
-void enviar_mensaje(char* mensaje, int socket_cliente)
+void enviar_mensaje(void* mensaje, int socket_cliente)
 {
-//	t_paquete* paquete = malloc(sizeof(t_paquete));
-//	paquete->codigo_operacion = MENSAJE;
-//	paquete->buffer = malloc(sizeof(t_buffer));
-	t_paquete* paquete = crear_paquete(MENSAJE);
+	int tamanio = sizeof(mensaje);
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+}
 
-//	paquete->buffer->size = strlen(mensaje) + 1;
-//	paquete->buffer->stream = malloc(paquete->buffer->size);
-//	memcpy(paquete->buffer->stream, mensaje, paquete->buffer->size);
-	agregar_string_a_paquete(paquete, mensaje);
-
-//	int bytes = paquete->buffer->size + 2*sizeof(int);
-//	void* a_enviar = serializar_paquete(paquete, bytes);
-//	send(socket_cliente, a_enviar, bytes, 0);
-//	free(a_enviar);
-	enviar_paquete(paquete, socket_cliente);
-
-	eliminar_paquete(paquete);
+void enviar_mensaje_string(char* mensaje, int socket_cliente)
+{
+	int tamanio = strlen(mensaje)+1;
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
 }
 
 void eliminar_paquete(t_paquete* paquete)
@@ -261,7 +283,6 @@ int recibir_operacion(int socket_cliente)
 
 t_buffer* recibir_buffer(int unSocket){ 
 	t_buffer* buffer = malloc(sizeof(t_buffer));
-
 	recv(unSocket, &(buffer->size), sizeof(uint32_t), 0);
 	buffer->stream = malloc(buffer->size);
 	recv(unSocket, buffer->stream, buffer->size, 0);
@@ -277,28 +298,28 @@ t_paquete* recibir_paquete(int unSocket)
 	return paquete;
 }
 
-char* recibir_mensaje(int socket_cliente)
+void* recibir_mensaje(int socket_cliente)
 {	
-	char* mensaje = malloc(sizeof(char));
+	void* mensaje = malloc(sizeof(void));
 	t_paquete* paquete = recibir_paquete(socket_cliente);
-	leer_string_del_paquete(paquete->buffer->stream, mensaje);
+	leer_string_del_stream(paquete->buffer->stream, mensaje);
 	
 	return mensaje;
 }
 
-void leer_algo_del_paquete(void* stream, void* valor)
+void leer_algo_del_stream(void* stream, void* valor)
 {
 	size_t tamanio = sizeof(valor);
 	memcpy(valor, &stream, tamanio);
 	stream += tamanio;
 }
 
-void leer_string_del_paquete(void* stream, char* valor) 
+void leer_string_del_stream(void* stream, char* valor) 
 {
 	int tamanio;
-	leer_algo_del_paquete(stream, &tamanio);
-	valor = realloc(valor, tamanio); // Ver de cambiar a malloc para cuidar a la memoria.
-	leer_algo_del_paquete(stream, &valor);
+	leer_algo_del_stream(stream, &tamanio); 
+	valor = malloc(tamanio); // En caso de pisar algun valor, hacerle free antes
+	leer_algo_del_stream(stream, &valor);
 }
 
 

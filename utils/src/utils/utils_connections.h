@@ -45,6 +45,13 @@ typedef struct
 
 extern t_log* logger;
 
+// Funciones de Listas
+
+bool contains_string(t_list* lista, char* elemento);
+bool son_el_mismo_string(char* elemento_posible, char* elemento);
+bool contains_algo(t_list* lista, void* elemento);
+bool son_lo_mismo(void* elemento_posible, void* elemento);
+
 // FUNCIONES CLIENTE
 int crear_conexion(char* ip, char* puerto, t_log* logger);
 void gestionar_handshake_como_cliente(int fd_conexion, const char* modulo_destino, t_log* logger);
@@ -64,7 +71,8 @@ void eliminar_buffer(t_buffer *buffer);
 t_paquete* crear_paquete(op_code code_op);
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
-void enviar_mensaje(char* mensaje, int socket_cliente);
+void enviar_mensaje(void* mensaje, int socket_cliente);
+void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void agregar_algo_a_paquete(t_paquete* paquete, void* valor);
 void agregar_string_a_paquete(t_paquete* paquete, char* valor);
@@ -74,9 +82,9 @@ void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 int recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
-char* recibir_mensaje(int socket_cliente);
-void leer_algo_del_paquete(void* stream, void* valor);
-void leer_string_del_paquete(void* stream, char* valor);
+void* recibir_mensaje(int socket_cliente);
+void leer_algo_del_stream(void* stream, void* valor);
+void leer_string_del_stream(void* stream, char* valor);
 
 
 //Funciones Superpaquete
