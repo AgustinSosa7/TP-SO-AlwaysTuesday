@@ -307,6 +307,16 @@ void* recibir_mensaje(int socket_cliente)
 	return mensaje;
 }
 
+char* recibir_mensaje_string(int socket_cliente)
+{	
+	int tamanio;
+	recv(socket_cliente, &tamanio, sizeof(int), 0);
+	char* mensaje = malloc(tamanio);
+	recv(socket_cliente, mensaje, tamanio, 0);
+	
+	return mensaje;
+}
+
 void leer_algo_del_stream(void* stream, void* valor)
 {
 	size_t tamanio = sizeof(valor);

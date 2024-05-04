@@ -83,6 +83,7 @@ int recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
 void* recibir_mensaje(int socket_cliente);
+char* recibir_mensaje_string(int socket_cliente);
 void leer_algo_del_stream(void* stream, void* valor);
 void leer_string_del_stream(void* stream, char* valor);
 
