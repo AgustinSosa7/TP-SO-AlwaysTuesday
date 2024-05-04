@@ -3,14 +3,22 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h> 
+
 
 #include <commons/log.h>
 #include <commons/config.h>
 
-//#include <../src/utils/hello.h>
 #include <../src/utils/utils_connections.h>
 
+
+
 //Variables GLOBALES 
+//extern t_list* INSTRUCCIONES_GEN;
+//extern t_list* INSTRUCCIONES_STDIN;
+//extern t_list* INSTRUCCIONES_STDOUT;
+//extern t_list* INSTRUCCIONES_FS;
+
 extern t_log* entradasalida_logger;
 extern t_log* entradasalida_log_debug;
 extern t_config* entradasalida_config;

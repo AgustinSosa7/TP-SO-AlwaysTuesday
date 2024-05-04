@@ -43,12 +43,13 @@ void validar_peticion(t_peticion* peticion){
 //}
 
 bool validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
+// Como se a que conexion de fd_entradasalida mandarlo? como utilizo el dato de la interfaz, como los comentarios de arriba
       t_paquete* paquete = crear_paquete(RECONOCER_INSTRUCCION);
       agregar_string_a_paquete(paquete, instruccion);
       enviar_paquete(paquete, fd_entradasalida);
       eliminar_paquete(paquete);
-      bool acepta_la_instruccion;
-      recv(fd_entradasalida, &acepta_la_instruccion, sizeof(bool), MSG_WAITALL);
+
+      bool acepta_la_instruccion = recibir_mensaje(fd_entradasalida);
       if(acepta_la_instruccion){
             return true;
       }else{

@@ -26,5 +26,6 @@
     log_info(kernel_logger, "Esperando a Entradasalida...");
     fd_entradasalida = esperar_cliente(fd_kernel, kernel_logger, "ENTRADASALIDA");
     gestionar_handshake_como_server(fd_entradasalida, kernel_logger, "ENTRADA SALIDA");
- }
+   }
+
 

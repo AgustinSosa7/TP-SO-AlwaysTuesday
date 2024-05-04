@@ -1,9 +1,5 @@
 #include "../includes/inicializar_entradasalida.h"
 
-t_list* INSTRUCCIONES_GEN;
-t_list* INSTRUCCIONES_STDIN;
-t_list* INSTRUCCIONES_STDOUT;
-t_list* INSTRUCCIONES_FS;
 
 void inicializar_entradasalida(){
     inicializar_logs();
@@ -37,6 +33,7 @@ if (entradasalida_config == NULL) {
 
 	NOMBRE_INTERFAZ = config_get_string_value(entradasalida_config,"NOMBRE_INTERFAZ");
 	TIPO_INTERFAZ = config_get_string_value(entradasalida_config,"TIPO_INTERFAZ");
+//	inicializar_listas_instrucciones();
 	recibir_configs(TIPO_INTERFAZ);
 }
 void recibir_configs(char* TIPO_INTERFAZ){
@@ -45,14 +42,14 @@ void recibir_configs(char* TIPO_INTERFAZ){
             TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
 			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
 			PUERTO_KERNEL = config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
-			INSTRUCCIONES_POSIBLES = INSTRUCCIONES_GEN;
+		//	INSTRUCCIONES_POSIBLES = INSTRUCCIONES_GEN;
 
     } else if (strcmp(TIPO_INTERFAZ, "STDIN") == 0) {
 			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
 			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
 			IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
 			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");   
-			INSTRUCCIONES_POSIBLES = INSTRUCCIONES_STDIN; 
+			//INSTRUCCIONES_POSIBLES = INSTRUCCIONES_STDIN; 
 
     } else if (strcmp(TIPO_INTERFAZ, "STDOUT") == 0) {
 			TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
@@ -60,7 +57,7 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
 			IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
 			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");
-			INSTRUCCIONES_POSIBLES = INSTRUCCIONES_STDOUT;   
+			//INSTRUCCIONES_POSIBLES = INSTRUCCIONES_STDOUT;   
 
 	} else if (strcmp(TIPO_INTERFAZ, "FS") == 0) {
 			TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
@@ -72,7 +69,7 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			BLOCK_SIZE = config_get_int_value(entradasalida_config,"BLOCK_SIZE");
 			BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
 		//	RETRASO_COMPACTACION = config_get_int_value(entradasalida_config,"RETRASO_COMPACTACION");
-			INSTRUCCIONES_POSIBLES = INSTRUCCIONES_FS;
+			//INSTRUCCIONES_POSIBLES = INSTRUCCIONES_FS;
 	
 		} else {
 	        printf("Tipo de interfaz desconocida.");
@@ -86,13 +83,13 @@ void imprimir_configs(){
 
 }
 
-void inicializar_listas_instrucciones(){
-	list_add(INSTRUCCIONES_GEN, "IO_GEN_SLEEP");
-	list_add(INSTRUCCIONES_STDIN, "IO_STDIN_READ");
-	list_add(INSTRUCCIONES_STDOUT, "IO_STDOUT_WRITE");
-	list_add(INSTRUCCIONES_FS, "IO_FS_CREATE");
-	list_add(INSTRUCCIONES_FS, "IO_FS_DELETE");
-	list_add(INSTRUCCIONES_FS, "IO_FS_TRUNCATE");
-	list_add(INSTRUCCIONES_FS, "IO_FS_WRITE");
-	list_add(INSTRUCCIONES_FS, "IO_FS_READ");
-}
+//void inicializar_listas_instrucciones(){
+//	list_add(INSTRUCCIONES_GEN, "IO_GEN_SLEEP");
+//	list_add(INSTRUCCIONES_STDIN, "IO_STDIN_READ");
+//	list_add(INSTRUCCIONES_STDOUT, "IO_STDOUT_WRITE");
+//	list_add(INSTRUCCIONES_FS, "IO_FS_CREATE");
+//	list_add(INSTRUCCIONES_FS, "IO_FS_DELETE");
+//	list_add(INSTRUCCIONES_FS, "IO_FS_TRUNCATE");
+//	list_add(INSTRUCCIONES_FS, "IO_FS_WRITE");
+//	list_add(INSTRUCCIONES_FS, "IO_FS_READ");
+//}

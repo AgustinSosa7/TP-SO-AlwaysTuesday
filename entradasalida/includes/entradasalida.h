@@ -5,7 +5,15 @@
 #include "inicializar_entradasalida.h"
 #include "entradasalida_kernel.h"
 
+#include <../src/utils/utils_connections.h>
+
+
 // Variables GLOBALES
+
+//t_list* INSTRUCCIONES_GEN;
+//t_list* INSTRUCCIONES_STDIN;
+//t_list* INSTRUCCIONES_STDOUT;
+//t_list* INSTRUCCIONES_FS;
 
 t_log* entradasalida_logger;
 t_log* entradasalida_log_debug;

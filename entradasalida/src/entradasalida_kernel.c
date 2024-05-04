@@ -12,13 +12,13 @@ void atender_entradasalida_kernel(){
         {
         case ATENDER_PETICION_INTERFAZ_KERNEL:
             t_peticion* peticion = recibir_peticion(paquete); //Ya tengo en peticion todos los datos que necesito.
-            procesar_peticion(peticion->instruccion, peticion->parametros);
-            free(peticion);
-            finalizar_peticion(fd_kernel);
+            procesar_peticion(peticion);
+            finalizar_peticion(peticion);
             break;
         case RECONOCER_INSTRUCCION:
             char* instruccion = recibir_instruccion(paquete);
-            validar_tipo_instruccion(instruccion);    
+            validar_tipo_instruccion(instruccion);   
+            free(instruccion); 
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
@@ -33,18 +33,23 @@ void atender_entradasalida_kernel(){
 
 t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
+    peticion->instruccion = malloc(sizeof(char));
 
-    leer_string_del_paquete(paquete, &peticion->instruccion);
-    leer_del_paquete(paquete, (void**)&peticion->parametros->tiempo_espera, sizeof(int));
+    void* stream = paquete->buffer->stream;
+    leer_string_del_stream(stream, peticion->instruccion);
+
+    asignar_parametros_segun_tipo(peticion, stream);
 
     return peticion;
 } 
 
-void procesar_peticion(char* instruccion, t_peticion_param* parametros) {
-      
+void asignar_parametros_segun_tipo(t_peticion* peticion, void* stream){
+
+      char* instruccion = peticion->instruccion;
+
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-            int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * parametros->tiempo_espera;
-            sleep(tiempo_espera);
+            leer_algo_del_stream(stream, &peticion->parametros->tiempo_espera);
+
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
             /* code */
@@ -63,40 +68,75 @@ void procesar_peticion(char* instruccion, t_peticion_param* parametros) {
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {
             /* code */
-      }else //la instruccion que llego fue IO_FS_READ
+      }else //DEFALUT IO_FS_READ
+      {
+            /* code */
+      }
+}
+
+void procesar_peticion(t_peticion* peticion) {
+
+      char* instruccion = peticion->instruccion;
+
+      if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
+            int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera;
+            sleep(tiempo_espera);
+
+      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
+      {
+            /* code */
+      }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
+      {
+            /* code */
+      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      {
+            /* code */
+      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      {
+            /* code */
+      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      {
+            /* code */
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
+      {
+            /* code */
+      }else //DEFALUT IO_FS_READ
       {
             /* code */
       }
 }      
 
 char* recibir_instruccion(t_paquete* paquete){
-      char* instruccion;
-      leer_string_del_paquete(paquete, &instruccion);
+      char* instruccion = malloc(sizeof(char));
+      void* stream = paquete->buffer->stream;
+
+      leer_string_del_stream(stream, instruccion);
       return instruccion;
 }
 
 void validar_tipo_instruccion(char* instruccion){
-      if(list_any_satisfy(INSTRUCCIONES_POSIBLES, (void*)la_instruccion_esta_en_la_lista)){
-            void* coso_a_enviar = malloc(sizeof(bool));
-	      bool saludar = true;
-	      memcpy(coso_a_enviar, &saludar, sizeof(int));
-	      send(fd_kernel, coso_a_enviar, sizeof(int),0);
-	      free(coso_a_enviar);
+
+      if(contains_string(INSTRUCCIONES_POSIBLES, instruccion)){
+            bool resultado = true;
+            enviar_mensaje(&resultado, fd_kernel);
       }else{
-            void* coso_a_enviar = malloc(sizeof(bool));
-	      bool saludar = true;
-	      memcpy(coso_a_enviar, &saludar, sizeof(int));
-	      send(fd_kernel, coso_a_enviar, sizeof(int),0);
-	      free(coso_a_enviar);
+            bool resultado = false;
+            enviar_mensaje(&resultado, fd_kernel);
             }
 }
 
-bool la_instruccion_esta_en_la_lista(char* instruccion_posible, char* instruccion){
-      if(strcmp(instruccion_posible,instruccion)==0){
-            return true;
-      }else{return false;}
+void finalizar_peticion(t_peticion* peticion){
+      bool resultado = true;
+      enviar_mensaje(&resultado, fd_kernel);
+      
+      eliminar_peticion(peticion);
 }
 
-void finalizar_peticion(){
-      send(fd_kernel, true, sizeof(bool), 0);
-}
+void eliminar_peticion(t_peticion* peticion){ 
+      free(peticion->parametros->archivo);
+      free(peticion->parametros->registro1);
+      free(peticion->parametros->registro2);
+      free(peticion->parametros->registro3);
+      free(peticion->parametros);
+      free(peticion);
+}      
