@@ -6,12 +6,16 @@ int main() {
 
 //Inicializar MEMORIA
 inicializar_memoria();
-lista_de_instrucciones = list_create();
-leer_archivo_pseudocodigo("PLANI1.txt",lista_de_instrucciones);
 
+t_list* lista_de_instrucciones = NULL;
+lista_de_instrucciones = leer_archivo_pseudocodigo("PLANI1.txt");
+
+printf("llene la lista de longitud %d\n",list_size(lista_de_instrucciones));   
+for(int i=0;i<7;i++){
+    printf("%s\n",list_get(lista_de_instrucciones, i ));
+    }
 
 // Iniciar servidor de memoria
-
 fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, IP_MEMORIA);  //Tercer argumento, ip del server
 
 // Esperar conexion de CPU

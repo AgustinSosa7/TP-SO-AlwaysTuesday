@@ -45,6 +45,5 @@ void _imprimir_config(){
     log_info(memoria_log_debug, "MEMORIA TAM_PAGINA: %d", TAM_PAGINA);
     log_info(memoria_log_debug, "MEMORIA PATH_INSTRUCCIONES: %s", PATH_INSTRUCCIONES);
     log_info(memoria_log_debug, "MEMORIA RETARDO_RESPUESTA: %d", RETARDO_RESPUESTA);
-
 }
 
