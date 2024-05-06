@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <pthread.h> 
 
-
+#include <../src/utils/utils_connections.h>
 #include <commons/log.h>
 #include <commons/config.h>
 
@@ -22,6 +22,14 @@ typedef struct{
     char* interfaz;
     t_peticion_param* parametros;
 } t_peticion;
+
+//Ver si conviene ponerlo en el utils :D
+typedef struct{  
+	int pid;
+	int program_counter;
+    int QUANTUM;
+	t_cpu* registros_CPU;
+}t_pcb;
 
 
 extern t_log* kernel_logger;

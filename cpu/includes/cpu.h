@@ -1,30 +1,18 @@
 #ifndef CPU_H_
 #define CPU_H_
 
+#include <../src/utils/utils_connections.h>
 #include "cpu_gestor.h"
 #include "inicializar_cpu.h"
 #include "cpu_kernel_dispatch.h"
 #include "cpu_kernel_interrupt.h"
 #include "cpu_memoria.h"
 
-typedef struct
-{
-    u_int32_t PC;
-    u_int8_t AX;
-    u_int8_t BX;
-    u_int8_t CX;
-    u_int8_t DX;
-    u_int32_t EAX;
-    u_int32_t EBX;
-    u_int32_t ECX;
-    u_int32_t EDX;
-    u_int32_t SI;
-    u_int32_t DI;
-}t_cpu;
 
+//moví la declaración del struc t_pcb a utils connections :D
 t_cpu* cpu;
 
-t_cpu* cpu = crear_paquete(op_code)
+//t_cpu* cpu = crear_paquete(op_code);   Fijarse como sería :D 
 //Variables GLOBALES
 
 t_log* cpu_logger;

@@ -256,6 +256,20 @@ void agregar_string_a_paquete(t_paquete* paquete, char* valor)
 	paquete->buffer->offset += tamanio; 
 }
 
+void agregar_registro_a_paquete(t_paquete* un_paquete, t_cpu* registros_CPU){
+agregar_algo_a_paquete(un_paquete,registros_CPU->AX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->BX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->CX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->DI);
+agregar_algo_a_paquete(un_paquete,registros_CPU->DX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->EAX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->EBX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->ECX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->EDX);
+agregar_algo_a_paquete(un_paquete,registros_CPU->SI);
+agregar_algo_a_paquete(un_paquete,registros_CPU->DI);
+}
+
 ////////////////////// DESERIALIZACION //////////////
 
 int recibir_operacion(int socket_cliente) 
