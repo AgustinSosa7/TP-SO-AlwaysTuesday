@@ -43,6 +43,21 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
+typedef struct
+{
+    u_int32_t PC;
+    u_int8_t AX;
+    u_int8_t BX;
+    u_int8_t CX;
+    u_int8_t DX;
+    u_int32_t EAX;
+    u_int32_t EBX;
+    u_int32_t ECX;
+    u_int32_t EDX;
+    u_int32_t SI;
+    u_int32_t DI;
+}t_cpu;
+
 extern t_log* logger;
 
 // Funciones de Listas

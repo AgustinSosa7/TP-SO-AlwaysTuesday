@@ -4,6 +4,6 @@
 
 #include "m_gestor.h"
 
-void leer_archivo_pseudocodigo(char*,t_list*);
+t_list* leer_archivo_pseudocodigo(char*);
 
 #endif /*INICIALIZAR_MEMORIA_H_*/
