@@ -23,7 +23,29 @@ typedef struct{
     t_peticion_param* parametros;
 } t_peticion;
 
+///////////////////////ESTRUCTURAS PCB////////////////////////////
+// typedef struct{
+//     int pid,
+//     int pc,
+//     int quantum,
+//     t_registros_cpu registros,
+//     estado_pcb estado
+// } t_pcb;
 
+// typdef struct{
+ 
+// } t_registros_cpu;
+
+// typedef enum{
+//     NEW,
+//     READY,
+//     EXEC,
+//     BLOCKED,
+//     EXIT
+// } estado_pcb;
+
+
+///////////////////////////////////////////////////////////////
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;
 extern t_config* kernel_config;
