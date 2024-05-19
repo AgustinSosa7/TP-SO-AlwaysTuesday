@@ -38,3 +38,22 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     list_add(lista_de_instrucciones, INSTRUCCION);
     return lista_de_instrucciones;
 };
+
+char* recibir_direccion_pseudocodigo(){
+    op_code code_op = recibir_operacion(fd_kernel);
+    t_paquete* paquete = recibir_paquete(fd_kernel);
+    void* stream = paquete->buffer->stream;
+    char* direccion_pseudocodigo;
+    if(code_op == PSEUDOCODIGO)
+    {
+        leer_string_del_stream(stream, direccion_pseudocodigo);
+        printf("Direc pseudocodigo: %s",direccion_pseudocodigo);
+        free(stream);
+    }
+    else
+    {   
+        log_error(memoria_logger, "No se recibio un pseudocodigo.");
+        exit(EXIT_FAILURE);
+    }
+    return direccion_pseudocodigo;
+};
