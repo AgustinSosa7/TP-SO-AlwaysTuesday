@@ -10,7 +10,7 @@ int main()
 /////////////////////////--CONEXIONES--//////////////////////
 
     conexion_kernel_memoria();
-    char* pseudocogido = "AHORA CREANME"; //VER POR QUE NO RECIBE LOS ULTIMOS 2 CARACTERES!
+    char* pseudocogido = "PLANI1.txt"; //VER POR QUE NO RECIBE LOS ULTIMOS 2 CARACTERES!
     log_info(kernel_log_debug, "ENVIO DE PSEUDO.%s",pseudocogido);
     enviar_direccion_pesudocodigo(pseudocogido);
     sleep(5);

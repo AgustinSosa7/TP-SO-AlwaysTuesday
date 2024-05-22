@@ -14,9 +14,9 @@ inicializar_memoria();
 fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, IP_MEMORIA);  //Tercer argumento, ip del server
 
 // Esperar conexion de CPU
-//log_info(memoria_logger, "Esperando a CPU...");
-//fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"CPU");
-//gestionar_handshake_como_server(fd_cpu, memoria_logger, "CPU");
+log_info(memoria_logger, "Esperando a CPU...");
+fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"CPU");
+gestionar_handshake_como_server(fd_cpu, memoria_logger, "CPU");
 
 // Esperar conexion de KERNEL
 log_info(memoria_logger, "Esperando a KERNEL...");

@@ -199,9 +199,6 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	memcpy(magic + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
 	desplazamiento+= paquete->buffer->size;
 
-	
-
-
 	return magic;
 }
 
@@ -327,12 +324,12 @@ op_code recibir_operacion(int socket_cliente)
 
 t_buffer* recibir_buffer(int unSocket){ 
 	t_buffer* buffer = malloc(sizeof(t_buffer));
-	recv(unSocket, &(buffer->size), sizeof(int), 0);
+	recv(unSocket, &(buffer->size), sizeof(int), MSG_WAITALL);
 	printf("buffer size:%d\n",buffer->size);
 	buffer->stream = malloc(buffer->size);
-	recv(unSocket, buffer->stream, buffer->size + 2, 0);
-	char* string = malloc(buffer->size + 5);
-	memcpy(string,buffer->stream + 4,buffer->size + 2);
+	recv(unSocket, buffer->stream, buffer->size , MSG_WAITALL);
+	char* string = malloc(buffer->size);
+	memcpy(string,buffer->stream + 4,buffer->size);
 	printf("string size:%s\n",string);
 	 return buffer;	
 }
