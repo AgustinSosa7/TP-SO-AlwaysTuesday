@@ -8,7 +8,7 @@
 #include "kernel_entradaSalida.h"
 #include "kernel_memoria.h"
 #include "crear_conexiones.h"
-
+#include "consola.h"
 #include <../src/utils/utils_connections.h>
 
 
@@ -37,5 +37,12 @@ char** RECURSOS;    // REVISAR EL TIPO EN EL ENUNCIADO
 char ** INSTANCIAS_RECURSOS; // POR FAVOR REVISAR EL TIPO EN EL ENUNCIADO
 int GRADO_MULTIPROGRAMACION;
 char * IP_KERNEL;
+
+
+t_list lista_new = list_create();
+t_list lista_ready = list_create();
+t_list lista_exec = list_create();
+t_list lista_blocked = list_create();
+t_list lista_exit = list_create();
 
 #endif

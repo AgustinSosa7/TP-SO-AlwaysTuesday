@@ -10,52 +10,55 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
+
 typedef struct{
     int tiempo_espera;
     char* archivo;
     char* registro1;
     char* registro2;
-    char* registro3; 
+    char* registro3;
 } t_peticion_param;
+
 typedef struct{
     char* instruccion;
     char* interfaz;
     t_peticion_param* parametros;
 } t_peticion;
 
-<<<<<<< HEAD
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
-// typedef struct{
-//     int pid,
-//     int pc,
-//     int quantum,
-//     t_registros_cpu registros,
-//     estado_pcb estado
-// } t_pcb;
-=======
-//Ver si conviene ponerlo en el utils :D
-typedef struct{  
-	int pid;
-	int program_counter;
-    int QUANTUM;
-	t_cpu* registros_CPU;
-}t_pcb;
 
->>>>>>> refs/remotes/origin/main
+extern int pid_global = 0;
+typedef struct{
+    int pid;
+    int pc;
+    int quantum;
+    char* path;
+    t_registros_cpu registros;
+    estado_pcb estado;
+} t_pcb;
 
-// typdef struct{
- 
-// } t_registros_cpu;
+typedef struct{
+ int AX;
+} t_registros_cpu;
 
-// typedef enum{
-//     NEW,
-//     READY,
-//     EXEC,
-//     BLOCKED,
-//     EXIT
-// } estado_pcb;
+typedef enum{
+    NEW,
+    READY,
+    EXEC,
+    BLOCKED,
+    EXIT
+} estado_pcb;
+
+extern t_list lista_new = list_create();
+extern t_list lista_ready = list_create();
+extern t_list lista_exec = list_create();
+extern t_list lista_blocked = list_create();
+extern t_list lista_exit = list_create();
 
 
+pthread_mutex_t mutex_pid;
+
+extern int procesos_activos=0;
 ///////////////////////////////////////////////////////////////
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

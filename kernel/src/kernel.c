@@ -7,6 +7,15 @@ int main()
     // Inicializar KERNEL
     inicializar_kernel();
 
+/////////////////////////--INICIAR PLANIFICADORES-//////////////////////
+    pthread_t plani_largo_plazo;
+    pthread_create(&plani_largo_plazo,NULL,(void*) planif_largo_plazo,NULL);
+    pthread_detach(plani_largo_plazo);
+
+    pthread_t plani_corto_plazo;
+    pthread_create(&plani_corto_plazo,NULL,(void*) planif_corto_plazo,NULL);
+    pthread_detach(plani_corto_plazo);
+
 /////////////////////////--CONEXIONES--//////////////////////
 
     conexion_kernel_memoria();
@@ -36,9 +45,9 @@ int main()
     pthread_create(&hilo_entradaSalida, NULL, (void*)atender_kernel_entradaSalida, NULL);
     pthread_detach(hilo_entradaSalida);
 
-    //leer consola interactiva
-    // iniciar_consola();
-    // leer_consola();
+   // leer consola interactiva
+    iniciar_consola();
+    leer_consola();
 
     return EXIT_SUCCESS;
 }
