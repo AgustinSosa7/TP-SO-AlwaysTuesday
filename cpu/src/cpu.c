@@ -12,6 +12,8 @@ int main() {
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
 
+    recibir_direccion_pseudocodigo();
+
 
     // Iniciar server de CPU - DISPATCH
 

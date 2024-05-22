@@ -27,9 +27,24 @@ void enviar_direccion_pesudocodigo(char* pseudocogido){
       t_paquete* paquete = crear_paquete(PSEUDOCODIGO);
       log_info(kernel_log_debug,"agrego el string al paquete...");
       agregar_string_a_paquete(paquete, pseudocogido);  
-      log_info(kernel_log_debug,"envio el  paquete de tamanio: %d",paquete->buffer->size );
+
+    /* BORRAR ES PARA LAS PRUEBAS  */
+
+      int tamanio_string = strlen(pseudocogido);
+      char *string = malloc((tamanio_string * sizeof(char)) + 1); // En caso de pisar algun valor, hacerle free antes
+	    printf("offset:%d\n",paquete->buffer->offset);
+	    printf("tam del string (malloc): %ld\n",strlen(string));
+	    memcpy(string, paquete->buffer->stream + sizeof(int), tamanio_string); //cambiar por offset el size of int
+	    paquete->buffer->offset += strlen(string);//tamanio_string;
+      printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
+	    printf("offset: %d\n",paquete->buffer->offset);
+	    printf("Se guardo en el string:%s\n",string);
+
+    /* FIN DE BORRAR ES PARA LAS PRUEBAS  */
+
+      log_info(kernel_log_debug,"envio el  paquete");
       enviar_paquete(paquete, fd_memoria);
-      log_info(kernel_log_debug,"elimino el paquetede memoria...");
+      //log_info(kernel_log_debug,"elimino el paquetede memoria...");
       eliminar_paquete(paquete);
       log_info(kernel_log_debug,"Listo c:");
 }

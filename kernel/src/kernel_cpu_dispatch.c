@@ -37,8 +37,8 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     peticion->instruccion = malloc(sizeof(char));
     peticion->instruccion = malloc(sizeof(char));
 
-    leer_string_del_stream(stream, peticion->instruccion);
-    leer_string_del_stream(stream, peticion->interfaz);
+    //leer_string_del_stream(stream, peticion->instruccion);
+    //leer_string_del_stream(stream, peticion->interfaz);
     
     peticion->parametros = leer_parametros(paquete,peticion->interfaz);
 

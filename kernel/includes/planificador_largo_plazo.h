@@ -6,7 +6,7 @@
 #include <../src/utils/utils_connections.h>
 
 
-void plp_proceso_nuevo(t_pcb* pcb);
+//void plp_proceso_nuevo(t_pcb* pcb);
    
 
 #endif 
