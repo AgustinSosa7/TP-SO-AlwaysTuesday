@@ -28,6 +28,9 @@ typedef enum
 	RECONOCER_INSTRUCCION,
 	//---- KERNEL - CPU
 	PCB
+	EJECUTAR_PROCESO_KC,
+	//---- KERNEL - MEMORIA
+	PSEUDOCODIGO
 }op_code;
 
 typedef struct

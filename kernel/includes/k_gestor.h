@@ -24,6 +24,40 @@ typedef struct{
 } t_peticion;
 
 
+
+///////////////////////ESTRUCTURAS PCB////////////////////////////
+// typedef struct{
+//     int pid,
+//     int pc,
+//     int quantum,
+//     t_registros_cpu registros,
+//     estado_pcb estado
+// } t_pcb;
+
+//Ver si conviene ponerlo en el utils :D
+typedef struct{  
+	int pid;
+	int program_counter;
+    int QUANTUM;
+	t_cpu* registros_CPU;
+}t_pcb;
+
+
+
+// typdef struct{
+ 
+// } t_registros_cpu;
+
+// typedef enum{
+//     NEW,
+//     READY,
+//     EXEC,
+//     BLOCKED,
+//     EXIT
+// } estado_pcb;
+
+
+///////////////////////////////////////////////////////////////
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;
 extern t_config* kernel_config;
