@@ -23,14 +23,6 @@ typedef struct{
     t_peticion_param* parametros;
 } t_peticion;
 
-//Ver si conviene ponerlo en el utils :D
-typedef struct{  
-	int pid;
-	int program_counter;
-    int QUANTUM;
-	t_cpu* registros_CPU;
-}t_pcb;
-
 
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

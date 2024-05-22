@@ -29,20 +29,23 @@ int main() {
 
     
     //Atender los mensajes de Kernel - Dispatch
-    //pthread_t hilo_kernel_dispatch;
-    //pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
-    //pthread_detach(hilo_kernel_dispatch);
+    pthread_t hilo_kernel_dispatch;
+    pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
+    pthread_detach(hilo_kernel_dispatch);
+    
 //
-    ////Atender los mensajes de Kernel - Interrupt
-    //pthread_t hilo_kernel_interrupt;
-    //pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
-    //pthread_detach(hilo_kernel_interrupt);
+    //Atender los mensajes de Kernel - Interrupt
+    pthread_t hilo_kernel_interrupt;
+    pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
+    pthread_detach(hilo_kernel_interrupt);
 //
-    ////Atender los mensajes de Memoria
-    //pthread_t hilo_memoria;
-    //pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
-    //pthread_join(hilo_memoria, NULL);
+    //Atender los mensajes de Memoria
+    pthread_t hilo_memoria;
+    pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
+    pthread_join(hilo_memoria, NULL);
 //
 
+
+//QUE no se muera el main
     return EXIT_SUCCESS;
 }

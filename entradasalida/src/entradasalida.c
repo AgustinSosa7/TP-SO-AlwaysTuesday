@@ -15,7 +15,7 @@ inicializar_entradasalida();
 //Conectarme como cliente a Kernel
   log_info(entradasalida_logger, "Creando conexion con KERNEL...");
   fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL, entradasalida_logger);
-  gestionar_handshake_como_cliente(fd_kernel, "MEMORIA", entradasalida_logger);
+  gestionar_handshake_como_cliente(fd_kernel, "KERNEL", entradasalida_logger);
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
 
