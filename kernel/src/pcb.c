@@ -1,4 +1,6 @@
 #include "../includes/pcb.h"
+#include <../src/utils/utils_connections.h>
+
 
 #include <semaphore.h>
 void _enviar_pcb_a_CPU_por_dispatch(t_pcb* un_pcb){
@@ -10,6 +12,7 @@ void _enviar_pcb_a_CPU_por_dispatch(t_pcb* un_pcb){
 	enviar_paquete(un_paquete, fd_cpu_dispatch);
 	eliminar_paquete(un_paquete);
 } 
+
 
 
 t_pcb* crearPcb(){

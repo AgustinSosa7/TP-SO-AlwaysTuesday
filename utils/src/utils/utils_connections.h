@@ -27,7 +27,10 @@ typedef enum
 	ATENDER_PETICION_INTERFAZ_KERNEL,
 	RECONOCER_INSTRUCCION,
 	//---- KERNEL - CPU
-	EJECUTAR_PROCESO_KC
+	PCB
+	EJECUTAR_PROCESO_KC,
+	//---- KERNEL - MEMORIA
+	PSEUDOCODIGO
 }op_code;
 
 typedef struct
@@ -45,7 +48,7 @@ typedef struct
 
 typedef struct
 {
-    u_int32_t PC;
+    u_int32_t PC; //SACADO POR QUE MILI QUISO :D
     u_int8_t AX;
     u_int8_t BX;
     u_int8_t CX;
@@ -57,7 +60,12 @@ typedef struct
     u_int32_t SI;
     u_int32_t DI;
 }t_cpu;
-
+typedef struct{  
+	int pid;
+	//int program_counter;
+    int QUANTUM;
+	t_cpu registros_CPU;
+}t_pcb;
 extern t_log* logger;
 
 // Funciones de Listas
@@ -91,16 +99,22 @@ void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void agregar_algo_a_paquete(t_paquete* paquete, void* valor);
 void agregar_string_a_paquete(t_paquete* paquete, char* valor);
+void agregar_registro_a_paquete(t_paquete* un_paquete, t_cpu* registros_CPU);
+
+//PCB
+void enviar_pcb_a(t_pcb* un_pcb, int socket);
+t_pcb* recibir_pcb(t_paquete* paquete,t_log* un_logger);
+void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
 
 
 // DESERIALIZACION
-int recibir_operacion(int);
+op_code recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
 void* recibir_mensaje(int socket_cliente);
 char* recibir_mensaje_string(int socket_cliente);
-void leer_algo_del_stream(void* stream, void* valor);
-void leer_string_del_stream(void* stream, char* valor);
+void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio);
+char* leer_string_del_stream(t_buffer* buffer);
 
 
 //Funciones Superpaquete
