@@ -44,11 +44,12 @@ char* recibir_direccion_pseudocodigo(){ //CODIGO REPETIDO EN CPU_MEMORIA
     op_code code_op = recibir_operacion(fd_kernel);
     t_paquete* paquete = recibir_paquete(fd_kernel);
     t_buffer* buffer = paquete->buffer;
-    log_info(memoria_logger, "Recibi un paquete de size: %d",paquete->buffer->size);
-    log_info(memoria_logger, "Recibi un paquete con el op_code: %d",code_op);
+    // Se comentó lo que era para probar si llegaba bien el paquete  :D
+    //log_info(memoria_logger, "Recibi un paquete de size: %d",paquete->buffer->size);
+    //log_info(memoria_logger, "Recibi un paquete con el op_code: %d",code_op);
     if(code_op == PSEUDOCODIGO)
     {
-        log_info(memoria_logger, "leer_string_del_stream");
+        //log_info(memoria_logger, "leer_string_del_stream");
         char* direccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
         log_info(memoria_logger, "free");
         free(paquete);

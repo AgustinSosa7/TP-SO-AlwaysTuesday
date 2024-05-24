@@ -207,17 +207,17 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 	int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
-	/* BORRAR ES PARA LAS PRUEBAS  */
+	/* BORRAR ES PARA LAS PRUEBAS  
 
       	int tamanio_string = 13;
       	char *string = malloc((tamanio_string * sizeof(char))); // En caso de pisar algun valor, hacerle free antes
 	    memcpy(string, a_enviar + sizeof(int) + sizeof(int) + sizeof(int), tamanio_string); //cambiar por offset el size of int
 	    //paquete->buffer->offset += strlen(string);//tamanio_string;
-      	printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
+      	/*printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
 	    printf("offset: %d\n",paquete->buffer->offset);
 	    printf("Se guardo en el string:%s\n",string);
-
-    /* FIN DE BORRAR ES PARA LAS PRUEBAS  */
+        
+    FIN DE BORRAR ES PARA LAS PRUEBAS  */
 
 	send(socket_cliente, a_enviar, bytes, 0);
 	free(a_enviar);
@@ -364,39 +364,41 @@ char* recibir_mensaje_string(int socket_cliente)
 	return mensaje;
 }
 
-void leer_algo_del_stream(t_buffer* buffer, void* valor)
+void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 {
-	printf("offset1:%d\n",buffer->offset);
-	printf("tamanio:%d\n",sizeof(valor));
-	memcpy(&valor, buffer->stream + buffer->offset, sizeof(valor));
-	buffer->offset += sizeof(valor);
-	printf("offset2:%d\n",buffer->offset);
+	///////////////////PRUEBA TAMAÑO de VALOR/////////////////////
+	//printf("offset1:%d\n",buffer->offset);
+	//printf("tamanio:%d\n",tamanio);
+	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
+	buffer->offset += tamanio;
+	//printf("offset2:%d\n",buffer->offset);
 }
 
 char* leer_string_del_stream(t_buffer* buffer) 
 {
 	int tamanio_string;
-	//printf("leer_algo_del_stream pasandole buffer de tamanio: %d\n",sizeof(tamanio_string));
-	//leer_algo_del_stream(buffer, &tamanio_string); 
-	//printf("TVALOR DEL INT: %d\n",tamanio_string);
-	
+	/////////////////////////////////PRUEBA LEER STRING//////////////////////////////////
+	/*printf("leer_algo_del_stream pasandole buffer de tamanio: %d\n",sizeof(tamanio_string));
+	leer_algo_del_stream(buffer, &tamanio_string); 
+	printf("TVALOR DEL INT: %d\n",tamanio_string);
 	printf("UINT8_T: %d\n",sizeof(uint8_t));
 	printf("INT_T: %d\n",sizeof(int));
+	printf("antes del int offset: %d\n",buffer->offset);*/
 
-	printf("antes del int offset: %d\n",buffer->offset);
-	memcpy(&tamanio_string, buffer->stream + buffer->offset, sizeof(tamanio_string));
-	buffer->offset += sizeof(tamanio_string);
+	leer_algo_del_stream(buffer, tamanio_string,sizeof(tamanio_string));
 
-	printf("tamanio_string: %d\n",tamanio_string);
-	printf("offset:%d\n",buffer->offset);
+	//memcpy(&tamanio_string, buffer->stream + buffer->offset, sizeof(tamanio_string));
+	//buffer->offset += sizeof(tamanio_string);
+	//printf("tamanio_string: %d\n",tamanio_string);
+	//printf("offset:%d\n",buffer->offset);
 
 	char *string = malloc(tamanio_string); // En caso de pisar algun valor, hacerle free antes
 	memcpy(string, buffer->stream + buffer->offset, tamanio_string); //cambiar por offset el size of int
 	buffer->offset += (strlen(string)+1);//tamanio_string;
 	
-	printf("Longitud de lo guardado en el string: %ld\n",(strlen(string)+1));
-	printf("offset: %d\n",buffer->offset);
-	printf("Se guardo en el string:%s\n",string);
+	//printf("Longitud de lo guardado en el string: %ld\n",(strlen(string)+1));
+	//printf("offset: %d\n",buffer->offset);
+	//printf("Se guardo en el string:%s\n",string);
 	return string;
 }
 

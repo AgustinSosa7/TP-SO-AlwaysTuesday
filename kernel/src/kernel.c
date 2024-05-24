@@ -15,15 +15,15 @@ int main()
     enviar_direccion_pesudocodigo(pseudocogido);
     sleep(5);
 
-    /*conexion_kernel_cpu_dispatch();
+    conexion_kernel_cpu_dispatch();
     conexion_kernel_cpu_interrupt();
     conexion_kernel_entradaSalida();
-    */
+    
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
 
     //Atender los mensajes de MEMORIA
-    /*pthread_t hilo_memoria;
+    pthread_t hilo_memoria;
     pthread_create(&hilo_memoria, NULL, (void*) atender_kernel_memoria, NULL);
     pthread_detach(hilo_memoria);
 
@@ -42,10 +42,10 @@ int main()
     pthread_create(&hilo_entradaSalida, NULL, (void*)atender_kernel_entradaSalida, NULL);
     pthread_detach(hilo_entradaSalida);
 
-    //leer consola interactiva
-    // iniciar_consola();
-    // leer_consola();
-    */
+    //leer consola interactiva  Dan Warning D:
+    //iniciar_consola();
+    //leer_consola();
+
     return EXIT_SUCCESS;
 }
 
