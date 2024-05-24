@@ -2,9 +2,15 @@
 #include <stdio.h>
 #include "../includes/entradasalida.h"
 
-int main() {
+int main(int argc, char** argv) {
 
-inicializar_entradasalida();
+if (argc < 3) {
+    fprintf(stderr, "Uso: %s <ruta_archivo_configuracion>\n", argv[0]);
+    return EXIT_FAILURE;
+}
+printf("nombre de interfaz: %s \n",argv[1]);
+printf("direccion de config: %s \n",argv[2]);
+inicializar_entradasalida(argv[2]);
 
 //Conectarme como cliente a Memoria
   log_info(entradasalida_logger, "Creando conexion con MEMORIA...");
@@ -20,9 +26,7 @@ inicializar_entradasalida();
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
 
 //Atender los mensajes de KERNEL
-    pthread_t hilo_kernel;
-    pthread_create(&hilo_kernel, NULL, (void*)atender_entradasalida_kernel, NULL);
-    pthread_detach(hilo_kernel);
+  atender_entradasalida_kernel();
 
 
 return EXIT_SUCCESS;

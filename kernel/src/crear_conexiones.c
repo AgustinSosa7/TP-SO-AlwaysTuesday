@@ -24,8 +24,34 @@
     fd_kernel = iniciar_servidor(PUERTO_ESCUCHA, kernel_logger, IP_KERNEL);
 
     log_info(kernel_logger, "Esperando a Entradasalida...");
+    pthread_t hilo_generador_de_io;
+    pthread_create(&hilo_generador_de_io, NULL, (void*)gestionador_entrada_salida, NULL);
+    pthread_detach(hilo_generador_de_io);
+
+
+
+    }
+
+  //crear hilo cada vez que te llegue una io
+
+void gestionador_entrada_salida(){
+    while(1){
+      pthread_t hilo_io;
+      pthread_create(&hilo_io,NULL, (void*)gestionar_entrada_salida, NULL);
+      pthread_detach(hilo_io);
+    }
+}
+
+
+void gestionar_entrada_salida(){
     fd_entradasalida = esperar_cliente(fd_kernel, kernel_logger, "ENTRADASALIDA");
     gestionar_handshake_como_server(fd_entradasalida, kernel_logger, "ENTRADA SALIDA");
+    
    }
 
+//lista_io = list_create(); ver donde crearla
 
+void inicializar_lista_io(){
+  list_add(lista_io,);
+
+}

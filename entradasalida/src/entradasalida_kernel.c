@@ -80,7 +80,7 @@ void procesar_peticion(t_peticion* peticion) {
 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
             int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera;
-            sleep(tiempo_espera);
+            usleep(tiempo_espera*1000);
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {

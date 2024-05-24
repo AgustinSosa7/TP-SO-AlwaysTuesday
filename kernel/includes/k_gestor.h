@@ -56,6 +56,15 @@ typedef struct{
 //     EXIT
 // } estado_pcb;
 
+///////////////////////////////////////////////////////////////
+typedef struct 
+{
+    char* nombre;
+    int tipo_interfaz;
+    int fd_interfaz;
+    t_queue* cola_procesos_blocked;
+} t_list_io;
+
 
 ///////////////////////////////////////////////////////////////
 extern t_log* kernel_logger;
