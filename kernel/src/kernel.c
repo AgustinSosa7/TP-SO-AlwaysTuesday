@@ -29,6 +29,11 @@ int main()
 /////////////////////////--CONEXIONES--//////////////////////
 
     conexion_kernel_memoria();
+    char* pseudocogido = "PLANI1.txt"; //VER POR QUE NO RECIBE LOS ULTIMOS 2 CARACTERES!
+    log_info(kernel_log_debug, "ENVIO DE PSEUDO.%s",pseudocogido);
+    enviar_direccion_pesudocodigo(pseudocogido);
+    sleep(5);
+
     conexion_kernel_cpu_dispatch();
     
     //conexion_kernel_cpu_interrupt();
@@ -37,6 +42,7 @@ int main()
     imprimir_pcb(&un_pcb, kernel_logger);
     enviar_pcb_a(&un_pcb, fd_cpu_dispatch);
     
+
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
     //Atender los mensajes de MEMORIA
     /*pthread_t hilo_memoria;
@@ -62,6 +68,7 @@ int main()
     //leer consola interactiva
     // iniciar_consola();
     // leer_consola();
+
 
     return EXIT_SUCCESS;
 }

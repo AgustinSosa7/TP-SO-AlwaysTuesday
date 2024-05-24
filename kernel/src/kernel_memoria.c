@@ -23,13 +23,17 @@ void atender_kernel_memoria(){
 }
 
 void enviar_direccion_pesudocodigo(char* pseudocogido){
-      log_info(kernel_log_debug,"creo paquete...");
+      // Se comentó lo que era para probar :D
+      //log_info(kernel_log_debug,"creo paquete...");
       t_paquete* paquete = crear_paquete(PSEUDOCODIGO);
-      log_info(kernel_log_debug,"agrego el string al paquete...");
+      //log_info(kernel_log_debug,"agrego el string al paquete...");
       agregar_string_a_paquete(paquete, pseudocogido);  
-      log_info(kernel_log_debug,"envio el  paquete de tamanio: %d",paquete->buffer->size );
+
+
+
+      //log_info(kernel_log_debug,"envio el  paquete");
       enviar_paquete(paquete, fd_memoria);
-      log_info(kernel_log_debug,"elimino el paquetede memoria...");
+      //log_info(kernel_log_debug,"elimino el paquetede memoria...");
       eliminar_paquete(paquete);
-      log_info(kernel_log_debug,"Listo c:");
+      //log_info(kernel_log_debug,"Listo c:");
 }

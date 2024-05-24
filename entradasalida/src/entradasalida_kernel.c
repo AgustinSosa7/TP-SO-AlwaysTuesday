@@ -36,7 +36,7 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     peticion->instruccion = malloc(sizeof(char));
 
     void* stream = paquete->buffer->stream;
-    leer_string_del_stream(stream, peticion->instruccion);
+    leer_string_del_stream(stream);
 
     asignar_parametros_segun_tipo(peticion, stream);
 
@@ -48,7 +48,7 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, void* stream){
       char* instruccion = peticion->instruccion;
 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-            leer_algo_del_stream(stream, &peticion->parametros->tiempo_espera);
+            leer_algo_del_stream(stream, &peticion->parametros->tiempo_espera,sizeof(peticion->parametros->tiempo_espera));
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
@@ -110,7 +110,7 @@ char* recibir_instruccion(t_paquete* paquete){
       char* instruccion = malloc(sizeof(char));
       void* stream = paquete->buffer->stream;
 
-      leer_string_del_stream(stream, instruccion);
+      leer_string_del_stream(stream);
       return instruccion;
 }
 

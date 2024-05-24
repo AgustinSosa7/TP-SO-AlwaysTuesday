@@ -38,8 +38,8 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     peticion->instruccion = malloc(sizeof(char));
     peticion->instruccion = malloc(sizeof(char));
 
-    leer_string_del_stream(stream, peticion->instruccion);
-    leer_string_del_stream(stream, peticion->interfaz);
+    //leer_string_del_stream(stream, peticion->instruccion);
+    //leer_string_del_stream(stream, peticion->interfaz);
     
     peticion->parametros = leer_parametros(paquete,peticion->interfaz);
 
@@ -52,7 +52,7 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
     void* stream = paquete->buffer->stream;
 
     if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-        leer_algo_del_stream(stream, &parametros->tiempo_espera);
+        leer_algo_del_stream(stream, &parametros->tiempo_espera,sizeof(parametros->tiempo_espera));
         return parametros;
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {

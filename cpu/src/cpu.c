@@ -13,6 +13,10 @@ int main() {
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
 
 
+    // Comentado porque no tenemos el pseudocodigo :D
+    //recibir_direccion_pseudocodigo();
+
+
     // Iniciar server de CPU - DISPATCH
 
     fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);

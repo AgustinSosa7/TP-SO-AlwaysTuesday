@@ -108,13 +108,13 @@ void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
 
 
 // DESERIALIZACION
-int recibir_operacion(int);
+op_code recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
 void* recibir_mensaje(int socket_cliente);
 char* recibir_mensaje_string(int socket_cliente);
-void leer_algo_del_stream(void* stream, void* valor);
-void leer_string_del_stream(void* stream, char* valor);
+void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio);
+char* leer_string_del_stream(t_buffer* buffer);
 
 
 //Funciones Superpaquete
