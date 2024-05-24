@@ -285,10 +285,10 @@ void agregar_string_a_paquete(t_paquete* paquete, char* string)
 }
 
 void agregar_registro_a_paquete(t_paquete* un_paquete, t_cpu* registros_CPU){
+agregar_algo_a_paquete(un_paquete,registros_CPU->PC);
 agregar_algo_a_paquete(un_paquete,registros_CPU->AX);
 agregar_algo_a_paquete(un_paquete,registros_CPU->BX);
 agregar_algo_a_paquete(un_paquete,registros_CPU->CX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->DI);
 agregar_algo_a_paquete(un_paquete,registros_CPU->DX);
 agregar_algo_a_paquete(un_paquete,registros_CPU->EAX);
 agregar_algo_a_paquete(un_paquete,registros_CPU->EBX);
@@ -296,6 +296,46 @@ agregar_algo_a_paquete(un_paquete,registros_CPU->ECX);
 agregar_algo_a_paquete(un_paquete,registros_CPU->EDX);
 agregar_algo_a_paquete(un_paquete,registros_CPU->SI);
 agregar_algo_a_paquete(un_paquete,registros_CPU->DI);
+}
+
+/////////////////////// PCB /////////////////////////
+
+void enviar_pcb_a(t_pcb* un_pcb, int socket){
+	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
+	agregar_algo_a_paquete(un_paquete, un_pcb->pid);
+    //agregar_algo_a_paquete(un_paquete, &un_pcb->program_counter);elPC debe ir en el registro de CPU ????
+    agregar_algo_a_paquete(un_paquete,un_pcb->QUANTUM);
+    agregar_registro_a_paquete(un_paquete, &un_pcb->registros_CPU);
+	enviar_paquete(un_paquete, socket);
+	eliminar_paquete(un_paquete);
+}
+
+t_pcb* recibir_pcb(t_paquete* paquete, t_log*logger){
+	void* stream = paquete->buffer->stream;
+	t_pcb* pcb = malloc(sizeof(t_pcb));
+	leer_algo_del_stream(stream, pcb->pid);
+	log_info(logger, pcb->pid);
+	//leer_algo_del_paquete(stream, &un_pcb->program_counter); elPC debe ir en el registro de CPU ????
+	leer_algo_del_stream(stream,&pcb->QUANTUM);
+	leer_registro_del_stream(stream, &(pcb->registros_CPU));
+	free(stream);
+	return pcb; //Devuelvo PCB
+}
+
+void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
+log_info(un_logger,"PCB Pid %d", pcb->pid);
+log_info(un_logger,"PCB Quantum %d",pcb->QUANTUM);	
+log_info(un_logger,"PCB PC: %d ", pcb->registros_CPU.PC);
+log_info(un_logger,"PCB AX: %d ", pcb->registros_CPU.AX);
+log_info(un_logger,"PCB BX: %d ", pcb->registros_CPU.BX);
+log_info(un_logger,"PCB CX: %d ", pcb->registros_CPU.CX);
+log_info(un_logger,"PCB DX: %d ", pcb->registros_CPU.DX);
+log_info(un_logger,"PCB EAX: %d ", pcb->registros_CPU.EAX);
+log_info(un_logger,"PCB EBX: %d ", pcb->registros_CPU.EBX);
+log_info(un_logger,"PCB ECX: %d ", pcb->registros_CPU.ECX);
+log_info(un_logger,"PCB EDX: %d ", pcb->registros_CPU.EDX);
+log_info(un_logger,"PCB SI: %d ", pcb->registros_CPU.SI);
+log_info(un_logger,"PCB DI: %d ", pcb->registros_CPU.DI);
 }
 
 ////////////////////// DESERIALIZACION //////////////
@@ -402,10 +442,22 @@ char* leer_string_del_stream(t_buffer* buffer)
 	return string;
 }
 
+void leer_registro_del_stream(void* stream, t_cpu* registros_CPU){
+leer_algo_del_stream(stream,&registros_CPU->PC);
+leer_algo_del_stream(stream,&registros_CPU->AX);
+leer_algo_del_stream(stream,&registros_CPU->BX);
+leer_algo_del_stream(stream,&registros_CPU->CX);
+leer_algo_del_stream(stream,&registros_CPU->DI);
+leer_algo_del_stream(stream,&registros_CPU->DX);
+leer_algo_del_stream(stream,&registros_CPU->EAX);
+leer_algo_del_stream(stream,&registros_CPU->EBX);
+leer_algo_del_stream(stream,&registros_CPU->ECX);
+leer_algo_del_stream(stream,&registros_CPU->EDX);
+leer_algo_del_stream(stream,&registros_CPU->SI);
+leer_algo_del_stream(stream,&registros_CPU->DI);
+}
 
-
-
-//////////////////////// Funciones del Super_Paquete
+//pcb->pid
 
 //t_paquete* crear_super_paquete(op_code code_op)   //Unica diff con el crear_paquete es el cod de op y buffer.
 //{
