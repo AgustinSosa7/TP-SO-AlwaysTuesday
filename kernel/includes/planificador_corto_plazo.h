@@ -8,8 +8,8 @@
 
 void planif_corto_plazo();
 
- planif_fifo();
- planif_RR();
- planif_VRR();
+void planif_fifo();
+void planif_RR();
+void planif_VRR();
 
 #endif 
