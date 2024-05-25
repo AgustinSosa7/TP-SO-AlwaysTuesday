@@ -71,7 +71,7 @@ typedef enum{
 
 typedef struct{
     int pid;
-    int program_counter;
+    //int program_counter; No se repite con el del registro?
     int quantum;
     char* path;
     t_registros_cpu* registros_cpu;
@@ -115,7 +115,7 @@ void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_C
 
 //PCB
 void enviar_pcb_a(t_pcb* un_pcb, int socket);
-t_pcb* recibir_pcb(t_paquete* paquete,t_log* un_logger);
+t_pcb* recibir_pcb(t_paquete* paquete);
 void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
 
 

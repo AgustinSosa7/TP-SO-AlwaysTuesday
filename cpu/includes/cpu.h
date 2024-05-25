@@ -10,7 +10,7 @@
 
 
 //moví la declaración del struc t_pcb a utils connections :D
-t_cpu* cpu;
+//t_cpu* cpu;
 
 //t_cpu* cpu = crear_paquete(op_code);   Fijarse como sería :D 
 //Variables GLOBALES

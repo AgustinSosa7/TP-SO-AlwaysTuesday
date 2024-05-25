@@ -34,8 +34,10 @@ int main()
     //conexion_kernel_cpu_interrupt();
     
     //conexion_kernel_entradaSalida();
-    imprimir_pcb(&un_pcb, kernel_logger);
-    enviar_pcb_a(&un_pcb, fd_cpu_dispatch);
+    /////////////////-Prueba mandar y recibir PCB-///////////////////
+    t_pcb * un_pcb;
+    imprimir_pcb(un_pcb, kernel_logger);
+    enviar_pcb_a(un_pcb, fd_cpu_dispatch);
     
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
