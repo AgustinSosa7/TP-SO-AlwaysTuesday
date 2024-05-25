@@ -8,8 +8,7 @@ if (argc < 3) {
     fprintf(stderr, "Uso: %s <ruta_archivo_configuracion>\n", argv[0]);
     return EXIT_FAILURE;
 }
-printf("nombre de interfaz: %s \n",argv[1]);
-printf("direccion de config: %s \n",argv[2]);
+
 inicializar_entradasalida(argv);
 
 //Conectarme como cliente a Memoria

@@ -72,6 +72,7 @@ void enviar_handshake(int conexion){
 	void* coso_a_enviar = malloc(sizeof(int));
 	int saludar = HANDSHAKE;
 	memcpy(coso_a_enviar, &saludar, sizeof(int));
+	//gestionar error de send aca. Para cuando un cliente se desconecta repentinamente.
 	send(conexion, coso_a_enviar, sizeof(int),0);
 	free(coso_a_enviar);
 }
@@ -137,16 +138,13 @@ void gestionar_handshake_como_server(int conexion, t_log* logger, const char* mo
 	int code_op = recibir_operacion(conexion);
 	switch (code_op) {
 		case HANDSHAKE:
-			gestionar_handshake(conexion);
-			
+			enviar_handshake(conexion);
 			int respuesta_handshake = recibir_operacion(conexion);
 			if(respuesta_handshake == HANDSHAKE){
 				log_warning(logger, "HANDSHAKE CON %s [EXITOSO]", modulo_destino);
 			}else{
 				log_error(logger, "Error en handshake con %s", modulo_destino);
 				}
-	
-
 			break;
 		case -1:
 			log_error(logger, "Desconexion en HANDSHAKE\n");

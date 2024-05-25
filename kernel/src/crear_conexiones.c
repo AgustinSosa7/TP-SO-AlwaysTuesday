@@ -25,30 +25,30 @@
 
     log_info(kernel_logger, "Esperando a Entradasalida...");
     pthread_t hilo_generador_de_io;
-    pthread_create(&hilo_generador_de_io, NULL, (void*)gestionador_entrada_salida, NULL);
+    pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
     pthread_detach(hilo_generador_de_io);
-
-
-
     }
 
   //crear hilo cada vez que te llegue una io
-
+/*
 void gestionador_entrada_salida(){
     while(1){
+      //sem_w
       pthread_t hilo_io;
       pthread_create(&hilo_io,NULL, (void*)gestionar_entrada_salida, NULL);
       pthread_detach(hilo_io);
+      //sem_s
     }
-}
-
+}*/
 
 void gestionar_entrada_salida(){
+  while(1){
     fd_entradasalida = esperar_cliente(fd_kernel, kernel_logger, "ENTRADASALIDA");
     gestionar_handshake_como_server(fd_entradasalida, kernel_logger, "ENTRADA SALIDA");
     t_interfaz* interfaz = identificar_io(fd_entradasalida);
     agregar_io(interfaz);
-   }
+  }
+}
 
 
 t_interfaz* identificar_io(int socket){

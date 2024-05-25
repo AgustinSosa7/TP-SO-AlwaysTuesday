@@ -14,7 +14,8 @@
         "config.h": "c",
         "Kernel_cpu_dispatch.C": "cpp",
         "kernel_entradasalida.h": "c",
-        "kernel_cpu_interrupt.h": "c"
+        "kernel_cpu_interrupt.h": "c",
+        "entradasalida.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

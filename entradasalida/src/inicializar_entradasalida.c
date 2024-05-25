@@ -4,7 +4,7 @@
 void inicializar_entradasalida(char** argv){
     inicializar_logs();
     inicializar_configs(argv);
-    imprimir_configs();
+    //imprimir_configs();
 }
 
 void inicializar_logs (){
@@ -27,7 +27,13 @@ void inicializar_configs(char** argv){
 	NOMBRE_INTERFAZ = argv[1];
 	
 	char* path = argv[2];
+	
+	printf("nombre de interfaz: %s \n",argv[1]);
+	printf("direccion de config: %s \n",argv[2]);
+	printf("direccion de config en path: %s \n",path);
+	
 	entradasalida_config = config_create(path);
+	imprimir_configs();
 
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");
@@ -86,6 +92,10 @@ void imprimir_configs(){
 }
 
 void inicializar_listas_instrucciones(){
+	INSTRUCCIONES_GEN = list_create();
+	INSTRUCCIONES_STDIN = list_create();
+	INSTRUCCIONES_STDOUT = list_create();
+	INSTRUCCIONES_FS = list_create();
 	list_add(INSTRUCCIONES_GEN, "IO_GEN_SLEEP");
 	list_add(INSTRUCCIONES_STDIN, "IO_STDIN_READ");
 	list_add(INSTRUCCIONES_STDOUT, "IO_STDOUT_WRITE");

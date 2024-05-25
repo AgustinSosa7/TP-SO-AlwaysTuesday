@@ -66,6 +66,8 @@ typedef struct{
     int QUANTUM;
 	t_cpu registros_CPU;
 }t_pcb;
+
+
 extern t_log* logger;
 
 // Funciones de Listas
