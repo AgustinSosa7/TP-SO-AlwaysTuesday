@@ -10,18 +10,18 @@ if (argc < 3) {
 }
 printf("nombre de interfaz: %s \n",argv[1]);
 printf("direccion de config: %s \n",argv[2]);
-inicializar_entradasalida(argv[2]);
+inicializar_entradasalida(argv);
 
 //Conectarme como cliente a Memoria
   log_info(entradasalida_logger, "Creando conexion con MEMORIA...");
   fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, entradasalida_logger);
   gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", entradasalida_logger);
 
-
 //Conectarme como cliente a Kernel
   log_info(entradasalida_logger, "Creando conexion con KERNEL...");
   fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL, entradasalida_logger);
   gestionar_handshake_como_cliente(fd_kernel, "KERNEL", entradasalida_logger);
+  enviar_mensaje_string(NOMBRE_INTERFAZ, fd_kernel);
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
 

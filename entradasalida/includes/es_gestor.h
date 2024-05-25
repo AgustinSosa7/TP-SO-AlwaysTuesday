@@ -5,11 +5,11 @@
 #include <stdio.h>
 #include <pthread.h> 
 
-
+#include <../src/utils/utils_connections.h>
 #include <commons/log.h>
 #include <commons/config.h>
 
-#include <../src/utils/utils_connections.h>
+
 
 
 
@@ -27,6 +27,7 @@ extern int fd_entradasalida;
 extern int fd_memoria;
 extern int fd_kernel;      
 
+extern char* NOMBRE_INTERFAZ;
 extern char* PUERTO_ESCUCHA;   
 extern char* TIPO_INTERFAZ;
 extern int TIEMPO_UNIDAD_TRABAJO; 

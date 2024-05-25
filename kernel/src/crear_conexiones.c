@@ -46,12 +46,28 @@ void gestionador_entrada_salida(){
 void gestionar_entrada_salida(){
     fd_entradasalida = esperar_cliente(fd_kernel, kernel_logger, "ENTRADASALIDA");
     gestionar_handshake_como_server(fd_entradasalida, kernel_logger, "ENTRADA SALIDA");
-    
+    t_interfaz* interfaz = identificar_io(fd_entradasalida);
+    agregar_io(interfaz);
    }
 
-//lista_io = list_create(); ver donde crearla
 
-void inicializar_lista_io(){
-  list_add(lista_io,);
-
+t_interfaz* identificar_io(int socket){
+  t_interfaz* interfaz = malloc(sizeof(interfaz_t));
+  char* nombre_io = recibir_mensaje_string(socket);
+  interfaz->nombre = malloc(strlen(nombre_io));
+  interfaz->fd_interfaz = socket;
+  return interfaz;
 }
+
+void agregar_io(t_interfaz* interfaz){
+  //semwait(mutex_io);
+  list_add(ios_conectadas, interfaz);
+  //semwsignal(mutex_io);
+}
+
+//typedef struct 
+//{
+//    char* nombre;
+//    int fd_interfaz;
+//    t_queue* cola_procesos_blocked;
+//} t_interfaz;

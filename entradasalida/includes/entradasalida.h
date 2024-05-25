@@ -23,6 +23,7 @@ int fd_entradasalida;
 int fd_memoria;
 int fd_kernel;      
 
+char* NOMBRE_INTERFAZ;
 char* PUERTO_ESCUCHA;    
 char* TIPO_INTERFAZ;
 t_list* INSTRUCCIONES_POSIBLES;

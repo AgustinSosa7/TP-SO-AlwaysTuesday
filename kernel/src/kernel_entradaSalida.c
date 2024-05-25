@@ -23,27 +23,32 @@ void atender_kernel_entradaSalida(){
 }
 
 
-void validar_peticion(t_peticion* peticion){
-      char* interfaz = peticion->interfaz;
+t_interfaz* validar_peticion(t_peticion* peticion){ //debe recibir pcb para poder mandarlo a exit?
+      char* nombre_io = peticion->interfaz;
       char* instruccion = peticion->instruccion;
 
-      if(/*existe_la_interfaz(interfaz) && esta_conectada_la_interfaz(interfaz) && */validar_interfaz_admite_instruccion(interfaz, instruccion)){
+    t_interfaz* interfaz = existe_la_interfaz(nombre_io);
+    esta_conectada_la_interfaz(interfaz);
+    validar_interfaz_admite_instruccion(interfaz, instruccion);
 
-//      }else{
-//            enviar_proceso_a_exit
-//      }
-    }
+    return interfaz;
 }
-//bool existe_la_interfaz(interfaz){
-//      
-//}         //Supongo que esto se va a poder hacer cuando este creado el pcb(?
+t_interfaz* existe_la_interfaz(nombre_io){
+      if(){
+        // elem_exist(ios_conectadas, esta_la_io(io, nombre_io)); mediante funciones de orden superior
+      }else{
+            //enviar_proceso_a_exit();
+            }
+}         
+void esta_conectada_la_interfaz(t_interfaz* interfaz){
+      if(interfaz->fd_interfaz > 0){ //esta es la condicion correcta?
+             
+      }else{
+            //enviar_proceso_a_exit();
+            } 
+}
 
-//bool esta_conectada_la_interfaz(char* interfaz){
-//
-//}
-
-bool validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
-// Como se a que conexion de fd_entradasalida mandarlo? como utilizo el dato de la interfaz, como los comentarios de arriba
+void validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
       t_paquete* paquete = crear_paquete(RECONOCER_INSTRUCCION);
       agregar_string_a_paquete(paquete, instruccion);
       enviar_paquete(paquete, fd_entradasalida);
@@ -51,18 +56,18 @@ bool validar_interfaz_admite_instruccion(char* interfaz, char* instruccion){
 
       bool acepta_la_instruccion = recibir_mensaje(fd_entradasalida);
       if(acepta_la_instruccion){
-            return true;
+
       }else{
             log_error(kernel_logger,"Interfaz %s: No reconozco esta instruccion. Proceso enviado a EXIT.\n", interfaz);
-            return false;
+            //enviar_proceso_a_exit();
       }
 }
 
-void enviar_peticion_a_interfaz(t_peticion* peticion){ 
+void enviar_peticion_a_interfaz(t_peticion* peticion, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, peticion->instruccion);
       agregar_algo_a_paquete(paquete, peticion->parametros);
-      enviar_paquete(paquete, fd_entradasalida);
+      enviar_paquete(paquete, interfaz->);
       eliminar_paquete(paquete);
 } 
 

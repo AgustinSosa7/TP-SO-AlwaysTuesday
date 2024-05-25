@@ -31,6 +31,7 @@ void atender_entradasalida_kernel(){
     }
 }
 
+
 t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
     peticion->instruccion = malloc(sizeof(char));

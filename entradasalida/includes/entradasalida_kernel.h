@@ -19,6 +19,7 @@ typedef struct{
     t_peticion_param* parametros;
 } t_peticion;
 
+void identificarse_con_kernel(int socket, char* nombre_io);
 
 void atender_entradasalida_kernel();
 

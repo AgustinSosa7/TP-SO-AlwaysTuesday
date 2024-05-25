@@ -76,6 +76,7 @@ void enviar_handshake(int conexion){
 	free(coso_a_enviar);
 }
 
+
 void liberar_conexion(int socket_cliente)
 {
 	close(socket_cliente);
@@ -136,11 +137,7 @@ void gestionar_handshake_como_server(int conexion, t_log* logger, const char* mo
 	int code_op = recibir_operacion(conexion);
 	switch (code_op) {
 		case HANDSHAKE:
-			void* coso_a_enviar = malloc(sizeof(int));
-			int respuesta = HANDSHAKE;
-			memcpy(coso_a_enviar, &respuesta, sizeof(int));
-			send(conexion, coso_a_enviar, sizeof(int),0);
-			free(coso_a_enviar);
+			gestionar_handshake(conexion);
 			
 			int respuesta_handshake = recibir_operacion(conexion);
 			if(respuesta_handshake == HANDSHAKE){
@@ -364,9 +361,9 @@ void* recibir_mensaje(int socket_cliente)
 char* recibir_mensaje_string(int socket_cliente)
 {	
 	int tamanio;
-	recv(socket_cliente, &tamanio, sizeof(int), 0);
+	recv(socket_cliente, &tamanio, sizeof(int), MSG_WAITALL);
 	char* mensaje = malloc(tamanio);
-	recv(socket_cliente, mensaje, tamanio, 0);
+	recv(socket_cliente, mensaje, tamanio, MSG_WAITALL);
 	
 	return mensaje;
 }

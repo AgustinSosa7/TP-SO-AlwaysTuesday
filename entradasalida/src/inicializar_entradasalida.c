@@ -1,9 +1,9 @@
 #include "../includes/inicializar_entradasalida.h"
 
 
-void inicializar_entradasalida(char *path){
+void inicializar_entradasalida(char** argv){
     inicializar_logs();
-    inicializar_configs(path);
+    inicializar_configs(argv);
     imprimir_configs();
 }
 
@@ -23,8 +23,11 @@ if (entradasalida_log_debug == NULL) {
 	}
 }
 
-void inicializar_configs(char *path){
-entradasalida_config = config_create(path);
+void inicializar_configs(char** argv){
+	NOMBRE_INTERFAZ = argv[1];
+	
+	char* path = argv[2];
+	entradasalida_config = config_create(path);
 
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");

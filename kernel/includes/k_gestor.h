@@ -60,13 +60,14 @@ typedef struct{
 typedef struct 
 {
     char* nombre;
-    int tipo_interfaz;
     int fd_interfaz;
     t_queue* cola_procesos_blocked;
-} t_list_io;
+} t_interfaz;
 
 
 ///////////////////////////////////////////////////////////////
+extern t_list* ios_concetadas;
+
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;
 extern t_config* kernel_config;

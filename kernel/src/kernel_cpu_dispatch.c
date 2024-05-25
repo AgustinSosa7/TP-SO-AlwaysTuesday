@@ -12,19 +12,19 @@ void atender_kernel_cpu_dispatch(){
         switch (cod_op)
         {
         case ATENDER_PETICION_INTERFAZ_KERNEL:
-            t_peticion* peticion = recibir_peticion(paquete); 
-            validar_peticion(peticion);
-            enviar_peticion_a_interfaz(peticion);
-            eliminar_peticion(peticion);
+            t_peticion* peticion = recibir_peticion(paquete); // dentro de este paquete tambien viene un pcb?
+            t_interfaz* interfaz = validar_peticion(peticion);
             // enviar_proceso_a_blocked
+            enviar_peticion_a_interfaz(peticion, interfaz);
+            eliminar_peticion(peticion);
             recibir_mensaje_fin_peticion();
             // desbloquear_proceso
             break;
         case -1:
-          //  log_error(logger, "Desconexion de CPU - DISPATCH");      
+          //  log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;
         default:
-           // log_warning(logger, "Operacion desconocida de CPU - DISPATCH");
+           // log_warning(kernel_logger, "Operacion desconocida de CPU - DISPATCH");
             break;
         }
         eliminar_paquete(paquete);
