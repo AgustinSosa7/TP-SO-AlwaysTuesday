@@ -49,7 +49,56 @@ int main() {
     pthread_join(hilo_memoria, NULL);
 //
 
-
 //QUE no se muera el main
     return EXIT_SUCCESS;
+}
+
+// iniciar estructuras
+void iniciar_estructuras(){
+	string= string_array_new();
+	string_array_push(&string, "SET");
+	string_array_push(&string, "SUM");
+	string_array_push(&string, "SUB");
+	string_array_push(&string, "JNZ");
+	string_array_push(&string, "IO_GEN_SLEEP");
+	
+	interrupt_proceso_id = NULL;
+	interrupt_proceso_ticket = NULL;
+	interrupt_motivo = NULL;
+	mochila = NULL;
+}
+
+//inicializacion de samaforos
+void iniciar_semaforo(){
+    semaforo_init(&semaforo_control_fetch_decode,0,0);
+    semaforo_init(&semaforo_control_decode_execute,0,0);
+}
+
+//ciclo de instruccion(fetch-decode-execute)
+void comenzar_ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
+    ciclo_instruccion_fetch();
+    
+    semaforo_wait(&semaforo_control_fetch_decode);
+    ciclo_instruccion_decode();
+
+    semaforo_wait(&semaforo_control_decode_execute);
+    ciclo_instruccion_execute();
+
+}
+//FETCH
+void ciclo_instruccion_fetch(){ //llamar a la funcion que hizo lucas
+/*	log_info(cpu_log_obligatorio, "PID: <%d> - FETCH - Program Counter: <%d>", contexto->proceso_pid, contexto->proceso_ip);
+	t_paquete* un_paquete = crear_super_paquete(PETICION_DE_INSTRUCCIONES_CM);
+	cargar_int_al_super_paquete(un_paquete, contexto->proceso_pid);
+	cargar_int_al_super_paquete(un_paquete, contexto->proceso_pc);
+	enviar_paquete(un_paquete, fd_memoria);
+	eliminar_paquete(un_paquete); */
+}
+//DECODE
+void ciclo_instruccion_decode(){
+    correr_decode();
+} 
+//EXECUTE
+void ciclo_instruccion_execute(){
+    comparacion_de_strings(instruccion_a_ejecutar);
 }
