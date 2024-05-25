@@ -1,7 +1,7 @@
 #include "../includes/consola.h"
 
 void iniciar_consola(){
-	t_list lista_instrucciones= list_create();
+	t_list* lista_instrucciones= list_create();
 	agregar_instruccion(lista_instrucciones,EJECUTAR_SCRIPT,1,"EJECUTAR_SCRIPT");
 	agregar_instruccion(lista_instrucciones,INICIAR_PROCESO,1,"INICIAR_PROCESO");
 	agregar_instruccion(lista_instrucciones,FINALIZAR_PROCESO,1,"FINALIZAR_PROCESO");
@@ -11,7 +11,7 @@ void iniciar_consola(){
 	agregar_instruccion(lista_instrucciones,PROCESO_ESTADO,0,"PROCESO_ESTADO");
 };
 
-void agregar_instruccion(t_list* lista_instrucciones, op_code_instruccion op_code, int parametros,char* op_code_string){
+void agregar_instruccion(t_list* lista_instrucciones, op_code_instruccion* op_code, int parametros,char* op_code_string){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 	instruccion->op_code_instruccion = op_code;
 	instruccion->cant_parametros = parametros;
@@ -44,6 +44,7 @@ void leer_comandos(){
 	free(leido);
 }
 //"[EJECUTAR_SCRIPT ,hola"]
+/*
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
 	int size = string_array_size(array_leido);
@@ -60,7 +61,9 @@ bool validar_instruccion(char* leido){
 		} 
 	}
 	return true;
-}
+}*/
+
+
 void atender_instruccion_validada(char* leido){
 	op_code_instruccion op_code_encontrado = encontrar_op_code(leido);
 
@@ -93,8 +96,8 @@ void atender_instruccion_validada(char* leido){
 
 }
 
-
-op_code_instruccion encontrar_op_code(leido){ 
+/*
+op_code_instruccion* encontrar_op_code(leido){ 
     char** array_leido = string_split(leido," ");
 	t_list_iterator lista = list_iterator_create(lista_instrucciones);
 	while(list_iterator_has_next(lista)){
@@ -105,3 +108,4 @@ op_code_instruccion encontrar_op_code(leido){
         }
     }
 }
+*/

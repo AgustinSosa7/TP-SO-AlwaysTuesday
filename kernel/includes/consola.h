@@ -17,16 +17,16 @@ typedef enum{
 }op_code_instruccion;
 
 typedef struct {
-    op_code_instruccion op_code_instruccion,
-    int cant_parametros,
-    char* nombre,
+    op_code_instruccion* op_code_instruccion;
+    int cant_parametros;
+    char* nombre;
 }t_instruccion;
 
 t_list lista_instrucciones;
 
 
 void iniciar_consola();
-void agregar_instruccion(t_list* lista_instrucciones, op_code_instruccion op_code, int parametros,char* op_code_string);
+void agregar_instruccion(t_list* lista_instrucciones, op_code_instruccion* op_code, int parametros,char* op_code_string);
 void leer_consola();
 void leer_comandos();
 bool validar_instruccion(char* leido);

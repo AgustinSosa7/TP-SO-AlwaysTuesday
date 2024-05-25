@@ -26,35 +26,13 @@ typedef struct{
 } t_peticion;
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
-
 extern int pid_global = 0;
-typedef struct{
-    int pid;
-    int pc;
-    int quantum;
-    char* path;
-    t_registros_cpu registros;
-    estado_pcb estado;
-} t_pcb;
 
-typedef struct{
- int AX;
-} t_registros_cpu;
-
-typedef enum{
-    NEW,
-    READY,
-    EXEC,
-    BLOCKED,
-    EXIT
-} estado_pcb;
-
-extern t_list lista_new = list_create();
-extern t_list lista_ready = list_create();
-extern t_list lista_exec = list_create();
-extern t_list lista_blocked = list_create();
-extern t_list lista_exit = list_create();
-
+extern t_list* lista_new;
+extern t_list* lista_ready;
+extern t_list* lista_exec;
+extern t_list* lista_blocked;
+extern t_list* lista_exit;
 
 pthread_mutex_t mutex_pid;
 

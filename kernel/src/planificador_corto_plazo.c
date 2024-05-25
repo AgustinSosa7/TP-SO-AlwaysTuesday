@@ -1,17 +1,16 @@
 #include <../includes/planificador_corto_plazo.h>
 
 void planif_corto_plazo(){
-   
-        switch (ALGORITMO_PLANIFICACION)
+        switch(ALGORITMO_PLANIFICACION)
         {
         case "FIFO":
-            planif_fifo();
+                planif_fifo();
             break;
         case "RR":
-            planif_RR();
+                planif_RR();
             break;
             case "VRR":
-            planif_VRR();
+                planif_VRR();
             break;
         default:
             break;
@@ -19,8 +18,7 @@ void planif_corto_plazo(){
     }
 
 
- planif_fifo(){
-
+void planif_fifo(){
     if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
             t_pcb* un_pcb = list_remove(lista_ready,0);
@@ -34,14 +32,12 @@ void planif_corto_plazo(){
         
  }
 
- planif_RR(){
+void planif_RR(){
 //enviar pcb a cpu por dispatch
 //iniciar quantum
 //enviar interrupcion a cpu por interrupt
 //recibir_pcb_con_motivo();
- }
- planif_VRR(){
-
-
- }
+ };
+void planif_VRR(){
+ };
 

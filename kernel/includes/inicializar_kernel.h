@@ -10,5 +10,7 @@
 void inicializar_kernel();
 void inicializar_logs(void);
 void inicializar_configs(void);
+void inicializar_listas(void);
+void inicializar_semaforos(void);
 
 #endif 
