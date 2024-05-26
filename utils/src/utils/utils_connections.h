@@ -12,6 +12,8 @@
 #include <commons/log.h>
 #include <commons/string.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
+
 
 #include <assert.h>
 
@@ -26,6 +28,7 @@ typedef enum
 	HANDSHAKE,
 	ATENDER_PETICION_INTERFAZ_KERNEL,
 	RECONOCER_INSTRUCCION,
+	ESTOY_CONECTADO,
 	//---- KERNEL - CPU
 	PCB,
 	EJECUTAR_PROCESO_KC,

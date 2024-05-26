@@ -4,11 +4,10 @@
 void inicializar_entradasalida(char** argv){
     inicializar_logs();
     inicializar_configs(argv);
-    //imprimir_configs();
+    imprimir_configs();
 }
 
 void inicializar_logs (){
-	//Creo que esto estaba desde antes, lo metiero los profes
    entradasalida_logger = log_create("entradasalida.log","ENTRADASALIDA_LOG",1,LOG_LEVEL_INFO);
 if (entradasalida_logger == NULL) {
 	perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
@@ -25,15 +24,9 @@ if (entradasalida_log_debug == NULL) {
 
 void inicializar_configs(char** argv){
 	NOMBRE_INTERFAZ = argv[1];
-	
 	char* path = argv[2];
-	
-	printf("nombre de interfaz: %s \n",argv[1]);
-	printf("direccion de config: %s \n",argv[2]);
-	printf("direccion de config en path: %s \n",path);
-	
+		
 	entradasalida_config = config_create(path);
-	imprimir_configs();
 
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");

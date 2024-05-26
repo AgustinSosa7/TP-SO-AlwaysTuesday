@@ -12,13 +12,14 @@ void atender_kernel_cpu_dispatch(){
         switch (cod_op)
         {
         case ATENDER_PETICION_INTERFAZ_KERNEL:
-            t_peticion* peticion = recibir_peticion(paquete); // dentro de este paquete tambien viene un pcb?
-            t_interfaz* interfaz = validar_peticion(peticion);
-            // enviar_proceso_a_blocked
+            t_peticion* peticion = recibir_peticion(paquete); 
+            t_pcb* pcb = recibir_pcb(paquete, kernel_logger)
+            t_interfaz* interfaz = validar_peticion(peticion, pcb);
+            // enviar_proceso_a_blocked (funcion que crear mili)
             enviar_peticion_a_interfaz(peticion, interfaz);
             eliminar_peticion(peticion);
             recibir_mensaje_fin_peticion();
-            // desbloquear_proceso
+            // desbloquear_proceso (funcion que crear mili)
             break;
         case -1:
           //  log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      

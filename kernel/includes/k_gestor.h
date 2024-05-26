@@ -54,19 +54,19 @@ typedef struct{
 //     EXEC,
 //     BLOCKED,
 //     EXIT
-// } estado_pcb;
-
-///////////////////////////////////////////////////////////////
+// } estado_pcb;///////////////////////////////////////////////////////////////
 typedef struct 
 {
     char* nombre;
     int fd_interfaz;
-    t_queue* cola_procesos_blocked;
+    t_queue* cola_procesos_blocked = queue_create();
 } t_interfaz;
 
 
+
+
 ///////////////////////////////////////////////////////////////
-extern t_list* ios_concetadas;
+extern t_list* IOS_CONECTADAS;
 
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

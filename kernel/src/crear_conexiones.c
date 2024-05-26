@@ -23,23 +23,15 @@
     void conexion_kernel_entradaSalida(){
     fd_kernel = iniciar_servidor(PUERTO_ESCUCHA, kernel_logger, IP_KERNEL);
 
+    IOS_CONECTADOS = list_create();
+
     log_info(kernel_logger, "Esperando a Entradasalida...");
     pthread_t hilo_generador_de_io;
     pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
     pthread_detach(hilo_generador_de_io);
     }
 
-  //crear hilo cada vez que te llegue una io
-/*
-void gestionador_entrada_salida(){
-    while(1){
-      //sem_w
-      pthread_t hilo_io;
-      pthread_create(&hilo_io,NULL, (void*)gestionar_entrada_salida, NULL);
-      pthread_detach(hilo_io);
-      //sem_s
-    }
-}*/
+  
 
 void gestionar_entrada_salida(){
   while(1){
@@ -61,13 +53,7 @@ t_interfaz* identificar_io(int socket){
 
 void agregar_io(t_interfaz* interfaz){
   //semwait(mutex_io);
-  list_add(ios_conectadas, interfaz);
+  list_add(IOS_CONECTADOS, interfaz);
   //semwsignal(mutex_io);
 }
 
-//typedef struct 
-//{
-//    char* nombre;
-//    int fd_interfaz;
-//    t_queue* cola_procesos_blocked;
-//} t_interfaz;

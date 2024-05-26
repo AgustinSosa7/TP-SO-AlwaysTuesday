@@ -20,6 +20,9 @@ void atender_entradasalida_kernel(){
             validar_tipo_instruccion(instruccion);   
             free(instruccion); 
             break;
+        case ESTOY_CONECTADO:
+            
+            break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;
