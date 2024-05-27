@@ -22,7 +22,7 @@
 void atender_kernel_cpu_dispatch();
 t_peticion* recibir_peticion(t_paquete* paquete);
 void validar_peticion(t_peticion* peticion);
-void enviar_peticion_a_interfaz(t_peticion* peticion);
+void enviar_peticion_a_interfaz(t_peticion* peticion, t_pcb* pcb);
 t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion);
 void eliminar_peticion(t_peticion* peticion);
 void recibir_mensaje_fin_peticion();

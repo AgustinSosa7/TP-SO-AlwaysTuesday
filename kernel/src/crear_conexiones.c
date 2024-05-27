@@ -44,16 +44,19 @@ void gestionar_entrada_salida(){
 
 
 t_interfaz* identificar_io(int socket){
-  t_interfaz* interfaz = malloc(sizeof(interfaz_t));
+  t_interfaz* interfaz = malloc(sizeof(t_interfaz));
   char* nombre_io = recibir_mensaje_string(socket);
   interfaz->nombre = malloc(strlen(nombre_io));
   interfaz->fd_interfaz = socket;
+  interfaz->cola_procesos_blocked = queue_create();
+  sem_init(interfaz->semaforo_cola_procesos_blocked, 0);
   return interfaz;
 }
 
 void agregar_io(t_interfaz* interfaz){
-  //semwait(mutex_io);
+  pthread_mutex_lock(mutex_io);
   list_add(IOS_CONECTADOS, interfaz);
-  //semwsignal(mutex_io);
+  pthread_mutex_unlock(mutex_io);
+
 }
 

@@ -292,17 +292,17 @@ t_pcb* recibir_pcb(t_paquete* paquete, t_log*logger){
 void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
 log_info(un_logger,"PCB Pid %d", pcb->pid);
 log_info(un_logger,"PCB Quantum %d",pcb->QUANTUM);	
-log_info(un_logger,"PCB PC: %d ", pcb->registros_CPU.PC);
-log_info(un_logger,"PCB AX: %d ", pcb->registros_CPU.AX);
-log_info(un_logger,"PCB BX: %d ", pcb->registros_CPU.BX);
-log_info(un_logger,"PCB CX: %d ", pcb->registros_CPU.CX);
-log_info(un_logger,"PCB DX: %d ", pcb->registros_CPU.DX);
-log_info(un_logger,"PCB EAX: %d ", pcb->registros_CPU.EAX);
-log_info(un_logger,"PCB EBX: %d ", pcb->registros_CPU.EBX);
-log_info(un_logger,"PCB ECX: %d ", pcb->registros_CPU.ECX);
-log_info(un_logger,"PCB EDX: %d ", pcb->registros_CPU.EDX);
-log_info(un_logger,"PCB SI: %d ", pcb->registros_CPU.SI);
-log_info(un_logger,"PCB DI: %d ", pcb->registros_CPU.DI);
+log_info(un_logger,"PCB PC: %d ", pcb->registros_CPU->PC);
+log_info(un_logger,"PCB AX: %d ", pcb->registros_CPU->AX);
+log_info(un_logger,"PCB BX: %d ", pcb->registros_CPU->BX);
+log_info(un_logger,"PCB CX: %d ", pcb->registros_CPU->CX);
+log_info(un_logger,"PCB DX: %d ", pcb->registros_CPU->DX);
+log_info(un_logger,"PCB EAX: %d ", pcb->registros_CPU->EAX);
+log_info(un_logger,"PCB EBX: %d ", pcb->registros_CPU->EBX);
+log_info(un_logger,"PCB ECX: %d ", pcb->registros_CPU->ECX);
+log_info(un_logger,"PCB EDX: %d ", pcb->registros_CPU->EDX);
+log_info(un_logger,"PCB SI: %d ", pcb->registros_CPU->SI);
+log_info(un_logger,"PCB DI: %d ", pcb->registros_CPU->DI);
 }
 
 ////////////////////// DESERIALIZACION //////////////
@@ -330,13 +330,14 @@ int recibir_operacion(int socket_cliente)
 
 }
 
-t_buffer* recibir_buffer(int unSocket){ 
+t_buffer* recibir_buffer(int unSocket)
+{ 
 	t_buffer* buffer = malloc(sizeof(t_buffer));
-	recv(unSocket, &(buffer->size), sizeof(uint32_t), 0);
+	recv(unSocket, &(buffer->size), sizeof(uint32_t), MSG_WAITALL);
 	buffer->stream = malloc(buffer->size);
-	recv(unSocket, buffer->stream, buffer->size, 0);
-
-	 return buffer;	
+	recv(unSocket, buffer->stream, buffer->size, MSG_WAITALL);
+	
+	return buffer;	
 }
 
 t_paquete* recibir_paquete(int unSocket)
@@ -344,15 +345,17 @@ t_paquete* recibir_paquete(int unSocket)
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	paquete->buffer = malloc(sizeof(t_buffer));
 	paquete->buffer = recibir_buffer(unSocket);
+
 	return paquete;
 }
 
 void* recibir_mensaje(int socket_cliente)
 {	
-	void* mensaje = malloc(sizeof(void));
-	t_paquete* paquete = recibir_paquete(socket_cliente);
-	leer_string_del_stream(paquete->buffer->stream, mensaje);
-	
+	int tamanio_mensaje;
+	recv(socket_cliente, tamanio_mensaje, sizeof(int), MSG_WAITALL);
+	void* mensaje = malloc(tamanio_mensaje);
+	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
+
 	return mensaje;
 }
 

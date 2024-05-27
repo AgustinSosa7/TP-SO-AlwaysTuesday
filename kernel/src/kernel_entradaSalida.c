@@ -28,9 +28,11 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
       char* instruccion = peticion->instruccion;
 
     t_interfaz* interfaz = existe_la_interfaz(nombre_io, pcb);
-    esta_conectada_la_interfaz(interfaz, pcb);
+    if(esta_conectada_la_interfaz(interfaz, pcb)){
     validar_interfaz_admite_instruccion(interfaz, instruccion);
-
+    }else{
+    //enviar_proceso_a_exit();
+    }
     return interfaz;
 }
 t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb){
@@ -45,17 +47,24 @@ t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb){
             //enviar_proceso_a_exit();
           }
 }         
-void esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb){
-      t_paquete* paquete = crear_paquete(ESTOY_CONECTADO); 
-      agregar_a_paquete(paquete, HANDSHAKE);
-      enviar_paquete(paquete, fd_entradasalida); // tener en cuenta e l error en el send
-      eliminar_paquete(paquete);
+bool esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb){
+    t_paquete* paquete = crear_paquete(ESTOY_CONECTADO); 
+    agregar_algo_a_paquete(paquete, true);
+    int bytes = sizeof(uint32_t) * 2 + sizeof(bool);
+	void* a_enviar = serializar_paquete(paquete, bytes);
+	int err = send(fd_entradasalida, a_enviar, bytes, SIGPIPE);
+	free(a_enviar);      
+    eliminar_paquete(paquete);
 
-      bool acepta_la_instruccion = recibir_mensaje(fd_entradasalida);
-      if(acepta_la_instruccion){ 
-            log_info(kernel_logger,"La interfaz %s no se encuentra conectada.", interfaz->nombre);
-            //enviar_proceso_a_exit();
-            } 
+    if(err == -1){
+        log_error(kernel_logger,"La interfaz %s no se encuentra conectada.", interfaz->nombre);
+        //enviar_proceso_a_exit();
+        return false;
+    }else{
+        bool respuesta = recibir_mensaje(fd_entradasalida);
+        return respuesta;
+    }
+
 }
 
 void validar_interfaz_admite_instruccion(char* interfaz, char* instruccion, t_pcb* pcb){
@@ -77,11 +86,30 @@ void enviar_peticion_a_interfaz(t_peticion* peticion, t_interfaz* interfaz){
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, peticion->instruccion);
       agregar_algo_a_paquete(paquete, peticion->parametros);
-      enviar_paquete(paquete, interfaz->);
+      enviar_paquete(paquete, interfaz->fd_interfaz);
       eliminar_paquete(paquete);
 } 
 
-void recibir_mensaje_fin_peticion(){
+void recibir_fin_peticion(){
     bool fin_peticion;
     recv(fd_entradasalida, &fin_peticion, sizeof(bool), MSG_WAITALL);
+    // signal(se_libero_io);
+}
+
+void gestionar_lista_de_interfaz(t_peticion* peticion, t_interfaz* interfaz){
+
+    // si la interfaz no tiene procesos bloqueados, lo ejecuto
+    // si la interfaz tiene procesos bloqueados, lo agrego a la lista
+    
+    // Hilo que maneja la cola de bloqueados:
+    // la cola de execute es un while(1) que se le avisa que ingreso un proceso a su cola mediante 
+    // un semaforo; este procede a hacerle pop, mandarlo a la cpu, esperar a recibir el contexto actualizado 
+    // y asi sucesivamente.
+    while(1){
+        wait(io->semaforo_cola_procesos_blocked)
+        pcb = pop(io->cola_procesos_blocked)        
+    }
+
+    // wait(se_libero_io); se inicializa en 1
+    enviar_peticion_a_interfaz(peticion, interfaz);
 }

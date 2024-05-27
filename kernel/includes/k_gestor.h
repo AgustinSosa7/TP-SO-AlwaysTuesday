@@ -26,22 +26,6 @@ typedef struct{
 
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
-// typedef struct{
-//     int pid,
-//     int pc,
-//     int quantum,
-//     t_registros_cpu registros,
-//     estado_pcb estado
-// } t_pcb;
-
-//Ver si conviene ponerlo en el utils :D
-typedef struct{  
-	int pid;
-	int program_counter;
-    int QUANTUM;
-	t_cpu* registros_CPU;
-}t_pcb;
-
 
 
 // typdef struct{
@@ -59,14 +43,16 @@ typedef struct
 {
     char* nombre;
     int fd_interfaz;
-    t_queue* cola_procesos_blocked = queue_create();
+    t_queue* cola_procesos_blocked;
+    sem_t* semaforo_cola_procesos_blocked;
 } t_interfaz;
 
 
 
 
 ///////////////////////////////////////////////////////////////
-extern t_list* IOS_CONECTADAS;
+extern t_list* IOS_CONECTADOS;
+extern pthread_mutex_t* mutex_io;
 
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

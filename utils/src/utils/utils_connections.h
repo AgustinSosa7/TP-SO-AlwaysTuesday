@@ -14,6 +14,7 @@
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
 
+#include <semaphore.h>
 
 #include <assert.h>
 
@@ -51,7 +52,6 @@ typedef struct
 
 typedef struct
 {
-    u_int32_t PC; //SACADO POR QUE MILI QUISO :D
     u_int8_t AX;
     u_int8_t BX;
     u_int8_t CX;
@@ -65,9 +65,9 @@ typedef struct
 }t_cpu;
 typedef struct{  
 	int pid;
-	//int program_counter;
+	int program_counter;
     int QUANTUM;
-	t_cpu registros_CPU;
+	t_cpu* registros_CPU;
 }t_pcb;
 
 
