@@ -26,8 +26,31 @@ int asignarPID(){
 
 void cambiar_estado(t_pcb* un_pcb, estado_pcb* nuevo_estado){
 	un_pcb->estado_pcb = nuevo_estado;
+	switch (nuevo_estado)
+    {
+    case NEW:
+        list_add(lista_new,un_pcb);
+
+        break;
+    case READY:
+        list_add(lista_ready,un_pcb);
+        break;
+    case EXEC:
+        list_add(lista_exec,un_pcb);
+        break;
+    case EXIT:
+        list_add(lista_exit,un_pcb);
+        break;
+
+    default:
+        break;
+    }
+    
 }
 
 void inicializar_registros(t_pcb* un_pcb){
 	un_pcb->registros_cpu->AX= 0;
 }
+
+
+    

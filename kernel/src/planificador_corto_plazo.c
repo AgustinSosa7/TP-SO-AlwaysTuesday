@@ -22,6 +22,7 @@ t_paquete* recibir_pcb_con_motivo(){
     int code_op = recibir_operacion(fd_cpu_dispatch);
     t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
     t_pcb* pcb_recibido = recibir_pcb(paquete);
+    log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
     switch (code_op)
     {
     case DESALOJO_QUANTUM:
@@ -31,7 +32,9 @@ t_paquete* recibir_pcb_con_motivo(){
         /* code */
         break;
     case PEDIDO_IO:
-        list_add(lista_blocked, pcb_recibido);
+        pthread_t pedido_io;
+        pthread_create(&pedido_io,NULL,(void* atender_pedido_io),paquete,pcb_recibido);
+
         break;
     default:
         break;
@@ -39,7 +42,11 @@ t_paquete* recibir_pcb_con_motivo(){
 }
 
 
- 
+void enviar_proceso_a_blocked(t_pcb* un_pcb,t_queue* cola){
+    un_pcb->estado_pcb = BLOCKED;
+    queue_push(cola,un_pcb);
+}
+
   
  planif_fifo(){
 
@@ -69,3 +76,33 @@ t_paquete* recibir_pcb_con_motivo(){
 
  }
 
+void atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido){
+        // podría ser que todo este CASE sea un "hilo" para que cada vez que se pida hacer una interfaz
+        // se cree un hilo que lo maneje por separado, ya que como existen n interfaces, deberían
+        // existin n hilos que se comuniquen con dichas interfaces
+            t_peticion* peticion = recibir_peticion(paquete); 
+            t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
+             enviar_proceso_a_blocked(pcb_recibido, interfaz->cola_procesos_blocked);
+            gestionar_lista_de_interfaz(peticion, interfaz); 
+            eliminar_peticion(peticion);
+            recibir_fin_peticion();
+            desbloquear_proceso(interfaz,pcb_recibido);
+      }
+
+void desbloquear_proceso(t_interfaz* interfaz){
+
+        t_pcb *un_pcb =queue_pop(interfaz->cola_procesos_blocked);
+        cambiar_estado(un_pcb, READY);
+        // signal(io->semaforo_cola_procesos_blocked);
+}
+
+/*FALTA INCLUIR BIEN A TODAS LAS LIBRERIAS,HACER "gestionar_lista_de_interfaz(param)" 
+y también arreglar argumentos del hilo atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido)
+Declarar todas las funciones nuevas que creamos, chequearlas bien.
+mili:
+hacer quantum
+poner semáforos en todos lados
+y más cosas que no recuerdo
+mergear bien "atender_kernel_cpu_dispatch"
+
+*/

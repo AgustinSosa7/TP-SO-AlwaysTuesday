@@ -93,7 +93,7 @@ void enviar_peticion_a_interfaz(t_peticion* peticion, t_interfaz* interfaz){
 void recibir_fin_peticion(){
     bool fin_peticion;
     recv(fd_entradasalida, &fin_peticion, sizeof(bool), MSG_WAITALL);
-    // signal(se_libero_io);
+ 
 }
 
 void gestionar_lista_de_interfaz(t_peticion* peticion, t_interfaz* interfaz){
@@ -123,7 +123,10 @@ struct{
     t_queue cola_procesos_blocked;
 }t_interfaz
 
-
+struct{
+    char* nombre;
+    t_queue cola_procesos_blocked;
+}bloqueados
 // int1 ----------------fd_entradasalida--------------- kernel -------------------cpu
 // 
 //                     p1 sleep 100000                               p2 sleep 3000

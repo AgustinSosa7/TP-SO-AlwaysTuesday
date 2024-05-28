@@ -11,19 +11,8 @@ void atender_kernel_cpu_dispatch(){
 
         switch (cod_op)
         {
-        case ATENDER_PETICION_INTERFAZ_KERNEL:
-        // podría ser que todo este CASE sea un "hilo" para que cada vez que se pida hacer una interfaz
-        // se cree un hilo que lo maneje por separado, ya que como existen n interfaces, deberían
-        // existin n hilos que se comuniquen con dichas interfaces
-            t_peticion* peticion = recibir_peticion(paquete); 
-            t_pcb* pcb = recibir_pcb(paquete, kernel_logger); // es probable que el pcb lo reciba antes
-            t_interfaz* interfaz = validar_peticion(peticion, pcb);
-            // enviar_proceso_a_blocked (funcion que crear mili)
-            gestionar_lista_de_interfaz(peticion, interfaz); 
-            eliminar_peticion(peticion);
-            recibir_fin_peticion();
-            // desbloquear_proceso (funcion que crear mili)
-            break;
+        case :
+       
         case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;
