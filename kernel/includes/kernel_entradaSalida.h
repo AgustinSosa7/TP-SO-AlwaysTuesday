@@ -6,7 +6,7 @@
 
 
 void atender_kernel_entradaSalida();
-void validar_peticion(t_peticion* peticion, t_pcb* pcb);
+t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb);
 t_interfaz* existe_la_interfaz(char* interfaz, t_pcb* pcb);
 bool esta_la_io(void* interfaz);
 bool esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb);

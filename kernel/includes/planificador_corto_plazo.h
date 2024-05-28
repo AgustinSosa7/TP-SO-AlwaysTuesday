@@ -13,6 +13,6 @@ void planif_RR();
 void planif_VRR();
 
 void atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido);
-
+void desbloquear_proceso(t_interfaz* interfaz, t_pcb* un_pcb);
 
 #endif 

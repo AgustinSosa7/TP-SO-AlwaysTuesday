@@ -299,29 +299,25 @@ void enviar_pcb_a(t_pcb* un_pcb, int socket){
 	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
 	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid));
     agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum));
-	agregar_string_a_paquete(un_paquete,un_pcb->path);
     agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
-	agregar_algo_a_paquete(un_paquete,un_pcb->estado_pcb);
+	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb));
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
 }
 
 t_pcb* recibir_pcb(t_paquete* paquete){
-	void* stream = paquete->buffer->stream;
+	void* buffer = paquete->buffer;
 	t_pcb* pcb = malloc(sizeof(t_pcb));
-	leer_algo_del_stream(stream, pcb->pid,sizeof(pcb->pid));
-	leer_algo_del_stream(stream,pcb->quantum,sizeof(pcb->quantum));
-	leer_string_del_stream(stream);
-	leer_registros_del_stream(stream, pcb->registros_cpu);
-	leer_algo_del_stream(stream,pcb->estado_pcb,sizeof(pcb->estado_pcb));
-	free(stream);
-	return pcb; //Devuelvo PCB
+	leer_algo_del_stream(buffer, &(pcb->pid), sizeof(int));
+	leer_algo_del_stream(buffer,&(pcb->quantum),sizeof(int));
+	leer_registros_del_stream(buffer, pcb->registros_cpu);
+	leer_algo_del_stream(buffer,&(pcb->estado_pcb),sizeof(pcb->estado_pcb));
+	return pcb; 
 }
 
 void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
 log_info(un_logger,"PCB Pid %d", pcb->pid);
 log_info(un_logger,"PCB Quantum %d",pcb->quantum);	
-log_info(un_logger,"PCB Path: %s",pcb->path);
 log_info(un_logger,"PCB PC: %d ", pcb->registros_cpu->PC);
 log_info(un_logger,"PCB AX: %d ", pcb->registros_cpu->AX);
 log_info(un_logger,"PCB BX: %d ", pcb->registros_cpu->BX);
@@ -333,7 +329,7 @@ log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
 log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
 log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
 log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
-log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
+//log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
 }
 
 ////////////////////// DESERIALIZACION //////////////
@@ -409,7 +405,7 @@ void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 char* leer_string_del_stream(t_buffer* buffer) 
 {
 	int tamanio_string;
-	leer_algo_del_stream(buffer, tamanio_string,sizeof(tamanio_string));
+	leer_algo_del_stream(buffer, &tamanio_string,sizeof(tamanio_string));
 
 	char *string = malloc(tamanio_string); // En caso de pisar algun valor, hacerle free antes
 	leer_algo_del_stream(buffer, string, tamanio_string);

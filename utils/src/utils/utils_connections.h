@@ -82,9 +82,8 @@ typedef enum{
 typedef struct{
     int pid;
     int quantum;
-    char* path;
     t_registros_cpu* registros_cpu;
-    estado_pcb* estado_pcb;
+    estado_pcb estado_pcb;
 } t_pcb;
 
 extern t_log* logger;

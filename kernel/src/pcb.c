@@ -24,14 +24,12 @@ int asignarPID(){
 	return a;
 }
 
-void cambiar_estado(t_pcb* un_pcb, estado_pcb* nuevo_estado){
+void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
 	un_pcb->estado_pcb = nuevo_estado;
-    int estado = nuevo_estado;
-	switch(estado)
+	switch(nuevo_estado)
     {
     case NEW:
         list_add(lista_new,un_pcb);
-
         break;
     case READY:
         list_add(lista_ready,un_pcb);

@@ -2,7 +2,8 @@
 #include "../includes/kernel_entradaSalida.h"
 #include "../includes/kernel_cpu_dispatch.h"
 
-void planif_corto_plazo(){
+void planif_corto_plazo()
+{
     int ALGORITMO_PLANIFICACION = 1;   // CLARAMENTE DEBE DE RECIBIR DE ALGUN LADO EL ALGORITMO SOLICITADO
         switch (ALGORITMO_PLANIFICACION)
         {
@@ -20,7 +21,8 @@ void planif_corto_plazo(){
         }
     }
 
-t_paquete* recibir_pcb_con_motivo(){ //falta declarar funcion en .h
+t_paquete* recibir_pcb_con_motivo()
+{ //falta declarar funcion en .h
     int code_op = recibir_operacion(fd_cpu_dispatch);
     t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
     t_pcb* pcb_recibido = recibir_pcb(paquete);
@@ -45,20 +47,22 @@ t_paquete* recibir_pcb_con_motivo(){ //falta declarar funcion en .h
 }
 
 
-void enviar_proceso_a_blocked(t_pcb* un_pcb,t_queue* cola){
+void enviar_proceso_a_blocked(t_pcb* un_pcb,t_queue* cola)
+{
    // un_pcb->estado_pcb = BLOCKED; //no utilizamos la funcion "cambiar_estado" para no manejas 2 listas de procesos bloqueados
     queue_push(cola,un_pcb);
     // poner semaforos
 }
 
   
-void planif_fifo(){
+void planif_fifo()
+{
 
     if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
-            //semaforos
+            //semaforos 
             t_pcb* un_pcb = list_remove(lista_ready,0);
-           // cambiar_estado(un_pcb,EXEC);
+            cambiar_estado(un_pcb, EXEC);
             //agregar msje
             _enviar_pcb_a_CPU_por_dispatch(un_pcb);
 
@@ -96,7 +100,7 @@ void atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido){
 
 void desbloquear_proceso(t_interfaz* interfaz){
         // poner semaforos
-        t_pcb *un_pcb =queue_pop(interfaz->cola_procesos_blocked);
+        t_pcb* un_pcb = queue_pop(interfaz->cola_procesos_blocked);
         cambiar_estado(un_pcb, READY);
         // signal(io->semaforo_cola_procesos_blocked);
 }
