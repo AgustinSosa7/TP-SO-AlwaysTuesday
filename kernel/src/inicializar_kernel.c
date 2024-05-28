@@ -2,9 +2,9 @@
 
 
 
-void inicializar_kernel(){
+void inicializar_kernel(char* path){
     inicializar_logs();
-    inicializar_configs();
+    inicializar_configs(path);
 	inicializar_listas();
 	inicializar_semaforos();
 	inicializar_pid_y_procesos_activos();
@@ -32,9 +32,9 @@ log_info(kernel_log_debug, "Se inicializo el kernel debug logger"); //Sacar even
 
 }    
     
-void inicializar_configs(void) {
+void inicializar_configs(char* path) {
 
-kernel_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/kernel.config");
+kernel_config = config_create(path);
 if (kernel_config == NULL) {
 	perror("Error al intentar cargar el config.");
 	exit(EXIT_FAILURE);

@@ -4,11 +4,11 @@
 #include "cpu_gestor.h"
 
 
-void inicializar_cpu();
+void inicializar_cpu(char* path);
 
 void inicializar_logs();
 
-void iniciar_config();
+void iniciar_config(char* path);
 
 void imprimir_config();
 #endif

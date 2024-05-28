@@ -1,9 +1,9 @@
 #include "../includes/inicializar_cpu.h"
 
 
-void inicializar_cpu(){
+void inicializar_cpu(char* path){
     inicializar_logs();
-    iniciar_config();
+    iniciar_config(path);
     imprimir_config();
 
 }
@@ -23,8 +23,8 @@ void inicializar_logs(){
 	}
 }
 
-void iniciar_config(){
-    cpu_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/cpu/cpu.config");
+void iniciar_config(char* path){
+    cpu_config = config_create(path);
     if (cpu_config == NULL) {
         perror("Error al intentar cargar el config.");
         exit(EXIT_FAILURE);

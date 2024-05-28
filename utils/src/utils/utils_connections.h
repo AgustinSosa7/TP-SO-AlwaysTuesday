@@ -95,6 +95,10 @@ bool son_el_mismo_string(char* elemento_posible, char* elemento);
 bool contains_algo(t_list* lista, void* elemento);
 bool son_lo_mismo(void* elemento_posible, void* elemento);
 
+/////////////////
+
+void validar_parametros_main(int argc, int parametros_esperados);
+
 // FUNCIONES CLIENTE
 int crear_conexion(char* ip, char* puerto, t_log* logger);
 void gestionar_handshake_como_cliente(int fd_conexion, const char* modulo_destino, t_log* logger);

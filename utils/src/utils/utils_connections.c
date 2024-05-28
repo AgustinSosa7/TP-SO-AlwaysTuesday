@@ -25,6 +25,13 @@ bool son_lo_mismo(void* elemento_posible, void* elemento){
       return (elemento_posible == elemento);
 }
 
+///////////////////////////////
+void validar_parametros_main(int argc, int parametros_esperados){
+	if (argc < parametros_esperados) {
+	    fprintf(stderr, "Uso: %s <ruta_archivo_configuracion>\n", argv[0]);
+	    return EXIT_FAILURE;
+	}
+}
 
 // CONEXIONES DE CLIENTE 
 int crear_conexion(char* ip, char* puerto, t_log* logger)

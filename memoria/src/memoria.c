@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include "../includes/memoria.h"
 
-int main() {
+int main(int argc, char** argv) {
+
+validar_parametros_main(argc, 2);
 
 //Inicializar MEMORIA
-inicializar_memoria();
+inicializar_memoria(argv[1]);
 
 //Comentado para que corra el programa :D
 

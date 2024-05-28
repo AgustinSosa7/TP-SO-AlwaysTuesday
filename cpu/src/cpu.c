@@ -1,10 +1,12 @@
 #include "../includes/cpu.h"
 
 
-int main() {
+int main(int argc, char** argv){
+
+    validar_parametros_main(argc, 2);
 
     // Inicializar CPU
-    inicializar_cpu();
+    inicializar_cpu(argv[1]);
 
     // Conectarnos como cliente a MEMORIA
 

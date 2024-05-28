@@ -1,8 +1,8 @@
 #include "../includes/inicializar_memoria.h"
 
-void inicializar_memoria(){
+void inicializar_memoria(char* path){
     _iniciar_log();  //memoria_logger = _iniciar_log();
-    _iniciar_config();
+    _iniciar_config(path);
     _imprimir_config();
 }
 
@@ -21,8 +21,8 @@ void _iniciar_log(){  // t_log* _iniciar_log()
 }
 
 
-void _iniciar_config(){
-    memoria_config = config_create("/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/memoria/memoria.config");
+void _iniciar_config(char* path){
+    memoria_config = config_create(path);
     if (memoria_config == NULL){
         perror("Error al intentar cargar el config.");
         exit(EXIT_FAILURE);

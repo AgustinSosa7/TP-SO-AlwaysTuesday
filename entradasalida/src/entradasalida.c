@@ -4,10 +4,7 @@
 
 int main(int argc, char** argv) {
 
-if (argc < 3) {
-    fprintf(stderr, "Uso: %s <ruta_archivo_configuracion>\n", argv[0]);
-    return EXIT_FAILURE;
-}
+validar_parametros_main(argc, 3);
 
 inicializar_entradasalida(argv);
 

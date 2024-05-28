@@ -3,9 +3,9 @@
 
 #include "m_gestor.h"
 
-void inicializar_memoria();
+void inicializar_memoria(char* path);
 void _iniciar_log();
-void _iniciar_config();
+void _iniciar_config(char* path);
 void _imprimir_config();
 
 #endif /*INICIALIZAR_MEMORIA_H_*/

@@ -3,11 +3,11 @@
 #include <../includes/kernel.h>
 #include <../includes/pcb.h>
 
-int main()
+int main(int argc, char** argv)
 {   
-    
+    validar_parametros_main(argc, 2);
     // Inicializar KERNEL
-    inicializar_kernel();
+    inicializar_kernel(argv[1]);
 
 
 /////////////////////////--INICIAR PLANIFICADORES-//////////////////////
