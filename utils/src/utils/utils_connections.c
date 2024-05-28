@@ -165,6 +165,7 @@ void crear_buffer(t_paquete* paquete)
 {
 	paquete->buffer = malloc(sizeof(t_buffer));
 	paquete->buffer->size = 0;
+	paquete->buffer->offset = 0;
 	paquete->buffer->stream = NULL;
 }
 
@@ -186,7 +187,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	void * magic = malloc(bytes);                       
 	int desplazamiento = 0;
 
-	memcpy(magic + desplazamiento, &(paquete->codigo_operacion), sizeof(int));
+	memcpy(magic + desplazamiento, &(paquete->codigo_operacion), sizeof(op_code));
 	desplazamiento+= sizeof(int);
 	memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(int));
 	desplazamiento+= sizeof(int);
@@ -198,11 +199,22 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 
 void enviar_paquete(t_paquete* paquete, int socket_cliente)
 {
-	int bytes = paquete->buffer->size + sizeof(uint32_t) + sizeof(uint8_t);
+	int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
-	send(socket_cliente, a_enviar, bytes, 0);
+	/* BORRAR ES PARA LAS PRUEBAS  
 
+      	int tamanio_string = 13;
+      	char *string = malloc((tamanio_string * sizeof(char))); // En caso de pisar algun valor, hacerle free antes
+	    memcpy(string, a_enviar + sizeof(int) + sizeof(int) + sizeof(int), tamanio_string); //cambiar por offset el size of int
+	    //paquete->buffer->offset += strlen(string);//tamanio_string;
+      	/*printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
+	    printf("offset: %d\n",paquete->buffer->offset);
+	    printf("Se guardo en el string:%s\n",string);
+        
+    FIN DE BORRAR ES PARA LAS PRUEBAS  */
+
+	send(socket_cliente, a_enviar, bytes, 0);
 	free(a_enviar);
 }
 
@@ -213,6 +225,7 @@ void enviar_mensaje(void* mensaje, int socket_cliente)
 	memcpy(a_enviar, &mensaje, tamanio);
 	send(socket_cliente, a_enviar, tamanio, 0);
 	free(a_enviar);
+	
 }
 
 void enviar_mensaje_string(char* mensaje, int socket_cliente)
@@ -226,8 +239,8 @@ void enviar_mensaje_string(char* mensaje, int socket_cliente)
 
 void eliminar_paquete(t_paquete* paquete)
 {
-	free(paquete->buffer->stream);
-	free(paquete->buffer);
+	//free(paquete->buffer->stream);
+	//free(paquete->buffer);
 	free(paquete);
 }
 
@@ -240,29 +253,44 @@ void agregar_algo_a_paquete(t_paquete* paquete, void* valor)
 	paquete->buffer->offset += tamanio; 
 }
 
-void agregar_string_a_paquete(t_paquete* paquete, char* valor) 
+void agregar_string_a_paquete(t_paquete* paquete, char* string) 
 {
-	int tamanio = strlen(valor) + 1;  // +1 por el /0
+	/*int tamanio = strlen(valor) + 1;  // +1 por el /0
 	agregar_algo_a_paquete(paquete, &tamanio);
-
 	paquete->buffer->size += tamanio;
 	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size);
 	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
-	paquete->buffer->offset += tamanio; 
+	paquete->buffer->offset += tamanio; */
+	
+	int tamanio_string = strlen(string) + 1;
+
+	paquete->buffer->stream = realloc(paquete->buffer->stream,
+															paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string);
+	
+	//paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string;
+	/**/
+	memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio_string, sizeof(int));
+	memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), string, sizeof(char)*tamanio_string);
+
+	
+
+	paquete->buffer->size += sizeof(int);
+	paquete->buffer->size += sizeof(char)*tamanio_string;
+	
 }
 
-void agregar_registro_a_paquete(t_paquete* un_paquete, t_cpu* registros_CPU){
-agregar_algo_a_paquete(un_paquete,registros_CPU->PC);
-agregar_algo_a_paquete(un_paquete,registros_CPU->AX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->BX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->CX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->DX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->EAX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->EBX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->ECX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->EDX);
-agregar_algo_a_paquete(un_paquete,registros_CPU->SI);
-agregar_algo_a_paquete(un_paquete,registros_CPU->DI);
+void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_cpu){
+agregar_algo_a_paquete(paquete,&registros_cpu->PC);
+agregar_algo_a_paquete(paquete,&registros_cpu->AX);
+agregar_algo_a_paquete(paquete,&registros_cpu->BX);
+agregar_algo_a_paquete(paquete,&registros_cpu->CX);
+agregar_algo_a_paquete(paquete,&registros_cpu->DX);
+agregar_algo_a_paquete(paquete,&registros_cpu->EAX);
+agregar_algo_a_paquete(paquete,&registros_cpu->EBX);
+agregar_algo_a_paquete(paquete,&registros_cpu->ECX);
+agregar_algo_a_paquete(paquete,&registros_cpu->EDX);
+agregar_algo_a_paquete(paquete,&registros_cpu->SI);
+agregar_algo_a_paquete(paquete,&registros_cpu->DI);
 }
 
 /////////////////////// PCB /////////////////////////
@@ -271,45 +299,50 @@ void enviar_pcb_a(t_pcb* un_pcb, int socket){
 	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
 	agregar_algo_a_paquete(un_paquete, un_pcb->pid);
     //agregar_algo_a_paquete(un_paquete, &un_pcb->program_counter);elPC debe ir en el registro de CPU ????
-    agregar_algo_a_paquete(un_paquete,un_pcb->QUANTUM);
-    agregar_registro_a_paquete(un_paquete, &un_pcb->registros_CPU);
+    agregar_algo_a_paquete(un_paquete,un_pcb->quantum);
+	agregar_string_a_paquete(un_paquete,un_pcb->path);
+    agregar_registro_a_paquete(un_paquete, &un_pcb->registros_cpu);
+	agregar_algo_a_paquete(un_paquete,un_pcb->estado_pcb);
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
 }
 
-t_pcb* recibir_pcb(t_paquete* paquete, t_log*logger){
+t_pcb* recibir_pcb(t_paquete* paquete){
 	void* stream = paquete->buffer->stream;
 	t_pcb* pcb = malloc(sizeof(t_pcb));
-	leer_algo_del_stream(stream, pcb->pid);
-	log_info(logger, pcb->pid);
+	leer_algo_del_stream(stream, pcb->pid,sizeof(pcb->pid));
 	//leer_algo_del_paquete(stream, &un_pcb->program_counter); elPC debe ir en el registro de CPU ????
-	leer_algo_del_stream(stream,&pcb->QUANTUM);
-	leer_registro_del_stream(stream, &(pcb->registros_CPU));
+	leer_algo_del_stream(stream,pcb->quantum,sizeof(pcb->quantum));
+	leer_string_del_stream(stream);
+	leer_registros_del_stream(stream, &(pcb->registros_cpu));
+	leer_algo_del_stream(stream,pcb->estado_pcb,sizeof(pcb->estado_pcb));
 	free(stream);
 	return pcb; //Devuelvo PCB
 }
 
 void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
 log_info(un_logger,"PCB Pid %d", pcb->pid);
-log_info(un_logger,"PCB Quantum %d",pcb->QUANTUM);	
-log_info(un_logger,"PCB PC: %d ", pcb->registros_CPU->PC);
-log_info(un_logger,"PCB AX: %d ", pcb->registros_CPU->AX);
-log_info(un_logger,"PCB BX: %d ", pcb->registros_CPU->BX);
-log_info(un_logger,"PCB CX: %d ", pcb->registros_CPU->CX);
-log_info(un_logger,"PCB DX: %d ", pcb->registros_CPU->DX);
-log_info(un_logger,"PCB EAX: %d ", pcb->registros_CPU->EAX);
-log_info(un_logger,"PCB EBX: %d ", pcb->registros_CPU->EBX);
-log_info(un_logger,"PCB ECX: %d ", pcb->registros_CPU->ECX);
-log_info(un_logger,"PCB EDX: %d ", pcb->registros_CPU->EDX);
-log_info(un_logger,"PCB SI: %d ", pcb->registros_CPU->SI);
-log_info(un_logger,"PCB DI: %d ", pcb->registros_CPU->DI);
+log_info(un_logger,"PCB Quantum %d",pcb->quantum);	
+log_info(un_logger,"PCB Path: %s",pcb->path);
+log_info(un_logger,"PCB PC: %d ", pcb->registros_cpu->PC);
+log_info(un_logger,"PCB AX: %d ", pcb->registros_cpu->AX);
+log_info(un_logger,"PCB BX: %d ", pcb->registros_cpu->BX);
+log_info(un_logger,"PCB CX: %d ", pcb->registros_cpu->CX);
+log_info(un_logger,"PCB DX: %d ", pcb->registros_cpu->DX);
+log_info(un_logger,"PCB EAX: %d ", pcb->registros_cpu->EAX);
+log_info(un_logger,"PCB EBX: %d ", pcb->registros_cpu->EBX);
+log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
+log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
+log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
+log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
+log_info(un_logger,"PCB Estado: %d",pcb->estado_pcb);
 }
 
 ////////////////////// DESERIALIZACION //////////////
 
-int recibir_operacion(int socket_cliente) 
+op_code recibir_operacion(int socket_cliente) 
 {
-	int cod_op;
+	op_code cod_op;
 
 	int bytesRecibidos = recv(socket_cliente, &cod_op, sizeof(op_code), MSG_WAITALL);
 
@@ -327,25 +360,26 @@ int recibir_operacion(int socket_cliente)
 		close(socket_cliente);
 		return -2;
 	}
-
 }
 
 t_buffer* recibir_buffer(int unSocket)
 { 
 	t_buffer* buffer = malloc(sizeof(t_buffer));
-	recv(unSocket, &(buffer->size), sizeof(uint32_t), MSG_WAITALL);
+	recv(unSocket, &(buffer->size), sizeof(int), MSG_WAITALL);
 	buffer->stream = malloc(buffer->size);
 	recv(unSocket, buffer->stream, buffer->size, MSG_WAITALL);
 	
 	return buffer;	
 }
 
+//INT
+
 t_paquete* recibir_paquete(int unSocket)
 { 
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	paquete->buffer = malloc(sizeof(t_buffer));
 	paquete->buffer = recibir_buffer(unSocket);
-
+	paquete->buffer->offset = 0;
 	return paquete;
 }
 
@@ -355,7 +389,6 @@ void* recibir_mensaje(int socket_cliente)
 	recv(socket_cliente, tamanio_mensaje, sizeof(int), MSG_WAITALL);
 	void* mensaje = malloc(tamanio_mensaje);
 	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
-
 	return mensaje;
 }
 
@@ -369,34 +402,57 @@ char* recibir_mensaje_string(int socket_cliente)
 	return mensaje;
 }
 
-void leer_algo_del_stream(void* stream, void* valor)
+void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 {
-	size_t tamanio = sizeof(valor);
-	memcpy(valor, stream, tamanio);
-	stream += tamanio;
+	///////////////////PRUEBA TAMAÑO de VALOR/////////////////////
+	//printf("offset1:%d\n",buffer->offset);
+	//printf("tamanio:%d\n",tamanio);
+	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
+	buffer->offset += tamanio;
+	//printf("offset2:%d\n",buffer->offset);
 }
 
-void leer_string_del_stream(void* stream, char* valor) 
+char* leer_string_del_stream(t_buffer* buffer) 
 {
-	int tamanio;
-	leer_algo_del_stream(stream, &tamanio); 
-	valor = malloc(tamanio); // En caso de pisar algun valor, hacerle free antes
-	leer_algo_del_stream(stream, &valor);
+	int tamanio_string;
+	/////////////////////////////////PRUEBA LEER STRING//////////////////////////////////
+	/*printf("leer_algo_del_stream pasandole buffer de tamanio: %d\n",sizeof(tamanio_string));
+	leer_algo_del_stream(buffer, &tamanio_string); 
+	printf("TVALOR DEL INT: %d\n",tamanio_string);
+	printf("UINT8_T: %d\n",sizeof(uint8_t));
+	printf("INT_T: %d\n",sizeof(int));
+	printf("antes del int offset: %d\n",buffer->offset);*/
+
+	leer_algo_del_stream(buffer, tamanio_string,sizeof(tamanio_string));
+
+	//memcpy(&tamanio_string, buffer->stream + buffer->offset, sizeof(tamanio_string));
+	//buffer->offset += sizeof(tamanio_string);
+	//printf("tamanio_string: %d\n",tamanio_string);
+	//printf("offset:%d\n",buffer->offset);
+
+	char *string = malloc(tamanio_string); // En caso de pisar algun valor, hacerle free antes
+	memcpy(string, buffer->stream + buffer->offset, tamanio_string); //cambiar por offset el size of int
+	buffer->offset += (strlen(string)+1);//tamanio_string;
+	
+	//printf("Longitud de lo guardado en el string: %ld\n",(strlen(string)+1));
+	//printf("offset: %d\n",buffer->offset);
+	//printf("Se guardo en el string:%s\n",string);
+	return string;
 }
 
-void leer_registro_del_stream(void* stream, t_cpu* registros_CPU){
-leer_algo_del_stream(stream,&registros_CPU->PC);
-leer_algo_del_stream(stream,&registros_CPU->AX);
-leer_algo_del_stream(stream,&registros_CPU->BX);
-leer_algo_del_stream(stream,&registros_CPU->CX);
-leer_algo_del_stream(stream,&registros_CPU->DI);
-leer_algo_del_stream(stream,&registros_CPU->DX);
-leer_algo_del_stream(stream,&registros_CPU->EAX);
-leer_algo_del_stream(stream,&registros_CPU->EBX);
-leer_algo_del_stream(stream,&registros_CPU->ECX);
-leer_algo_del_stream(stream,&registros_CPU->EDX);
-leer_algo_del_stream(stream,&registros_CPU->SI);
-leer_algo_del_stream(stream,&registros_CPU->DI);
+void leer_registros_del_stream(void* stream, t_registros_cpu* registros_CPU){
+leer_algo_del_stream(stream,&registros_CPU->PC,sizeof(registros_CPU->PC));
+leer_algo_del_stream(stream,&registros_CPU->AX,sizeof(registros_CPU->AX));
+leer_algo_del_stream(stream,&registros_CPU->BX,sizeof(registros_CPU->BX));
+leer_algo_del_stream(stream,&registros_CPU->CX,sizeof(registros_CPU->CX));
+leer_algo_del_stream(stream,&registros_CPU->DI,sizeof(registros_CPU->DI));
+leer_algo_del_stream(stream,&registros_CPU->DX,sizeof(registros_CPU->DX));
+leer_algo_del_stream(stream,&registros_CPU->EAX,sizeof(registros_CPU->EAX));
+leer_algo_del_stream(stream,&registros_CPU->EBX,sizeof(registros_CPU->EBX));
+leer_algo_del_stream(stream,&registros_CPU->ECX,sizeof(registros_CPU->ECX));
+leer_algo_del_stream(stream,&registros_CPU->EDX,sizeof(registros_CPU->EDX));
+leer_algo_del_stream(stream,&registros_CPU->SI,sizeof(registros_CPU->SI));
+leer_algo_del_stream(stream,&registros_CPU->DI,sizeof(registros_CPU->DI));
 }
 
 //pcb->pid

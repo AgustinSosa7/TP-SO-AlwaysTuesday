@@ -10,20 +10,20 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
+
 typedef struct{
     int tiempo_espera;
     char* archivo;
     char* registro1;
     char* registro2;
-    char* registro3; 
+    char* registro3;
 } t_peticion_param;
+
 typedef struct{
     char* instruccion;
     char* interfaz;
     t_peticion_param* parametros;
 } t_peticion;
-
-
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
 
@@ -38,7 +38,7 @@ typedef struct{
 //     EXEC,
 //     BLOCKED,
 //     EXIT
-// } estado_pcb;///////////////////////////////////////////////////////////////
+// } estado_pcb;
 typedef struct 
 {
     char* nombre;
@@ -49,7 +49,17 @@ typedef struct
 
 
 
+extern int pid_global = 0;
 
+extern t_list* lista_new;
+extern t_list* lista_ready;
+extern t_list* lista_exec;
+extern t_list* lista_blocked;
+extern t_list* lista_exit;
+
+pthread_mutex_t mutex_pid;
+
+extern int procesos_activos=0;
 ///////////////////////////////////////////////////////////////
 extern t_list* IOS_CONECTADOS;
 extern pthread_mutex_t* mutex_io;
