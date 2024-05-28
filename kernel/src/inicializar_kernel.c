@@ -7,6 +7,7 @@ void inicializar_kernel(){
     inicializar_configs();
 	inicializar_listas();
 	inicializar_semaforos();
+	inicializar_pid_y_procesos_activos();
 }
 
 void inicializar_logs(void){
@@ -81,3 +82,8 @@ void inicializar_listas(void){
 void inicializar_semaforos(void){
 	mutex_pid = 1;
 }
+
+void inicializar_pid_y_procesos_activos(){
+	pid_global = 0;
+	procesos_activos = 0;
+	}

@@ -49,7 +49,7 @@ t_interfaz* identificar_io(int socket){
   interfaz->nombre = malloc(strlen(nombre_io));
   interfaz->fd_interfaz = socket;
   interfaz->cola_procesos_blocked = queue_create();
-  sem_init(interfaz->semaforo_cola_procesos_blocked, 0);
+  sem_init(interfaz->semaforo_cola_procesos_blocked, 0, 0); // el segundo argumento te dice que el sem es compartido por hilos del mismo proceso
   return interfaz;
 }
 

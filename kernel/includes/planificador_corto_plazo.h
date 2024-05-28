@@ -12,4 +12,7 @@ void planif_fifo();
 void planif_RR();
 void planif_VRR();
 
+void atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido);
+
+
 #endif 

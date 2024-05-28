@@ -34,7 +34,13 @@ typedef enum
 	PCB,
 	EJECUTAR_PROCESO_KC,
 	//---- KERNEL - MEMORIA
-	PSEUDOCODIGO
+	PSEUDOCODIGO,
+    FIFO,
+    RR,
+    VRR,
+    DESALOJO_QUANTUM,
+    PROCESO_EXIT,
+    PEDIDO_IO
 }op_code;
 
 typedef struct
@@ -52,6 +58,7 @@ typedef struct
 
 typedef struct
 {
+    u_int32_t PC;
     u_int8_t AX;
     u_int8_t BX;
     u_int8_t CX;
@@ -62,8 +69,6 @@ typedef struct
     u_int32_t EDX;
     u_int32_t SI;
     u_int32_t DI;
-}t_cpu;
-
 }t_registros_cpu;
 
 typedef enum{
@@ -76,7 +81,6 @@ typedef enum{
 
 typedef struct{
     int pid;
-    //int program_counter; No se repite con el del registro?
     int quantum;
     char* path;
     t_registros_cpu* registros_cpu;

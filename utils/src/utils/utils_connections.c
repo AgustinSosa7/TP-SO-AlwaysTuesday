@@ -208,7 +208,7 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
       	char *string = malloc((tamanio_string * sizeof(char))); // En caso de pisar algun valor, hacerle free antes
 	    memcpy(string, a_enviar + sizeof(int) + sizeof(int) + sizeof(int), tamanio_string); //cambiar por offset el size of int
 	    //paquete->buffer->offset += strlen(string);//tamanio_string;
-      	/*printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
+      	/* printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
 	    printf("offset: %d\n",paquete->buffer->offset);
 	    printf("Se guardo en el string:%s\n",string);
         
@@ -297,11 +297,10 @@ agregar_algo_a_paquete(paquete,&registros_cpu->DI);
 
 void enviar_pcb_a(t_pcb* un_pcb, int socket){
 	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
-	agregar_algo_a_paquete(un_paquete, un_pcb->pid);
-    //agregar_algo_a_paquete(un_paquete, &un_pcb->program_counter);elPC debe ir en el registro de CPU ????
-    agregar_algo_a_paquete(un_paquete,un_pcb->quantum);
+	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid));
+    agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum));
 	agregar_string_a_paquete(un_paquete,un_pcb->path);
-    agregar_registro_a_paquete(un_paquete, &un_pcb->registros_cpu);
+    agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
 	agregar_algo_a_paquete(un_paquete,un_pcb->estado_pcb);
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
@@ -311,10 +310,9 @@ t_pcb* recibir_pcb(t_paquete* paquete){
 	void* stream = paquete->buffer->stream;
 	t_pcb* pcb = malloc(sizeof(t_pcb));
 	leer_algo_del_stream(stream, pcb->pid,sizeof(pcb->pid));
-	//leer_algo_del_paquete(stream, &un_pcb->program_counter); elPC debe ir en el registro de CPU ????
 	leer_algo_del_stream(stream,pcb->quantum,sizeof(pcb->quantum));
 	leer_string_del_stream(stream);
-	leer_registros_del_stream(stream, &(pcb->registros_cpu));
+	leer_registros_del_stream(stream, pcb->registros_cpu);
 	leer_algo_del_stream(stream,pcb->estado_pcb,sizeof(pcb->estado_pcb));
 	free(stream);
 	return pcb; //Devuelvo PCB
@@ -335,7 +333,7 @@ log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
 log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
 log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
 log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
-log_info(un_logger,"PCB Estado: %d",pcb->estado_pcb);
+log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
 }
 
 ////////////////////// DESERIALIZACION //////////////
@@ -404,39 +402,18 @@ char* recibir_mensaje_string(int socket_cliente)
 
 void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 {
-	///////////////////PRUEBA TAMAÑO de VALOR/////////////////////
-	//printf("offset1:%d\n",buffer->offset);
-	//printf("tamanio:%d\n",tamanio);
 	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
 	buffer->offset += tamanio;
-	//printf("offset2:%d\n",buffer->offset);
 }
 
 char* leer_string_del_stream(t_buffer* buffer) 
 {
 	int tamanio_string;
-	/////////////////////////////////PRUEBA LEER STRING//////////////////////////////////
-	/*printf("leer_algo_del_stream pasandole buffer de tamanio: %d\n",sizeof(tamanio_string));
-	leer_algo_del_stream(buffer, &tamanio_string); 
-	printf("TVALOR DEL INT: %d\n",tamanio_string);
-	printf("UINT8_T: %d\n",sizeof(uint8_t));
-	printf("INT_T: %d\n",sizeof(int));
-	printf("antes del int offset: %d\n",buffer->offset);*/
-
 	leer_algo_del_stream(buffer, tamanio_string,sizeof(tamanio_string));
 
-	//memcpy(&tamanio_string, buffer->stream + buffer->offset, sizeof(tamanio_string));
-	//buffer->offset += sizeof(tamanio_string);
-	//printf("tamanio_string: %d\n",tamanio_string);
-	//printf("offset:%d\n",buffer->offset);
-
 	char *string = malloc(tamanio_string); // En caso de pisar algun valor, hacerle free antes
-	memcpy(string, buffer->stream + buffer->offset, tamanio_string); //cambiar por offset el size of int
-	buffer->offset += (strlen(string)+1);//tamanio_string;
-	
-	//printf("Longitud de lo guardado en el string: %ld\n",(strlen(string)+1));
-	//printf("offset: %d\n",buffer->offset);
-	//printf("Se guardo en el string:%s\n",string);
+	leer_algo_del_stream(buffer, string, tamanio_string);
+
 	return string;
 }
 
@@ -445,7 +422,6 @@ leer_algo_del_stream(stream,&registros_CPU->PC,sizeof(registros_CPU->PC));
 leer_algo_del_stream(stream,&registros_CPU->AX,sizeof(registros_CPU->AX));
 leer_algo_del_stream(stream,&registros_CPU->BX,sizeof(registros_CPU->BX));
 leer_algo_del_stream(stream,&registros_CPU->CX,sizeof(registros_CPU->CX));
-leer_algo_del_stream(stream,&registros_CPU->DI,sizeof(registros_CPU->DI));
 leer_algo_del_stream(stream,&registros_CPU->DX,sizeof(registros_CPU->DX));
 leer_algo_del_stream(stream,&registros_CPU->EAX,sizeof(registros_CPU->EAX));
 leer_algo_del_stream(stream,&registros_CPU->EBX,sizeof(registros_CPU->EBX));

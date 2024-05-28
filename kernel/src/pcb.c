@@ -26,7 +26,8 @@ int asignarPID(){
 
 void cambiar_estado(t_pcb* un_pcb, estado_pcb* nuevo_estado){
 	un_pcb->estado_pcb = nuevo_estado;
-	switch (nuevo_estado)
+    int estado = nuevo_estado;
+	switch(estado)
     {
     case NEW:
         list_add(lista_new,un_pcb);

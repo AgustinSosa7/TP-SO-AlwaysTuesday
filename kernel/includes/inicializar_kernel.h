@@ -12,5 +12,6 @@ void inicializar_logs(void);
 void inicializar_configs(void);
 void inicializar_listas(void);
 void inicializar_semaforos(void);
+void inicializar_pid_y_procesos_activos();
 
 #endif 

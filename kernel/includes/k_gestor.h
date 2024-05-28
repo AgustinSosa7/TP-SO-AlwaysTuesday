@@ -49,7 +49,7 @@ typedef struct
 
 
 
-extern int pid_global = 0;
+extern int pid_global;
 
 extern t_list* lista_new;
 extern t_list* lista_ready;
@@ -59,7 +59,7 @@ extern t_list* lista_exit;
 
 pthread_mutex_t mutex_pid;
 
-extern int procesos_activos=0;
+extern int procesos_activos;
 ///////////////////////////////////////////////////////////////
 extern t_list* IOS_CONECTADOS;
 extern pthread_mutex_t* mutex_io;

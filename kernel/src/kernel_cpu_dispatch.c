@@ -10,9 +10,7 @@ void atender_kernel_cpu_dispatch(){
 
 
         switch (cod_op)
-        {
-        case :
-       
+        {  
         case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;

@@ -125,10 +125,11 @@ struct{
 
 struct{
     char* nombre;
+    int fd_entradasalida;
     t_queue cola_procesos_blocked;
 }bloqueados
 // int1 ----------------fd_entradasalida--------------- kernel -------------------cpu
 // 
-//                     p1 sleep 100000                               p2 sleep 3000
-//                                                                   p3 sleep 1500
-//                                                                   p4 sleep 4000
+//                     p3 sleep 1500                           
+//                                                      
+//                                                      p4 sleep 4000
