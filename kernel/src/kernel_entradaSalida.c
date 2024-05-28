@@ -29,7 +29,7 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
 
     t_interfaz* interfaz = existe_la_interfaz(nombre_io, pcb);
     if(esta_conectada_la_interfaz(interfaz, pcb)){
-    validar_interfaz_admite_instruccion(interfaz, instruccion);
+    validar_interfaz_admite_instruccion(interfaz, instruccion); 
     }else{
     //enviar_proceso_a_exit();
     }
@@ -100,16 +100,32 @@ void gestionar_lista_de_interfaz(t_peticion* peticion, t_interfaz* interfaz){
 
     // si la interfaz no tiene procesos bloqueados, lo ejecuto
     // si la interfaz tiene procesos bloqueados, lo agrego a la lista
-    
+
     // Hilo que maneja la cola de bloqueados:
     // la cola de execute es un while(1) que se le avisa que ingreso un proceso a su cola mediante 
     // un semaforo; este procede a hacerle pop, mandarlo a la cpu, esperar a recibir el contexto actualizado 
     // y asi sucesivamente.
-    while(1){
-        wait(io->semaforo_cola_procesos_blocked)
-        pcb = pop(io->cola_procesos_blocked)        
-    }
 
-    // wait(se_libero_io); se inicializa en 1
-    enviar_peticion_a_interfaz(peticion, interfaz);
+ //   while(1){
+ //       wait(io->semaforo_cola_procesos_blocked);
+ //       pcb = pop(io->cola_procesos_blocked);        
+ //   }
+//
+ //   // wait(se_libero_io); se inicializa en 1
+ //   enviar_peticion_a_interfaz(peticion, interfaz);
 }
+
+
+
+struct{
+    char* nombre;
+    int fd_entradasalida;
+    t_queue cola_procesos_blocked;
+}t_interfaz
+
+
+// int1 ----------------fd_entradasalida--------------- kernel -------------------cpu
+// 
+//                     p1 sleep 100000                               p2 sleep 3000
+//                                                                   p3 sleep 1500
+//                                                                   p4 sleep 4000
