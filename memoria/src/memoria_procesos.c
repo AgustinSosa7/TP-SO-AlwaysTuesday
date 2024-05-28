@@ -39,21 +39,48 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     return lista_de_instrucciones;
 };
 
-char* recibir_direccion_pseudocodigo(){
+
+char* recibir_direccion_pseudocodigo(){ //CODIGO REPETIDO EN CPU_MEMORIA
     op_code code_op = recibir_operacion(fd_kernel);
     t_paquete* paquete = recibir_paquete(fd_kernel);
-    void* stream = paquete->buffer->stream;
-    char* direccion_pseudocodigo;
+    t_buffer* buffer = paquete->buffer;
+    // Se comentó lo que era para probar si llegaba bien el paquete  :D
+    //log_info(memoria_logger, "Recibi un paquete de size: %d",paquete->buffer->size);
+    //log_info(memoria_logger, "Recibi un paquete con el op_code: %d",code_op);
     if(code_op == PSEUDOCODIGO)
     {
-        leer_string_del_stream(stream, direccion_pseudocodigo);
-        printf("Direc pseudocodigo: %s",direccion_pseudocodigo);
-        free(stream);
+        //log_info(memoria_logger, "leer_string_del_stream");
+        char* direccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
+        log_info(memoria_logger, "free");
+        free(paquete);
+        return direccion_pseudocodigo;
     }
     else
     {   
         log_error(memoria_logger, "No se recibio un pseudocodigo.");
+        free(paquete);
         exit(EXIT_FAILURE);
     }
-    return direccion_pseudocodigo;
 };
+
+void enviar_instruccion_pesudocodigo(t_list* lista_proceso,int pc){
+    t_paquete* paquete = crear_paquete(PSEUDOCODIGO);
+    agregar_string_a_paquete(paquete, list_get(lista_proceso, pc));
+
+    /* BORRAR ES PARA LAS PRUEBAS  */
+
+        int tamanio_string = strlen(list_get(lista_proceso, pc));
+        char *string = malloc(tamanio_string * sizeof(char)); // En caso de pisar algun valor, hacerle free antes
+	    printf("offset:%d\n",paquete->buffer->offset);
+	    printf("tam del string (malloc): %ld\n",strlen(string));
+	    memcpy(string, paquete->buffer->stream + sizeof(int), tamanio_string); //cambiar por offset el size of int
+	    paquete->buffer->offset += strlen(string);//tamanio_string;
+        printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
+	    printf("offset: %d\n",paquete->buffer->offset);
+	    printf("Se guardo en el string:%s\n",string);
+
+    /* FIN DE BORRAR ES PARA LAS PRUEBAS  */
+
+    enviar_paquete(paquete, fd_cpu);
+    eliminar_paquete(paquete);
+}

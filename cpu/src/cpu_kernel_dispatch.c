@@ -19,11 +19,10 @@ void atender_cpu_kernel_dispatch(){
             case PCB:
                     //Recibe el paquete lo deserealiza y recibe el PCB
                     log_info(cpu_logger,"LLego el PCB");
-                    t_pcb* un_pcb = recibir_pcb(paquete,cpu_logger);
+                    t_pcb* un_pcb = recibir_pcb(paquete);
                     //Se prueba si llega bien el PCB
                     imprimir_pcb(un_pcb, cpu_logger);
                     free(un_pcb);
-           
             break;
             case -1:
                 log_error(cpu_logger, "Desconexión de KERNEL - Dispatch");

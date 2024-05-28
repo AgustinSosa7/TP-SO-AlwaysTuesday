@@ -5,6 +5,8 @@
 void inicializar_kernel(){
     inicializar_logs();
     inicializar_configs();
+	inicializar_listas();
+	inicializar_semaforos();
 }
 
 void inicializar_logs(void){
@@ -66,4 +68,16 @@ log_info(kernel_log_debug, "PUERTO_CPU_INTERRUPT: %s", PUERTO_CPU_INTERRUPT); //
 
 log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualmente
 
+}
+
+void inicializar_listas(void){
+	lista_new = list_create();
+	lista_ready = list_create();
+	lista_exec = list_create();
+	lista_blocked = list_create();
+	lista_exit = list_create();
+}
+
+void inicializar_semaforos(void){
+	mutex_pid = 1;
 }
