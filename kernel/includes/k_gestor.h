@@ -26,6 +26,29 @@ typedef struct{
 } t_peticion;
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
+
+
+// typdef struct{
+ 
+// } t_registros_cpu;
+
+// typedef enum{
+//     NEW,
+//     READY,
+//     EXEC,
+//     BLOCKED,
+//     EXIT
+// } estado_pcb;
+typedef struct 
+{
+    char* nombre;
+    int fd_interfaz;
+    t_queue* cola_procesos_blocked;
+    sem_t* semaforo_cola_procesos_blocked;
+} t_interfaz;
+
+
+
 extern int pid_global = 0;
 
 extern t_list* lista_new;
@@ -38,6 +61,9 @@ pthread_mutex_t mutex_pid;
 
 extern int procesos_activos=0;
 ///////////////////////////////////////////////////////////////
+extern t_list* IOS_CONECTADOS;
+extern pthread_mutex_t* mutex_io;
+
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;
 extern t_config* kernel_config;

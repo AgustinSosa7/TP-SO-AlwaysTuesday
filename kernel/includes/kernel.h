@@ -14,6 +14,8 @@
 
 // Variables GLOBALES
 
+t_list* IOS_CONECTADOS;
+
 t_log* kernel_logger;
 t_log* kernel_log_debug;
 t_config* kernel_config;

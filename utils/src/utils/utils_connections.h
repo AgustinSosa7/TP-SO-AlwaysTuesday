@@ -12,6 +12,9 @@
 #include <commons/log.h>
 #include <commons/string.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
+
+#include <semaphore.h>
 
 #include <assert.h>
 
@@ -26,6 +29,7 @@ typedef enum
 	HANDSHAKE,
 	ATENDER_PETICION_INTERFAZ_KERNEL,
 	RECONOCER_INSTRUCCION,
+	ESTOY_CONECTADO,
 	//---- KERNEL - CPU
 	PCB,
 	EJECUTAR_PROCESO_KC,
@@ -48,7 +52,6 @@ typedef struct
 
 typedef struct
 {
-    u_int32_t PC; //SACADO POR QUE MILI QUISO :D
     u_int8_t AX;
     u_int8_t BX;
     u_int8_t CX;
@@ -59,6 +62,8 @@ typedef struct
     u_int32_t EDX;
     u_int32_t SI;
     u_int32_t DI;
+}t_cpu;
+
 }t_registros_cpu;
 
 typedef enum{

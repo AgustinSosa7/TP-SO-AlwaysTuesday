@@ -72,9 +72,11 @@ void enviar_handshake(int conexion){
 	void* coso_a_enviar = malloc(sizeof(int));
 	int saludar = HANDSHAKE;
 	memcpy(coso_a_enviar, &saludar, sizeof(int));
+	//gestionar error de send aca. Para cuando un cliente se desconecta repentinamente.
 	send(conexion, coso_a_enviar, sizeof(int),0);
 	free(coso_a_enviar);
 }
+
 
 void liberar_conexion(int socket_cliente)
 {
@@ -136,20 +138,13 @@ void gestionar_handshake_como_server(int conexion, t_log* logger, const char* mo
 	int code_op = recibir_operacion(conexion);
 	switch (code_op) {
 		case HANDSHAKE:
-			void* coso_a_enviar = malloc(sizeof(int));
-			int respuesta = HANDSHAKE;
-			memcpy(coso_a_enviar, &respuesta, sizeof(int));
-			send(conexion, coso_a_enviar, sizeof(int),0);
-			free(coso_a_enviar);
-			
+			enviar_handshake(conexion);
 			int respuesta_handshake = recibir_operacion(conexion);
 			if(respuesta_handshake == HANDSHAKE){
 				log_warning(logger, "HANDSHAKE CON %s [EXITOSO]", modulo_destino);
 			}else{
 				log_error(logger, "Error en handshake con %s", modulo_destino);
 				}
-	
-
 			break;
 		case -1:
 			log_error(logger, "Desconexion en HANDSHAKE\n");
@@ -367,16 +362,14 @@ op_code recibir_operacion(int socket_cliente)
 	}
 }
 
-t_buffer* recibir_buffer(int unSocket){ 
+t_buffer* recibir_buffer(int unSocket)
+{ 
 	t_buffer* buffer = malloc(sizeof(t_buffer));
 	recv(unSocket, &(buffer->size), sizeof(int), MSG_WAITALL);
-	printf("buffer size:%d\n",buffer->size);
 	buffer->stream = malloc(buffer->size);
-	recv(unSocket, buffer->stream, buffer->size , MSG_WAITALL);
-	char* string = malloc(buffer->size);
-	memcpy(string,buffer->stream + 4,buffer->size);
-	printf("string size:%s\n",string);
-	 return buffer;	
+	recv(unSocket, buffer->stream, buffer->size, MSG_WAITALL);
+	
+	return buffer;	
 }
 
 //INT
@@ -392,19 +385,19 @@ t_paquete* recibir_paquete(int unSocket)
 
 void* recibir_mensaje(int socket_cliente)
 {	
-	void* mensaje = malloc(sizeof(void));
-	t_paquete* paquete = recibir_paquete(socket_cliente);
-	//leer_string_del_stream(paquete->buffer->stream, mensaje);
-	
+	int tamanio_mensaje;
+	recv(socket_cliente, tamanio_mensaje, sizeof(int), MSG_WAITALL);
+	void* mensaje = malloc(tamanio_mensaje);
+	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
 	return mensaje;
 }
 
 char* recibir_mensaje_string(int socket_cliente)
 {	
 	int tamanio;
-	recv(socket_cliente, &tamanio, sizeof(int), 0);
+	recv(socket_cliente, &tamanio, sizeof(int), MSG_WAITALL);
 	char* mensaje = malloc(tamanio);
-	recv(socket_cliente, mensaje, tamanio, 0);
+	recv(socket_cliente, mensaje, tamanio, MSG_WAITALL);
 	
 	return mensaje;
 }
