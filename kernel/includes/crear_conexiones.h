@@ -14,6 +14,7 @@
 void gestionar_entrada_salida();
 t_interfaz* identificar_io(int socket);
 void agregar_io(t_interfaz* interfaz);
+void gestionar_procesos_io(t_interfaz* interfaz);
 
 
 

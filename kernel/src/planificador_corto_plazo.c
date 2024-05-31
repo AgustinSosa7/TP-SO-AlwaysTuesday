@@ -22,13 +22,6 @@ void planif_corto_plazo()
     }
 
 
-void enviar_proceso_a_blocked(t_pcb* un_pcb,t_queue* cola)
-{
-   // un_pcb->estado_pcb = BLOCKED; //no utilizamos la funcion "cambiar_estado" para no manejas 2 listas de procesos bloqueados
-    queue_push(cola,un_pcb);
-    // poner semaforos
-}
-
 
 void planif_fifo_RR()
 {
@@ -99,39 +92,30 @@ void gestionar_quantum(t_pcb* un_pcb){
         
     }
     
+
+void enviar_proceso_a_blocked(t_proceso_blocked* proceso_a_ejecutar, t_interfaz* interfaz)
+{
+    proceso_a_ejecutar->un_pcb->estado_pcb = BLOCKED;
+    
+    //pthread_mutex_lock(interfaz->mutex_cola_blocked);
+    queue_push(interfaz->cola_procesos_blocked, proceso_a_ejecutar->un_pcb);
+    //pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+    signal(interfaz->semaforo_cola_procesos_blocked);
 }
 
  
 void atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido){
-        // podría ser que todo este CASE sea un "hilo" para que cada vez que se pida hacer una interfaz
-        // se cree un hilo que lo maneje por separado, ya que como existen n interfaces, deberían
-        // existin n hilos que se comuniquen con dichas interfaces
-            t_peticion* peticion = recibir_peticion(paquete);  
-            t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
-            enviar_proceso_a_blocked(pcb_recibido, interfaz->cola_procesos_blocked);
-            gestionar_lista_de_interfaz(peticion, interfaz); 
-            eliminar_peticion(peticion);
-            recibir_fin_peticion();
-            desbloquear_proceso(interfaz,pcb_recibido);
-      }
-
-void desbloquear_proceso(t_interfaz* interfaz){
-        // poner semaforos
-        t_pcb* un_pcb = queue_pop(interfaz->cola_procesos_blocked);
-        cambiar_estado(un_pcb, READY);
-        // signal(io->semaforo_cola_procesos_blocked);
+      t_peticion* peticion = recibir_peticion(paquete);  
+      t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
+      t_proceso_blocked* proceso_a_ejecutar;
+      proceso_a_ejecutar->un_pcb = pcb_recibido;
+      proceso_a_ejecutar->peticion = peticion;
+      enviar_proceso_a_blocked(proceso_a_ejecutar, interfaz);
+      eliminar_peticion(peticion);
 }
 
-/*FALTA INCLUIR BIEN A TODAS LAS LIBRERIAS,HACER "gestionar_lista_de_interfaz(param)" 
-y también arreglar argumentos del hilo atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido)
-Declarar todas las funciones nuevas que creamos, chequearlas bien.
-mili:
-hacer quantum
-poner semáforos en todos lados
-y más cosas que no recuerdo
-mergear bien "atender_kernel_cpu_dispatch"
 
-*/
+
 
 
 

@@ -45,7 +45,13 @@ typedef struct
     int fd_interfaz;
     t_queue* cola_procesos_blocked;
     sem_t* semaforo_cola_procesos_blocked;
+    pthread_mutex_t* mutex_cola_blocked;
 } t_interfaz;
+
+typedef struct{
+        t_pcb* un_pcb;
+        t_peticion* peticion;
+}t_proceso_blocked;
 
 
 

@@ -39,6 +39,7 @@ void gestionar_entrada_salida(){
     gestionar_handshake_como_server(fd_entradasalida, kernel_logger, "ENTRADA SALIDA");
     t_interfaz* interfaz = identificar_io(fd_entradasalida);
     agregar_io(interfaz);
+    gestionar_procesos_io(interfaz);
   }
 }
 
@@ -50,6 +51,8 @@ t_interfaz* identificar_io(int socket){
   interfaz->fd_interfaz = socket;
   interfaz->cola_procesos_blocked = queue_create();
   sem_init(interfaz->semaforo_cola_procesos_blocked, 0, 0); // el segundo argumento te dice que el sem es compartido por hilos del mismo proceso
+  pthread_mutex_t* mutex_cola_blocked;
+  interfaz->mutex_cola_blocked = mutex_cola_blocked;
   return interfaz;
 }
 
@@ -60,3 +63,23 @@ void agregar_io(t_interfaz* interfaz){
 
 }
 
+void gestionar_procesos_io(t_interfaz* interfaz){
+  while(1){
+    wait(interfaz->semaforo_cola_procesos_blocked);
+    //wait
+    t_procesos_blocked* proceso_a_ejecutar = pop(interfaz->cola_procesos_blocked)
+    //signal
+    enviar_peticion_a_interfaz(proceso_a_ejecutar->peticion, interfaz);
+    recibir_fin_peticion();
+    desbloquear_proceso(proceso_a_ejecutar->un_pcb);
+  }
+}
+
+void recibir_fin_peticion(){
+    bool fin_peticion;
+    recv(fd_entradasalida, &fin_peticion, sizeof(bool), MSG_WAITALL);
+}
+
+void desbloquear_proceso(t_pcb* un_pcb){
+    cambiar_estado(un_pcb, READY);
+}
