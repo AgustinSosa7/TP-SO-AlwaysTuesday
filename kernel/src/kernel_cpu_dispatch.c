@@ -1,25 +1,38 @@
 #include "../includes/kernel_cpu_dispatch.h"
 
-
-void atender_kernel_cpu_dispatch(){
-    bool control_key = 1;
-    while (control_key) {
-        int cod_op = recibir_operacion(fd_cpu_dispatch);
-        t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
-	  log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", cod_op);
-
-
-        switch (cod_op)
-        {  
-        case -1:
+void recibir_pcb_con_motivo()
+{     int control_key = 1;
+      while (control_key){
+      int code_op = recibir_operacion(fd_cpu_dispatch);
+      t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
+      t_pcb* pcb_recibido = recibir_pcb(paquete);
+      log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
+      switch (code_op)
+      {
+      case DESALOJO_QUANTUM:
+            log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum",pcb->pid);
+            cambiar_estado(pcb_recibido, READY);
+            
+            break;
+      case PROCESO_EXIT:
+            /* code */
+            break;
+      case PEDIDO_IO:               
+            //pthread_t pedido_io;
+            //pthread_create(&pedido_io, NULL, atender_pedido_io,(paquete,pcb_recibido)); //verificar como se envian estos parametros
+            //pthread_detach(pedido_io);
+            atender_pedido_io(paquete,pcb_recibido);
+            break;
+      case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;
-        default:
+            break;
+      default:
             log_warning(kernel_logger, "Operacion desconocida de CPU - DISPATCH");
             break;
         }
-        eliminar_paquete(paquete);
-    }
+        eliminar_paquete(paquete);    
+      }
 }
 
 

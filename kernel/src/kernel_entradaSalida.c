@@ -1,26 +1,26 @@
 #include "../includes/kernel_entradaSalida.h"
 #include <../src/utils/utils_connections.h>
 
-
-
-void atender_kernel_entradaSalida(){
-    bool control_key = 1;
-    while (control_key) {
-        int cod_op = recibir_operacion(fd_entradasalida);
-        switch (cod_op)
-        {
-        case MENSAJE:
-            //
-            break;
-        case -1:
-          //  log_error(logger, "Desconexion de ENTRADASALIDA");      
-            control_key = 0;
-        default:
-           // log_warning(logger, "Operacion desconocida de ENTRADASALIDA");
-            break;
-        }
-    }
+void atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido){
+      t_peticion* peticion = recibir_peticion(paquete);  
+      t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
+      t_proceso_blocked* proceso_a_ejecutar;
+      proceso_a_ejecutar->un_pcb = pcb_recibido;
+      proceso_a_ejecutar->peticion = peticion;
+      enviar_proceso_a_blocked(proceso_a_ejecutar, interfaz);
+      eliminar_peticion(peticion);
 }
+
+void enviar_proceso_a_blocked(t_proceso_blocked* proceso_a_ejecutar, t_interfaz* interfaz)
+{
+    proceso_a_ejecutar->un_pcb->estado_pcb = BLOCKED;
+    
+    //pthread_mutex_lock(interfaz->mutex_cola_blocked);
+    queue_push(interfaz->cola_procesos_blocked, proceso_a_ejecutar->un_pcb);
+    //pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+    signal(interfaz->semaforo_cola_procesos_blocked);
+}
+
 
 
 t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){ 

@@ -64,8 +64,8 @@ int main(int argc, char** argv)
     pthread_join(hilo_entradaSalida,NULL); //Pruena MILI :3
 */
     //leer consola interactiva
-    // iniciar_consola();
-    // leer_consola();
+     iniciar_consola();
+     leer_consola();
 
 
     return EXIT_SUCCESS;

@@ -27,18 +27,6 @@ typedef struct{
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
 
-
-// typdef struct{
- 
-// } t_registros_cpu;
-
-// typedef enum{
-//     NEW,
-//     READY,
-//     EXEC,
-//     BLOCKED,
-//     EXIT
-// } estado_pcb;
 typedef struct 
 {
     char* nombre;
@@ -59,6 +47,7 @@ extern int pid_global;
 
 extern t_list* lista_new;
 extern t_list* lista_ready;
+extern t_list* lista_ready_plus;
 extern t_list* lista_exec;
 extern t_list* lista_blocked;
 extern t_list* lista_exit;
