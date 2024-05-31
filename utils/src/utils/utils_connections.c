@@ -339,6 +339,31 @@ log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
 //log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
 }
 
+char* enum_a_string(estado_pcb estado){
+    switch (estado)
+    {
+      case NEW:
+        return "NEW";
+        break;
+        case READY:
+        return "READY";
+        break;
+      case EXEC:
+        return "EXEC";
+        break;
+      case EXIT:
+        return "EXIT";
+        break;
+      case BLOCKED:
+        return "BLOCKED";
+        break;
+	  case READYPLUS:
+        return "READYPLUS";
+        break;
+      default:
+        break;
+}
+    
 ////////////////////// DESERIALIZACION //////////////
 
 op_code recibir_operacion(int socket_cliente) 

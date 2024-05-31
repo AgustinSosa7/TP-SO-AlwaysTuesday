@@ -8,10 +8,10 @@ void planif_corto_plazo()
         switch (ALGORITMO_PLANIFICACION)
         {
         case FIFO:
-            planif_fifo();
+            planif_fifo_RR();
             break;
         case RR:
-            planif_RR();
+            planif_fifo_RR();
             break;
         case  VRR:
             planif_VRR();
@@ -21,7 +21,50 @@ void planif_corto_plazo()
         }
     }
 
-t_paquete* recibir_pcb_con_motivo()
+
+void enviar_proceso_a_blocked(t_pcb* un_pcb,t_queue* cola)
+{
+   // un_pcb->estado_pcb = BLOCKED; //no utilizamos la funcion "cambiar_estado" para no manejas 2 listas de procesos bloqueados
+    queue_push(cola,un_pcb);
+    // poner semaforos
+}
+
+
+void planif_fifo_RR()
+{
+
+    if(!list_is_empty(lista_ready)){
+        if(list_is_empty(lista_exec)){
+            //semaforos 
+            t_pcb* un_pcb = list_remove(lista_ready,0);
+            cambiar_estado(un_pcb, EXEC);
+            
+            enviar_pcb_a(un_pcb,fd_cpu_dispatch);
+
+            if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
+                pthread_t hilo_quantum;
+                pthread_create(&hilo_quantum, NULL, (void*)gestionar_quantum, un_pcb);
+            }
+             recibir_pcb_con_motivo();
+        }
+        
+ }
+
+ void gestionar_quantum_VRR(){
+    
+ }
+// VRR
+ void planif_VRR(){
+    if(!list_is_empty(lista_ready_plus)){
+        t_pcb* un_pcb = list_remove(lista_ready_plus);
+        cambiar_estado(un_pcb, READYPLUS);
+        enviar_pcb_a(un_pcb,fd_cpu_dispatch);
+        pthread_t hilo_quantum_VRR;
+        pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);
+    }
+ }
+
+void recibir_pcb_con_motivo()
 { //falta declarar funcion en .h
     int code_op = recibir_operacion(fd_cpu_dispatch);
     t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
@@ -30,7 +73,9 @@ t_paquete* recibir_pcb_con_motivo()
     switch (code_op)
     {
     case DESALOJO_QUANTUM:
-        /* code */
+        log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum",pcb->pid);
+        cambiar_estado(pcb_recibido, READY);
+        
         break;
     case PROCESO_EXIT:
         /* code */
@@ -46,45 +91,17 @@ t_paquete* recibir_pcb_con_motivo()
     }
 }
 
-
-void enviar_proceso_a_blocked(t_pcb* un_pcb,t_queue* cola)
-{
-   // un_pcb->estado_pcb = BLOCKED; //no utilizamos la funcion "cambiar_estado" para no manejas 2 listas de procesos bloqueados
-    queue_push(cola,un_pcb);
-    // poner semaforos
+void gestionar_quantum(t_pcb* un_pcb){
+// proceso finaliza antes de que termine el quantum y vuelve a entrar
+    sleep(QUANTUM);
+        if(contains_algo(lista_exec, un_pcb->pid)){
+        //enviar interrupcion a cpu por interrupt
+        
+    }
+    
 }
 
-  
-void planif_fifo()
-{
-
-    if(!list_is_empty(lista_ready)){
-        if(list_is_empty(lista_exec)){
-            //semaforos 
-            t_pcb* un_pcb = list_remove(lista_ready,0);
-            cambiar_estado(un_pcb, EXEC);
-            //agregar msje
-            _enviar_pcb_a_CPU_por_dispatch(un_pcb);
-
-            //recibir_pcb_con_motivo();
-
-            //switch(motivo desalojo)
-            //
-        }
-        
- }
-
- void planif_RR(){
-//enviar pcb a cpu por dispatch
-//iniciar quantum
-//enviar interrupcion a cpu por interrupt
-//recibir_pcb_con_motivo();
- }
- void planif_VRR(){
-
-
- }
-
+ 
 void atender_pedido_io(t_paquete* paquete, t_pcb* pcb_recibido){
         // podría ser que todo este CASE sea un "hilo" para que cada vez que se pida hacer una interfaz
         // se cree un hilo que lo maneje por separado, ya que como existen n interfaces, deberían
@@ -115,3 +132,6 @@ y más cosas que no recuerdo
 mergear bien "atender_kernel_cpu_dispatch"
 
 */
+
+
+

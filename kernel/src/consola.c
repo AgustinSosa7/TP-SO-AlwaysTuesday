@@ -43,8 +43,7 @@ void leer_comandos(){
 	}
 	free(leido);
 }
-//"[EJECUTAR_SCRIPT ,hola"]
-/*
+
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
 	int size = string_array_size(array_leido);
@@ -61,7 +60,7 @@ bool validar_instruccion(char* leido){
 		} 
 	}
 	return true;
-}*/
+}
 
 
 void atender_instruccion_validada(char* leido){
@@ -70,7 +69,7 @@ void atender_instruccion_validada(char* leido){
 	switch (op_code_encontrado)
 	{
 	case EJECUTAR_SCRIPT:
-		/* code */
+		
 		break;
 	case INICIAR_PROCESO:
 		t_pcb* nuevo_pcb = crearPcb();
@@ -96,7 +95,6 @@ void atender_instruccion_validada(char* leido){
 
 }
 
-/*
 op_code_instruccion* encontrar_op_code(leido){ 
     char** array_leido = string_split(leido," ");
 	t_list_iterator lista = list_iterator_create(lista_instrucciones);
@@ -108,4 +106,3 @@ op_code_instruccion* encontrar_op_code(leido){
         }
     }
 }
-*/

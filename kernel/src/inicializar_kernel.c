@@ -75,8 +75,9 @@ void inicializar_listas(void){
 	lista_new = list_create();
 	lista_ready = list_create();
 	lista_exec = list_create();
-	lista_blocked = list_create();
+	//lista_blocked = list_create();
 	lista_exit = list_create();
+	lista_ready_plus = list_create();
 }
 
 void inicializar_semaforos(void){

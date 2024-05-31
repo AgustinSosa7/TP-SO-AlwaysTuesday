@@ -8,7 +8,7 @@ t_pcb* crearPcb(){
 	t_pcb* pcb = malloc(sizeof(t_pcb*));
 	pcb->pid = asignarPID();
     //pcb->program_counter = 0; Esto no se repite en los registros???? 
-    pcb->quantum= QUANTUM;
+    pcb->quantum = 0;
     pcb->registros_cpu = malloc(sizeof(t_registros_cpu*));
 	inicializar_registros(pcb);
     pcb->estado_pcb = NEW;
@@ -25,7 +25,12 @@ int asignarPID(){
 }
 
 void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
+    estado_pcb estado_anterior = un_pcb->estado_pcb;
 	un_pcb->estado_pcb = nuevo_estado;
+
+    log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual:
+    <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
+
 	switch(nuevo_estado)
     {
     case NEW:
@@ -33,6 +38,8 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
         break;
     case READY:
         list_add(lista_ready,un_pcb);
+        //log info(Ingreso a Ready: “Cola Ready <COLA>: [<LISTA DE PIDS>]”)
+
         break;
     case EXEC:
         list_add(lista_exec,un_pcb);
@@ -40,7 +47,9 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
     case EXIT:
         list_add(lista_exit,un_pcb);
         break;
-
+    case READYPLUS:
+        list_add(lista_ready_plus,un_pcb);
+        break;    
     default:
         break;
     }
@@ -51,5 +60,3 @@ void inicializar_registros(t_pcb* un_pcb){
 	un_pcb->registros_cpu->AX= 0;
 }
 
-
-    

@@ -76,7 +76,8 @@ typedef enum{
     READY,
     EXEC,
     BLOCKED,
-    EXIT
+    EXIT,
+    READYPLUS,
 } estado_pcb;
 
 typedef struct{
@@ -129,7 +130,7 @@ void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_C
 void enviar_pcb_a(t_pcb* un_pcb, int socket);
 t_pcb* recibir_pcb(t_paquete* paquete);
 void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
-
+char* enum_a_string(estado_pcb estado);
 
 // DESERIALIZACION
 op_code recibir_operacion(int);
