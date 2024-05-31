@@ -13,7 +13,7 @@ t_interfaz* existe_la_interfaz(char* interfaz, t_pcb* pcb);
 bool esta_la_io(void* interfaz);
 bool esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb);
 void validar_interfaz_admite_instruccion(char* interfaz, char* instruccion, t_pcb* pcb);
-void enviar_peticion_a_interfaz(t_peticion* peticion);
+void enviar_peticion_a_interfaz(t_peticion* peticion, t_interfaz* interfaz);
 void recibir_fin_peticion();
 
 #endif 

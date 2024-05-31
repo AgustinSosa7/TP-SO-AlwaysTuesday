@@ -15,9 +15,10 @@ void enviar_proceso_a_blocked(t_proceso_blocked* proceso_a_ejecutar, t_interfaz*
 {
     proceso_a_ejecutar->un_pcb->estado_pcb = BLOCKED;
     
-    //pthread_mutex_lock(interfaz->mutex_cola_blocked);
+    pthread_mutex_lock(interfaz->mutex_cola_blocked);
     queue_push(interfaz->cola_procesos_blocked, proceso_a_ejecutar->un_pcb);
-    //pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+    pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+
     signal(interfaz->semaforo_cola_procesos_blocked);
 }
 
@@ -36,10 +37,14 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
     return interfaz;
 }
 t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb){
+    t_interfaz* interfaz = malloc(sizeof(t_interfaz));
+    interfaz = list_find(IOS_CONECTADOS, esta_la_io(io, nombre_io)); 
+
     bool esta_la_io(void* interfaz){
-        return (strcmp(nombre_io,interfaz->nombre) == 0);
+        bool respuesta;
+        respuesta = (strcmp(nombre_io,interfaz->nombre) == 0);
+        return respuesta;
     }
-    t_interfaz* interfaz = list_find(IOS_CONECTADOS, esta_la_io(io, nombre_io)); 
 
     if(interfaz != NULL){ //Es correcta esta condicion?
         return interfaz;
