@@ -4,8 +4,9 @@
 
 int main(int argc, char** argv) {
 
-validar_parametros_main(argc, 2);
-
+if(validar_parametros_incorrectos_main(argc, 2, argv)){
+        return EXIT_FAILURE;
+    }
 //Inicializar MEMORIA
 inicializar_memoria(argv[1]);
 

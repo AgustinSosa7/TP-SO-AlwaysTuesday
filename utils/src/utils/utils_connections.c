@@ -26,12 +26,14 @@ bool son_lo_mismo(void* elemento_posible, void* elemento){
 }
 
 ///////////////////////////////
-void validar_parametros_main(int argc, int parametros_esperados){
+bool validar_parametros_incorrectos_main(int argc, int parametros_esperados, char** argv){
 	if (argc < parametros_esperados) {
 	    fprintf(stderr, "Uso: %s <ruta_archivo_configuracion>\n", argv[0]);
-	    return EXIT_FAILURE;
+	    return true;
+	}else{
+		return false;
 	}
-}
+} 
 
 // CONEXIONES DE CLIENTE 
 int crear_conexion(char* ip, char* puerto, t_log* logger)
@@ -215,7 +217,7 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
       	char *string = malloc((tamanio_string * sizeof(char))); // En caso de pisar algun valor, hacerle free antes
 	    memcpy(string, a_enviar + sizeof(int) + sizeof(int) + sizeof(int), tamanio_string); //cambiar por offset el size of int
 	    //paquete->buffer->offset += strlen(string);//tamanio_string;
-      	/* printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
+        printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
 	    printf("offset: %d\n",paquete->buffer->offset);
 	    printf("Se guardo en el string:%s\n",string);
         
@@ -360,8 +362,7 @@ char* enum_a_string(estado_pcb estado){
 	  case READYPLUS:
         return "READYPLUS";
         break;
-      default:
-        break;
+	}
 }
     
 ////////////////////// DESERIALIZACION //////////////
@@ -412,7 +413,7 @@ t_paquete* recibir_paquete(int unSocket)
 void* recibir_mensaje(int socket_cliente)
 {	
 	int tamanio_mensaje;
-	recv(socket_cliente, tamanio_mensaje, sizeof(int), MSG_WAITALL);
+	recv(socket_cliente, &tamanio_mensaje, sizeof(int), MSG_WAITALL);
 	void* mensaje = malloc(tamanio_mensaje);
 	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
 	return mensaje;
@@ -446,56 +447,16 @@ char* leer_string_del_stream(t_buffer* buffer)
 }
 
 void leer_registros_del_stream(void* stream, t_registros_cpu* registros_CPU){
-leer_algo_del_stream(stream,&registros_CPU->PC,sizeof(registros_CPU->PC));
-leer_algo_del_stream(stream,&registros_CPU->AX,sizeof(registros_CPU->AX));
-leer_algo_del_stream(stream,&registros_CPU->BX,sizeof(registros_CPU->BX));
-leer_algo_del_stream(stream,&registros_CPU->CX,sizeof(registros_CPU->CX));
-leer_algo_del_stream(stream,&registros_CPU->DX,sizeof(registros_CPU->DX));
-leer_algo_del_stream(stream,&registros_CPU->EAX,sizeof(registros_CPU->EAX));
-leer_algo_del_stream(stream,&registros_CPU->EBX,sizeof(registros_CPU->EBX));
-leer_algo_del_stream(stream,&registros_CPU->ECX,sizeof(registros_CPU->ECX));
-leer_algo_del_stream(stream,&registros_CPU->EDX,sizeof(registros_CPU->EDX));
-leer_algo_del_stream(stream,&registros_CPU->SI,sizeof(registros_CPU->SI));
-leer_algo_del_stream(stream,&registros_CPU->DI,sizeof(registros_CPU->DI));
+	leer_algo_del_stream(stream,&registros_CPU->PC,sizeof(registros_CPU->PC));
+	leer_algo_del_stream(stream,&registros_CPU->AX,sizeof(registros_CPU->AX));
+	leer_algo_del_stream(stream,&registros_CPU->BX,sizeof(registros_CPU->BX));
+	leer_algo_del_stream(stream,&registros_CPU->CX,sizeof(registros_CPU->CX));
+	leer_algo_del_stream(stream,&registros_CPU->DX,sizeof(registros_CPU->DX));
+	leer_algo_del_stream(stream,&registros_CPU->EAX,sizeof(registros_CPU->EAX));
+	leer_algo_del_stream(stream,&registros_CPU->EBX,sizeof(registros_CPU->EBX));
+	leer_algo_del_stream(stream,&registros_CPU->ECX,sizeof(registros_CPU->ECX));
+	leer_algo_del_stream(stream,&registros_CPU->EDX,sizeof(registros_CPU->EDX));
+	leer_algo_del_stream(stream,&registros_CPU->SI,sizeof(registros_CPU->SI));
+	leer_algo_del_stream(stream,&registros_CPU->DI,sizeof(registros_CPU->DI));
 }
 
-//pcb->pid
-
-//t_paquete* crear_super_paquete(op_code code_op)   //Unica diff con el crear_paquete es el cod de op y buffer.
-//{
-//	t_paquete* super_paquete = malloc(sizeof(t_paquete));
-//	super_paquete->codigo_operacion = code_op;
-//	crear_buffer(super_paquete);
-//	return  super_paquete;
-//}  
-//
-//void cargar_int_al_super_paquete(t_paquete* paquete, int numero){  //Ver que hacer con el off set Ruka
-//	if(paquete->buffer->size == 0){
-//		paquete->buffer->stream = malloc(sizeof(int));
-//		memcpy(paquete->buffer->stream, &numero, sizeof(int));
-//	}else{
-//		paquete->buffer->stream = realloc(paquete->buffer->stream,
-//											paquete->buffer->size + sizeof(int));
-//		/**/
-//		memcpy(paquete->buffer->stream + paquete->buffer->size, &numero, sizeof(int));
-//	}
-//
-//	paquete->buffer->size += sizeof(int);
-//}
-//
-//void cargar_choclo_al_super_paquete(t_paquete* paquete, void* choclo, int size){
-//	if(paquete->buffer->size == 0){
-//		paquete->buffer->stream = malloc(sizeof(int) + size);
-//		memcpy(paquete->buffer->stream, &size, sizeof(int));
-//		memcpy(paquete->buffer->stream + sizeof(int), choclo, size);
-//	}else{
-//		paquete->buffer->stream = realloc(paquete->buffer->stream,
-//												paquete->buffer->size + sizeof(int) + size);
-//
-//		memcpy(paquete->buffer->stream + paquete->buffer->size, &size, sizeof(int));
-//		memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), choclo, size);
-//	}
-//
-//	paquete->buffer->size += sizeof(int);
-//	paquete->buffer->size += size;
-//}

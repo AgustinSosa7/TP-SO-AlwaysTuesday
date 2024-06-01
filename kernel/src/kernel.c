@@ -5,7 +5,9 @@
 
 int main(int argc, char** argv)
 {   
-    validar_parametros_main(argc, 2);
+    if(validar_parametros_incorrectos_main(argc, 2, argv)){
+        	    return EXIT_FAILURE;
+    }
     // Inicializar KERNEL
     inicializar_kernel(argv[1]);
 
@@ -47,9 +49,9 @@ int main(int argc, char** argv)
     pthread_detach(hilo_memoria);*/
 
     //Atender los mensajes de CPU - DISPATCH
-    pthread_t hilo_cpu_dispatch;
-    pthread_create(&hilo_cpu_dispatch, NULL, (void*)atender_kernel_cpu_dispatch, NULL);
-    pthread_detach(hilo_cpu_dispatch);
+   // pthread_t hilo_cpu_dispatch;
+   // pthread_create(&hilo_cpu_dispatch, NULL, (void*)atender_kernel_cpu_dispatch, NULL);
+   // pthread_detach(hilo_cpu_dispatch);
 
    //Atender los mensajes de CPU - INTERRUPT 
    /*

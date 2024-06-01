@@ -22,7 +22,7 @@ void atender_entradasalida_kernel(){
             break;
         case ESTOY_CONECTADO:
             bool respuesta = dar_respuesta_conectado(paquete); 
-            enviar_mensaje(true, fd_kernel);            
+            enviar_mensaje(&respuesta, fd_kernel);            
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
@@ -148,8 +148,8 @@ void eliminar_peticion(t_peticion* peticion){
 
  bool dar_respuesta_conectado(t_paquete* paquete){
       bool respuesta = malloc(sizeof(bool));
-      void* stream = paquete->buffer->stream;
+      void* buffer = paquete->buffer;
 
-      leer_algo_del_stream(stream, &respuesta);
+      leer_algo_del_stream(buffer, &respuesta, sizeof(respuesta));
       return respuesta;
  }

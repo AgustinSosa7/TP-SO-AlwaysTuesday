@@ -10,7 +10,6 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-
 typedef struct{
     int tiempo_espera;
     char* archivo;
@@ -24,6 +23,11 @@ typedef struct{
     char* interfaz;
     t_peticion_param* parametros;
 } t_peticion;
+
+typedef struct{
+    t_paquete* paquete;
+    t_pcb* un_pcb;
+}t_paquete_y_pcb;
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
 
@@ -52,7 +56,7 @@ extern t_list* lista_exec;
 extern t_list* lista_blocked;
 extern t_list* lista_exit;
 
-pthread_mutex_t mutex_pid;
+pthread_mutex_t* mutex_pid;
 
 extern int procesos_activos;
 ///////////////////////////////////////////////////////////////

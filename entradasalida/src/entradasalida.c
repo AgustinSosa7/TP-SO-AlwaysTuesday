@@ -4,7 +4,9 @@
 
 int main(int argc, char** argv) {
 
-validar_parametros_main(argc, 3);
+if(validar_parametros_incorrectos_main(argc, 3, argv)){
+    return EXIT_FAILURE;
+ }
 
 inicializar_entradasalida(argv);
 

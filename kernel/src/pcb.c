@@ -28,8 +28,7 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
     estado_pcb estado_anterior = un_pcb->estado_pcb;
 	un_pcb->estado_pcb = nuevo_estado;
 
-    log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual:
-    <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
+    log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
 
 	switch(nuevo_estado)
     {

@@ -98,7 +98,7 @@ bool son_lo_mismo(void* elemento_posible, void* elemento);
 
 /////////////////
 
-void validar_parametros_main(int argc, int parametros_esperados);
+bool validar_parametros_incorrectos_main(int argc, int parametros_esperados, char** argv);
 
 // FUNCIONES CLIENTE
 int crear_conexion(char* ip, char* puerto, t_log* logger);
