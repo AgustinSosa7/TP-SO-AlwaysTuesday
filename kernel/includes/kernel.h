@@ -41,11 +41,11 @@ int GRADO_MULTIPROGRAMACION;
 char * IP_KERNEL;
 
 
-t_list lista_new;
-t_list lista_ready;
-t_list lista_ready_plus;
-t_list lista_exec;
-t_list lista_exit;
+t_list* lista_new;
+t_list* lista_ready;
+t_list* lista_ready_plus;
+t_list* lista_exec;
+t_list* lista_exit;
 
 
 #endif

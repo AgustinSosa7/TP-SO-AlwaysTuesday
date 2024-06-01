@@ -11,7 +11,7 @@ void iniciar_consola(){
 	agregar_instruccion(lista_instrucciones,PROCESO_ESTADO,0,"PROCESO_ESTADO");
 };
 
-void agregar_instruccion(t_list* lista_instrucciones, op_code_instruccion* op_code, int parametros,char* op_code_string){
+void agregar_instruccion(t_list* lista_instrucciones, op_code_instruccion op_code, int parametros,char* op_code_string){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 	instruccion->op_code_instruccion = op_code;
 	instruccion->cant_parametros = parametros;
@@ -47,8 +47,9 @@ void leer_comandos(){
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
 	int size = string_array_size(array_leido);
-	t_list_iterator lista = list_iterator_create(lista_instrucciones);
-	while(list_iterator_has_next(lista)){
+	t_list_iterator* lista = list_iterator_create(lista_instrucciones);
+	while(list_iterator_has_next(lista))
+	{
         t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 		instruccion = list_iterator_next(lista);
 		if(strcmp(array_leido[0],instruccion->nombre)!=0){
@@ -95,9 +96,9 @@ void atender_instruccion_validada(char* leido){
 
 }
 
-op_code_instruccion* encontrar_op_code(leido){ 
+op_code_instruccion encontrar_op_code(char* leido){ 
     char** array_leido = string_split(leido," ");
-	t_list_iterator lista = list_iterator_create(lista_instrucciones);
+	t_list_iterator* lista = list_iterator_create(lista_instrucciones);
 	while(list_iterator_has_next(lista)){
         t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 		instruccion = list_iterator_next(lista);

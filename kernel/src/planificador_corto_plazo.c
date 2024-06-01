@@ -41,7 +41,8 @@ void planif_fifo_RR()
              recibir_pcb_con_motivo();
         }
         
- }
+    }
+}
 
  void gestionar_quantum_VRR(){
     
@@ -49,7 +50,7 @@ void planif_fifo_RR()
 // VRR
  void planif_VRR(){
     if(!list_is_empty(lista_ready_plus)){
-        t_pcb* un_pcb = list_remove(lista_ready_plus);
+        t_pcb* un_pcb = list_remove(lista_ready_plus, 0); // falta agregarle un numero correcto (el 0 no estoy seguro si va)
         cambiar_estado(un_pcb, READYPLUS);
         enviar_pcb_a(un_pcb,fd_cpu_dispatch);
         pthread_t hilo_quantum_VRR;
@@ -61,7 +62,7 @@ void planif_fifo_RR()
 void gestionar_quantum(t_pcb* un_pcb){
 // proceso finaliza antes de que termine el quantum y vuelve a entrar
     sleep(QUANTUM);
-        if(contains_algo(lista_exec, un_pcb->pid)){
+        if(contains_algo(lista_exec, un_pcb->pid)){ 
         //enviar interrupcion a cpu por interrupt
         
     }

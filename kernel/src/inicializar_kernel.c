@@ -81,7 +81,8 @@ void inicializar_listas(void){
 }
 
 void inicializar_semaforos(void){
-	mutex_pid = 1;
+	pthread_mutex_init(mutex_pid, NULL);
+	pthread_mutex_init(mutex_io, NULL);
 }
 
 void inicializar_pid_y_procesos_activos(){
