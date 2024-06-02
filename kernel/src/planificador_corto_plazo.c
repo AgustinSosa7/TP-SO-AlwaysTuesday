@@ -4,8 +4,8 @@
 
 void planif_corto_plazo()
 {
-    int ALGORITMO_PLANIFICACION = 1;   // CLARAMENTE DEBE DE RECIBIR DE ALGUN LADO EL ALGORITMO SOLICITADO
-        switch (ALGORITMO_PLANIFICACION)
+    char* algoritmo = enum_a_string(ALGORITMO_PLANIFICACION);   
+        switch (algoritmo)
         {
         case FIFO:
             planif_fifo_RR();
@@ -28,7 +28,7 @@ void planif_fifo_RR()
 
     if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
-            //semaforos 
+
             t_pcb* un_pcb = list_remove(lista_ready,0);
             cambiar_estado(un_pcb, EXEC);
             
@@ -45,18 +45,24 @@ void planif_fifo_RR()
 }
 
  void gestionar_quantum_VRR(){
-    
+    t_temporal 
  }
+
 // VRR
- void planif_VRR(){
+  void planif_VRR(){
+    t_pcb* un_pcb;
     if(!list_is_empty(lista_ready_plus)){
-        t_pcb* un_pcb = list_remove(lista_ready_plus, 0); // falta agregarle un numero correcto (el 0 no estoy seguro si va)
-        cambiar_estado(un_pcb, READYPLUS);
+        un_pcb = list_remove(lista_ready_plus, 0); // falta agregarle un numero correcto (el 0 no estoy seguro si va)
+        cambiar_estado(un_pcb,READYPLUS);
         enviar_pcb_a(un_pcb,fd_cpu_dispatch);
         pthread_t hilo_quantum_VRR;
         pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);
+    } else if(!list_is_empty(lista_ready)){
+        un_pcb = list_remove(lista_ready);
+        cambiar_estado(un_pcb,READY);
+        enviar_pcb_a(un_pcb,fd_cpu_dispatch);
     }
- }
+ } 
 
 
 void gestionar_quantum(t_pcb* un_pcb){
