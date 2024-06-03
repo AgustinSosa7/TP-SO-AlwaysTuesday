@@ -38,9 +38,6 @@ typedef enum
     INTERRUPCION,
 	//---- KERNEL - MEMORIA
 	PSEUDOCODIGO,
-    FIFO,
-    RR,
-    VRR,
     DESALOJO_QUANTUM,
     PROCESO_EXIT,
     PEDIDO_IO

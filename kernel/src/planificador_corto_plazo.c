@@ -7,8 +7,8 @@ void planif_corto_plazo()
 {
     while(1){
         sem_wait(&sem_planificador_corto_plazo);
-        int algor = 1;   
-            switch (algor)
+        algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
+            switch (algoritmo)
             {
             case FIFO:
                 planif_fifo_RR();
@@ -29,7 +29,7 @@ void planif_fifo_RR()
 {
 
     if(!queue_is_empty(cola_ready)){
-        if(queue_is_empty(lista_exec)){
+        if(list_is_empty(lista_exec)){
 
             t_pcb* un_pcb = queue_pop(cola_ready);
             cambiar_estado(un_pcb, EXEC);
@@ -62,12 +62,12 @@ void gestionar_quantum(t_pcb* un_pcb){
     t_pcb* un_pcb;
     if(!queue_is_empty(cola_ready_plus)){
         un_pcb = queue_pop(cola_ready_plus); 
-        cambiar_estado(un_pcb,READYPLUS);
+        cambiar_estado(un_pcb,EXEC);
         enviar_pcb_a(un_pcb,fd_cpu_dispatch);
     
     } else if(!queue_is_empty(cola_ready)){
         un_pcb = queue_pop(cola_ready);
-        cambiar_estado(un_pcb,READY);
+        cambiar_estado(un_pcb,EXEC);
         enviar_pcb_a(un_pcb,fd_cpu_dispatch);
     }
     pthread_t hilo_quantum_VRR;
@@ -94,7 +94,13 @@ void gestionar_quantum(t_pcb* un_pcb){
  }
 
 
+ algoritmos_enum algoritmo_string_a_enum(char* algoritmo_de_plani){
+    if(strcmp("FIFO",algoritmo_de_plani)==0){
+        return FIFO;
+    } else if(strcmp("RR",algoritmo_de_plani)==0){
+        return RR;
+    } else if(strcmp("VRR",algoritmo_de_plani)==0){
+        return VRR;
+    }
 
-
-
-
+ }

@@ -11,6 +11,7 @@ void recibir_pcb_con_motivo()
       {
       case DESALOJO_QUANTUM:
             log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum",pcb_recibido->pid);
+            t_pcb* remover_pcb = list_remove(lista_exec,0);
             cambiar_estado(pcb_recibido, READY);
             
             break;
