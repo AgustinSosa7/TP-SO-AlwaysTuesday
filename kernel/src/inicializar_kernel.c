@@ -6,7 +6,7 @@ void inicializar_kernel(char* path){
     inicializar_logs();
     inicializar_configs(path);
 	inicializar_listas();
-	inicializar_semaforos();
+	//inicializar_semaforos();
 	inicializar_pid_y_procesos_activos();
 }
 
@@ -34,10 +34,10 @@ log_info(kernel_log_debug, "Se inicializo el kernel debug logger"); //Sacar even
     
 void inicializar_configs(char* path) {
 
-kernel_config = config_create(path);
-if (kernel_config == NULL) {
-	perror("Error al intentar cargar el config.");
-	exit(EXIT_FAILURE);
+	kernel_config = config_create(path);
+	if (kernel_config == NULL) {
+		perror("Error al intentar cargar el config.");
+		exit(EXIT_FAILURE);
     } 
 
 PUERTO_ESCUCHA = config_get_string_value(kernel_config,"PUERTO_ESCUCHA");
@@ -77,15 +77,19 @@ void inicializar_listas(void){
 	lista_ready_plus = list_create();
 	lista_exec = list_create();
 	lista_exit = list_create();
+	log_info(kernel_log_debug, "Se inicializan las listas..."); //Sacar eventualmente
 
 }
 
 void inicializar_semaforos(void){
-	pthread_mutex_init(mutex_pid, NULL);
-	pthread_mutex_init(mutex_io, NULL);
+	//pthread_mutex_init(mutex_pid, NULL);
+	//pthread_mutex_init(mutex_io, NULL);
+	log_info(kernel_log_debug, "Se inicializan los semaforos..."); //Sacar eventualmente
+
 }
 
 void inicializar_pid_y_procesos_activos(){
-	pid_global = 0;
-	procesos_activos = 0;
+	int pid_global = 0;
+	int procesos_activos = 0;
+	log_info(kernel_log_debug, "Se inicializan las variables globales..."); //Sacar eventualmente
 	}

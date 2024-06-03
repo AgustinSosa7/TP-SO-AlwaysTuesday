@@ -5,20 +5,13 @@
 #include "inicializar_memoria.h"
 #include "memoria_procesos.h"
 
-typedef struct
-{
-	int pid;
-	t_list* instrucciones;
-} t_proceso;
-
-//  Lista de instrucciones provisorias
-t_list* lista_de_instrucciones;
-
 // Variables GLOBALES
 
 t_log* memoria_logger;
 t_log* memoria_log_debug;
 t_config* memoria_config;
+
+t_list* procesos_memoria;
 
 int fd_memoria;
 int fd_entradasalida;  // Estos cuatro falta pasarlos tambien al m_gestor.h poniendoles el extern al prinicipio.
@@ -26,7 +19,6 @@ int fd_cpu;            // Soy Ruka, uds dejaron esto acá? Estoy modularizando l
 int fd_kernel;
 
 char* server_name;
-
 
 
 //CONFIG

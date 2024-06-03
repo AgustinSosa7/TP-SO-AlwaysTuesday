@@ -1,6 +1,6 @@
 # include "../includes/cpu_kernel_interrupt.h"
 
-
+/*
 void atender_cpu_kernel_interrupt(){
 
     bool control_key = 1;
@@ -22,4 +22,4 @@ void atender_cpu_kernel_interrupt(){
 		}
     }
 
-}
+}*/

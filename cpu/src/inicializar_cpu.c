@@ -16,11 +16,14 @@ void inicializar_logs(){
 	}
 
 
-    cpu_log_debug = log_create("cpu.log","CPU_LOG",1,LOG_LEVEL_TRACE);
+    cpu_log_debug = log_create("cpu.log","CPU_LOG",1,LOG_LEVEL_INFO);
     if (cpu_log_debug == NULL) {
 	    perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
 	    exit(EXIT_FAILURE);
 	}
+
+    log_info(cpu_log_debug, "Se inicializo el cpu debug logger"); //Sacar eventualmente
+
 }
 
 void iniciar_config(char* path){

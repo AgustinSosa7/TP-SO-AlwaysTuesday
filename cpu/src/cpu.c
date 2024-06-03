@@ -3,9 +3,11 @@
 
 int main(int argc, char** argv){
 
-   if(validar_parametros_main(argc, 2, argv)){
-        	    return EXIT_FAILURE;
-    }
+    //DESCOMENTAR
+   //if(validar_parametros_main(argc, 2, argv)){
+   //     	    return EXIT_FAILURE;
+    //}
+
     // Inicializar CPU
     inicializar_cpu(argv[1]);
 
@@ -17,11 +19,11 @@ int main(int argc, char** argv){
 
 
     // Comentado porque no tenemos el pseudocodigo :D
-    //recibir_direccion_pseudocodigo();
-
+    char* instruccion_recibida = recibir_instruccion_pseudocodigo();
+    log_info(cpu_log_debug, "recibi el pseudocodigo:%s", instruccion_recibida);
 
     // Iniciar server de CPU - DISPATCH
-
+    /*
     fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
     log_info(cpu_logger, "Esperando a DISPATCH...");
     fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch, cpu_logger,"KERNEL-DISPATCH");
@@ -33,29 +35,29 @@ int main(int argc, char** argv){
     log_info(cpu_logger, "Esperando a INTERRUPT...");
     fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL-INTERRUPT");
     gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger, "KERNEL-INTERRUPT");
-
+    */
     
     //Atender los mensajes de Kernel - Dispatch
-    pthread_t hilo_kernel_dispatch;
-    pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
-    pthread_detach(hilo_kernel_dispatch);
+    //pthread_t hilo_kernel_dispatch;
+    //pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
+    //pthread_detach(hilo_kernel_dispatch);
     
 //
     //Atender los mensajes de Kernel - Interrupt
-    pthread_t hilo_kernel_interrupt;
-    pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
-    pthread_detach(hilo_kernel_interrupt);
+    //pthread_t hilo_kernel_interrupt;
+    //pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
+    //pthread_detach(hilo_kernel_interrupt);
 //
     //Atender los mensajes de Memoria
-    pthread_t hilo_memoria;
-    pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
-    pthread_join(hilo_memoria, NULL);
+    //pthread_t hilo_memoria;
+    //pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
+    //pthread_join(hilo_memoria, NULL);
 //
 
 //QUE no se muera el main
     return EXIT_SUCCESS;
 }
-
+/*
 // iniciar estructuras
 void iniciar_estructuras(){
 	string= string_array_new();
@@ -90,18 +92,17 @@ void comenzar_ciclo_instruccion(){                          //crear dos hilos: u
 }
 //FETCH
 void ciclo_instruccion_fetch(){ //llamar a la funcion que hizo lucas
-/*	log_info(cpu_log_obligatorio, "PID: <%d> - FETCH - Program Counter: <%d>", contexto->proceso_pid, contexto->proceso_ip);
-	t_paquete* un_paquete = crear_super_paquete(PETICION_DE_INSTRUCCIONES_CM);
-	cargar_int_al_super_paquete(un_paquete, contexto->proceso_pid);
-	cargar_int_al_super_paquete(un_paquete, contexto->proceso_pc);
+	log_info(cpu_log_obligatorio, "PID: <%d> - FETCH - Program Counter: <%d>", contexto->proceso_pid, contexto->proceso_ip);
+	MANDA UN PID Y PC QUE QUIERO EJECUTAR
 	enviar_paquete(un_paquete, fd_memoria);
-	eliminar_paquete(un_paquete); */
+	eliminar_paquete(un_paquete); 
 }
 //DECODE
 void ciclo_instruccion_decode(){
+    RECIBIR EL CHAR* DE INSTRUCCION QUE QUIERO DECODIFICAR
     correr_decode();
 } 
 //EXECUTE
 void ciclo_instruccion_execute(){
     comparacion_de_strings(instruccion_a_ejecutar);
-}
+}*/

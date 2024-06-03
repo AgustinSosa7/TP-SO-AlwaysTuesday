@@ -47,7 +47,6 @@ typedef struct{
 
 
 
-extern int pid_global;
 
 extern t_list* lista_new;
 extern t_list* lista_ready;
@@ -56,9 +55,9 @@ extern t_list* lista_exec;
 extern t_list* lista_blocked;
 extern t_list* lista_exit;
 
-pthread_mutex_t* mutex_pid;
+//pthread_mutex_t* mutex_pid;
 
-extern int procesos_activos;
+
 ///////////////////////////////////////////////////////////////
 extern t_list* IOS_CONECTADOS;
 extern pthread_mutex_t* mutex_io;
@@ -73,6 +72,8 @@ extern int fd_entradasalida;
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
 
+extern int pid_global;
+extern int procesos_activos;
 
 extern char* PUERTO_ESCUCHA;
 extern char* IP_MEMORIA;

@@ -4,6 +4,7 @@ void inicializar_memoria(char* path){
     _iniciar_log();  //memoria_logger = _iniciar_log();
     _iniciar_config(path);
     _imprimir_config();
+    _inicializar_listas();
 }
 
 void _iniciar_log(){  // t_log* _iniciar_log()
@@ -47,3 +48,6 @@ void _imprimir_config(){
     log_info(memoria_log_debug, "MEMORIA RETARDO_RESPUESTA: %d", RETARDO_RESPUESTA);
 }
 
+void _inicializar_listas(){
+    procesos_memoria = list_create();
+}

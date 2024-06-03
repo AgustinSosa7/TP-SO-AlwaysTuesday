@@ -1,5 +1,5 @@
-#include "../includes/cpu.h"
-
+#include "../includes/instrucciones.h"
+/*
 void comparacion_de_strings(){
     if(strcmp(instruccion_a_ejecutar[0], "SET") == 0){//[SET][AX][22]
 		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[1], instruccion_a_ejecutar[2]);
@@ -43,4 +43,4 @@ void comparacion_de_strings(){
 
 	}
 
-}
+}*/

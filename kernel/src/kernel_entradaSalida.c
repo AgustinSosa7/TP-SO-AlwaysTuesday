@@ -1,6 +1,6 @@
 #include "../includes/kernel_entradaSalida.h"
 #include <../src/utils/utils_connections.h>
-
+/*
 void atender_pedido_io(t_paquete_y_pcb* paquete_y_pcb){
       t_paquete* paquete = paquete_y_pcb->paquete; 
       t_pcb* pcb_recibido = paquete_y_pcb->un_pcb; 
@@ -16,7 +16,7 @@ void atender_pedido_io(t_paquete_y_pcb* paquete_y_pcb){
 
       eliminar_peticion(peticion);
       free(proceso_a_ejecutar);
-}
+}*/
 
 
 t_peticion* recibir_peticion(t_paquete* paquete){
@@ -68,15 +68,15 @@ void enviar_proceso_a_blocked(t_proceso_blocked* proceso_a_ejecutar, t_interfaz*
 {
     proceso_a_ejecutar->un_pcb->estado_pcb = BLOCKED;
     
-    pthread_mutex_lock(interfaz->mutex_cola_blocked);
+    //pthread_mutex_lock(interfaz->mutex_cola_blocked);
     queue_push(interfaz->cola_procesos_blocked, proceso_a_ejecutar->un_pcb);
-    pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+    //pthread_mutex_unlock(interfaz->mutex_cola_blocked);
 
     sem_post(interfaz->semaforo_cola_procesos_blocked);
 }
 
 
-
+/*
 t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){ 
       char* nombre_io = peticion->interfaz;
       char* instruccion = peticion->instruccion;
@@ -88,7 +88,8 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
         //matar al hilo en el que me encuentro?
     }
     return interfaz;
-}
+}*/
+/*
 t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb){
     bool esta_la_io(void* io){
         bool respuesta;
@@ -106,8 +107,8 @@ t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb){
             cambiar_estado(pcb, EXIT);
             //matar al hilo en el que me encuentro?
           }
-}         
-
+}*/
+/*
 bool esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb){
     t_paquete* paquete = crear_paquete(ESTOY_CONECTADO); 
     bool mensaje = true;
@@ -132,7 +133,7 @@ bool esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb){
         return respuesta;
     }
 
-}
+}*/
 
 void validar_interfaz_admite_instruccion(char* interfaz, char* instruccion, t_pcb* un_pcb){
       t_paquete* paquete = crear_paquete(RECONOCER_INSTRUCCION);
@@ -153,15 +154,15 @@ void validar_interfaz_admite_instruccion(char* interfaz, char* instruccion, t_pc
 void enviar_peticion_a_interfaz(t_peticion* peticion, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, peticion->instruccion);
-      agregar_algo_a_paquete(paquete, peticion->parametros);
+      agregar_algo_a_paquete(paquete, peticion->parametros,sizeof(peticion->parametros));
       enviar_paquete(paquete, interfaz->fd_interfaz);
       eliminar_paquete(paquete);
 } 
 
-void recibir_fin_peticion(){
-    bool fin_peticion;
-    recv(fd_entradasalida, &fin_peticion, sizeof(bool), MSG_WAITALL);
-}
+//void recibir_fin_peticion(){
+//    bool fin_peticion;
+//    recv(fd_entradasalida, &fin_peticion, sizeof(bool), MSG_WAITALL);
+//}
 
 
 void eliminar_peticion(t_peticion* peticion){

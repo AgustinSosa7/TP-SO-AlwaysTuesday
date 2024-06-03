@@ -13,33 +13,34 @@ int main(int argc, char** argv)
 
 
 /////////////////////////--INICIAR PLANIFICADORES-//////////////////////
-    pthread_t plani_largo_plazo;
+    /*pthread_t plani_largo_plazo;
     pthread_create(&plani_largo_plazo,NULL,(void*) planif_largo_plazo,NULL);
     pthread_detach(plani_largo_plazo);
 
     pthread_t plani_corto_plazo;
     pthread_create(&plani_corto_plazo,NULL,(void*) planif_corto_plazo,NULL);
     pthread_detach(plani_corto_plazo);
-
+    */
 
 
 /////////////////////////--CONEXIONES--//////////////////////
 
     conexion_kernel_memoria();
+    int pid = 3;
     char* pseudocogido = "PLANI1.txt"; 
-    log_info(kernel_log_debug, "ENVIO DE PSEUDO.%s",pseudocogido);
-    enviar_direccion_pesudocodigo(pseudocogido);
+    log_info(kernel_log_debug, "ENVIO DE PSEUDO: %s con un pid de: %d\n",pseudocogido,pid);
+    enviar_direccion_pesudocodigo(pseudocogido,pid);
     sleep(5);
 
-    conexion_kernel_cpu_dispatch();
+    //conexion_kernel_cpu_dispatch();
     
     //conexion_kernel_cpu_interrupt();
     
     //conexion_kernel_entradaSalida();
     /////////////////-Prueba mandar y recibir PCB-///////////////////
-    t_pcb * un_pcb;
-    imprimir_pcb(un_pcb, kernel_logger);
-    enviar_pcb_a(un_pcb, fd_cpu_dispatch);
+    //t_pcb * un_pcb;
+    //imprimir_pcb(un_pcb, kernel_logger);
+    //enviar_pcb_a(un_pcb, fd_cpu_dispatch);
     
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
@@ -66,8 +67,8 @@ int main(int argc, char** argv)
     pthread_join(hilo_entradaSalida,NULL); //Pruena MILI :3
 */
     //leer consola interactiva
-     iniciar_consola();
-     leer_consola();
+     //iniciar_consola();
+     //leer_consola();
 
 
     return EXIT_SUCCESS;

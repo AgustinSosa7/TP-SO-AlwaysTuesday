@@ -21,10 +21,9 @@ void recibir_pcb_con_motivo()
             t_paquete_y_pcb* paquete_y_pcb = malloc(sizeof(t_paquete_y_pcb));
             paquete_y_pcb->paquete = paquete;
             paquete_y_pcb->un_pcb = pcb_recibido;   
-            pthread_t pedido_io;
+            /*pthread_t pedido_io;
             pthread_create(&pedido_io, NULL, atender_pedido_io, paquete_y_pcb); //verificar como se envian estos parametros
-            pthread_detach(pedido_io);
-            
+            pthread_detach(pedido_io);*/
             break;
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      

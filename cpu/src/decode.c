@@ -1,6 +1,6 @@
-#include "../includes/cpu.h"
+#include "../includes/decode.h"
 
-
+/*
 bool validador_de_header(char* header_string){
 	bool respuesta = false;
 	int i = 0;
@@ -15,9 +15,9 @@ bool validador_de_header(char* header_string){
 void correr_decode(){
 	if(validador_de_header(instruccion_a_ejecutar[0])){   
 		// log_info(cpu_logger, "Instruccion Validada: [%s] -> OK", instruccion_a_ejecutar[0]);
-		sem_post(&sem_control_decode_execute);
+		//sem_post(&sem_control_decode_execute);
 	}else{
 		log_error(cpu_logger, "Instruccion no encontrada: [PC: %d][Instruc_Header: %s]", contexto->proceso_ip, instruccion_a_ejecutar[0]);
 		exit(EXIT_FAILURE); 
 	}
-}
+}*/

@@ -5,7 +5,7 @@
 void planif_largo_plazo(){
    while(1){
    //sem cada vez que hay un new
-
+/*
      if( procesos_activos < GRADO_MULTIPROGRAMACION){ 
 
         if(!list_is_empty(lista_new)){
@@ -16,6 +16,6 @@ void planif_largo_plazo(){
         log_info(kernel_logger,"PID: < %d > - Estado Anterior: < NEW > - Estado Actual: <READY>", un_pcb->pid);
         
          }
-      }     
+      }*/     
    }
 }

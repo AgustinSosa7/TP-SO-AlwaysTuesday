@@ -4,6 +4,6 @@
 #include "cpu_gestor.h"
 
 void atender_cpu_memoria();
-char* recibir_direccion_pseudocodigo(); //CODIGO REPETIDO EN MEMORIA_PROCESOS PASAR A SHARED
+char* recibir_instruccion_pseudocodigo(); 
 
 #endif 

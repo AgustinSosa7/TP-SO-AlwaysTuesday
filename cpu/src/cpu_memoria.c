@@ -21,19 +21,17 @@ void atender_cpu_memoria(){
 }
 
 
-char* recibir_direccion_pseudocodigo(){ //CODIGO REPETIDO EN MEMORIA_PROCESOS
+char* recibir_instruccion_pseudocodigo(){
     op_code code_op = recibir_operacion(fd_memoria);
     t_paquete* paquete = recibir_paquete(fd_memoria);
     t_buffer* buffer = paquete->buffer;
-    log_info(cpu_log_debug, "Recibi un paquete de size: %d",paquete->buffer->size);
-    log_info(cpu_log_debug, "Recibi un paquete con el op_code: %d",code_op);
     if(code_op == PSEUDOCODIGO)
     {
         log_info(cpu_log_debug, "leer_string_del_stream");
-        char* direccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
+        char* instruccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
         log_info(cpu_log_debug, "free");
         free(paquete);
-        return direccion_pseudocodigo;
+        return instruccion_pseudocodigo;
     }
     else
     {   

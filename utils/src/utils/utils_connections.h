@@ -35,6 +35,7 @@ typedef enum
 	EJECUTAR_PROCESO_KC,
 	//---- KERNEL - MEMORIA
 	PSEUDOCODIGO,
+    CREAR_PROCESO,
     FIFO,
     RR,
     VRR,
@@ -122,7 +123,7 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void enviar_mensaje(void* mensaje, int socket_cliente);
 void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
-void agregar_algo_a_paquete(t_paquete* paquete, void* valor);
+void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio);
 void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_CPU);
 
@@ -138,7 +139,7 @@ t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
 void* recibir_mensaje(int socket_cliente);
 char* recibir_mensaje_string(int socket_cliente);
-void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio);
+void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio);
 char* leer_string_del_stream(t_buffer* buffer);
 void leer_registros_del_stream(void* stream, t_registros_cpu* registros_CPU);
 

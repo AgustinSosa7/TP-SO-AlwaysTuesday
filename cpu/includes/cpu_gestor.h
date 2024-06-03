@@ -9,14 +9,13 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-
-
-
 // Variables GLOBALES
 
 extern t_log* cpu_logger;
 extern t_log* cpu_log_debug;
 extern t_config* cpu_config;
+
+extern t_registros_cpu* registros_cpu;
 
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
@@ -31,7 +30,5 @@ extern char* PUERTO_ESCUCHA_DISPATCH;
 extern char* PUERTO_ESCUCHA_INTERRUPT;
 extern int CANTIDAD_ENTRADAS_TLB;
 extern char* ALGORITMO_TLB;
-
-
 
 #endif

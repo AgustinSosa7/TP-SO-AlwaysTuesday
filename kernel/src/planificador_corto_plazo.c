@@ -61,12 +61,12 @@ void planif_fifo_RR()
 
 void gestionar_quantum(t_pcb* un_pcb){
 // proceso finaliza antes de que termine el quantum y vuelve a entrar
-    sleep(QUANTUM);
-        if(contains_algo(lista_exec, un_pcb->pid)){ 
+    //sleep(QUANTUM);
+        //if(contains_algo(lista_exec, un_pcb->pid)){ 
         //enviar interrupcion a cpu por interrupt
         
     }
-}   
+//}   
 
 
 

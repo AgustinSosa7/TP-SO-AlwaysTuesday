@@ -1,7 +1,7 @@
 #include "../includes/consola.h"
 
 void iniciar_consola(){
-	t_list* lista_instrucciones= list_create();
+	t_list* lista_instrucciones = list_create();
 	agregar_instruccion(lista_instrucciones,EJECUTAR_SCRIPT,1,"EJECUTAR_SCRIPT");
 	agregar_instruccion(lista_instrucciones,INICIAR_PROCESO,1,"INICIAR_PROCESO");
 	agregar_instruccion(lista_instrucciones,FINALIZAR_PROCESO,1,"FINALIZAR_PROCESO");
@@ -33,17 +33,17 @@ void leer_comandos(){
     char* leido;
 	leido = readline("> ");
 	while(strcmp(leido,"\0") != 0){
-		if(validar_instruccion(leido)){
+		/*if(validar_instruccion(leido)){
 			printf("Comando válido\n");
 			atender_instruccion_validada(leido);
-		}
+		}*/
 
 		free(leido);
 		leido = readline("> ");
 	}
 	free(leido);
 }
-
+/*
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
 	int size = string_array_size(array_leido);
@@ -55,18 +55,18 @@ bool validar_instruccion(char* leido){
 		if(strcmp(array_leido[0],instruccion->nombre)!=0){
 			log_error(kernel_logger,"No se pudo reconocer el comando");
             exit(EXIT_FAILURE);
-		} else if(size != array_leido[1]){
+		} else if(size != 1){ //array_leido[1]){ VER
 			log_error(kernel_logger,"No coincide la cantidad de parametros");
             exit(EXIT_FAILURE);
 		} 
 	}
 	return true;
-}
+}*/
 
 
 void atender_instruccion_validada(char* leido){
-	op_code_instruccion op_code_encontrado = encontrar_op_code(leido);
-
+	//op_code_instruccion op_code_encontrado = encontrar_op_code(leido);
+	op_code_instruccion op_code_encontrado = 1;
 	switch (op_code_encontrado)
 	{
 	case EJECUTAR_SCRIPT:
@@ -95,7 +95,7 @@ void atender_instruccion_validada(char* leido){
 	}
 
 }
-
+/*
 op_code_instruccion encontrar_op_code(char* leido){ 
     char** array_leido = string_split(leido," ");
 	t_list_iterator* lista = list_iterator_create(lista_instrucciones);
@@ -106,4 +106,4 @@ op_code_instruccion encontrar_op_code(char* leido){
             return instruccion->op_code_instruccion;
         }
     }
-}
+}*/

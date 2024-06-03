@@ -51,16 +51,16 @@ t_interfaz* identificar_io(int socket){
   interfaz->fd_interfaz = socket;
   interfaz->cola_procesos_blocked = queue_create();
   sem_init(interfaz->semaforo_cola_procesos_blocked, 0, 0); // el segundo argumento te dice que el sem es compartido por hilos del mismo proceso
-  pthread_mutex_t* mutex_cola_blocked;
-  pthread_mutex_init(mutex_cola_blocked, NULL);
-  interfaz->mutex_cola_blocked = mutex_cola_blocked;
+  //pthread_mutex_t* mutex_cola_blocked;
+  //pthread_mutex_init(mutex_cola_blocked, NULL);
+  //interfaz->mutex_cola_blocked = mutex_cola_blocked;
   return interfaz;
 }
 
 void agregar_io(t_interfaz* interfaz){
-  pthread_mutex_lock(mutex_io);
+  //pthread_mutex_lock(mutex_io);
   list_add(IOS_CONECTADOS, interfaz);
-  pthread_mutex_unlock(mutex_io);
+  //pthread_mutex_unlock(mutex_io);
 
 }
 
@@ -70,7 +70,7 @@ void gestionar_procesos_io(t_interfaz* interfaz){
     pthread_mutex_lock(interfaz->mutex_cola_blocked);
     t_proceso_blocked* proceso_a_ejecutar = queue_pop(interfaz->cola_procesos_blocked);
     pthread_mutex_unlock(interfaz->mutex_cola_blocked);
-    enviar_peticion_a_interfaz(proceso_a_ejecutar->peticion, interfaz);
+    //enviar_peticion_a_interfaz(proceso_a_ejecutar->peticion, interfaz);
     recibir_fin_peticion();
     desbloquear_proceso(proceso_a_ejecutar->un_pcb);
   }
@@ -78,9 +78,9 @@ void gestionar_procesos_io(t_interfaz* interfaz){
 
 void recibir_fin_peticion(){
     bool fin_peticion;
-    recv(fd_entradasalida, &fin_peticion, sizeof(bool), MSG_WAITALL);
+    recv(fd_entradasalida, &fin_peticion, sizeof(fin_peticion), MSG_WAITALL);
 }
 
 void desbloquear_proceso(t_pcb* un_pcb){
-    cambiar_estado(un_pcb, READY);
+    //cambiar_estado(un_pcb, READY);
 }
