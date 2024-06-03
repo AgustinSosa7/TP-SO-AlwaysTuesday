@@ -13,7 +13,7 @@
 #include <commons/string.h>
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
-
+#include <commons/temporal.h>
 #include <semaphore.h>
 
 #include <assert.h>
@@ -33,6 +33,7 @@ typedef enum
 	//---- KERNEL - CPU
 	PCB,
 	EJECUTAR_PROCESO_KC,
+    INTERRUPCION,
 	//---- KERNEL - MEMORIA
 	PSEUDOCODIGO,
     FIFO,

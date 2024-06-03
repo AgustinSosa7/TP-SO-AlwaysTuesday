@@ -49,16 +49,19 @@ typedef struct{
 
 extern int pid_global;
 
-extern t_list* lista_new;
-extern t_list* lista_ready;
-extern t_list* lista_ready_plus;
+extern t_queue* cola_new;
+extern t_queue* cola_ready;
+extern t_queue* cola_ready_plus;
 extern t_list* lista_exec;
 extern t_list* lista_blocked;
-extern t_list* lista_exit;
+extern t_queue* cola_exit;
 
-pthread_mutex_t* mutex_pid;
+//////////////////////SEMAFOROS/////////////////////////////////////////
 
-extern int procesos_activos;
+extern pthread_mutex_t* mutex_pid;
+extern sem_t sem_grado_multiprogram;
+extern sem_t sem_new_a_ready;
+extern sem_t sem_planificador_corto_plazo;
 ///////////////////////////////////////////////////////////////
 extern t_list* IOS_CONECTADOS;
 extern pthread_mutex_t* mutex_io;

@@ -56,6 +56,16 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
 }
 
 void inicializar_registros(t_pcb* un_pcb){
-	un_pcb->registros_cpu->AX= 0;
+	un_pcb->registros_cpu->PC= 0;
+    un_pcb->registros_cpu->AX= 0;
+    un_pcb->registros_cpu->Bx= 0;
+    un_pcb->registros_cpu->CX= 0;
+    un_pcb->registros_cpu->DX= 0;
+    un_pcb->registros_cpu->EAX= 0;
+    un_pcb->registros_cpu->EBX= 0;
+    un_pcb->registros_cpu->ECX= 0;
+    un_pcb->registros_cpu->EDX= 0;
+    un_pcb->registros_cpu->SI= 0;
+    un_pcb->registros_cpu->DI= 0;
 }
 

@@ -71,21 +71,23 @@ log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualment
 
 }
 
-void inicializar_listas(void){
-	lista_new = list_create();
-	lista_ready = list_create();
-	lista_ready_plus = list_create();
+void inicializar_colas(void){
+	cola_new = queue_create();
+	cola_ready = queue_create();
+	cola_ready_plus = queue_create();
 	lista_exec = list_create();
-	lista_exit = list_create();
+	cola_exit = queue_create();
 
 }
 
 void inicializar_semaforos(void){
 	pthread_mutex_init(mutex_pid, NULL);
 	pthread_mutex_init(mutex_io, NULL);
+	sem_init(&sem_grado_multiprogram,0,GRADO_MULTIPROGRAMACION);
+	sem_init(&sem_new_a_ready,0,0);
+	sem_init(&sem_planificador_corto_plazo,0,0);
 }
 
 void inicializar_pid_y_procesos_activos(){
 	pid_global = 0;
-	procesos_activos = 0;
 	}

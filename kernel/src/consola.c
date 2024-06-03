@@ -74,9 +74,9 @@ void atender_instruccion_validada(char* leido){
 		break;
 	case INICIAR_PROCESO:
 		t_pcb* nuevo_pcb = crearPcb();
-		list_add(lista_new, nuevo_pcb);
-		//signal 
+		 queue_push(cola_new, nuevo_pcb);	
 		log_info(kernel_logger,"Se crea el proceso < %d > en NEW",nuevo_pcb->pid);
+		sem_post(sem_new_a_ready);
 		//enviar algo a memoria
 
 		break;
