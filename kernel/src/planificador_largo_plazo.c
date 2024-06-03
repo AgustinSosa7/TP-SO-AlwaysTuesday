@@ -11,7 +11,7 @@ void planif_largo_plazo(){
       cambiar_estado(un_pcb, READY);
       queue_push(cola_ready,un_pcb);
       log_info(kernel_logger,"PID: < %d > - Estado Anterior: < NEW > - Estado Actual: <READY>", un_pcb->pid);
-      sem_post(sem_planificador_corto_plazo);
+      sem_post(&sem_planificador_corto_plazo);
          }
       }     
    }

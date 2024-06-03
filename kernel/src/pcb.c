@@ -33,10 +33,10 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
 	switch(nuevo_estado)
     {
     case NEW:
-        list_add(lista_new,un_pcb);
+        queue_push(cola_new,un_pcb);
         break;
     case READY:
-        list_add(lista_ready,un_pcb);
+        queue_push(cola_ready,un_pcb);
         //log info(Ingreso a Ready: “Cola Ready <COLA>: [<LISTA DE PIDS>]”)
 
         break;
@@ -44,10 +44,10 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
         list_add(lista_exec,un_pcb);
         break;
     case EXIT:
-        list_add(lista_exit,un_pcb);
+        queue_push(cola_exit,un_pcb);
         break;
     case READYPLUS:
-        list_add(lista_ready_plus,un_pcb);
+        queue_push(cola_ready_plus,un_pcb);
         break;    
     default:
         break;
@@ -58,7 +58,7 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
 void inicializar_registros(t_pcb* un_pcb){
 	un_pcb->registros_cpu->PC= 0;
     un_pcb->registros_cpu->AX= 0;
-    un_pcb->registros_cpu->Bx= 0;
+    un_pcb->registros_cpu->BX= 0;
     un_pcb->registros_cpu->CX= 0;
     un_pcb->registros_cpu->DX= 0;
     un_pcb->registros_cpu->EAX= 0;
