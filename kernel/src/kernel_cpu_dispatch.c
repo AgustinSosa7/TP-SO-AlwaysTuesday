@@ -11,6 +11,7 @@ void recibir_pcb_con_motivo()
       {
       case DESALOJO_QUANTUM:
             log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum",pcb_recibido->pid);
+            t_pcb* remover_pcb = list_remove(lista_exec,0);
             cambiar_estado(pcb_recibido, READY);
             
             break;
@@ -22,7 +23,7 @@ void recibir_pcb_con_motivo()
             paquete_y_pcb->paquete = paquete;
             paquete_y_pcb->un_pcb = pcb_recibido;   
             pthread_t pedido_io;
-            pthread_create(&pedido_io, NULL, atender_pedido_io, paquete_y_pcb); //verificar como se envian estos parametros
+            pthread_create(&pedido_io, NULL,(void*)atender_pedido_io, paquete_y_pcb); //verificar como se envian estos parametros
             pthread_detach(pedido_io);
             
             break;

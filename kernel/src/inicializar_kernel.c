@@ -5,7 +5,7 @@
 void inicializar_kernel(char* path){
     inicializar_logs();
     inicializar_configs(path);
-	inicializar_listas();
+	inicializar_colas();
 	inicializar_semaforos();
 	inicializar_pid_y_procesos_activos();
 }
@@ -81,8 +81,14 @@ void inicializar_colas(void){
 }
 
 void inicializar_semaforos(void){
-	pthread_mutex_init(mutex_pid, NULL);
-	pthread_mutex_init(mutex_io, NULL);
+	pthread_mutex_init(&mutex_pid, NULL);
+	pthread_mutex_init(&mutex_io, NULL);
+	pthread_mutex_init(&mutex_new, NULL);
+	pthread_mutex_init(&mutex_ready, NULL);
+	pthread_mutex_init(&mutex_exec, NULL);
+	pthread_mutex_init(&mutex_ready_plus, NULL);
+	pthread_mutex_init(&mutex_exit, NULL);
+
 	sem_init(&sem_grado_multiprogram,0,GRADO_MULTIPROGRAMACION);
 	sem_init(&sem_new_a_ready,0,0);
 	sem_init(&sem_planificador_corto_plazo,0,0);

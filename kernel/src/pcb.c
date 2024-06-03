@@ -7,8 +7,7 @@
 t_pcb* crearPcb(){
 	t_pcb* pcb = malloc(sizeof(t_pcb*));
 	pcb->pid = asignarPID();
-    //pcb->program_counter = 0; Esto no se repite en los registros???? 
-    pcb->quantum = 0;
+    pcb->quantum = QUANTUM;
     pcb->registros_cpu = malloc(sizeof(t_registros_cpu*));
 	inicializar_registros(pcb);
     pcb->estado_pcb = NEW;
