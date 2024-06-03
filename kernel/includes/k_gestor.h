@@ -50,6 +50,7 @@ typedef struct{
 
 
 extern int pid_global;
+extern int tiempo_transcurrido;
 
 extern t_queue* cola_new;
 extern t_queue* cola_ready;
@@ -60,17 +61,18 @@ extern t_queue* cola_exit;
 
 //////////////////////SEMAFOROS/////////////////////////////////////////
 
-extern pthread_mutex_t mutex_pid;
-extern pthread_mutex_t mutex_new;
-extern pthread_mutex_t mutex_ready;
-extern pthread_mutex_t mutex_exec;
-extern pthread_mutex_t mutex_ready_plus;
-extern pthread_mutex_t mutex_exit;
-extern pthread_mutex_t mutex_io;
+extern pthread_mutex_t* mutex_pid;
+extern pthread_mutex_t* mutex_new;
+extern pthread_mutex_t* mutex_ready;
+extern pthread_mutex_t* mutex_exec;
+extern pthread_mutex_t* mutex_ready_plus;
+extern pthread_mutex_t* mutex_exit;
+extern pthread_mutex_t* mutex_io;
 
-extern sem_t sem_grado_multiprogram;
-extern sem_t sem_new_a_ready;
-extern sem_t sem_planificador_corto_plazo;
+extern sem_t* sem_grado_multiprogram;
+extern sem_t* sem_new_a_ready;
+extern sem_t* sem_planificador_corto_plazo;
+
 ///////////////////////////////////////////////////////////////
 extern t_list* INSTRUCCIONES_GEN;
 extern t_list* INSTRUCCIONES_STDIN;

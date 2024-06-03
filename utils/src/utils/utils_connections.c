@@ -287,8 +287,8 @@ agregar_algo_a_paquete(paquete,&registros_cpu->DI);
 
 /////////////////////// PCB /////////////////////////
 
-void enviar_pcb_a(t_pcb* un_pcb, int socket){
-	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
+void enviar_pcb_a(t_pcb* un_pcb, int socket,op_code mensaje){
+	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
 	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid));
     agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum));
     agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);

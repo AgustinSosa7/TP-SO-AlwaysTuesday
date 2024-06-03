@@ -267,5 +267,13 @@ void eliminar_peticion(t_peticion* peticion){
 // ------------------------------ FIN PETICION -------------------------------------------------------------
 
 void desbloquear_proceso(t_pcb* un_pcb){
-    cambiar_estado(un_pcb, READY);
+     if(tiempo_transcurrido < un_pcb->quantum){
+        un_pcb->quantum = un_pcb->quantum - tiempo_transcurrido;
+        cambiar_estado(un_pcb,READYPLUS);
+     
+    } else{
+        cambiar_estado(un_pcb,READY);
+    }// SACAR DE LA LISTA DE BLOQUEADOS!!!
+    
+       
 }

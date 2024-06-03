@@ -125,7 +125,7 @@ void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_CPU);
 
 //PCB
-void enviar_pcb_a(t_pcb* un_pcb, int socket);
+void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje);
 t_pcb* recibir_pcb(t_paquete* paquete);
 void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
 char* enum_a_string(estado_pcb estado);

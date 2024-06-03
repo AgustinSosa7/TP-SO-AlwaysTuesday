@@ -35,24 +35,24 @@ void planif_fifo_RR()
             cambiar_estado(un_pcb, EXEC);
             
             enviar_pcb_a(un_pcb,fd_cpu_dispatch);
-            recibir_pcb_con_motivo();
+
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
                 pthread_t hilo_quantum;
                 pthread_create(&hilo_quantum, NULL, (void*)gestionar_quantum, un_pcb);
                 pthread_detach(hilo_quantum);
-                recibir_pcb_con_motivo();
+
 
             }
-               
+        recibir_pcb_con_motivo();  
         }
         
     }
 }
 void gestionar_quantum(t_pcb* un_pcb){
-    usleep(QUANTUM*1000);
+    usleep(un_pcb->quantum*1000);
         if(contains_algo(lista_exec, &(un_pcb->pid))){ 
         enviar_interrupción_a_cpu();
-
+        un_pcb->quantum = QUANTUM;
 
     }
 }   
@@ -62,14 +62,11 @@ void gestionar_quantum(t_pcb* un_pcb){
     t_pcb* un_pcb;
     if(!queue_is_empty(cola_ready_plus)){
         un_pcb = queue_pop(cola_ready_plus); 
-        cambiar_estado(un_pcb,EXEC);
-        enviar_pcb_a(un_pcb,fd_cpu_dispatch);
-    
     } else if(!queue_is_empty(cola_ready)){
         un_pcb = queue_pop(cola_ready);
-        cambiar_estado(un_pcb,EXEC);
-        enviar_pcb_a(un_pcb,fd_cpu_dispatch);
     }
+    cambiar_estado(un_pcb,EXEC);
+    enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
     pthread_t hilo_quantum_VRR;
     pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);
     pthread_detach(hilo_quantum_VRR);
@@ -83,14 +80,8 @@ void gestionar_quantum(t_pcb* un_pcb){
     pthread_detach(hilo_quantum_vrr);
     recibir_pcb_con_motivo();
     temporal_stop(quantum_vrr);
-    int tiempo_transcurrido = temporal_gettime(quantum_vrr);
+    tiempo_transcurrido = temporal_gettime(quantum_vrr);
     temporal_destroy(quantum_vrr);
-    // if(tiempo_transcurrido < un_pcb->quantum){
-    //     un_pcb->quantum = un_pcb->quantum - tiempo_transcurrido;
-    //     queue_push(cola_ready_plus,un_pcb);
-    // } TENGO DUDAS SOBRE CUANDO AGREGARLO A LA COLA DE READY+
-
-
  }
 
 
