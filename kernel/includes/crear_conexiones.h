@@ -3,6 +3,7 @@
 
 #include <../src/utils/utils_connections.h>
 #include "k_gestor.h"
+#include "kernel_entradaSalida.h"
 
 
 
@@ -12,11 +13,5 @@
  void conexion_kernel_entradaSalida();
 
 void gestionar_entrada_salida();
-t_interfaz* identificar_io(int socket);
-void agregar_io(t_interfaz* interfaz);
-void gestionar_procesos_io(t_interfaz* interfaz);
-
-
-
 
 #endif 

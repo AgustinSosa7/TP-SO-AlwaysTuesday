@@ -19,7 +19,13 @@ inicializar_entradasalida(argv);
   log_info(entradasalida_logger, "Creando conexion con KERNEL...");
   fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL, entradasalida_logger);
   gestionar_handshake_como_cliente(fd_kernel, "KERNEL", entradasalida_logger);
-  enviar_mensaje_string(NOMBRE_INTERFAZ, fd_kernel);
+  t_paquete* paquete = crear_paquete(ME_IDENTIFICO);
+  agregar_algo_a_paquete(paquete, NOMBRE_INTERFAZ);
+  agregar_algo_a_paquete(paquete, TIPO_INTERFAZ);
+  enviar_paquete(paquete, fd_kernel);
+  eliminar_paquete(paquete);
+
+  //enviar_mensaje_string(NOMBRE_INTERFAZ, fd_kernel);
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
 

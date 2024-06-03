@@ -11,6 +11,8 @@ void inicializar_kernel(char* path);
 void inicializar_logs(void);
 void inicializar_configs(char* path);
 void inicializar_colas(void);
+void inicializar_listas(void);
+void inicializar_listas_instrucciones(void);
 void inicializar_semaforos(void);
 void inicializar_pid_y_procesos_activos();
 

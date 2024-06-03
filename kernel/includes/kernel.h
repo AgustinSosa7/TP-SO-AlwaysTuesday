@@ -14,7 +14,15 @@
 
 // Variables GLOBALES
 
+t_list* INSTRUCCIONES_GEN;
+t_list* INSTRUCCIONES_STDIN;
+t_list* INSTRUCCIONES_STDOUT;
+t_list* INSTRUCCIONES_FS;
+
 t_list* IOS_CONECTADOS;
+pthread_mutex_t* mutex_io;
+
+int pid_global;
 
 t_log* kernel_logger;
 t_log* kernel_log_debug;

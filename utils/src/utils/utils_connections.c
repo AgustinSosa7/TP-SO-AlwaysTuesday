@@ -223,27 +223,12 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
         
     FIN DE BORRAR ES PARA LAS PRUEBAS  */
 
-	send(socket_cliente, a_enviar, bytes, 0);
-	free(a_enviar);
-}
-
-void enviar_mensaje(void* mensaje, int socket_cliente)
-{
-	int tamanio = sizeof(mensaje);
-	void* a_enviar = malloc(tamanio);
-	memcpy(a_enviar, &mensaje, tamanio);
-	send(socket_cliente, a_enviar, tamanio, 0);
-	free(a_enviar);
+	int bytes_enviados = send(socket_cliente, a_enviar, bytes, MSG_NOSIGNAL);
 	
-}
-
-void enviar_mensaje_string(char* mensaje, int socket_cliente)
-{
-	int tamanio = strlen(mensaje)+1;
-	void* a_enviar = malloc(tamanio);
-	memcpy(a_enviar, &mensaje, tamanio);
-	send(socket_cliente, a_enviar, tamanio, 0);
-	free(a_enviar);
+	if(bytes_enviados < 0) {
+			close(socket_cliente);
+	   		printf("El cliente cerró la conexión.\n");
+	} 
 }
 
 void eliminar_paquete(t_paquete* paquete)
@@ -274,14 +259,12 @@ void agregar_string_a_paquete(t_paquete* paquete, char* string)
 	int tamanio_string = strlen(string) + 1;
 
 	paquete->buffer->stream = realloc(paquete->buffer->stream,
-															paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string);
+	paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string);
 	
 	//paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string;
-	/**/
+
 	memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio_string, sizeof(int));
 	memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), string, sizeof(char)*tamanio_string);
-
-	
 
 	paquete->buffer->size += sizeof(int);
 	paquete->buffer->size += sizeof(char)*tamanio_string;
@@ -399,7 +382,6 @@ t_buffer* recibir_buffer(int unSocket)
 	return buffer;	
 }
 
-//INT
 
 t_paquete* recibir_paquete(int unSocket)
 { 
@@ -410,24 +392,6 @@ t_paquete* recibir_paquete(int unSocket)
 	return paquete;
 }
 
-void* recibir_mensaje(int socket_cliente)
-{	
-	int tamanio_mensaje;
-	recv(socket_cliente, &tamanio_mensaje, sizeof(int), MSG_WAITALL);
-	void* mensaje = malloc(tamanio_mensaje);
-	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
-	return mensaje;
-}
-
-char* recibir_mensaje_string(int socket_cliente)
-{	
-	int tamanio;
-	recv(socket_cliente, &tamanio, sizeof(int), MSG_WAITALL);
-	char* mensaje = malloc(tamanio);
-	recv(socket_cliente, mensaje, tamanio, MSG_WAITALL);
-	
-	return mensaje;
-}
 
 void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 {

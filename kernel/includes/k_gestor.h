@@ -13,9 +13,9 @@
 typedef struct{
     int tiempo_espera;
     char* archivo;
-    char* registro1;
-    char* registro2;
-    char* registro3;
+    char* registroDireccion;
+    char* registroTamanio;
+    char* registroPunteroArchivo;
 } t_peticion_param;
 
 typedef struct{
@@ -34,6 +34,8 @@ typedef struct{
 typedef struct 
 {
     char* nombre;
+    char* tipo;
+    t_list* instrucciones_posibles;
     int fd_interfaz;
     t_queue* cola_procesos_blocked;
     sem_t* semaforo_cola_procesos_blocked;
@@ -58,13 +60,16 @@ extern t_queue* cola_exit;
 
 //////////////////////SEMAFOROS/////////////////////////////////////////
 
-extern pthread_mutex_t* mutex_pid;
 extern sem_t sem_grado_multiprogram;
 extern sem_t sem_new_a_ready;
 extern sem_t sem_planificador_corto_plazo;
 ///////////////////////////////////////////////////////////////
+extern t_list* INSTRUCCIONES_GEN;
+extern t_list* INSTRUCCIONES_STDIN;
+extern t_list* INSTRUCCIONES_STDOUT;
+extern t_list* INSTRUCCIONES_FS;
+
 extern t_list* IOS_CONECTADOS;
-extern pthread_mutex_t* mutex_io;
 
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

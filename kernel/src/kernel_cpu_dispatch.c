@@ -22,7 +22,7 @@ void recibir_pcb_con_motivo()
             paquete_y_pcb->paquete = paquete;
             paquete_y_pcb->un_pcb = pcb_recibido;   
             pthread_t pedido_io;
-            pthread_create(&pedido_io, NULL, atender_pedido_io, paquete_y_pcb); //verificar como se envian estos parametros
+            pthread_create(&pedido_io, NULL, atender_pedido_io, paquete_y_pcb); 
             pthread_detach(pedido_io);
             
             break;
