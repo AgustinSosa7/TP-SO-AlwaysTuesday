@@ -23,6 +23,7 @@ t_list* IOS_CONECTADOS;
 pthread_mutex_t* mutex_io;
 
 int pid_global;
+int procesos_activos;
 int tiempo_transcurrido;
 t_log* kernel_logger;
 t_log* kernel_log_debug;

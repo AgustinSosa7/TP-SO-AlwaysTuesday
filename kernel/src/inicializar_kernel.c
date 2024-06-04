@@ -76,7 +76,7 @@ void inicializar_listas(void){
 	lista_ready = list_create();
 	lista_ready_plus = list_create();
 	lista_exec = list_create();
-	lista_exit = list_create();
+	cola_exit = queue_create();
 	inicializar_listas_instrucciones();
 }
 

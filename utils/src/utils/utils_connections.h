@@ -118,6 +118,8 @@ void crear_buffer(t_paquete* paquete);
 void eliminar_buffer(t_buffer *buffer);
 t_paquete* crear_paquete(op_code code_op);
 void* serializar_paquete(t_paquete* paquete, int bytes);
+void enviar_mensaje(void* mensaje, int socket_cliente);
+void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void agregar_algo_a_paquete(t_paquete* paquete, void* valor);
@@ -131,6 +133,8 @@ void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
 char* enum_a_string(estado_pcb estado);
 
 // DESERIALIZACION
+void* recibir_mensaje(int socket_cliente);
+char* recibir_mensaje_string(int socket_cliente);
 op_code recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);

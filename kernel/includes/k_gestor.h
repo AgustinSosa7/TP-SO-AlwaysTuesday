@@ -55,6 +55,7 @@ typedef struct{
 
 extern int pid_global;
 extern int tiempo_transcurrido;
+extern int procesos_activos; 
 
 
 extern t_list* INSTRUCCIONES_GEN;

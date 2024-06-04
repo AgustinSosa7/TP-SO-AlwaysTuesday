@@ -34,7 +34,7 @@ void planif_fifo_RR()
             t_pcb* un_pcb = queue_pop(cola_ready);
             cambiar_estado(un_pcb, EXEC);
             
-            enviar_pcb_a(un_pcb,fd_cpu_dispatch);
+            enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
 
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
                 pthread_t hilo_quantum;
