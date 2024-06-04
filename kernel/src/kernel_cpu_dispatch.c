@@ -18,11 +18,16 @@ void recibir_pcb_con_motivo()
             /* code */
             break;
       case PEDIDO_IO:          
-            t_paquete_y_pcb* paquete_y_pcb = malloc(sizeof(t_paquete_y_pcb));
-            paquete_y_pcb->paquete = paquete;
-            paquete_y_pcb->un_pcb = pcb_recibido;   
+            t_peticion* peticion = recibir_peticion(paquete);  
+            t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
+
+            t_peticion_pcb_interfaz* peticion_pcb_interfaz = malloc(sizeof(t_peticion_pcb_interfaz));
+            peticion_pcb_interfaz->peticion = peticion;
+            peticion_pcb_interfaz->un_pcb = pcb_recibido;
+            peticion_pcb_interfaz->interfaz = interfaz; 
+
             pthread_t pedido_io;
-            pthread_create(&pedido_io, NULL, atender_pedido_io, paquete_y_pcb); //verificar como se envian estos parametros
+            pthread_create(&pedido_io, NULL, enviar_proceso_a_blocked, peticion_pcb_interfaz); 
             pthread_detach(pedido_io);
             
             break;

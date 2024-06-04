@@ -47,5 +47,10 @@ t_list* lista_ready_plus;
 t_list* lista_exec;
 t_list* lista_exit;
 
+t_list* INSTRUCCIONES_GEN;
+t_list* INSTRUCCIONES_STDIN;
+t_list* INSTRUCCIONES_STDOUT;
+t_list* INSTRUCCIONES_FS;
+
 
 #endif

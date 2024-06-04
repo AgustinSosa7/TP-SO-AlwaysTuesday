@@ -12,13 +12,20 @@
 
 
 
+typedef struct{
+    int tiempo_espera;
+    char* archivo;
+    char* registroDireccion;
+    char* registroTamanio;
+    char* registroPunteroArchivo; 
+} t_peticion_param;
+
+typedef struct{
+    char* instruccion;
+    t_peticion_param* parametros;
+} t_peticion;
 
 //Variables GLOBALES 
-extern t_list* INSTRUCCIONES_GEN;
-extern t_list* INSTRUCCIONES_STDIN;
-extern t_list* INSTRUCCIONES_STDOUT;
-extern t_list* INSTRUCCIONES_FS;
-
 extern t_log* entradasalida_logger;
 extern t_log* entradasalida_log_debug;
 extern t_config* entradasalida_config;
@@ -39,7 +46,6 @@ extern char* PATH_BASE_DIALFS;
 extern int BLOCK_SIZE;
 extern int BLOCK_COUNT;
 extern int RETRASO_COMPACTACION;
-extern t_list* INSTRUCCIONES_POSIBLES;
 
 
 

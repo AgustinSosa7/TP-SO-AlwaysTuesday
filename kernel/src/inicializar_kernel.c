@@ -77,10 +77,27 @@ void inicializar_listas(void){
 	lista_ready_plus = list_create();
 	lista_exec = list_create();
 	lista_exit = list_create();
+	inicializar_listas_instrucciones();
+}
 
+void inicializar_listas_instrucciones(){
+	INSTRUCCIONES_GEN = list_create();
+	INSTRUCCIONES_STDIN = list_create();
+	INSTRUCCIONES_STDOUT = list_create();
+	INSTRUCCIONES_FS = list_create();
+	list_add(INSTRUCCIONES_GEN, "IO_GEN_SLEEP");
+	list_add(INSTRUCCIONES_STDIN, "IO_STDIN_READ");
+	list_add(INSTRUCCIONES_STDOUT, "IO_STDOUT_WRITE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_CREATE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_DELETE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_TRUNCATE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_WRITE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_READ");
 }
 
 void inicializar_semaforos(void){
+	mutex_pid = malloc(sizeof(pthread_mutex_t));;
+	mutex_io = malloc(sizeof(pthread_mutex_t));;
 	pthread_mutex_init(mutex_pid, NULL);
 	pthread_mutex_init(mutex_io, NULL);
 }

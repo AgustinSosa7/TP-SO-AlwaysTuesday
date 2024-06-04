@@ -8,7 +8,6 @@
 
 void inicializar_entradasalida(char** argv);
 void inicializar_logs();
-void inicializar_listas_instrucciones(); 
 void inicializar_configs(char** argv);
 void imprimir_configs();
 void recibir_configs(char* TIPO_INTERFAZ);
