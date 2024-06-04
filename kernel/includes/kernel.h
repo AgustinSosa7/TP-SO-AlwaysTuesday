@@ -55,5 +55,10 @@ t_queue* cola_ready_plus;
 t_list* lista_exec;
 t_queue* cola_exit;
 
+t_list* INSTRUCCIONES_GEN;
+t_list* INSTRUCCIONES_STDIN;
+t_list* INSTRUCCIONES_STDOUT;
+t_list* INSTRUCCIONES_FS;
+
 
 #endif

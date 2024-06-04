@@ -5,7 +5,7 @@
 void inicializar_kernel(char* path){
     inicializar_logs();
     inicializar_configs(path);
-	inicializar_colas();
+	inicializar_listas();
 	inicializar_semaforos();
 	inicializar_pid_y_procesos_activos();
 }
@@ -71,16 +71,12 @@ log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualment
 
 }
 
-void inicializar_colas(void){
-	cola_new = queue_create();
-	cola_ready = queue_create();
-	cola_ready_plus = queue_create();
+void inicializar_listas(void){
+	lista_new = list_create();
+	lista_ready = list_create();
+	lista_ready_plus = list_create();
 	lista_exec = list_create();
-	cola_exit = queue_create();
-
-}
-
-void inicializar_listas(){
+	lista_exit = list_create();
 	inicializar_listas_instrucciones();
 }
 
@@ -100,19 +96,13 @@ void inicializar_listas_instrucciones(){
 }
 
 void inicializar_semaforos(void){
-	pthread_mutex_init(&mutex_pid, NULL);
-	pthread_mutex_init(&mutex_io, NULL);
-	pthread_mutex_init(&mutex_new, NULL);
-	pthread_mutex_init(&mutex_ready, NULL);
-	pthread_mutex_init(&mutex_exec, NULL);
-	pthread_mutex_init(&mutex_ready_plus, NULL);
-	pthread_mutex_init(&mutex_exit, NULL);
-
-	sem_init(&sem_grado_multiprogram,0,GRADO_MULTIPROGRAMACION);
-	sem_init(&sem_new_a_ready,0,0);
-	sem_init(&sem_planificador_corto_plazo,0,0);
+	mutex_pid = malloc(sizeof(pthread_mutex_t));;
+	mutex_io = malloc(sizeof(pthread_mutex_t));;
+	pthread_mutex_init(mutex_pid, NULL);
+	pthread_mutex_init(mutex_io, NULL);
 }
 
 void inicializar_pid_y_procesos_activos(){
 	pid_global = 0;
+	procesos_activos = 0;
 	}

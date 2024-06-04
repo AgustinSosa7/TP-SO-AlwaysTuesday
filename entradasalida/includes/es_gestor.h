@@ -9,17 +9,12 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-
-
-
-
-
 typedef struct{
     int tiempo_espera;
     char* archivo;
-    char* registro1;
-    char* registro2;
-    char* registro3; 
+    char* registroDireccion;
+    char* registroTamanio;
+    char* registroPunteroArchivo; 
 } t_peticion_param;
 
 typedef struct{
@@ -28,7 +23,6 @@ typedef struct{
 } t_peticion;
 
 //Variables GLOBALES 
-
 extern t_log* entradasalida_logger;
 extern t_log* entradasalida_log_debug;
 extern t_config* entradasalida_config;

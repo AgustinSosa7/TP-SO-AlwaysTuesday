@@ -66,7 +66,7 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			BLOCK_SIZE = config_get_int_value(entradasalida_config,"BLOCK_SIZE");
 			BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
 			RETRASO_COMPACTACION = config_get_int_value(entradasalida_config,"RETRASO_COMPACTACION");
-
+	
 		} else {
 	        printf("Tipo de interfaz desconocida.");
 			EXIT_FAILURE;    
@@ -78,5 +78,4 @@ void imprimir_configs(){
 	log_info(entradasalida_logger, "TIPO_INTERFAZ: %s",TIPO_INTERFAZ);
 
 }
-
 

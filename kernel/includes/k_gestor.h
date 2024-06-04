@@ -10,6 +10,21 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
+
+///////////////////////ESTRUCTURAS PCB////////////////////////////
+
+typedef struct 
+{
+    char* nombre;
+    char* tipo;
+    t_list* instrucciones_posibles;
+    int fd_interfaz;
+    bool esta_conectada;
+    t_queue* cola_procesos_blocked;
+    sem_t* semaforo_cola_procesos_blocked;
+    pthread_mutex_t* mutex_cola_blocked;
+} t_interfaz;
+
 typedef struct{
     int tiempo_espera;
     char* archivo;
@@ -25,32 +40,32 @@ typedef struct{
 } t_peticion;
 
 typedef struct{
-    t_paquete* paquete;
+    t_peticion* peticion;
     t_pcb* un_pcb;
-}t_paquete_y_pcb;
+    t_interfaz* interfaz;
+}t_peticion_pcb_interfaz;
+
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
-
-typedef struct 
-{
-    char* nombre;
-    char* tipo;
-    t_list* instrucciones_posibles;
-    int fd_interfaz;
-    t_queue* cola_procesos_blocked;
-    sem_t* semaforo_cola_procesos_blocked;
-    pthread_mutex_t* mutex_cola_blocked;
-} t_interfaz;
 
 typedef struct{
         t_pcb* un_pcb;
         t_peticion* peticion;
 }t_proceso_blocked;
 
-
-
 extern int pid_global;
 extern int tiempo_transcurrido;
+
+
+extern t_list* INSTRUCCIONES_GEN;
+extern t_list* INSTRUCCIONES_STDIN;
+extern t_list* INSTRUCCIONES_STDOUT;
+extern t_list* INSTRUCCIONES_FS;
+extern t_list* IOS_CONECTADOS;
+
+extern t_list* lista_new;
+extern t_list* lista_ready;
+extern t_list* lista_ready_plus;
 
 extern t_queue* cola_new;
 extern t_queue* cola_ready;
@@ -74,12 +89,6 @@ extern sem_t* sem_new_a_ready;
 extern sem_t* sem_planificador_corto_plazo;
 
 ///////////////////////////////////////////////////////////////
-extern t_list* INSTRUCCIONES_GEN;
-extern t_list* INSTRUCCIONES_STDIN;
-extern t_list* INSTRUCCIONES_STDOUT;
-extern t_list* INSTRUCCIONES_FS;
-
-extern t_list* IOS_CONECTADOS;
 
 
 extern t_log* kernel_logger;

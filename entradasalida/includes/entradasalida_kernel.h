@@ -13,8 +13,7 @@ t_peticion* recibir_peticion(t_paquete* paquete);
 void asignar_parametros_segun_tipo(t_peticion* peticion, void* stream);
 void procesar_peticion(t_peticion* peticion);
 
-void finalizar_peticion(t_peticion* peticion, t_pcb* pcb);
+void finalizar_peticion(t_peticion* peticion);
 void eliminar_peticion(t_peticion* peticion);
 
-void agregar_pcb_al_paquete(t_paquete* paquete, t_pcb* pcb);
 #endif 
