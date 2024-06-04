@@ -5,7 +5,7 @@ void enviar_interrupción_a_cpu(){
     //agregar_algo_a_paquete(un_paquete,& );
 	enviar_paquete(un_paquete,fd_cpu_dispatch);
     eliminar_paquete(un_paquete);
-}
+} //MEJOR USAR SEMAFOROS
 
 // void atender_kernel_cpu_interrupt(){
 //     bool control_key = 1;

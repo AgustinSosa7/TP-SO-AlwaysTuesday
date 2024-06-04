@@ -6,7 +6,7 @@
 void planif_corto_plazo()
 {
     while(1){
-        sem_wait(&sem_planificador_corto_plazo);
+        sem_wait(sem_planificador_corto_plazo);
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch (algoritmo)
             {
@@ -90,7 +90,7 @@ void gestionar_quantum(t_pcb* un_pcb){
         return FIFO;
     } else if(strcmp("RR",algoritmo_de_plani)==0){
         return RR;
-    } else if(strcmp("VRR",algoritmo_de_plani)==0){
+    } else {
         return VRR;
     }
 

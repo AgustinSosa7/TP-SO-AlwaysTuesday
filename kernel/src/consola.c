@@ -1,7 +1,7 @@
 #include "../includes/consola.h"
 
 void iniciar_consola(){
-	t_list* lista_instrucciones= list_create();
+	lista_instrucciones= list_create();
 	agregar_instruccion(lista_instrucciones,EJECUTAR_SCRIPT,1,"EJECUTAR_SCRIPT");
 	agregar_instruccion(lista_instrucciones,INICIAR_PROCESO,1,"INICIAR_PROCESO");
 	agregar_instruccion(lista_instrucciones,FINALIZAR_PROCESO,1,"FINALIZAR_PROCESO");

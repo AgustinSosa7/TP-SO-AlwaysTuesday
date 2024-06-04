@@ -6,6 +6,12 @@
 #include "kernel_entradaSalida.h"
 
 
+t_list* INSTRUCCIONES_GEN;
+t_list* INSTRUCCIONES_STDIN;
+t_list* INSTRUCCIONES_STDOUT;
+t_list* INSTRUCCIONES_FS;
+t_list* IOS_CONECTADOS;
+
 
  void conexion_kernel_memoria();
  void conexion_kernel_cpu_dispatch();
