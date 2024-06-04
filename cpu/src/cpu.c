@@ -78,31 +78,16 @@ void iniciar_semaforo(){
     semaforo_init(&semaforo_control_fetch_decode,0,0);
     semaforo_init(&semaforo_control_decode_execute,0,0);
 }
-
+*/
 //ciclo de instruccion(fetch-decode-execute)
-void comenzar_ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
-    ciclo_instruccion_fetch();
+void ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
+    //FETCH
+
+    //DECODE
     
-    semaforo_wait(&semaforo_control_fetch_decode);
-    ciclo_instruccion_decode();
+    //EXECUTE
 
-    semaforo_wait(&semaforo_control_decode_execute);
-    ciclo_instruccion_execute();
+    //CHECK INTERRUPT
 
 }
-//FETCH
-void ciclo_instruccion_fetch(){ //llamar a la funcion que hizo lucas
-	log_info(cpu_log_obligatorio, "PID: <%d> - FETCH - Program Counter: <%d>", contexto->proceso_pid, contexto->proceso_ip);
-	MANDA UN PID Y PC QUE QUIERO EJECUTAR
-	enviar_paquete(un_paquete, fd_memoria);
-	eliminar_paquete(un_paquete); 
-}
-//DECODE
-void ciclo_instruccion_decode(){
-    RECIBIR EL CHAR* DE INSTRUCCION QUE QUIERO DECODIFICAR
-    correr_decode();
-} 
-//EXECUTE
-void ciclo_instruccion_execute(){
-    comparacion_de_strings(instruccion_a_ejecutar);
-}*/
+/*

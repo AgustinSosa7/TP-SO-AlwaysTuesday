@@ -57,7 +57,7 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
-typedef struct
+typedef struct //Verificar tipo de datos
 {
     u_int32_t PC;
     u_int8_t AX;
@@ -71,6 +71,11 @@ typedef struct
     u_int32_t SI;
     u_int32_t DI;
 }t_registros_cpu;
+
+typedef struct{
+ int pid;
+
+}contexto_ejecucion;
 
 typedef enum{
     NEW,
