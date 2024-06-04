@@ -5,6 +5,7 @@
 #include <../src/utils/utils_connections.h>
 
 
-void atender_kernel_cpu_interrupt();
+//void atender_kernel_cpu_interrupt();
+void enviar_interrupción_a_cpu();
 
 #endif 

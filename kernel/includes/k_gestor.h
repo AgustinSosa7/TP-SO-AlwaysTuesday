@@ -25,14 +25,14 @@ typedef struct
     pthread_mutex_t* mutex_cola_blocked;
 } t_interfaz;
 
-
 typedef struct{
     int tiempo_espera;
     char* archivo;
     char* registroDireccion;
     char* registroTamanio;
-    char* registroPunteroArchivo; 
+    char* registroPunteroArchivo;
 } t_peticion_param;
+
 typedef struct{
     char* instruccion;
     char* interfaz;
@@ -46,31 +46,50 @@ typedef struct{
 }t_peticion_pcb_interfaz;
 
 
+///////////////////////ESTRUCTURAS PCB////////////////////////////
+
 typedef struct{
         t_pcb* un_pcb;
         t_peticion* peticion;
 }t_proceso_blocked;
 
 extern int pid_global;
+extern int tiempo_transcurrido;
+
 
 extern t_list* INSTRUCCIONES_GEN;
 extern t_list* INSTRUCCIONES_STDIN;
 extern t_list* INSTRUCCIONES_STDOUT;
 extern t_list* INSTRUCCIONES_FS;
+extern t_list* IOS_CONECTADOS;
 
 extern t_list* lista_new;
 extern t_list* lista_ready;
 extern t_list* lista_ready_plus;
+
+extern t_queue* cola_new;
+extern t_queue* cola_ready;
+extern t_queue* cola_ready_plus;
 extern t_list* lista_exec;
 extern t_list* lista_blocked;
-extern t_list* lista_exit;
+extern t_queue* cola_exit;
+
+//////////////////////SEMAFOROS/////////////////////////////////////////
 
 extern pthread_mutex_t* mutex_pid;
-
-extern int procesos_activos;
-///////////////////////////////////////////////////////////////
-extern t_list* IOS_CONECTADOS;
+extern pthread_mutex_t* mutex_new;
+extern pthread_mutex_t* mutex_ready;
+extern pthread_mutex_t* mutex_exec;
+extern pthread_mutex_t* mutex_ready_plus;
+extern pthread_mutex_t* mutex_exit;
 extern pthread_mutex_t* mutex_io;
+
+extern sem_t* sem_grado_multiprogram;
+extern sem_t* sem_new_a_ready;
+extern sem_t* sem_planificador_corto_plazo;
+
+///////////////////////////////////////////////////////////////
+
 
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

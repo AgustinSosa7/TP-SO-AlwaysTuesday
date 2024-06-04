@@ -13,7 +13,7 @@
 #include <commons/string.h>
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
-
+#include <commons/temporal.h>
 #include <semaphore.h>
 
 #include <assert.h>
@@ -27,17 +27,17 @@ typedef enum
 	MENSAJE,
 	PAQUETE,
 	HANDSHAKE,
+    //---- KERNEL - IO
+    ME_IDENTIFICO,
 	ATENDER_PETICION_INTERFAZ_KERNEL,
-	RECONOCER_INSTRUCCION,
 	ESTOY_CONECTADO,
+    FIN_PETICION,
 	//---- KERNEL - CPU
 	PCB,
 	EJECUTAR_PROCESO_KC,
+    INTERRUPCION,
 	//---- KERNEL - MEMORIA
 	PSEUDOCODIGO,
-    FIFO,
-    RR,
-    VRR,
     DESALOJO_QUANTUM,
     PROCESO_EXIT,
     PEDIDO_IO
@@ -119,15 +119,13 @@ void eliminar_buffer(t_buffer *buffer);
 t_paquete* crear_paquete(op_code code_op);
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
-void enviar_mensaje(void* mensaje, int socket_cliente);
-void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void agregar_algo_a_paquete(t_paquete* paquete, void* valor);
 void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_CPU);
 
 //PCB
-void enviar_pcb_a(t_pcb* un_pcb, int socket);
+void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje);
 t_pcb* recibir_pcb(t_paquete* paquete);
 void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
 char* enum_a_string(estado_pcb estado);
@@ -136,8 +134,6 @@ char* enum_a_string(estado_pcb estado);
 op_code recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
-void* recibir_mensaje(int socket_cliente);
-char* recibir_mensaje_string(int socket_cliente);
 void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio);
 char* leer_string_del_stream(t_buffer* buffer);
 void leer_registros_del_stream(void* stream, t_registros_cpu* registros_CPU);

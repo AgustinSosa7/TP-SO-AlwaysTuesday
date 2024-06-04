@@ -9,9 +9,6 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-
-
-
 typedef struct{
     int tiempo_espera;
     char* archivo;

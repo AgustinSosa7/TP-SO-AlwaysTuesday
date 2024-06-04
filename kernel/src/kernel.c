@@ -37,9 +37,9 @@ int main(int argc, char** argv)
     
     //conexion_kernel_entradaSalida();
     /////////////////-Prueba mandar y recibir PCB-///////////////////
-    t_pcb * un_pcb;
-    imprimir_pcb(un_pcb, kernel_logger);
-    enviar_pcb_a(un_pcb, fd_cpu_dispatch);
+   // t_pcb * un_pcb;
+  //  imprimir_pcb(un_pcb, kernel_logger);
+   // enviar_pcb_a(un_pcb, fd_cpu_dispatch);
     
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
