@@ -7,6 +7,8 @@
 #include "cpu_kernel_dispatch.h"
 #include "cpu_kernel_interrupt.h"
 #include "cpu_memoria.h"
+#include "decode.h"
+#include "execute.h"
 
 
 t_log* cpu_logger;
@@ -28,6 +30,13 @@ char* PUERTO_ESCUCHA_DISPATCH;
 char* PUERTO_ESCUCHA_INTERRUPT;
 int CANTIDAD_ENTRADAS_TLB;
 char* ALGORITMO_TLB;
+
+void ciclo_instruccion();
+char* decodificacion_instruccion(t_list *lista_de_instrucciones);
+bool codigo_inexistente(char *instruccion);
+bool requiere_traduccion(char *instruccion);
+void ejecucion_proceso(char *codigo);
+cod_instruccion identificador_instruccion(char* codigo);
 
 //semaforo_t semaforo_control_fetch_decode;
 //semaforo_t semaforo_control_decode_execute;

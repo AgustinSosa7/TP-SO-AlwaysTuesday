@@ -13,14 +13,14 @@ int main(int argc, char** argv){
 
     // Conectarnos como cliente a MEMORIA
 
-    log_info(cpu_logger, "Creando conexion con MEMORIA...");
-    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
-    gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
+    //log_info(cpu_logger, "Creando conexion con MEMORIA...");
+    //fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
+    //gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
 
 
     // Comentado porque no tenemos el pseudocodigo :D
-    char* instruccion_recibida = recibir_instruccion_pseudocodigo();
-    log_info(cpu_log_debug, "recibi el pseudocodigo:%s", instruccion_recibida);
+    //char* instruccion_recibida = recibir_instruccion_pseudocodigo();
+    //log_info(cpu_log_debug, "recibi el pseudocodigo:%s", instruccion_recibida);
 
     // Iniciar server de CPU - DISPATCH
     /*
@@ -78,16 +78,24 @@ void iniciar_semaforo(){
     semaforo_init(&semaforo_control_fetch_decode,0,0);
     semaforo_init(&semaforo_control_decode_execute,0,0);
 }
-*/
-//ciclo de instruccion(fetch-decode-execute)
-void ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
-    //FETCH
 
-    //DECODE
+*/
+//ciclo de instruccion(fetch-decode-execute-check_interrupt)
+void ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
+    //FETCH  Me debería taraer instrucciones para decodificar
+
+    t_list * lista_de_instrucciones;  // tiene que ser una lista de Strings, no sé si está bien. acá iria lo que recibe del Fetch. Hablar con Lucas como llega
     
+    //DECODE, Ver como afecta al PID 
+
+    while(lista_de_instrucciones->elements_count != 0){
+    char* codigo = decodificacion_instruccion(lista_de_instrucciones); //Va una lista de Strings
+
     //EXECUTE
+
+    ejecucion_proceso(codigo);
 
     //CHECK INTERRUPT
 
+    }  // El Check I. debe estar en el while????
 }
-/*
