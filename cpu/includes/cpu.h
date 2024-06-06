@@ -11,6 +11,10 @@
 #include "decode.h"
 #include "execute.h"
 
+//Estructuras
+
+
+
 
 t_log* cpu_logger;
 t_log* cpu_log_debug;
@@ -33,10 +37,10 @@ int CANTIDAD_ENTRADAS_TLB;
 char* ALGORITMO_TLB;
 
 void ciclo_instruccion();
-char* decodificacion_instruccion(t_list *lista_de_instrucciones);
+cod_instruccion decodificacion_instruccion(char *instruccion);
 bool codigo_inexistente(char *instruccion);
 bool requiere_traduccion(char *instruccion);
-void ejecucion_proceso(char *codigo);
+void ejecucion_proceso(cod_instruccion instruccion, char** codigo);
 cod_instruccion identificador_instruccion(char* codigo);
 
 //semaforo_t semaforo_control_fetch_decode;

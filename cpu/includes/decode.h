@@ -3,8 +3,9 @@
 
 #include "cpu_gestor.h"
 
-char* decodificacion_instruccion(t_list * lista_de_instrucciones);
+cod_instruccion decodificacion_instruccion(char *instruccion);
 bool codigo_inexistente(char* instruccion);
 bool requiere_traduccion(char * instruccion);
+cod_instruccion identificador_instruccion(char* codigo);
 
 #endif 

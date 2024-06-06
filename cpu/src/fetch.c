@@ -1,6 +1,6 @@
 #include "../includes/fetch.h"
 
-void ciclo_instruccion_fetch(){ //
+char ** ciclo_instruccion_fetch(){ //
     
 	
 	//sacar
@@ -10,7 +10,7 @@ void ciclo_instruccion_fetch(){ //
 	char** instruccion_spliteada;
 	//fin sacar
 
-	while(i<7){
+	//while(i<7){
 
 		//SEM WAIT FETCH
 		log_info(cpu_log_debug, "PID: <%d> - FETCH - PC: <%d>", contexto_ejecucion->pid, contexto_ejecucion->registros_cpu->PC);
@@ -28,7 +28,10 @@ void ciclo_instruccion_fetch(){ //
 		
 		contexto_ejecucion->registros_cpu->PC++;
 		i++;
-		sleep(3);
+
+		return instruccion_spliteada;
+		//sleep(3);
 		//fin sacar
-	}
+	//}
+
 }

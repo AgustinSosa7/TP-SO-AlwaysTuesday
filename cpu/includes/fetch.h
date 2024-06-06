@@ -7,7 +7,7 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-void ciclo_instruccion_fetch();
+char** ciclo_instruccion_fetch();
 
 #endif
 

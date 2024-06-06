@@ -86,18 +86,21 @@ void iniciar_semaforo(){
 */
 //ciclo de instruccion(fetch-decode-execute-check_interrupt)
 void ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
+    
+    while(1){
+    
     //FETCH  Me debería taraer instrucciones para decodificar
 
-    t_list * lista_de_instrucciones;  // tiene que ser una lista de Strings, no sé si está bien. acá iria lo que recibe del Fetch. Hablar con Lucas como llega
+    char ** instruccion = ciclo_instruccion_fetch();  // tiene que ser una lista de Strings, no sé si está bien. acá iria lo que recibe del Fetch. Hablar con Lucas como llega
     
     //DECODE, Ver como afecta al PID 
 
-    while(lista_de_instrucciones->elements_count != 0){
-    char* codigo = decodificacion_instruccion(lista_de_instrucciones); //Va una lista de Strings
+    
+    cod_instruccion instruccion_a_ejecutar = decodificacion_instruccion(instruccion[0]); //Va una lista de Strings
 
     //EXECUTE
 
-    ejecucion_proceso(codigo);
+    ejecucion_proceso(instruccion_a_ejecutar, instruccion); // Podría hacerse dentro el decode
 
     //CHECK INTERRUPT
 
