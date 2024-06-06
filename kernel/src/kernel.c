@@ -1,7 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <../includes/kernel.h>
-#include <../includes/pcb.h>
+#include "../includes/kernel.h"
+
 
 int main(int argc, char** argv)
 {   
@@ -35,7 +33,7 @@ int main(int argc, char** argv)
     
     //conexion_kernel_cpu_interrupt();
     
-    //conexion_kernel_entradaSalida();
+    conexion_kernel_entradaSalida();
     /////////////////-Prueba mandar y recibir PCB-///////////////////
    // t_pcb * un_pcb;
   //  imprimir_pcb(un_pcb, kernel_logger);

@@ -2,13 +2,8 @@
 #define K_GESTOR_H_
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <pthread.h> 
 
 #include <../src/utils/utils_connections.h>
-#include <commons/log.h>
-#include <commons/config.h>
 
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
@@ -55,18 +50,14 @@ typedef struct{
 
 extern int pid_global;
 extern int tiempo_transcurrido;
-extern int procesos_activos; 
 
+extern t_list* lista_instrucciones;
 
 extern t_list* INSTRUCCIONES_GEN;
 extern t_list* INSTRUCCIONES_STDIN;
 extern t_list* INSTRUCCIONES_STDOUT;
 extern t_list* INSTRUCCIONES_FS;
 extern t_list* IOS_CONECTADOS;
-
-// extern t_list* lista_new;
-// extern t_list* lista_ready;
-// extern t_list* lista_ready_plus;
 
 extern t_queue* cola_new;
 extern t_queue* cola_ready;

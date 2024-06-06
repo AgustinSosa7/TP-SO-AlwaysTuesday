@@ -1,12 +1,13 @@
 
-#ifndef CONSOLA_H
-#define CONSOLA_H
+#ifndef CONSOLA_H_
+#define CONSOLA_H_
 
 #include "k_gestor.h"
-#include <readline/readline.h>
+#include "pcb.h"
 
 
-t_list* lista_instrucciones;
+
+
 typedef enum{
 	EJECUTAR_SCRIPT,
     INICIAR_PROCESO,

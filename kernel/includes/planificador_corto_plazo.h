@@ -3,7 +3,7 @@
 
 #include "k_gestor.h"
 #include "pcb.h"
-#include <../src/utils/utils_connections.h>
+#include "kernel_cpu_dispatch.h"
 typedef enum {
     FIFO,
     RR,

@@ -2,10 +2,9 @@
 #define KERNEL_CPU_INTERRUPT_H_
 
 #include "k_gestor.h"
-#include <../src/utils/utils_connections.h>
 
-
+//void enviar_interrupción_a_cpu();
 //void atender_kernel_cpu_interrupt();
-void enviar_interrupción_a_cpu();
+
 
 #endif 

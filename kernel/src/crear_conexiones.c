@@ -1,4 +1,10 @@
 #include "../includes/crear_conexiones.h"
+
+// t_list* INSTRUCCIONES_GEN;
+// t_list* INSTRUCCIONES_STDIN;
+// t_list* INSTRUCCIONES_STDOUT;
+// t_list* INSTRUCCIONES_FS;
+// t_list* IOS_CONECTADOS;
         // Conectarse con Memoria
     void conexion_kernel_memoria(){
     log_info(kernel_logger, "Creando conexion con MEMORIA...");

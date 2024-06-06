@@ -1,11 +1,9 @@
-#ifndef KERNEL_ENTRADASALIDA_H
-#define KERNEL_ENTRADASALIDA_H
+#ifndef KERNEL_ENTRADASALIDA_H_
+#define KERNEL_ENTRADASALIDA_H_
 
-#include <../src/utils/utils_connections.h>
+
 #include "k_gestor.h"
 #include "pcb.h"
-
-
 void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz);
 
 t_peticion* recibir_peticion(t_paquete* paquete);

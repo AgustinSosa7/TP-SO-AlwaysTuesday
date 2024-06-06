@@ -1,8 +1,5 @@
 #include "../includes/pcb.h"
-#include <../src/utils/utils_connections.h>
 
-
-#include <semaphore.h>
 
 t_pcb* crearPcb(){
 	t_pcb* pcb = malloc(sizeof(t_pcb*));

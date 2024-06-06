@@ -1,5 +1,5 @@
 #include "../includes/kernel_memoria.h"
-#include <../src/utils/utils_connections.h>
+
 
 
 

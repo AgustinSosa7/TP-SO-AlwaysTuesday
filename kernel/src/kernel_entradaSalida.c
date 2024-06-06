@@ -1,6 +1,4 @@
 #include "../includes/kernel_entradaSalida.h"
-#include <../src/utils/utils_connections.h>
-
 
 t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
@@ -47,24 +45,6 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       }
 }           
 
-void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
-{
-    peticion_pcb_interfaz->un_pcb->estado_pcb = BLOCKED;
-
-    t_proceso_blocked* proceso_blocked = malloc(sizeof(t_proceso_blocked));
-    proceso_blocked->peticion = peticion_pcb_interfaz->peticion;
-    proceso_blocked->un_pcb = peticion_pcb_interfaz->un_pcb;
-    
-    pthread_mutex_lock(peticion_pcb_interfaz->interfaz->mutex_cola_blocked);
-    queue_push(peticion_pcb_interfaz->interfaz->cola_procesos_blocked, proceso_blocked);
-    pthread_mutex_unlock(peticion_pcb_interfaz->interfaz->mutex_cola_blocked);
-
-    sem_post(peticion_pcb_interfaz->interfaz->semaforo_cola_procesos_blocked);
-
-    eliminar_peticion(peticion_pcb_interfaz->peticion);
-}
-
-
 t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){ 
       char* nombre_io = peticion->interfaz;
       char* instruccion = peticion->instruccion;
@@ -108,6 +88,25 @@ void validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion
             //matar al hilo en el que me encuentro?
       }
 }
+
+
+void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
+{
+    peticion_pcb_interfaz->un_pcb->estado_pcb = BLOCKED;
+
+    t_proceso_blocked* proceso_blocked = malloc(sizeof(t_proceso_blocked));
+    proceso_blocked->peticion = peticion_pcb_interfaz->peticion;
+    proceso_blocked->un_pcb = peticion_pcb_interfaz->un_pcb;
+    
+    pthread_mutex_lock(peticion_pcb_interfaz->interfaz->mutex_cola_blocked);
+    queue_push(peticion_pcb_interfaz->interfaz->cola_procesos_blocked, proceso_blocked);
+    pthread_mutex_unlock(peticion_pcb_interfaz->interfaz->mutex_cola_blocked);
+
+    sem_post(peticion_pcb_interfaz->interfaz->semaforo_cola_procesos_blocked);
+
+    eliminar_peticion(peticion_pcb_interfaz->peticion);
+}
+
 
 void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);

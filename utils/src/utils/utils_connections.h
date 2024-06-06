@@ -14,9 +14,14 @@
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
 #include <commons/temporal.h>
+#include <commons/config.h>
 #include <semaphore.h>
 
+#include <pthread.h> 
+
 #include <assert.h>
+#include <readline/readline.h>
+
 
 #define PUERTO "4444"
 #define BACKLOG 100
