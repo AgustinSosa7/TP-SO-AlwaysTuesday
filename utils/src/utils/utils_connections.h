@@ -35,6 +35,7 @@ typedef enum
 	EJECUTAR_PROCESO_KC,
 	//---- KERNEL - MEMORIA
 	PSEUDOCODIGO,
+    PEDIDO_PSEUDOCODIGO,
     CREAR_PROCESO,
     FIFO,
     RR,
@@ -72,10 +73,7 @@ typedef struct //Verificar tipo de datos
     u_int32_t DI;
 }t_registros_cpu;
 
-typedef struct{
- int pid;
 
-}contexto_ejecucion;
 
 typedef enum{
     NEW,

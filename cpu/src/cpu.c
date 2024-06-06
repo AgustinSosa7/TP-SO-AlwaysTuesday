@@ -13,14 +13,14 @@ int main(int argc, char** argv){
 
     // Conectarnos como cliente a MEMORIA
 
-    //log_info(cpu_logger, "Creando conexion con MEMORIA...");
-    //fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
-    //gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
+    log_info(cpu_logger, "Creando conexion con MEMORIA...");
+    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
+    gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
 
-
-    // Comentado porque no tenemos el pseudocodigo :D
-    //char* instruccion_recibida = recibir_instruccion_pseudocodigo();
-    //log_info(cpu_log_debug, "recibi el pseudocodigo:%s", instruccion_recibida);
+    printf("Guardo las nuevas variables?\n");
+    contexto_ejecucion->pid = 3;
+    contexto_ejecucion->registros_cpu->PC = 0;
+    printf("Si!\n");
 
     // Iniciar server de CPU - DISPATCH
     /*
@@ -53,8 +53,12 @@ int main(int argc, char** argv){
     //pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
     //pthread_join(hilo_memoria, NULL);
 //
+    //Ciclos de instruccion
+    printf("Antes de crear el hilo fetch\n");
+    pthread_t hilo_fetch;
+    pthread_create(&hilo_fetch, NULL, (void*)ciclo_instruccion_fetch, NULL);
+    pthread_join(hilo_fetch, NULL);
 
-//QUE no se muera el main
     return EXIT_SUCCESS;
 }
 /*

@@ -7,6 +7,7 @@
 #include "cpu_kernel_dispatch.h"
 #include "cpu_kernel_interrupt.h"
 #include "cpu_memoria.h"
+#include "fetch.h"
 #include "decode.h"
 #include "execute.h"
 
@@ -15,7 +16,7 @@ t_log* cpu_logger;
 t_log* cpu_log_debug;
 t_config* cpu_config;
 
-t_registros_cpu* registros_cpu;
+t_contexto_ejecucion* contexto_ejecucion; //CAMBIAR A PCB GLOBAL PREGUNTAR SI EL CAMBIO ESTA OK EL SABADO
 
 int fd_cpu_dispatch;
 int fd_cpu_interrupt;

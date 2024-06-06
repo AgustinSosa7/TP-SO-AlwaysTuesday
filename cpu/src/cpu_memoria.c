@@ -1,6 +1,6 @@
 #include "../includes/cpu_memoria.h"
 
-
+/*
 void atender_cpu_memoria(){
     bool control_key = 1;
     while (control_key) {
@@ -18,8 +18,15 @@ void atender_cpu_memoria(){
             break;
         }
     }
-}
+}*/
 
+void pedir_instruccion_pseudocodigo(int pid,int pc){
+    t_paquete* paquete = crear_paquete(PEDIDO_PSEUDOCODIGO);
+    agregar_algo_a_paquete(paquete,pid,sizeof(pid));
+    agregar_algo_a_paquete(paquete,pc,sizeof(pc));
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+}
 
 char* recibir_instruccion_pseudocodigo(){
     op_code code_op = recibir_operacion(fd_memoria);
@@ -27,9 +34,7 @@ char* recibir_instruccion_pseudocodigo(){
     t_buffer* buffer = paquete->buffer;
     if(code_op == PSEUDOCODIGO)
     {
-        log_info(cpu_log_debug, "leer_string_del_stream");
         char* instruccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
-        log_info(cpu_log_debug, "free");
         free(paquete);
         return instruccion_pseudocodigo;
     }

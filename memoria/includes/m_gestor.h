@@ -20,6 +20,13 @@ typedef struct
 	t_list* instrucciones;
 } t_proceso;
 
+
+typedef struct
+{
+	int pid;
+	int pc;
+} t_pedido;
+
 //Variables GLOBALES
 
 extern t_log* memoria_logger;

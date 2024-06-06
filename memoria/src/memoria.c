@@ -30,18 +30,16 @@ gestionar_handshake_como_server(fd_kernel, memoria_logger, "KERNEL");
 
 list_add(procesos_memoria, crear_proceso_nuevo());
 
+while(1){
+t_pedido* pedido = recibir_instruccion_a_enviar();
+printf("Proceso pedido: %d\n",pedido->pid);
 //recv_cpu lo que tengo que pasarte. pid PC
-t_proceso* proceso1 = buscar_proceso_en_memoria(3);
-
+t_proceso* proceso1 = buscar_proceso_en_memoria(pedido->pid);
 printf("ENCONTRADO %d\n",proceso1->pid); //BORRAR
-
-/*
-printf("Llene la lista de longitud %d\n",list_size(proceso1->instrucciones));   
-for(int i=0;i<7;i++){
-    printf("%s\n",list_get(proceso1->instrucciones, i ));
-    }*/
-
-enviar_instruccion_pesudocodigo(proceso1->instrucciones,2);//PROGRAM_COUNTER_PEDIDO);
+enviar_instruccion_pesudocodigo(proceso1->instrucciones,pedido->pc);//PROGRAM_COUNTER_PEDIDO);
+free(pedido);
+sleep(3);
+}
 
 // Esperar conexion de ENTRADASALIDA
 /*log_info(memoria_logger, "Esperando a EntradaSalida...");

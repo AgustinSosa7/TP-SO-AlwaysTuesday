@@ -25,7 +25,10 @@
         "inicializar_cpu.h": "c",
         "cpu_kernel_dispatch.h": "c",
         "cpu.h": "c",
-        "cpu_gestor.h": "c"
+        "cpu_gestor.h": "c",
+        "log.h": "c",
+        "fetch.h": "c",
+        "execute.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

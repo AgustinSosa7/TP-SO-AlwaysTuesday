@@ -75,20 +75,20 @@ void enviar_instruccion_pesudocodigo(t_list* lista_proceso,int pc){
     eliminar_paquete(paquete);
 }
 
-void recibir_instruccion_a_enviar(int pid,int pc){
+t_pedido* recibir_instruccion_a_enviar(){
     op_code code_op = recibir_operacion(fd_cpu);
     t_paquete* paquete = recibir_paquete(fd_cpu);
     t_buffer* buffer = paquete->buffer;
-        
-    int PROCESSID = leer_algo_del_stream(buffer, &PROCESSID,sizeof(PROCESSID));
-    int PROGRAM_COUNTER = leer_algo_del_stream(buffer, &PROGRAM_COUNTER,sizeof(PROGRAM_COUNTER));
-    printf("PID: %d\n",PROCESSID);
-    printf("PROGRAM_COUNTER: %d\n",PROGRAM_COUNTER);
+    t_pedido* pedido = malloc(sizeof(t_pedido*));
+    pedido->pid = leer_algo_del_stream(buffer, &pedido->pid,sizeof(pedido->pid));
+    pedido->pc = leer_algo_del_stream(buffer, &pedido->pc,sizeof(pedido->pc));
+    printf("PID: %d\n",pedido->pid);
+    printf("PROGRAM_COUNTER: %d\n",pedido->pc);
 
     //enviar_instruccion_pesudocodigo((buscar_proceso_en_memoria(PROCESSID))->instrucciones,PROGRAM_COUNTER);
-
     free(buffer);
     free(paquete);
+    return pedido;
 };
 
 t_proceso* buscar_proceso_en_memoria(int process_id){
