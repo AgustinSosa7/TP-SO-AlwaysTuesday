@@ -123,9 +123,8 @@ void inicializar_semaforos(void){
 	sem_init(sem_grado_multiprogram,0,GRADO_MULTIPROGRAMACION);
 	sem_init(sem_new_a_ready,0,0);
 	sem_init(sem_planificador_corto_plazo,0,0);
-
 }
 
 void inicializar_pid(){
 	pid_global = 0;
-	}
+	} 

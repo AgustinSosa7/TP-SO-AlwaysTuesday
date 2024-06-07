@@ -16,7 +16,7 @@ void recibir_pcb_con_motivo()
             
             break;
       case PROCESO_EXIT:
-            //finalizar_proceso()
+           
             //decir a memoria que libere las estructuras
             //cambiar de estado a exit 
             //eliminar de la cola que estaba antes
@@ -46,9 +46,6 @@ void recibir_pcb_con_motivo()
         eliminar_paquete(paquete);    
       }
 }
-
-
-
 
 
 

@@ -1,16 +1,16 @@
 # include "../includes/cpu_kernel_interrupt.h"
 
 
-void atender_cpu_kernel_interrupt(){
-
+void atender_interrupciones(){
     bool control_key = 1;
     while (control_key) {
+        //semaforo
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
 		switch (cod_op) {
-            case MENSAJE:
-                //recibir_mensaje(cliente_fd);
+            case INTERRUPCION_FIN_QUANTUM:
+                enviar_pcb_con_motivo();
                 break;
-            case PAQUETE:
+            case INTERRUPCION_FIN_PROCESO:
                 //
                 break;
             case -1:

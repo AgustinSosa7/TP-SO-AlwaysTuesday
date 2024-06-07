@@ -1,10 +1,5 @@
 #include "../includes/crear_conexiones.h"
 
-// t_list* INSTRUCCIONES_GEN;
-// t_list* INSTRUCCIONES_STDIN;
-// t_list* INSTRUCCIONES_STDOUT;
-// t_list* INSTRUCCIONES_FS;
-// t_list* IOS_CONECTADOS;
         // Conectarse con Memoria
     void conexion_kernel_memoria(){
     log_info(kernel_logger, "Creando conexion con MEMORIA...");
@@ -101,7 +96,7 @@ void gestionar_procesos_io(t_interfaz* interfaz){
     enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
     recibir_fin_peticion(interfaz);
 
-    desbloquear_proceso(proceso_a_ejecutar->un_pcb);
+    desbloquear_proceso(interfaz);
   }
 }
 

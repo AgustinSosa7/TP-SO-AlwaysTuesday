@@ -51,7 +51,7 @@ void planif_fifo_RR()
 void gestionar_quantum(t_pcb* un_pcb){
     usleep(un_pcb->quantum*1000);
         if(contains_algo(lista_exec, &(un_pcb->pid))){ 
-        //enviar_interrupción_a_cpu();
+        enviar_interrupción_a_cpu(INTERRUPCION_FIN_QUANTUM); 
         un_pcb->quantum = QUANTUM;
 
     }

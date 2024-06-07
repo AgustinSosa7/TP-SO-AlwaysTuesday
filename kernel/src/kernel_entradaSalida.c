@@ -53,7 +53,8 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
     if(interfaz->esta_conectada){
         validar_interfaz_admite_instruccion(interfaz, instruccion, pcb); 
     }else{
-        cambiar_estado(pcb, EXIT);
+      //enviar_proceso_blocked_a_exit(interfaz->cola_procesos_blocked);
+
       log_error(kernel_logger,"La interfaz %s no se encuentra conectada. Proceso enviado a EXIT.\n", interfaz->nombre);
       //matar al hilo en el que me encuentro?
     }
@@ -83,8 +84,7 @@ void validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion
       if(contains_string(interfaz->instrucciones_posibles, instruccion)){
 
       }else{
-            log_error(kernel_logger,"Interfaz %s: No reconozco esta instruccion. Proceso enviado a EXIT.\n", interfaz->nombre);
-            cambiar_estado(un_pcb, EXIT);
+      //enviar_proceso_blocked_a_exit(interfaz->cola_procesos_blocked);
             //matar al hilo en el que me encuentro?
       }
 }
@@ -113,19 +113,37 @@ void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* 
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion);
       agregar_algo_a_paquete(paquete, proceso_blocked->peticion->parametros); //revisar si hay que enviar parametro por parametro
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
-	  void* a_enviar = serializar_paquete(paquete, bytes);
+	void* a_enviar = serializar_paquete(paquete, bytes);
       int err = send(fd_entradasalida, a_enviar, bytes, SIGPIPE);
       if(err == -1){
         close(interfaz->fd_interfaz);
         interfaz->esta_conectada = false;
 
-        log_error(kernel_logger,"La interfaz %s no se encuentra conectada. Proceso enviado a EXIT.\n", interfaz->nombre);
-        cambiar_estado(proceso_blocked->un_pcb, EXIT);
+        //enviar_proceso_blocked_a_exit(interfaz->cola_procesos_blocked);
         //matar al hilo en el que me encuentro?
     }
-	  free(a_enviar);
+	free(a_enviar);
       eliminar_paquete(paquete);
 } 
+
+//void enviar_proceso_blocked_a_exit(t_queue* cola_procesos_blocked){
+//      pthread_mutex_lock(interfaz->mutex_cola_blocked);
+//      t_pcb* un_pcb = queue_pop(cola_procesos_blocked);    
+//      pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+//
+//      int estado_anterior = un_pcb->estado_pcb;
+//
+//      cambiar_estado(un_pcb,EXIT);
+//      un_pcb->estado_pcb = EXIT;
+//
+//      pthread_mutex_lock(mutex_exit);
+//      queue_push(cola_exit,un_pcb);
+//      pthread_mutex_unlock(mutex_exit);
+//      
+//      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
+//
+//      // LIBERAR ESTRUCTURAS EN MEMORIA
+//}
 
 void recibir_fin_peticion(t_interfaz* interfaz){
     bool fin_peticion;
@@ -138,8 +156,40 @@ void recibir_fin_peticion(t_interfaz* interfaz){
       }
 }
 
-void desbloquear_proceso(t_pcb* un_pcb){
-    cambiar_estado(un_pcb, READY);
+
+void desbloquear_proceso(t_interfaz* interfaz){
+    pthread_mutex_lock(interfaz->mutex_cola_blocked);
+    t_pcb* un_pcb = queue_pop(interfaz->cola_procesos_blocked);    
+    pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+
+      estado_pcb estado_anterior = un_pcb->estado_pcb;
+
+     if(tiempo_transcurrido < un_pcb->quantum){
+       enviar_proceso_blocked_a_ready_plus(un_pcb);
+    } else{
+      enviar_proceso_blocked_a_ready(un_pcb);
+
+    }
+      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
+
+}
+
+void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
+      cambiar_estado(un_pcb,READY);
+      un_pcb->estado_pcb = READY;
+
+      pthread_mutex_lock(mutex_ready);
+      queue_push(cola_ready,un_pcb); 
+      pthread_mutex_unlock(mutex_ready);
+}
+
+void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
+      un_pcb->quantum = un_pcb->quantum - tiempo_transcurrido;
+      un_pcb->estado_pcb = READYPLUS;
+      pthread_mutex_lock(mutex_ready_plus);
+      queue_push(cola_ready_plus,un_pcb); 
+      pthread_mutex_unlock(mutex_ready_plus);
+      // LIBERAR ESTRUCTURAS EN MEMORIA
 }
 
 void eliminar_peticion(t_peticion* peticion){

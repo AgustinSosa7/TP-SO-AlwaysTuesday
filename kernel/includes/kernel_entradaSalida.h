@@ -15,9 +15,12 @@ bool esta_la_io(void* interfaz);
 bool esta_o_no(char* nombre_io, t_interfaz* io);
 bool esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb);
 void validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion, t_pcb* pcb);
+void enviar_proceso_blocked_a_exit(t_queue* cola_procesos_blocked);
 void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz);
 void recibir_fin_peticion(t_interfaz* interfaz);
-void desbloquear_proceso(t_pcb* un_pcb);
+void desbloquear_proceso(t_interfaz* interfaz);
+void enviar_proceso_blocked_a_ready(t_pcb* un_pcb);
+void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb);
 void eliminar_peticion(t_peticion* peticion);
 
 #endif 

@@ -112,3 +112,15 @@ op_code_instruccion encontrar_op_code(char* leido){
     }
 	return op_code_instr;
 }
+
+
+// void proceso_estado(){
+// 	t_list* procesos_estado = list_create();
+
+// }
+
+// t_list* popear_elementos_de_la_queue(t_queue* cola){
+// 	//sacar size de la cola y hacer pop con un for
+// 	t_pcb elemento = queue_pop(cola);
+// 	list 
+// }

@@ -78,7 +78,6 @@ extern pthread_mutex_t* mutex_io;
 extern sem_t* sem_grado_multiprogram;
 extern sem_t* sem_new_a_ready;
 extern sem_t* sem_planificador_corto_plazo;
-
 ///////////////////////////////////////////////////////////////
 
 
