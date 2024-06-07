@@ -5,11 +5,11 @@
 cod_instruccion decodificacion_instruccion(char *instruccion){
 	
 
-	if(codigo_inexistente(instruccion)){ 
+	//if(codigo_inexistente(instruccion)){ 
 		//log_error(cpu_logger, "Instruccion no encontrada: [PC: %d][Instruc_Header: %s]", contexto->proceso_ip, instruccion_a_ejecutar[0]);
-		log_error(cpu_logger, "Hubo un error leyendo %s",instruccion);
-		exit(EXIT_FAILURE); 
-	}
+	//	log_error(cpu_logger, "Hubo un error leyendo %s",instruccion);
+	//	exit(EXIT_FAILURE); 
+	//}
 	//Semaforo que active a Execute
     //El tp dice que acá debería fijarse si necesita que entra la MMU o no.
 	

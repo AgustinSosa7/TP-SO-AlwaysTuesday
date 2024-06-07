@@ -22,9 +22,9 @@ char ** ciclo_instruccion_fetch(){ //
 		printf("Recibi el pseudo: %s\n",pseudo);
 
 		instruccion_spliteada = string_split(pseudo, " ");
-		printf("Spliteado param0: %s\n",instruccion_spliteada[0]);
-		printf("Spliteado param1: %s\n",instruccion_spliteada[1]);
-		printf("Spliteado param2: %s\n",instruccion_spliteada[2]);
+		printf("Spliteado param0fetch: %s\n",instruccion_spliteada[0]);
+		printf("Spliteado param1fetch: %s\n",instruccion_spliteada[1]);
+		printf("Spliteado param2fetch: %s\n",instruccion_spliteada[2]);
 		
 		contexto_ejecucion->registros_cpu->PC++;
 		i++;

@@ -56,7 +56,7 @@ int main(int argc, char** argv){
     //Ciclos de instruccion
     printf("Antes de crear el hilo fetch\n");
     pthread_t hilo_fetch;
-    pthread_create(&hilo_fetch, NULL, (void*)ciclo_instruccion_fetch, NULL);
+    pthread_create(&hilo_fetch, NULL, (void*)ciclo_instruccion, NULL);
     pthread_join(hilo_fetch, NULL);
 
     return EXIT_SUCCESS;

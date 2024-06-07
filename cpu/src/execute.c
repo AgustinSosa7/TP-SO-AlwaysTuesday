@@ -2,7 +2,6 @@
 
 
 void ejecucion_proceso(cod_instruccion instruccion, char** codigo){
-//cod_instruccion instruccion = identificador_instruccion(codigo);
 switch (instruccion)
 {
     case SET: //Solo para probar
