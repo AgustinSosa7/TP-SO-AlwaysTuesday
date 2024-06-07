@@ -20,6 +20,7 @@ inicializar_entradasalida(argv);
   fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL, entradasalida_logger);
   gestionar_handshake_como_cliente(fd_kernel, "KERNEL", entradasalida_logger);
   enviar_mensaje_string(NOMBRE_INTERFAZ, fd_kernel);
+  enviar_mensaje_string(TIPO_INTERFAZ, fd_kernel);
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
 

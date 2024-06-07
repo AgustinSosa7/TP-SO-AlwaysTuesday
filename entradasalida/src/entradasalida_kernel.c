@@ -15,15 +15,6 @@ void atender_entradasalida_kernel(){
             procesar_peticion(peticion);
             finalizar_peticion(peticion);
             break;
-        case RECONOCER_INSTRUCCION:
-            char* instruccion = recibir_instruccion(paquete);
-            validar_tipo_instruccion(instruccion);   
-            free(instruccion); 
-            break;
-        case ESTOY_CONECTADO:
-            bool respuesta = dar_respuesta_conectado(paquete); 
-            enviar_mensaje(&respuesta, fd_kernel);            
-            break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;
@@ -111,25 +102,6 @@ void procesar_peticion(t_peticion* peticion) {
       }
 }      
 
-char* recibir_instruccion(t_paquete* paquete){
-      char* instruccion = malloc(sizeof(char));
-      void* stream = paquete->buffer->stream;
-
-      leer_string_del_stream(stream);
-      return instruccion;
-}
-
-void validar_tipo_instruccion(char* instruccion){
-
-      if(contains_string(INSTRUCCIONES_POSIBLES, instruccion)){
-            bool resultado = true;
-            enviar_mensaje(&resultado, fd_kernel);
-      }else{
-            bool resultado = false;
-            enviar_mensaje(&resultado, fd_kernel);
-            }
-}
-
 void finalizar_peticion(t_peticion* peticion){
       bool resultado = true;
       enviar_mensaje(&resultado, fd_kernel);
@@ -139,17 +111,9 @@ void finalizar_peticion(t_peticion* peticion){
 
 void eliminar_peticion(t_peticion* peticion){ 
       free(peticion->parametros->archivo);
-      free(peticion->parametros->registro1);
-      free(peticion->parametros->registro2);
-      free(peticion->parametros->registro3);
+      free(peticion->parametros->registroDireccion);
+      free(peticion->parametros->registroTamanio);
+      free(peticion->parametros->registroPunteroArchivo);
       free(peticion->parametros);
       free(peticion);
 }      
-
- bool dar_respuesta_conectado(t_paquete* paquete){
-      bool respuesta = malloc(sizeof(bool));
-      void* buffer = paquete->buffer;
-
-      leer_algo_del_stream(buffer, &respuesta, sizeof(respuesta));
-      return respuesta;
- }

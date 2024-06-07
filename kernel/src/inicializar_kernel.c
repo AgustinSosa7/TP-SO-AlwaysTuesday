@@ -1,13 +1,29 @@
 #include <../includes/inicializar_kernel.h>
 
+//  t_queue* cola_new;
+//  t_queue* cola_ready;
+//  t_queue* cola_ready_plus;
+//  t_list* lista_exec;
+//  t_queue* cola_exit;
+// ////////////////SEMAFOROS/////////////////////////////////////////
+//  pthread_mutex_t* mutex_pid;
+//  pthread_mutex_t* mutex_new;
+//  pthread_mutex_t* mutex_ready;
+//  pthread_mutex_t* mutex_exec;
+//  pthread_mutex_t* mutex_ready_plus;
+//  pthread_mutex_t* mutex_exit;
+//  pthread_mutex_t* mutex_io;
+//  sem_t* sem_grado_multiprogram;
+//  sem_t* sem_new_a_ready;
+//  sem_t* sem_planificador_corto_plazo;
 
 
 void inicializar_kernel(char* path){
     inicializar_logs();
     inicializar_configs(path);
-	inicializar_listas();
-	//inicializar_semaforos();
-	inicializar_pid_y_procesos_activos();
+	  inicializar_listas_y_colas();
+	  inicializar_semaforos();
+	  inicializar_pid();
 }
 
 void inicializar_logs(void){
@@ -71,25 +87,44 @@ log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualment
 
 }
 
-void inicializar_listas(void){
-	lista_new = list_create();
-	lista_ready = list_create();
-	lista_ready_plus = list_create();
+void inicializar_listas_y_colas(void){
+	cola_new = queue_create();
+	cola_ready = queue_create();
+	cola_ready_plus = queue_create();
 	lista_exec = list_create();
-	lista_exit = list_create();
-	log_info(kernel_log_debug, "Se inicializan las listas..."); //Sacar eventualmente
+	cola_exit = queue_create();
+	inicializar_listas_instrucciones();
+}
 
+void inicializar_listas_instrucciones(){
+	INSTRUCCIONES_GEN = list_create();
+	INSTRUCCIONES_STDIN = list_create();
+	INSTRUCCIONES_STDOUT = list_create();
+	INSTRUCCIONES_FS = list_create();
+	list_add(INSTRUCCIONES_GEN, "IO_GEN_SLEEP");
+	list_add(INSTRUCCIONES_STDIN, "IO_STDIN_READ");
+	list_add(INSTRUCCIONES_STDOUT, "IO_STDOUT_WRITE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_CREATE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_DELETE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_TRUNCATE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_WRITE");
+	list_add(INSTRUCCIONES_FS, "IO_FS_READ");
 }
 
 void inicializar_semaforos(void){
-	//pthread_mutex_init(mutex_pid, NULL);
-	//pthread_mutex_init(mutex_io, NULL);
-	log_info(kernel_log_debug, "Se inicializan los semaforos..."); //Sacar eventualmente
+	pthread_mutex_init(mutex_pid, NULL);
+	pthread_mutex_init(mutex_io, NULL);
+	pthread_mutex_init(mutex_new, NULL);
+	pthread_mutex_init(mutex_ready, NULL);
+	pthread_mutex_init(mutex_exec, NULL);
+	pthread_mutex_init(mutex_ready_plus, NULL);
+	pthread_mutex_init(mutex_exit, NULL);
 
+	sem_init(sem_grado_multiprogram,0,GRADO_MULTIPROGRAMACION);
+	sem_init(sem_new_a_ready,0,0);
+	sem_init(sem_planificador_corto_plazo,0,0);
 }
 
-void inicializar_pid_y_procesos_activos(){
-	int pid_global = 0;
-	int procesos_activos = 0;
-	log_info(kernel_log_debug, "Se inicializan las variables globales..."); //Sacar eventualmente
-	}
+void inicializar_pid(){
+	pid_global = 0;
+	} 

@@ -2,20 +2,30 @@
 #define K_GESTOR_H_
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <pthread.h> 
 
 #include <../src/utils/utils_connections.h>
-#include <commons/log.h>
-#include <commons/config.h>
+
+
+///////////////////////ESTRUCTURAS PCB////////////////////////////
+
+typedef struct 
+{
+    char* nombre;
+    char* tipo;
+    t_list* instrucciones_posibles;
+    int fd_interfaz;
+    bool esta_conectada;
+    t_queue* cola_procesos_blocked;
+    sem_t* semaforo_cola_procesos_blocked;
+    pthread_mutex_t* mutex_cola_blocked;
+} t_interfaz;
 
 typedef struct{
     int tiempo_espera;
     char* archivo;
-    char* registro1;
-    char* registro2;
-    char* registro3;
+    char* registroDireccion;
+    char* registroTamanio;
+    char* registroPunteroArchivo;
 } t_peticion_param;
 
 typedef struct{
@@ -25,42 +35,53 @@ typedef struct{
 } t_peticion;
 
 typedef struct{
-    t_paquete* paquete;
+    t_peticion* peticion;
     t_pcb* un_pcb;
-}t_paquete_y_pcb;
+    t_interfaz* interfaz;
+}t_peticion_pcb_interfaz;
+
 
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
-
-typedef struct 
-{
-    char* nombre;
-    int fd_interfaz;
-    t_queue* cola_procesos_blocked;
-    sem_t* semaforo_cola_procesos_blocked;
-    pthread_mutex_t* mutex_cola_blocked;
-} t_interfaz;
 
 typedef struct{
         t_pcb* un_pcb;
         t_peticion* peticion;
 }t_proceso_blocked;
 
+extern int pid_global;
+extern int tiempo_transcurrido;
+
+extern t_list* lista_instrucciones;
 
 
-
-extern t_list* lista_new;
-extern t_list* lista_ready;
-extern t_list* lista_ready_plus;
-extern t_list* lista_exec;
-extern t_list* lista_blocked;
-extern t_list* lista_exit;
-
-//pthread_mutex_t* mutex_pid;
-
-
-///////////////////////////////////////////////////////////////
+extern t_list* INSTRUCCIONES_GEN;
+extern t_list* INSTRUCCIONES_STDIN;
+extern t_list* INSTRUCCIONES_STDOUT;
+extern t_list* INSTRUCCIONES_FS;
 extern t_list* IOS_CONECTADOS;
+
+
+extern t_queue* cola_new;
+extern t_queue* cola_ready;
+extern t_queue* cola_ready_plus;
+extern t_list* lista_exec;
+extern t_queue* cola_exit;
+
+//////////////////////SEMAFOROS/////////////////////////////////////////
+
+extern pthread_mutex_t* mutex_pid;
+extern pthread_mutex_t* mutex_new;
+extern pthread_mutex_t* mutex_ready;
+extern pthread_mutex_t* mutex_exec;
+extern pthread_mutex_t* mutex_ready_plus;
+extern pthread_mutex_t* mutex_exit;
 extern pthread_mutex_t* mutex_io;
+
+extern sem_t* sem_grado_multiprogram;
+extern sem_t* sem_new_a_ready;
+extern sem_t* sem_planificador_corto_plazo;
+///////////////////////////////////////////////////////////////
+
 
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;

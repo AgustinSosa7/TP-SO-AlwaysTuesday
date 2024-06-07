@@ -206,6 +206,24 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	return magic;
 }
 
+void enviar_mensaje(void* mensaje, int socket_cliente)
+{
+	int tamanio = sizeof(mensaje);
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+	
+}
+void enviar_mensaje_string(char* mensaje, int socket_cliente)
+{
+	int tamanio = strlen(mensaje)+1;
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+}
+
 void enviar_paquete(t_paquete* paquete, int socket_cliente)
 {
 	int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
@@ -237,27 +255,12 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
         */
     //FIN DE BORRAR ES PARA LAS PRUEBAS  
 
-	send(socket_cliente, a_enviar, bytes, 0);
-	free(a_enviar);
-}
-
-void enviar_mensaje(void* mensaje, int socket_cliente)
-{
-	int tamanio = sizeof(mensaje);
-	void* a_enviar = malloc(tamanio);
-	memcpy(a_enviar, &mensaje, tamanio);
-	send(socket_cliente, a_enviar, tamanio, 0);
-	free(a_enviar);
+	int bytes_enviados = send(socket_cliente, a_enviar, bytes, MSG_NOSIGNAL);
 	
-}
-
-void enviar_mensaje_string(char* mensaje, int socket_cliente)
-{
-	int tamanio = strlen(mensaje)+1;
-	void* a_enviar = malloc(tamanio);
-	memcpy(a_enviar, &mensaje, tamanio);
-	send(socket_cliente, a_enviar, tamanio, 0);
-	free(a_enviar);
+	if(bytes_enviados < 0) {
+			close(socket_cliente);
+	   		printf("El cliente cerró la conexión.\n");
+	} 
 }
 
 void eliminar_paquete(t_paquete* paquete)
@@ -303,11 +306,12 @@ agregar_algo_a_paquete(paquete,&registros_cpu->DI,sizeof(registros_cpu->DI));
 
 /////////////////////// PCB /////////////////////////
 
+
 void enviar_pcb_a(t_pcb* un_pcb, int socket){
 	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
 	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
-    agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->pid));
-    agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
+  agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->pid));
+  agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
 	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
@@ -365,6 +369,23 @@ char* enum_a_string(estado_pcb estado){
 }
     
 ////////////////////// DESERIALIZACION //////////////
+void* recibir_mensaje(int socket_cliente)
+{	
+	int tamanio_mensaje;
+	recv(socket_cliente, &tamanio_mensaje, sizeof(int), MSG_WAITALL);
+	void* mensaje = malloc(tamanio_mensaje);
+	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
+	return mensaje;
+}
+char* recibir_mensaje_string(int socket_cliente)
+{	
+	int tamanio;
+	recv(socket_cliente, &tamanio, sizeof(int), MSG_WAITALL);
+	char* mensaje = malloc(tamanio);
+	recv(socket_cliente, mensaje, tamanio, MSG_WAITALL);
+	
+	return mensaje;
+}
 
 op_code recibir_operacion(int socket_cliente) 
 {
@@ -398,7 +419,6 @@ t_buffer* recibir_buffer(int unSocket)
 	return buffer;	
 }
 
-//INT
 
 t_paquete* recibir_paquete(int unSocket)
 { 
@@ -409,24 +429,6 @@ t_paquete* recibir_paquete(int unSocket)
 	return paquete;
 }
 
-void* recibir_mensaje(int socket_cliente)
-{	
-	int tamanio_mensaje;
-	recv(socket_cliente, &tamanio_mensaje, sizeof(int), MSG_WAITALL);
-	void* mensaje = malloc(tamanio_mensaje);
-	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
-	return mensaje;
-}
-
-char* recibir_mensaje_string(int socket_cliente)
-{	
-	int tamanio;
-	recv(socket_cliente, &tamanio, sizeof(int), MSG_WAITALL);
-	char* mensaje = malloc(tamanio);
-	recv(socket_cliente, mensaje, tamanio, MSG_WAITALL);
-	
-	return mensaje;
-}
 
 void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 {

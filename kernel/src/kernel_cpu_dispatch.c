@@ -11,19 +11,28 @@ void recibir_pcb_con_motivo()
       {
       case DESALOJO_QUANTUM:
             log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum",pcb_recibido->pid);
+            t_pcb* remover_pcb = list_remove(lista_exec,0);
             cambiar_estado(pcb_recibido, READY);
             
             break;
       case PROCESO_EXIT:
-            /* code */
+           
+            //decir a memoria que libere las estructuras
+            //cambiar de estado a exit 
+            //eliminar de la cola que estaba antes
             break;
       case PEDIDO_IO:          
-            t_paquete_y_pcb* paquete_y_pcb = malloc(sizeof(t_paquete_y_pcb));
-            paquete_y_pcb->paquete = paquete;
-            paquete_y_pcb->un_pcb = pcb_recibido;   
-            /*pthread_t pedido_io;
-            pthread_create(&pedido_io, NULL, atender_pedido_io, paquete_y_pcb); //verificar como se envian estos parametros
-            pthread_detach(pedido_io);*/
+            t_peticion* peticion = recibir_peticion(paquete);  
+            t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
+
+            t_peticion_pcb_interfaz* peticion_pcb_interfaz = malloc(sizeof(t_peticion_pcb_interfaz));
+            peticion_pcb_interfaz->peticion = peticion;
+            peticion_pcb_interfaz->un_pcb = pcb_recibido;
+            peticion_pcb_interfaz->interfaz = interfaz; 
+
+            pthread_t pedido_io;
+            pthread_create(&pedido_io, NULL, (void*) enviar_proceso_a_blocked, peticion_pcb_interfaz); 
+            pthread_detach(pedido_io);
             break;
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
@@ -36,9 +45,6 @@ void recibir_pcb_con_motivo()
         eliminar_paquete(paquete);    
       }
 }
-
-
-
 
 
 

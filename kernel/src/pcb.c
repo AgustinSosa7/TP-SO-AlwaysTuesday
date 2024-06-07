@@ -1,14 +1,10 @@
 #include "../includes/pcb.h"
-#include <../src/utils/utils_connections.h>
 
-
-#include <semaphore.h>
 
 t_pcb* crearPcb(){
 	t_pcb* pcb = malloc(sizeof(t_pcb*));
 	pcb->pid = asignarPID();
-    //pcb->program_counter = 0; Esto no se repite en los registros???? 
-    pcb->quantum = 0;
+    pcb->quantum = QUANTUM;
     pcb->registros_cpu = malloc(sizeof(t_registros_cpu*));
 	inicializar_registros(pcb);
     pcb->estado_pcb = NEW;
@@ -24,8 +20,12 @@ int asignarPID(){
 	return a;
 }
 
+   //la funcion  cambiar estado debe sacarlo de la cola anterior y agregarlo a la nueva
 void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
     estado_pcb estado_anterior = un_pcb->estado_pcb;
+
+    //sacar_de_la_lista_vieja(estado,anteriorsu_cola(estado_anterior))
+
 	un_pcb->estado_pcb = nuevo_estado;
 
     log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
@@ -33,10 +33,10 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
 	switch(nuevo_estado)
     {
     case NEW:
-        list_add(lista_new,un_pcb);
+        queue_push(cola_new,un_pcb);
         break;
     case READY:
-        list_add(lista_ready,un_pcb);
+        queue_push(cola_ready,un_pcb);
         //log info(Ingreso a Ready: “Cola Ready <COLA>: [<LISTA DE PIDS>]”)
 
         break;
@@ -44,10 +44,10 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
         list_add(lista_exec,un_pcb);
         break;
     case EXIT:
-        list_add(lista_exit,un_pcb);
+        queue_push(cola_exit,un_pcb);
         break;
     case READYPLUS:
-        list_add(lista_ready_plus,un_pcb);
+        queue_push(cola_ready_plus,un_pcb);
         break;    
     default:
         break;
@@ -56,6 +56,16 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
 }
 
 void inicializar_registros(t_pcb* un_pcb){
-	un_pcb->registros_cpu->AX= 0;
+	un_pcb->registros_cpu->PC= 0;
+    un_pcb->registros_cpu->AX= 0;
+    un_pcb->registros_cpu->BX= 0;
+    un_pcb->registros_cpu->CX= 0;
+    un_pcb->registros_cpu->DX= 0;
+    un_pcb->registros_cpu->EAX= 0;
+    un_pcb->registros_cpu->EBX= 0;
+    un_pcb->registros_cpu->ECX= 0;
+    un_pcb->registros_cpu->EDX= 0;
+    un_pcb->registros_cpu->SI= 0;
+    un_pcb->registros_cpu->DI= 0;
 }
 
