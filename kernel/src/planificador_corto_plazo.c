@@ -85,6 +85,7 @@ void gestionar_quantum(t_pcb* un_pcb){
  }
 
 
+
  algoritmos_enum algoritmo_string_a_enum(char* algoritmo_de_plani){
     if(strcmp("FIFO",algoritmo_de_plani)==0){
         return FIFO;

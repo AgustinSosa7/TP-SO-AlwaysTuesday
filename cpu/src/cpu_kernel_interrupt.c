@@ -1,6 +1,7 @@
 # include "../includes/cpu_kernel_interrupt.h"
 
 
+/*
 void atender_interrupciones(){
     bool control_key = 1;
     while (control_key) {
@@ -21,5 +22,4 @@ void atender_interrupciones(){
                 break;
 		}
     }
-
-}
+}*/

@@ -28,20 +28,23 @@ gestionar_handshake_como_server(fd_kernel, memoria_logger, "KERNEL");
 
 /////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
 
-/*t_list* lista_de_instrucciones = NULL; 
-lista_de_instrucciones = leer_archivo_pseudocodigo(recibir_direccion_pseudocodigo());
+list_add(procesos_memoria, crear_proceso_nuevo());
 
-printf("Llene la lista de longitud %d\n",list_size(lista_de_instrucciones));   
-for(int i=0;i<7;i++){
-    printf("%s\n",list_get(lista_de_instrucciones, i ));
-    }
+while(1){
+t_pedido* pedido = recibir_instruccion_a_enviar();
+printf("Proceso pedido: %d\n",pedido->pid);
+//recv_cpu lo que tengo que pasarte. pid PC
+t_proceso* proceso1 = buscar_proceso_en_memoria(pedido->pid);
+printf("ENCONTRADO %d\n",proceso1->pid); //BORRAR
+enviar_instruccion_pesudocodigo(proceso1->instrucciones,pedido->pc);//PROGRAM_COUNTER_PEDIDO);
+free(pedido);
+sleep(3);
+}
 
-enviar_instruccion_pesudocodigo(lista_de_instrucciones,3);
-*/
 // Esperar conexion de ENTRADASALIDA
-log_info(memoria_logger, "Esperando a EntradaSalida...");
+/*log_info(memoria_logger, "Esperando a EntradaSalida...");
 fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
-gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");
+gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");*/
 
 // Finalizar MEMORIA
 

@@ -9,14 +9,43 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-
-
-
 // Variables GLOBALES
+
+typedef enum 
+{
+    SET,
+    MOV_IN,
+    MOV_OUT,
+    SUM,
+    SUB,
+    JNZ,
+    RESIZE,
+    COPY_STRING,
+    WAIT,
+    SIGNAL,
+    IO_GEN_SLEEP,
+    IO_STDIN_READ,
+    IO_STDOUT_WRITE,
+    IO_FS_CREATE,
+    IO_FS_DELETE,
+    IO_FS_TRUNCATE,
+    IO_FS_WRITE,
+    IO_FS_READ,
+    EXIT_CPU
+}cod_instruccion;
+
+
+typedef struct{
+    int pid;
+    t_registros_cpu* registros_cpu; 
+}t_contexto_ejecucion; //CAMBIAR A PCB GLOBAL PREGUNTAR SI EL CAMBIO ESTA OK EL SABADO
+
 
 extern t_log* cpu_logger;
 extern t_log* cpu_log_debug;
 extern t_config* cpu_config;
+
+extern t_contexto_ejecucion* contexto_ejecucion;
 
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
@@ -31,7 +60,5 @@ extern char* PUERTO_ESCUCHA_DISPATCH;
 extern char* PUERTO_ESCUCHA_INTERRUPT;
 extern int CANTIDAD_ENTRADAS_TLB;
 extern char* ALGORITMO_TLB;
-
-
 
 #endif

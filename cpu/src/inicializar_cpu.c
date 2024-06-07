@@ -5,7 +5,7 @@ void inicializar_cpu(char* path){
     inicializar_logs();
     iniciar_config(path);
     imprimir_config();
-
+    inicializar_estructuras();
 }
 
 void inicializar_logs(){
@@ -16,11 +16,14 @@ void inicializar_logs(){
 	}
 
 
-    cpu_log_debug = log_create("cpu.log","CPU_LOG",1,LOG_LEVEL_TRACE);
+    cpu_log_debug = log_create("cpu.log","CPU_LOG",1,LOG_LEVEL_INFO);
     if (cpu_log_debug == NULL) {
 	    perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
 	    exit(EXIT_FAILURE);
 	}
+
+    log_info(cpu_log_debug, "Se inicializo el cpu debug logger"); //Sacar eventualmente
+
 }
 
 void iniciar_config(char* path){
@@ -45,4 +48,9 @@ void imprimir_config(){
     log_warning(cpu_log_debug, "PUERTO_MEMORIA: %s", PUERTO_MEMORIA);
     log_debug(cpu_log_debug, "PUERTO_ESCUCHA_DISPATCH: %s", PUERTO_ESCUCHA_DISPATCH);
     log_trace(cpu_log_debug,"PUERTO_ESCUCHA_INTERRUPT: %s", PUERTO_ESCUCHA_INTERRUPT);
+}
+
+void inicializar_estructuras(){
+    contexto_ejecucion = malloc(sizeof(t_contexto_ejecucion*));
+    contexto_ejecucion->registros_cpu = malloc(sizeof(t_registros_cpu*));
 }

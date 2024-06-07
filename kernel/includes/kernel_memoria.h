@@ -5,5 +5,5 @@
 
 
 void atender_kernel_memoria();
-void enviar_direccion_pesudocodigo(char*);
+void enviar_direccion_pesudocodigo(char*,int);
 #endif 

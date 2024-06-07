@@ -12,12 +12,28 @@
 #include <commons/collections/list.h>
 #include <commons/txt.h>
 
+//Estructuras
+typedef struct
+{
+	int pid;
+	char* direccion_pseudocodigo;
+	t_list* instrucciones;
+} t_proceso;
+
+
+typedef struct
+{
+	int pid;
+	int pc;
+} t_pedido;
 
 //Variables GLOBALES
 
 extern t_log* memoria_logger;
 extern t_log* memoria_log_debug;
 extern t_config* memoria_config;
+
+extern t_list* procesos_memoria;
 
 extern char* IP_MEMORIA;
 extern char* PUERTO_ESCUCHA;

@@ -229,17 +229,31 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 	int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
-	/* BORRAR ES PARA LAS PRUEBAS  
+	// BORRAR ES PARA LAS PRUEBAS  
+		/*int op_code; // En caso de pisar algun valor, hacerle free antes
+	    memcpy(&op_code, a_enviar, sizeof(op_code)); //cambiar por offset el size of int
+		printf("op code: %d\n",op_code);
 
-      	int tamanio_string = 13;
+		int buffer_size; // En caso de pisar algun valor, hacerle free antes
+	    memcpy(&buffer_size, a_enviar + sizeof(op_code), sizeof(buffer_size)); //cambiar por offset el size of int
+		printf("buffer size: %d\n",buffer_size);
+
+		int pid; // En caso de pisar algun valor, hacerle free antes
+	    memcpy(&pid, a_enviar + sizeof(op_code) + sizeof(buffer_size), sizeof(pid)); //cambiar por offset el size of int
+		printf("pid: %d\n",pid);
+
+		int tamanio_string; // En caso de pisar algun valor, hacerle free antes
+	    memcpy(&tamanio_string, a_enviar + sizeof(op_code) + sizeof(buffer_size) + sizeof(pid), sizeof(tamanio_string)); //cambiar por offset el size of int
+		printf("long_string: %d\n",tamanio_string);
+
       	char *string = malloc((tamanio_string * sizeof(char))); // En caso de pisar algun valor, hacerle free antes
-	    memcpy(string, a_enviar + sizeof(int) + sizeof(int) + sizeof(int), tamanio_string); //cambiar por offset el size of int
-	    //paquete->buffer->offset += strlen(string);//tamanio_string;
+	    memcpy(string, a_enviar + + sizeof(op_code) + sizeof(buffer_size) + sizeof(pid) + sizeof(tamanio_string), tamanio_string); //cambiar por offset el size of int
+	    paquete->buffer->offset += strlen(string)+1;//tamanio_string;
         printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
 	    printf("offset: %d\n",paquete->buffer->offset);
 	    printf("Se guardo en el string:%s\n",string);
-        
-    FIN DE BORRAR ES PARA LAS PRUEBAS  */
+        */
+    //FIN DE BORRAR ES PARA LAS PRUEBAS  
 
 	int bytes_enviados = send(socket_cliente, a_enviar, bytes, MSG_NOSIGNAL);
 	
@@ -256,9 +270,8 @@ void eliminar_paquete(t_paquete* paquete)
 	free(paquete);
 }
 
-void agregar_algo_a_paquete(t_paquete* paquete, void* valor)
+void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio)
 {
-	size_t tamanio = sizeof(valor);
 	paquete->buffer->size += tamanio;
 	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
 	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
@@ -266,51 +279,40 @@ void agregar_algo_a_paquete(t_paquete* paquete, void* valor)
 }
 
 void agregar_string_a_paquete(t_paquete* paquete, char* string) 
-{
-	/*int tamanio = strlen(valor) + 1;  // +1 por el /0
-	agregar_algo_a_paquete(paquete, &tamanio);
-	paquete->buffer->size += tamanio;
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size);
-	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
-	paquete->buffer->offset += tamanio; */
-	
+{	
 	int tamanio_string = strlen(string) + 1;
-
-	paquete->buffer->stream = realloc(paquete->buffer->stream,
-	paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string);
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string);
 	
-	//paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string;
-
 	memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio_string, sizeof(int));
 	memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), string, sizeof(char)*tamanio_string);
-
 	paquete->buffer->size += sizeof(int);
 	paquete->buffer->size += sizeof(char)*tamanio_string;
 	
 }
 
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_cpu){
-agregar_algo_a_paquete(paquete,&registros_cpu->PC);
-agregar_algo_a_paquete(paquete,&registros_cpu->AX);
-agregar_algo_a_paquete(paquete,&registros_cpu->BX);
-agregar_algo_a_paquete(paquete,&registros_cpu->CX);
-agregar_algo_a_paquete(paquete,&registros_cpu->DX);
-agregar_algo_a_paquete(paquete,&registros_cpu->EAX);
-agregar_algo_a_paquete(paquete,&registros_cpu->EBX);
-agregar_algo_a_paquete(paquete,&registros_cpu->ECX);
-agregar_algo_a_paquete(paquete,&registros_cpu->EDX);
-agregar_algo_a_paquete(paquete,&registros_cpu->SI);
-agregar_algo_a_paquete(paquete,&registros_cpu->DI);
+agregar_algo_a_paquete(paquete,&registros_cpu->PC,sizeof(registros_cpu->PC));
+agregar_algo_a_paquete(paquete,&registros_cpu->AX,sizeof(registros_cpu->AX));
+agregar_algo_a_paquete(paquete,&registros_cpu->BX,sizeof(registros_cpu->BX));
+agregar_algo_a_paquete(paquete,&registros_cpu->CX,sizeof(registros_cpu->CX));
+agregar_algo_a_paquete(paquete,&registros_cpu->DX,sizeof(registros_cpu->DX));
+agregar_algo_a_paquete(paquete,&registros_cpu->EAX,sizeof(registros_cpu->EAX));
+agregar_algo_a_paquete(paquete,&registros_cpu->EBX,sizeof(registros_cpu->EBX));
+agregar_algo_a_paquete(paquete,&registros_cpu->ECX,sizeof(registros_cpu->ECX));
+agregar_algo_a_paquete(paquete,&registros_cpu->EDX,sizeof(registros_cpu->EDX));
+agregar_algo_a_paquete(paquete,&registros_cpu->SI,sizeof(registros_cpu->SI));
+agregar_algo_a_paquete(paquete,&registros_cpu->DI,sizeof(registros_cpu->DI));
 }
 
 /////////////////////// PCB /////////////////////////
 
-void enviar_pcb_a(t_pcb* un_pcb, int socket,op_code mensaje){
-	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
-	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid));
-    agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum));
-    agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
-	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb));
+
+void enviar_pcb_a(t_pcb* un_pcb, int socket){
+	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
+	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
+  agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->pid));
+  agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
+	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
 }
@@ -428,10 +430,11 @@ t_paquete* recibir_paquete(int unSocket)
 }
 
 
-void leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
+void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 {
 	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
 	buffer->offset += tamanio;
+	return valor;
 }
 
 char* leer_string_del_stream(t_buffer* buffer) 
@@ -440,7 +443,11 @@ char* leer_string_del_stream(t_buffer* buffer)
 	leer_algo_del_stream(buffer, &tamanio_string,sizeof(tamanio_string));
 
 	char *string = malloc(tamanio_string); // En caso de pisar algun valor, hacerle free antes
-	leer_algo_del_stream(buffer, string, tamanio_string);
+
+	//leer_algo_del_stream(buffer, string, tamanio_string);
+	
+	memcpy(string, buffer->stream + buffer->offset, tamanio_string); //cambiar por offset el size of int
+	buffer->offset += (strlen(string)+1);//tamanio_string;
 
 	return string;
 }

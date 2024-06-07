@@ -3,9 +3,11 @@
 
 int main(int argc, char** argv){
 
-   if(validar_parametros_main(argc, 2, argv)){
-        	    return EXIT_FAILURE;
-    }
+    //DESCOMENTAR
+   //if(validar_parametros_main(argc, 2, argv)){
+   //     	    return EXIT_FAILURE;
+    //}
+
     // Inicializar CPU
     inicializar_cpu(argv[1]);
 
@@ -15,13 +17,13 @@ int main(int argc, char** argv){
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
 
-
-    // Comentado porque no tenemos el pseudocodigo :D
-    //recibir_direccion_pseudocodigo();
-
+    printf("Guardo las nuevas variables?\n");
+    contexto_ejecucion->pid = 3;
+    contexto_ejecucion->registros_cpu->PC = 0;
+    printf("Si!\n");
 
     // Iniciar server de CPU - DISPATCH
-
+    /*
     fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
     log_info(cpu_logger, "Esperando a DISPATCH...");
     fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch, cpu_logger,"KERNEL-DISPATCH");
@@ -33,29 +35,33 @@ int main(int argc, char** argv){
     log_info(cpu_logger, "Esperando a INTERRUPT...");
     fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL-INTERRUPT");
     gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger, "KERNEL-INTERRUPT");
-
+    */
     
     //Atender los mensajes de Kernel - Dispatch
-    pthread_t hilo_kernel_dispatch;
-    pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
-    pthread_detach(hilo_kernel_dispatch);
+    //pthread_t hilo_kernel_dispatch;
+    //pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
+    //pthread_detach(hilo_kernel_dispatch);
     
 //
     //Atender los mensajes de Kernel - Interrupt
-    pthread_t hilo_kernel_interrupt;
-    pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
-    pthread_detach(hilo_kernel_interrupt);
+    //pthread_t hilo_kernel_interrupt;
+    //pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_cpu_kernel_interrupt,NULL);
+    //pthread_detach(hilo_kernel_interrupt);
 //
     //Atender los mensajes de Memoria
-    pthread_t hilo_memoria;
-    pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
-    pthread_join(hilo_memoria, NULL);
+    //pthread_t hilo_memoria;
+    //pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
+    //pthread_join(hilo_memoria, NULL);
 //
+    //Ciclos de instruccion
+    printf("Antes de crear el hilo fetch\n");
+    pthread_t hilo_fetch;
+    pthread_create(&hilo_fetch, NULL, (void*)ciclo_instruccion_fetch, NULL);
+    pthread_join(hilo_fetch, NULL);
 
-//QUE no se muera el main
     return EXIT_SUCCESS;
 }
-
+/*
 // iniciar estructuras
 void iniciar_estructuras(){
 	string= string_array_new();
@@ -77,31 +83,26 @@ void iniciar_semaforo(){
     semaforo_init(&semaforo_control_decode_execute,0,0);
 }
 
-//ciclo de instruccion(fetch-decode-execute)
-void comenzar_ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
-    ciclo_instruccion_fetch();
+*/
+//ciclo de instruccion(fetch-decode-execute-check_interrupt)
+void ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
     
-    semaforo_wait(&semaforo_control_fetch_decode);
-    ciclo_instruccion_decode();
+    while(1){
+    
+    //FETCH  Me debería taraer instrucciones para decodificar
 
-    semaforo_wait(&semaforo_control_decode_execute);
-    ciclo_instruccion_execute();
+    char ** instruccion = ciclo_instruccion_fetch();  // tiene que ser una lista de Strings, no sé si está bien. acá iria lo que recibe del Fetch. Hablar con Lucas como llega
+    
+    //DECODE, Ver como afecta al PID 
 
-}
-//FETCH
-void ciclo_instruccion_fetch(){ //llamar a la funcion que hizo lucas
-/*	log_info(cpu_log_obligatorio, "PID: <%d> - FETCH - Program Counter: <%d>", contexto->proceso_pid, contexto->proceso_ip);
-	t_paquete* un_paquete = crear_super_paquete(PETICION_DE_INSTRUCCIONES_CM);
-	cargar_int_al_super_paquete(un_paquete, contexto->proceso_pid);
-	cargar_int_al_super_paquete(un_paquete, contexto->proceso_pc);
-	enviar_paquete(un_paquete, fd_memoria);
-	eliminar_paquete(un_paquete); */
-}
-//DECODE
-void ciclo_instruccion_decode(){
-    correr_decode();
-} 
-//EXECUTE
-void ciclo_instruccion_execute(){
-    comparacion_de_strings(instruccion_a_ejecutar);
+    
+    cod_instruccion instruccion_a_ejecutar = decodificacion_instruccion(instruccion[0]); //Va una lista de Strings
+
+    //EXECUTE
+
+    ejecucion_proceso(instruccion_a_ejecutar, instruccion); // Podría hacerse dentro el decode
+
+    //CHECK INTERRUPT
+
+    }  // El Check I. debe estar en el while????
 }

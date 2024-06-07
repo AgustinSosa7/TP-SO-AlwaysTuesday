@@ -33,10 +33,10 @@ void leer_comandos(){
     char* leido;
 	leido = readline("> ");
 	while(strcmp(leido,"\0") != 0){
-		if(validar_instruccion(leido)){
+		/*if(validar_instruccion(leido)){
 			printf("Comando válido\n");
 			atender_instruccion_validada(leido);
-		}
+		}*/
 
 		free(leido);
 		leido = readline("> ");
@@ -66,8 +66,8 @@ bool validar_instruccion(char* leido){
 
 
 void atender_instruccion_validada(char* leido){
-	op_code_instruccion op_code_encontrado = encontrar_op_code(leido);
-
+	//op_code_instruccion op_code_encontrado = encontrar_op_code(leido);
+	op_code_instruccion op_code_encontrado = 1;
 	switch (op_code_encontrado)
 	{
 	case EJECUTAR_SCRIPT:
@@ -124,3 +124,4 @@ op_code_instruccion encontrar_op_code(char* leido){
 // 	t_pcb elemento = queue_pop(cola);
 // 	list 
 // }
+

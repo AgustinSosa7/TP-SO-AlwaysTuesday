@@ -53,11 +53,13 @@ extern int tiempo_transcurrido;
 
 extern t_list* lista_instrucciones;
 
+
 extern t_list* INSTRUCCIONES_GEN;
 extern t_list* INSTRUCCIONES_STDIN;
 extern t_list* INSTRUCCIONES_STDOUT;
 extern t_list* INSTRUCCIONES_FS;
 extern t_list* IOS_CONECTADOS;
+
 
 extern t_queue* cola_new;
 extern t_queue* cola_ready;
@@ -91,6 +93,8 @@ extern int fd_entradasalida;
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
 
+extern int pid_global;
+extern int procesos_activos;
 
 extern char* PUERTO_ESCUCHA;
 extern char* IP_MEMORIA;

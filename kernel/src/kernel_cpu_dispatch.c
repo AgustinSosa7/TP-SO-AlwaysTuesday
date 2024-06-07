@@ -33,7 +33,6 @@ void recibir_pcb_con_motivo()
             pthread_t pedido_io;
             pthread_create(&pedido_io, NULL, (void*) enviar_proceso_a_blocked, peticion_pcb_interfaz); 
             pthread_detach(pedido_io);
-            
             break;
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      

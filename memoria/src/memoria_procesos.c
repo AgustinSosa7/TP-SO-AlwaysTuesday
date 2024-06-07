@@ -10,6 +10,7 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     string_append(&PATH, PATH_INSTRUCCIONES);
 	string_append(&PATH, "/");
 	string_append(&PATH, nombre_Archivo);
+    printf("%s\n",PATH);
     FILE *Pseudocodigo = fopen(PATH, "r");
 
     //Una vez leido verifico que lo haya leido bien.
@@ -40,24 +41,28 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
 };
 
 
-char* recibir_direccion_pseudocodigo(){ //CODIGO REPETIDO EN CPU_MEMORIA
+t_proceso* crear_proceso_nuevo(){
     op_code code_op = recibir_operacion(fd_kernel);
     t_paquete* paquete = recibir_paquete(fd_kernel);
     t_buffer* buffer = paquete->buffer;
-    // Se comentó lo que era para probar si llegaba bien el paquete  :D
-    //log_info(memoria_logger, "Recibi un paquete de size: %d",paquete->buffer->size);
-    //log_info(memoria_logger, "Recibi un paquete con el op_code: %d",code_op);
-    if(code_op == PSEUDOCODIGO)
+    t_proceso* procesoNuevo = malloc(sizeof(t_proceso*));
+    if(code_op == CREAR_PROCESO)
     {
-        //log_info(memoria_logger, "leer_string_del_stream");
-        char* direccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
-        log_info(memoria_logger, "free");
+        //int pid;
+        int pid = leer_algo_del_stream(buffer, &pid,sizeof(pid)); //cambiar a leer algo del buffer
+        char* direccion_pseudocodigo = leer_string_del_stream(buffer);
+        procesoNuevo->pid = pid;
+        procesoNuevo->direccion_pseudocodigo = direccion_pseudocodigo;
+        procesoNuevo->instrucciones = list_create();
+        procesoNuevo->instrucciones = leer_archivo_pseudocodigo(direccion_pseudocodigo);
         free(paquete);
-        return direccion_pseudocodigo;
+        //list_add(procesos_memoria, procesoNuevo);
+        //log_info(memoria_logger, "Se agrego un proceso a memoria %d",procesoNuevo->pid);
+        return procesoNuevo;
     }
     else
     {   
-        log_error(memoria_logger, "No se recibio un pseudocodigo.");
+        log_error(memoria_logger, "No se recibio un proceso a crear correctamente.");
         free(paquete);
         exit(EXIT_FAILURE);
     }
@@ -66,21 +71,34 @@ char* recibir_direccion_pseudocodigo(){ //CODIGO REPETIDO EN CPU_MEMORIA
 void enviar_instruccion_pesudocodigo(t_list* lista_proceso,int pc){
     t_paquete* paquete = crear_paquete(PSEUDOCODIGO);
     agregar_string_a_paquete(paquete, list_get(lista_proceso, pc));
-
-    /* BORRAR ES PARA LAS PRUEBAS  */
-
-        int tamanio_string = strlen(list_get(lista_proceso, pc));
-        char *string = malloc(tamanio_string * sizeof(char)); // En caso de pisar algun valor, hacerle free antes
-	    printf("offset:%d\n",paquete->buffer->offset);
-	    printf("tam del string (malloc): %ld\n",strlen(string));
-	    memcpy(string, paquete->buffer->stream + sizeof(int), tamanio_string); //cambiar por offset el size of int
-	    paquete->buffer->offset += strlen(string);//tamanio_string;
-        printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
-	    printf("offset: %d\n",paquete->buffer->offset);
-	    printf("Se guardo en el string:%s\n",string);
-
-    /* FIN DE BORRAR ES PARA LAS PRUEBAS  */
-
     enviar_paquete(paquete, fd_cpu);
     eliminar_paquete(paquete);
+}
+
+t_pedido* recibir_instruccion_a_enviar(){
+    op_code code_op = recibir_operacion(fd_cpu);
+    t_paquete* paquete = recibir_paquete(fd_cpu);
+    t_buffer* buffer = paquete->buffer;
+    t_pedido* pedido = malloc(sizeof(t_pedido*));
+    pedido->pid = leer_algo_del_stream(buffer, &pedido->pid,sizeof(pedido->pid));
+    pedido->pc = leer_algo_del_stream(buffer, &pedido->pc,sizeof(pedido->pc));
+    printf("PID: %d\n",pedido->pid);
+    printf("PROGRAM_COUNTER: %d\n",pedido->pc);
+
+    //enviar_instruccion_pesudocodigo((buscar_proceso_en_memoria(PROCESSID))->instrucciones,PROGRAM_COUNTER);
+    free(buffer);
+    free(paquete);
+    return pedido;
+};
+
+t_proceso* buscar_proceso_en_memoria(int process_id){
+    bool buscar_proceso(t_proceso* proceso){
+	    return (proceso->pid == process_id);
+    }
+    t_proceso *proceso_encontrado = list_find(procesos_memoria, (void*)buscar_proceso);
+    if(proceso_encontrado == NULL){
+		log_error(memoria_log_debug, "El proceso %d no se encontro en memoria.", process_id);
+		exit(EXIT_FAILURE);
+	}
+    return proceso_encontrado;
 }

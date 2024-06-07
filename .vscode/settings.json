@@ -15,7 +15,20 @@
         "Kernel_cpu_dispatch.C": "cpp",
         "kernel_entradasalida.h": "c",
         "kernel_cpu_interrupt.h": "c",
-        "entradasalida.h": "c"
+        "entradasalida.h": "c",
+        "crear_conexiones.h": "c",
+        "readline.h": "c",
+        "planificador_largo_plazo.h": "c",
+        "planificador_corto_plazo.h": "c",
+        "pcb.h": "c",
+        "stdlib.h": "c",
+        "inicializar_cpu.h": "c",
+        "cpu_kernel_dispatch.h": "c",
+        "cpu.h": "c",
+        "cpu_gestor.h": "c",
+        "log.h": "c",
+        "fetch.h": "c",
+        "execute.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -99,4 +99,3 @@ void gestionar_procesos_io(t_interfaz* interfaz){
     desbloquear_proceso(interfaz);
   }
 }
-

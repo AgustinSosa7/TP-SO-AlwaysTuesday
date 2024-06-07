@@ -59,12 +59,13 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
       //matar al hilo en el que me encuentro?
     }
     return interfaz;
-}
+    }
+
+
 t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb) {
     bool esta_la_io(void* io) {
       return esta_o_no(nombre_io, io);
     }
-
     t_interfaz* interfaz = list_find(IOS_CONECTADOS, esta_la_io); 
 
     if (interfaz != NULL) {
@@ -76,9 +77,11 @@ t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb) {
     }
 }   
 
+
 bool esta_o_no(char* nombre_io, t_interfaz* io){ 
         return (strcmp(nombre_io, io->nombre) == 0);
 }
+
 
 void validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion, t_pcb* un_pcb){
       if(contains_string(interfaz->instrucciones_posibles, instruccion)){
@@ -155,6 +158,7 @@ void recibir_fin_peticion(t_interfaz* interfaz){
         log_error(kernel_logger,"La interfaz %s se ha desconectado repentinamente. Proceso enviado a READY.\n", interfaz->nombre);
       }
 }
+
 
 
 void desbloquear_proceso(t_interfaz* interfaz){
