@@ -67,7 +67,6 @@ t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb) {
       return esta_o_no(nombre_io, io);
     }
     t_interfaz* interfaz = list_find(IOS_CONECTADOS, esta_la_io); 
-
     if (interfaz != NULL) {
         return interfaz;
     } else {
@@ -114,7 +113,7 @@ void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
 void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion);
-      agregar_algo_a_paquete(paquete, proceso_blocked->peticion->parametros); //revisar si hay que enviar parametro por parametro
+      agregar_algo_a_paquete(paquete, proceso_blocked->peticion->parametros,sizeof(proceso_blocked->peticion->parametros)); //revisar si hay que enviar parametro por parametro
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
       int err = send(fd_entradasalida, a_enviar, bytes, SIGPIPE);

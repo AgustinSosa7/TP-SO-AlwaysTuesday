@@ -307,11 +307,11 @@ agregar_algo_a_paquete(paquete,&registros_cpu->DI,sizeof(registros_cpu->DI));
 /////////////////////// PCB /////////////////////////
 
 
-void enviar_pcb_a(t_pcb* un_pcb, int socket){
-	t_paquete* un_paquete = crear_paquete(PCB); //Ejecutar, ver si tiene ese nombre;
+void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
+	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
 	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
-  agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->pid));
-  agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
+  	agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->pid));
+  	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
 	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
