@@ -24,7 +24,7 @@ void recibir_pcb_con_motivo()
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  
             t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
-
+            if(interfaz!=NULL){
             t_peticion_pcb_interfaz* peticion_pcb_interfaz = malloc(sizeof(t_peticion_pcb_interfaz));
             peticion_pcb_interfaz->peticion = peticion;
             peticion_pcb_interfaz->un_pcb = pcb_recibido;
@@ -33,6 +33,8 @@ void recibir_pcb_con_motivo()
             pthread_t pedido_io;
             pthread_create(&pedido_io, NULL, (void*) enviar_proceso_a_blocked, peticion_pcb_interfaz); 
             pthread_detach(pedido_io);
+            }
+
             break;
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      

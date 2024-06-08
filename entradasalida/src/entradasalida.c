@@ -19,10 +19,9 @@ inicializar_entradasalida(argv);
   log_info(entradasalida_logger, "Creando conexion con KERNEL...");
   fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL, entradasalida_logger);
   gestionar_handshake_como_cliente(fd_kernel, "KERNEL", entradasalida_logger);
-  sleep(3);
+  
   enviar_mensaje_string(NOMBRE_INTERFAZ, fd_kernel);
   enviar_mensaje_string(TIPO_INTERFAZ, fd_kernel);
-  log_info(entradasalida_logger, "envie mi id");
 
 /////////////////////////--ATENDER-MENSAJES--//////////////////////
 

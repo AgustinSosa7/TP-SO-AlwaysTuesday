@@ -17,12 +17,14 @@ int main(int argc, char** argv){
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
 
-    printf("Guardo las nuevas variables?\n");
-    contexto_ejecucion->pid = 3;
-    contexto_ejecucion->registros_cpu->PC = 0;
-    printf("Si!\n");
+    //printf("Guardo las nuevas variables?\n");
+    //contexto_ejecucion->pid = 3;
+    //contexto_ejecucion->registros_cpu->PC = 0;
+    //printf("Si!\n");
 
     // Iniciar server de CPU - DISPATCH
+
+    // crear un hilo para cada uno
     
     fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
     log_info(cpu_logger, "Esperando a DISPATCH...");
@@ -46,19 +48,19 @@ int main(int argc, char** argv){
     //Atender los mensajes de Kernel - Interrupt
     pthread_t hilo_kernel_interrupt;
     pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_interrupciones,NULL);
-    pthread_detach(hilo_kernel_interrupt);
+    pthread_join(hilo_kernel_interrupt, NULL);
 
     //Atender los mensajes de Memoria
-    //pthread_t hilo_memoria;
-    //pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
-    //pthread_join(hilo_memoria, NULL);
+   // pthread_t hilo_memoria;
+   // pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
+   // pthread_join(hilo_memoria, NULL);
 //
     //Ciclos de instruccion
     printf("Antes de crear el hilo fetch\n");
     pthread_t hilo_fetch;
     pthread_create(&hilo_fetch, NULL, (void*)ciclo_instruccion, NULL);
     pthread_join(hilo_fetch, NULL);
-
+  
     return EXIT_SUCCESS;
 }
 /*

@@ -48,7 +48,7 @@ t_proceso* crear_proceso_nuevo(){
     t_proceso* procesoNuevo = malloc(sizeof(t_proceso*));
     if(code_op == CREAR_PROCESO)
     {
-        //int pid;
+        //zint pid;
         int pid = leer_algo_del_stream(buffer, &pid,sizeof(pid)); //cambiar a leer algo del buffer
         char* direccion_pseudocodigo = leer_string_del_stream(buffer);
         procesoNuevo->pid = pid;

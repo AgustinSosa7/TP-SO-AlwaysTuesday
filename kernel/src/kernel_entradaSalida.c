@@ -1,6 +1,6 @@
 #include "../includes/kernel_entradaSalida.h"
 
-t_peticion* recibir_peticion(t_paquete* paquete){
+t_peticion* recibir_peticion(t_paquete* paquete){ 
     t_peticion* peticion = malloc(sizeof(t_peticion));
     void* buffer = paquete->buffer;
     peticion->instruccion = malloc(sizeof(char));
@@ -49,7 +49,7 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
       char* nombre_io = peticion->interfaz;
       char* instruccion = peticion->instruccion;
 
-    t_interfaz* interfaz = existe_la_interfaz(nombre_io, pcb);
+    t_interfaz* interfaz = existe_la_interfaz(nombre_io, pcb); 
     if(interfaz->esta_conectada){
         validar_interfaz_admite_instruccion(interfaz, instruccion, pcb); 
     }else{
@@ -104,7 +104,7 @@ void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
     queue_push(peticion_pcb_interfaz->interfaz->cola_procesos_blocked, proceso_blocked);
     pthread_mutex_unlock(&(peticion_pcb_interfaz->interfaz->mutex_cola_blocked));
 
-    sem_post(peticion_pcb_interfaz->interfaz->semaforo_cola_procesos_blocked);
+    sem_post(&(peticion_pcb_interfaz->interfaz->semaforo_cola_procesos_blocked));
 
     eliminar_peticion(peticion_pcb_interfaz->peticion);
 }
@@ -113,14 +113,14 @@ void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
 void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion);
-      agregar_algo_a_paquete(paquete, proceso_blocked->peticion->parametros,sizeof(proceso_blocked->peticion->parametros)); //revisar si hay que enviar parametro por parametro
+      //agregar_algo_a_paquete(paquete, proceso_blocked->peticion->parametros,sizeof(proceso_blocked->peticion->parametros)); //revisar si hay que enviar parametro por parametro
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
-      int err = send(fd_entradasalida, a_enviar, bytes, SIGPIPE);
+      int err = send(fd_entradasalida, a_enviar, bytes, SIGPIPE); 
       if(err == -1){
         close(interfaz->fd_interfaz);
         interfaz->esta_conectada = false;
-
+        // enviar a todos los procesos que tiene bloqueado a exit 
         //enviar_proceso_blocked_a_exit(interfaz->cola_procesos_blocked);
         //matar al hilo en el que me encuentro?
     }

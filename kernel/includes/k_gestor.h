@@ -16,7 +16,7 @@ typedef struct
     int fd_interfaz;
     bool esta_conectada;
     t_queue* cola_procesos_blocked;
-    sem_t* semaforo_cola_procesos_blocked;
+    sem_t semaforo_cola_procesos_blocked;
     pthread_mutex_t mutex_cola_blocked;
 } t_interfaz;
 

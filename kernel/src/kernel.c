@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     conexion_kernel_memoria();
 
     conexion_kernel_cpu_dispatch();
-    
+    sleep(5);
     conexion_kernel_cpu_interrupt();
     
     conexion_kernel_entradaSalida();
@@ -36,11 +36,11 @@ int main(int argc, char** argv)
      leer_consola();
 
 
-    int pid = 3;
-    char* pseudocogido = "PLANI1.txt"; 
-    log_info(kernel_log_debug, "ENVIO DE PSEUDO: %s con un pid de: %d\n",pseudocogido,pid);
-    enviar_direccion_pesudocodigo(pseudocogido,pid);
-    sleep(5);
+   // int pid = 3;
+   // char* pseudocogido = "PLANI1.txt"; 
+   // log_info(kernel_log_debug, "ENVIO DE PSEUDO: %s con un pid de: %d\n",pseudocogido,pid);
+   // enviar_direccion_pesudocodigo(pseudocogido,pid);
+   // sleep(5);
     return EXIT_SUCCESS;
 }
 
