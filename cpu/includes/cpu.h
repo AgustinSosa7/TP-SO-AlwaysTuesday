@@ -7,9 +7,7 @@
 #include "cpu_kernel_dispatch.h"
 #include "cpu_kernel_interrupt.h"
 #include "cpu_memoria.h"
-#include "fetch.h"
-#include "decode.h"
-#include "execute.h"
+#include "ciclo_instruccion.h"
 
 //Estructuras
 
@@ -20,7 +18,8 @@ t_log* cpu_logger;
 t_log* cpu_log_debug;
 t_config* cpu_config;
 
-t_contexto_ejecucion* contexto_ejecucion; //CAMBIAR A PCB GLOBAL PREGUNTAR SI EL CAMBIO ESTA OK EL SABADO
+t_pcb *pcb_global;
+char ** opcode_cpu;
 
 int fd_cpu_dispatch;
 int fd_cpu_interrupt;
@@ -36,11 +35,13 @@ char* PUERTO_ESCUCHA_INTERRUPT;
 int CANTIDAD_ENTRADAS_TLB;
 char* ALGORITMO_TLB;
 
+
 void ciclo_instruccion();
-cod_instruccion decodificacion_instruccion(char *instruccion);
+char ** ciclo_instruccion_fetch();
+void decodificacion_instruccion(char *instruccion);
 bool codigo_inexistente(char *instruccion);
-bool requiere_traduccion(char *instruccion);
-void ejecucion_proceso(cod_instruccion instruccion, char** codigo);
+//bool requiere_traduccion(char *instruccion);
+void ejecucion_proceso(char** codigo);
 cod_instruccion identificador_instruccion(char* codigo);
 
 //semaforo_t semaforo_control_fetch_decode;

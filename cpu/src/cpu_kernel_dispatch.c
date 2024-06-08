@@ -1,6 +1,7 @@
 # include "../includes/cpu_kernel_dispatch.h"
 
 
+
 void atender_cpu_kernel_dispatch(){
 
     bool control_key = 1;
@@ -20,8 +21,11 @@ void atender_cpu_kernel_dispatch(){
                     //Recibe el paquete lo deserealiza y recibe el PCB
                     log_info(cpu_logger,"LLego el PCB");
                     t_pcb* un_pcb = recibir_pcb(paquete);
-                    //Se prueba si llega bien el PCB
-                    imprimir_pcb(un_pcb, cpu_logger);
+                    imprimir_pcb( un_pcb,cpu_logger);
+                    pcb_global = un_pcb;
+                    pthread_t hilo_ciclo_instruccion;
+                    pthread_create(&hilo_ciclo_instruccion, NULL, (void*)ciclo_instruccion, NULL);
+                    pthread_detach(hilo_ciclo_instruccion); //Para mi es detach xq no sigue esperando si no que se activa del KERNEL , ver dps :D
                     free(un_pcb);
                     //signal para que siga el ciclo de instruccion
             break;

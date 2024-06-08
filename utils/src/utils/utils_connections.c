@@ -266,7 +266,7 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 void eliminar_paquete(t_paquete* paquete)
 {
 	//free(paquete->buffer->stream);
-	//free(paquete->buffer);
+	//free(paquete->buffer);	
 	free(paquete);
 }
 
@@ -291,17 +291,17 @@ void agregar_string_a_paquete(t_paquete* paquete, char* string)
 }
 
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_cpu){
-agregar_algo_a_paquete(paquete,&registros_cpu->PC,sizeof(registros_cpu->PC));
-agregar_algo_a_paquete(paquete,&registros_cpu->AX,sizeof(registros_cpu->AX));
-agregar_algo_a_paquete(paquete,&registros_cpu->BX,sizeof(registros_cpu->BX));
-agregar_algo_a_paquete(paquete,&registros_cpu->CX,sizeof(registros_cpu->CX));
-agregar_algo_a_paquete(paquete,&registros_cpu->DX,sizeof(registros_cpu->DX));
-agregar_algo_a_paquete(paquete,&registros_cpu->EAX,sizeof(registros_cpu->EAX));
-agregar_algo_a_paquete(paquete,&registros_cpu->EBX,sizeof(registros_cpu->EBX));
-agregar_algo_a_paquete(paquete,&registros_cpu->ECX,sizeof(registros_cpu->ECX));
-agregar_algo_a_paquete(paquete,&registros_cpu->EDX,sizeof(registros_cpu->EDX));
-agregar_algo_a_paquete(paquete,&registros_cpu->SI,sizeof(registros_cpu->SI));
-agregar_algo_a_paquete(paquete,&registros_cpu->DI,sizeof(registros_cpu->DI));
+agregar_algo_a_paquete(paquete,&(registros_cpu->PC),sizeof(registros_cpu->PC));
+agregar_algo_a_paquete(paquete,&(registros_cpu->AX),sizeof(registros_cpu->AX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->BX),sizeof(registros_cpu->BX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->CX),sizeof(registros_cpu->CX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->DX),sizeof(registros_cpu->DX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->EAX),sizeof(registros_cpu->EAX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->EBX),sizeof(registros_cpu->EBX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->ECX),sizeof(registros_cpu->ECX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->EDX),sizeof(registros_cpu->EDX));
+agregar_algo_a_paquete(paquete,&(registros_cpu->SI),sizeof(registros_cpu->SI));
+agregar_algo_a_paquete(paquete,&(registros_cpu->DI),sizeof(registros_cpu->DI));
 }
 
 /////////////////////// PCB /////////////////////////
@@ -310,7 +310,7 @@ agregar_algo_a_paquete(paquete,&registros_cpu->DI,sizeof(registros_cpu->DI));
 void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
 	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
 	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
-  	agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->pid));
+  	agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->quantum));
   	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
 	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
 	enviar_paquete(un_paquete, socket);
@@ -341,7 +341,7 @@ log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
 log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
 log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
 log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
-//log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
+log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
 }
 
 char* enum_a_string(estado_pcb estado){
@@ -365,6 +365,8 @@ char* enum_a_string(estado_pcb estado){
 	  case READYPLUS:
         return "READYPLUS";
         break;
+	  default:
+	  	break;
 	}
 }
     

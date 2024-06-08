@@ -2,6 +2,7 @@
 #define CPU_KERNEL_DISPATCH_H_
 
 #include "cpu_gestor.h"
+#include "ciclo_instruccion.h"
 
 void atender_cpu_kernel_dispatch();
 

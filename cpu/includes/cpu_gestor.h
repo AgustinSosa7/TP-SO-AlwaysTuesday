@@ -34,18 +34,14 @@ typedef enum
     EXIT_CPU
 }cod_instruccion;
 
-
-typedef struct{
-    int pid;
-    t_registros_cpu* registros_cpu; 
-}t_contexto_ejecucion; //CAMBIAR A PCB GLOBAL PREGUNTAR SI EL CAMBIO ESTA OK EL SABADO
+extern t_pcb* pcb_global;
+extern char ** opcode_cpu;
 
 
 extern t_log* cpu_logger;
 extern t_log* cpu_log_debug;
 extern t_config* cpu_config;
 
-extern t_contexto_ejecucion* contexto_ejecucion;
 
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;

@@ -26,10 +26,16 @@ int main(int argc, char** argv)
     conexion_kernel_memoria();
 
     conexion_kernel_cpu_dispatch();
-    sleep(5);
+    
+    //sleep(5);
     conexion_kernel_cpu_interrupt();
     
     conexion_kernel_entradaSalida();
+
+    // PRUEBA
+    
+    //t_pcb *pcb_prueba= crearPcb();
+    //enviar_pcb_a(pcb_prueba, fd_cpu_dispatch, PCB);
 
    // leer consola interactiva
      iniciar_consola();
@@ -41,6 +47,7 @@ int main(int argc, char** argv)
    // log_info(kernel_log_debug, "ENVIO DE PSEUDO: %s con un pid de: %d\n",pseudocogido,pid);
    // enviar_direccion_pesudocodigo(pseudocogido,pid);
    // sleep(5);
+   
     return EXIT_SUCCESS;
 }
 

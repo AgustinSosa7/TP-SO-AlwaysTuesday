@@ -55,11 +55,7 @@ int main(int argc, char** argv){
    // pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);
    // pthread_join(hilo_memoria, NULL);
 //
-    //Ciclos de instruccion
-    printf("Antes de crear el hilo fetch\n");
-    pthread_t hilo_fetch;
-    pthread_create(&hilo_fetch, NULL, (void*)ciclo_instruccion, NULL);
-    pthread_join(hilo_fetch, NULL);
+    
   
     return EXIT_SUCCESS;
 }
@@ -86,27 +82,4 @@ void iniciar_semaforo(){
 }
 
 */
-//ciclo de instruccion(fetch-decode-execute-check_interrupt)
-void ciclo_instruccion(){                          //crear dos hilos: uno para decode, otro para execute
-    
-    while(1){
-    
-    //FETCH  Me debería taraer instrucciones para decodificar
-
-    char ** instruccion = ciclo_instruccion_fetch();  // tiene que ser una lista de Strings, no sé si está bien. acá iria lo que recibe del Fetch. Hablar con Lucas como llega
-    
-    //DECODE, Ver como afecta al PID 
-
-    
-    cod_instruccion instruccion_a_ejecutar = decodificacion_instruccion(instruccion[0]); //Va una lista de Strings
-
-    //EXECUTE
-
-    ejecucion_proceso(instruccion_a_ejecutar, instruccion); // Podría hacerse dentro el decode
-
-    //CHECK INTERRUPT
-    //verif del flag que modifico el kernel luego de mandar la interrupcion
-    }  // El Check I. debe estar en el while????
-    //atender interrupciones
-}
 

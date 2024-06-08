@@ -28,7 +28,7 @@ void enviar_direccion_pesudocodigo(char* pseudocogido,int pid){
       t_paquete* paquete = crear_paquete(CREAR_PROCESO);
       //log_info(kernel_log_debug,"agrego el string al paquete...");
       
-      agregar_algo_a_paquete(paquete,pid,sizeof(pid));
+      agregar_algo_a_paquete(paquete,&pid,sizeof(pid));
 
       agregar_string_a_paquete(paquete, pseudocogido);  
 

@@ -1,0 +1,29 @@
+#ifndef CICLO_INSTRUCCION_H
+#define CICLO_INSTRUCCION_H
+
+#include "cpu_gestor.h"
+#include "cpu_memoria.h"
+#include "stdbool.h"
+#include <commons/log.h>
+#include <commons/config.h>
+
+
+void ciclo_instruccion();
+
+//FETCH
+
+char** ciclo_instruccion_fetch();
+
+//DECODE
+
+void decodificacion_instruccion(char *instruccion);
+bool codigo_inexistente(char* instruccion);
+//bool requiere_traduccion(char * instruccion);
+
+
+//EXECUTE
+
+void ejecucion_proceso(char** codigo);
+cod_instruccion identificador_instruccion(char* codigo);
+#endif
+

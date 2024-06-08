@@ -24,6 +24,8 @@ void inicializar_logs(){
 
     log_info(cpu_log_debug, "Se inicializo el cpu debug logger"); //Sacar eventualmente
 
+
+
 }
 
 void iniciar_config(char* path){
@@ -51,6 +53,27 @@ void imprimir_config(){
 }
 
 void inicializar_estructuras(){
-    contexto_ejecucion = malloc(sizeof(t_contexto_ejecucion*));
-    contexto_ejecucion->registros_cpu = malloc(sizeof(t_registros_cpu*));
+    pcb_global = malloc(sizeof(t_pcb*));
+    //pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu*));    // Ver si funciona cmabie contexto por PCB
+
+    opcode_cpu = string_array_new();
+    string_array_push(&opcode_cpu, "SET");
+	string_array_push(&opcode_cpu, "SUM");
+	string_array_push(&opcode_cpu, "SUB");
+	string_array_push(&opcode_cpu, "JNZ");
+    string_array_push(&opcode_cpu, "MOV_IN");
+	string_array_push(&opcode_cpu, "MOV_OUT");
+	string_array_push(&opcode_cpu, "RESIZE");
+    string_array_push(&opcode_cpu, "COPY_STRING");
+	string_array_push(&opcode_cpu, "WAIT");
+	string_array_push(&opcode_cpu, "SIGNAL");
+	string_array_push(&opcode_cpu, "IO_GEN_SLEEP");
+	string_array_push(&opcode_cpu, "IO_STDIN_READ");
+	string_array_push(&opcode_cpu, "IO_STDOUT_WRITE");
+	string_array_push(&opcode_cpu, "IO_FS_CREATE");
+    string_array_push(&opcode_cpu, "IO_FS_DELETE");
+	string_array_push(&opcode_cpu, "IO_FS_TRUNCATE");
+    string_array_push(&opcode_cpu, "IO_FS_WRITE");
+    string_array_push(&opcode_cpu, "IO_FS_READ");
+	string_array_push(&opcode_cpu, "EXIT");
 }
