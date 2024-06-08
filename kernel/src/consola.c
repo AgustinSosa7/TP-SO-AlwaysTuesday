@@ -75,11 +75,11 @@ void atender_instruccion_validada(char* leido){
 		break;
 	case INICIAR_PROCESO:
 		t_pcb* nuevo_pcb = crearPcb();
-		pthread_mutex_lock(mutex_new);
+		pthread_mutex_lock(&mutex_new);
 		 queue_push(cola_new, nuevo_pcb);
-		pthread_mutex_unlock(mutex_new);	
+		pthread_mutex_unlock(&mutex_new);	
 		log_info(kernel_logger,"Se crea el proceso < %d > en NEW",nuevo_pcb->pid);
-		sem_post(sem_new_a_ready);
+		sem_post(&sem_new_a_ready);
 		//enviar algo a memoria
 
 		break;

@@ -23,6 +23,7 @@ void atender_cpu_kernel_dispatch(){
                     //Se prueba si llega bien el PCB
                     imprimir_pcb(un_pcb, cpu_logger);
                     free(un_pcb);
+                    //signal para que siga el ciclo de instruccion
             break;
             case -1:
                 log_error(cpu_logger, "Desconexión de KERNEL - Dispatch");
@@ -34,3 +35,5 @@ void atender_cpu_kernel_dispatch(){
     }
 
 }
+
+//enviar pcb

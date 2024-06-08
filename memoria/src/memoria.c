@@ -26,6 +26,12 @@ log_info(memoria_logger, "Esperando a KERNEL...");
 fd_kernel = esperar_cliente(fd_memoria, memoria_logger,"KERNEL"); 
 gestionar_handshake_como_server(fd_kernel, memoria_logger, "KERNEL");
 
+
+// Esperar conexion de ENTRADASALIDA
+log_info(memoria_logger, "Esperando a EntradaSalida...");
+fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
+gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");
+
 /////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
 
 list_add(procesos_memoria, crear_proceso_nuevo());
@@ -40,11 +46,6 @@ enviar_instruccion_pesudocodigo(proceso1->instrucciones,pedido->pc);//PROGRAM_CO
 free(pedido);
 sleep(3);
 }
-
-// Esperar conexion de ENTRADASALIDA
-/*log_info(memoria_logger, "Esperando a EntradaSalida...");
-fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
-gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");*/
 
 // Finalizar MEMORIA
 

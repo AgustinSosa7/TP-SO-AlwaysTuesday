@@ -17,7 +17,7 @@ typedef struct
     bool esta_conectada;
     t_queue* cola_procesos_blocked;
     sem_t* semaforo_cola_procesos_blocked;
-    pthread_mutex_t* mutex_cola_blocked;
+    pthread_mutex_t mutex_cola_blocked;
 } t_interfaz;
 
 typedef struct{
@@ -69,17 +69,17 @@ extern t_queue* cola_exit;
 
 //////////////////////SEMAFOROS/////////////////////////////////////////
 
-extern pthread_mutex_t* mutex_pid;
-extern pthread_mutex_t* mutex_new;
-extern pthread_mutex_t* mutex_ready;
-extern pthread_mutex_t* mutex_exec;
-extern pthread_mutex_t* mutex_ready_plus;
-extern pthread_mutex_t* mutex_exit;
-extern pthread_mutex_t* mutex_io;
+extern pthread_mutex_t mutex_pid;
+extern pthread_mutex_t mutex_new;
+extern pthread_mutex_t mutex_ready;
+extern pthread_mutex_t mutex_exec;
+extern pthread_mutex_t mutex_ready_plus;
+extern pthread_mutex_t mutex_exit;
+extern pthread_mutex_t mutex_io;
 
-extern sem_t* sem_grado_multiprogram;
-extern sem_t* sem_new_a_ready;
-extern sem_t* sem_planificador_corto_plazo;
+extern sem_t sem_grado_multiprogram;
+extern sem_t sem_new_a_ready;
+extern sem_t sem_planificador_corto_plazo;
 ///////////////////////////////////////////////////////////////
 
 

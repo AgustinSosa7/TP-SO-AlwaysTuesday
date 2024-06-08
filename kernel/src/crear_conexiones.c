@@ -28,7 +28,6 @@
 
     IOS_CONECTADOS = list_create();
 
-    log_info(kernel_logger, "Esperando a Entradasalida...");
     pthread_t hilo_generador_de_io;
     pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
     pthread_detach(hilo_generador_de_io);
@@ -36,10 +35,12 @@
 
 void gestionar_entrada_salida(){
   while(1){
+    log_info(kernel_logger, "Esperando a Entradasalida...");
     fd_entradasalida = esperar_cliente(fd_kernel, kernel_logger, "ENTRADASALIDA");
     gestionar_handshake_como_server(fd_entradasalida, kernel_logger, "ENTRADA SALIDA");
     t_interfaz* interfaz = identificar_io(fd_entradasalida);
     agregar_io(interfaz);
+        log_info(kernel_logger, "Se conecto la interfaz: %s", interfaz->nombre);
     gestionar_procesos_io(interfaz);
   }
 }
@@ -48,7 +49,7 @@ void gestionar_entrada_salida(){
 t_interfaz* identificar_io(int socket){
   t_interfaz* interfaz = malloc(sizeof(t_interfaz));
 
-  interfaz->nombre = recibir_mensaje_string(socket);
+  interfaz->nombre = recibir_mensaje_string(socket); 
   interfaz->tipo = recibir_mensaje_string(socket);
   interfaz->instrucciones_posibles = asignar_instrucciones_posibles(interfaz->tipo);
   interfaz->fd_interfaz = socket;
@@ -56,8 +57,8 @@ t_interfaz* identificar_io(int socket){
   interfaz->cola_procesos_blocked = queue_create();
 
   sem_init(interfaz->semaforo_cola_procesos_blocked, 0, 0); 
-  pthread_mutex_t* mutex_cola_blocked;
-  pthread_mutex_init(mutex_cola_blocked, NULL);
+  pthread_mutex_t mutex_cola_blocked;
+  pthread_mutex_init(&mutex_cola_blocked, NULL);
   interfaz->mutex_cola_blocked = mutex_cola_blocked;
 
   return interfaz;
@@ -80,18 +81,18 @@ t_list* asignar_instrucciones_posibles(char* tipo){
 }
 
 void agregar_io(t_interfaz* interfaz){
-  pthread_mutex_lock(mutex_io);
+  pthread_mutex_lock(&mutex_io);
   list_add(IOS_CONECTADOS, interfaz);
-  pthread_mutex_unlock(mutex_io);
+  pthread_mutex_unlock(&mutex_io);
 }
 
 void gestionar_procesos_io(t_interfaz* interfaz){
   while(1){
     sem_wait(interfaz->semaforo_cola_procesos_blocked);
 
-    pthread_mutex_lock(interfaz->mutex_cola_blocked);
+    pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
     t_proceso_blocked* proceso_a_ejecutar = queue_pop(interfaz->cola_procesos_blocked);
-    pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+    pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
     enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
     recibir_fin_peticion(interfaz);

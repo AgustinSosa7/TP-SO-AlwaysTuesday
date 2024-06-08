@@ -81,7 +81,6 @@ void enviar_handshake(int conexion){
 	void* coso_a_enviar = malloc(sizeof(int));
 	int saludar = HANDSHAKE;
 	memcpy(coso_a_enviar, &saludar, sizeof(int));
-	//gestionar error de send aca. Para cuando un cliente se desconecta repentinamente.
 	send(conexion, coso_a_enviar, sizeof(int),0);
 	free(coso_a_enviar);
 }
@@ -219,7 +218,8 @@ void enviar_mensaje_string(char* mensaje, int socket_cliente)
 {
 	int tamanio = strlen(mensaje)+1;
 	void* a_enviar = malloc(tamanio);
-	memcpy(a_enviar, &mensaje, tamanio);
+	memcpy(a_enviar, &tamanio, sizeof(int));
+	memcpy(a_enviar + sizeof(int), &mensaje, tamanio); // falta emviarle primero el tamanio del string
 	send(socket_cliente, a_enviar, tamanio, 0);
 	free(a_enviar);
 }
@@ -430,11 +430,11 @@ t_paquete* recibir_paquete(int unSocket)
 }
 
 
-void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
+void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio) // debería ser tipo void a secas
 {
 	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
 	buffer->offset += tamanio;
-	return valor;
+	return valor; //no debería retornar nada 
 }
 
 char* leer_string_del_stream(t_buffer* buffer) 

@@ -100,9 +100,9 @@ void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
     proceso_blocked->peticion = peticion_pcb_interfaz->peticion;
     proceso_blocked->un_pcb = peticion_pcb_interfaz->un_pcb;
     
-    pthread_mutex_lock(peticion_pcb_interfaz->interfaz->mutex_cola_blocked);
+    pthread_mutex_lock(&(peticion_pcb_interfaz->interfaz->mutex_cola_blocked));
     queue_push(peticion_pcb_interfaz->interfaz->cola_procesos_blocked, proceso_blocked);
-    pthread_mutex_unlock(peticion_pcb_interfaz->interfaz->mutex_cola_blocked);
+    pthread_mutex_unlock(&(peticion_pcb_interfaz->interfaz->mutex_cola_blocked));
 
     sem_post(peticion_pcb_interfaz->interfaz->semaforo_cola_procesos_blocked);
 
@@ -161,9 +161,9 @@ void recibir_fin_peticion(t_interfaz* interfaz){
 
 
 void desbloquear_proceso(t_interfaz* interfaz){
-    pthread_mutex_lock(interfaz->mutex_cola_blocked);
+    pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
     t_pcb* un_pcb = queue_pop(interfaz->cola_procesos_blocked);    
-    pthread_mutex_unlock(interfaz->mutex_cola_blocked);
+    pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
       estado_pcb estado_anterior = un_pcb->estado_pcb;
 
@@ -181,17 +181,17 @@ void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
       cambiar_estado(un_pcb,READY);
       un_pcb->estado_pcb = READY;
 
-      pthread_mutex_lock(mutex_ready);
+      pthread_mutex_lock(&mutex_ready);
       queue_push(cola_ready,un_pcb); 
-      pthread_mutex_unlock(mutex_ready);
+      pthread_mutex_unlock(&mutex_ready);
 }
 
 void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
       un_pcb->quantum = un_pcb->quantum - tiempo_transcurrido;
       un_pcb->estado_pcb = READYPLUS;
-      pthread_mutex_lock(mutex_ready_plus);
+      pthread_mutex_lock(&mutex_ready_plus);
       queue_push(cola_ready_plus,un_pcb); 
-      pthread_mutex_unlock(mutex_ready_plus);
+      pthread_mutex_unlock(&mutex_ready_plus);
       // LIBERAR ESTRUCTURAS EN MEMORIA
 }
 

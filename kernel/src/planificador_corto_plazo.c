@@ -6,7 +6,7 @@
 void planif_corto_plazo()
 {
     while(1){
-        sem_wait(sem_planificador_corto_plazo);
+        sem_wait(&sem_planificador_corto_plazo);
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch (algoritmo)
             {

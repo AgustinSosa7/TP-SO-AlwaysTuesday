@@ -114,21 +114,21 @@ void inicializar_listas_instrucciones(){
 void inicializar_semaforos(){
 	printf("arrancando sems...\n");
 	
-	sem_init(sem_grado_multiprogram,0,GRADO_MULTIPROGRAMACION);
+	sem_init(&sem_grado_multiprogram,0,GRADO_MULTIPROGRAMACION);
 	printf("listo las GRADO_MULTIPROGRAMACION\n");
-	sem_init(sem_new_a_ready,0,0);
-	sem_init(sem_planificador_corto_plazo,0,0);
+	sem_init(&sem_new_a_ready,0,0);
+	sem_init(&sem_planificador_corto_plazo,0,0);
 	printf("listo las sem_planificador_corto_plazo\n");
 
 	
-	pthread_mutex_init(mutex_pid, NULL);
+	pthread_mutex_init(&mutex_pid, NULL);
 	printf("listo las mutex_pid\n");
-	pthread_mutex_init(mutex_io, NULL);
-	pthread_mutex_init(mutex_new, NULL);
-	pthread_mutex_init(mutex_ready, NULL);
-	pthread_mutex_init(mutex_exec, NULL);
-	pthread_mutex_init(mutex_ready_plus, NULL);
-	pthread_mutex_init(mutex_exit, NULL);
+	pthread_mutex_init(&mutex_io, NULL);
+	pthread_mutex_init(&mutex_new, NULL);
+	pthread_mutex_init(&mutex_ready, NULL);
+	pthread_mutex_init(&mutex_exec, NULL);
+	pthread_mutex_init(&mutex_ready_plus, NULL);
+	pthread_mutex_init(&mutex_exit, NULL);
 	printf("listo las mutex_exit\n");
 }
 
