@@ -3,10 +3,9 @@
 
 int main(int argc, char** argv){
 
-    //DESCOMENTAR
-   //if(validar_parametros_main(argc, 2, argv)){
-   //     	    return EXIT_FAILURE;
-    //}
+   if(validar_parametros_incorrectos_main(argc, 2, argv)){
+        	    return EXIT_FAILURE;
+}
 
     // Inicializar CPU
     inicializar_cpu(argv[1]);
@@ -51,27 +50,5 @@ int main(int argc, char** argv){
 
     return EXIT_SUCCESS;
 }
-/*
-// iniciar estructuras
-void iniciar_estructuras(){
-	string= string_array_new();
-	string_array_push(&string, "SET");
-	string_array_push(&string, "SUM");
-	string_array_push(&string, "SUB");
-	string_array_push(&string, "JNZ");
-	string_array_push(&string, "IO_GEN_SLEEP");
-	
-	interrupt_proceso_id = NULL;
-	interrupt_proceso_ticket = NULL;
-	interrupt_motivo = NULL;
-	mochila = NULL;
-}
 
-//inicializacion de samaforos
-void iniciar_semaforo(){
-    semaforo_init(&semaforo_control_fetch_decode,0,0);
-    semaforo_init(&semaforo_control_decode_execute,0,0);
-}
-
-*/
 

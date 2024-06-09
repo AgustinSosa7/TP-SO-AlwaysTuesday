@@ -51,7 +51,7 @@ extern int fd_memoria;
 
 extern char* IP_MEMORIA;
 extern char* IP_CPU;
-extern char* PUERTO_MEMORIA; //Quizas en crear_concxion() los toma como char*
+extern char* PUERTO_MEMORIA; 
 extern char* PUERTO_ESCUCHA_DISPATCH;
 extern char* PUERTO_ESCUCHA_INTERRUPT;
 extern int CANTIDAD_ENTRADAS_TLB;
