@@ -1,6 +1,6 @@
 #include "../includes/crear_conexiones.h"
 
-        // Conectarse con Memoria
+    // Conectarse con Memoria
     void conexion_kernel_memoria(){
     log_info(kernel_logger, "Creando conexion con MEMORIA...");
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, kernel_logger);
@@ -17,20 +17,20 @@ void conexion_kernel_cpu_dispatch(){
 void crear_conexion_kernel_cpu_dispatch(){
     log_info(kernel_logger, "Creando conexion con CPU DISPATCH...");
     fd_cpu_dispatch = crear_conexion(IP_CPU, PUERTO_CPU_DISPATCH, kernel_logger);
-    gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU", kernel_logger);
+    gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU-INTERRUPT", kernel_logger);
 }
 
     // INTERRUPT
 void conexion_kernel_cpu_interrupt(){
     pthread_t hilo_kernel_cpu_interrupt;
     pthread_create(&hilo_kernel_cpu_interrupt, NULL, (void*) crear_conexion_kernel_cpu_interrupt, NULL);
-    pthread_detach(hilo_kernel_cpu_interrupt);
+    pthread_join(hilo_kernel_cpu_interrupt, NULL); // Esta bie que sea join? no hay algun problema con nada? 
 }
 
 void crear_conexion_kernel_cpu_interrupt(){
     log_info(kernel_logger, "Creando conexion con CPU INTERRUPT...");
     fd_cpu_interrupt = crear_conexion(IP_CPU, PUERTO_CPU_INTERRUPT, kernel_logger);
-    gestionar_handshake_como_cliente(fd_cpu_interrupt, "CPU", kernel_logger);
+    gestionar_handshake_como_cliente(fd_cpu_interrupt, "CPU-INTERRUPT", kernel_logger);
 }
 
 

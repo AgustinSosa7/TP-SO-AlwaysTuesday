@@ -30,9 +30,7 @@ void recibir_pcb_con_motivo()
             peticion_pcb_interfaz->un_pcb = pcb_recibido;
             peticion_pcb_interfaz->interfaz = interfaz; 
 
-            pthread_t pedido_io;
-            pthread_create(&pedido_io, NULL, (void*) enviar_proceso_a_blocked, peticion_pcb_interfaz); 
-            pthread_detach(pedido_io);
+            enviar_proceso_a_blocked(peticion_pcb_interfaz); 
             }
 
             break;

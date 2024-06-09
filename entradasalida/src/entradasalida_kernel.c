@@ -2,6 +2,7 @@
 
 
 void atender_entradasalida_kernel(){
+    log_info(entradasalida_logger, "Atendiendo KERNEL...");  
     bool control_key = 1;
     while (control_key) {
         int cod_op = recibir_operacion(fd_kernel);
