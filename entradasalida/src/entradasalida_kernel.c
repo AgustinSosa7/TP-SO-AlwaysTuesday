@@ -45,7 +45,7 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, void* stream){
       char* instruccion = peticion->instruccion;
 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-            leer_algo_del_stream(stream, &peticion->parametros->tiempo_espera,sizeof(peticion->parametros->tiempo_espera));
+           peticion->parametros->tiempo_espera= leer_algo_del_stream(stream,sizeof(peticion->parametros->tiempo_espera));
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {

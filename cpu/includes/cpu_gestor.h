@@ -11,6 +11,7 @@
 
 // Variables GLOBALES
 extern pthread_t hilo_kernel_interrupt;
+
 typedef enum 
 {
     SET,
@@ -36,7 +37,7 @@ typedef enum
 
 extern t_pcb* pcb_global;
 extern char ** opcode_cpu;
-
+extern sem_t sem_ciclo_de_instruccion;
 
 extern t_log* cpu_logger;
 extern t_log* cpu_log_debug;

@@ -17,7 +17,7 @@ void conexion_kernel_cpu_dispatch(){
 void crear_conexion_kernel_cpu_dispatch(){
     log_info(kernel_logger, "Creando conexion con CPU DISPATCH...");
     fd_cpu_dispatch = crear_conexion(IP_CPU, PUERTO_CPU_DISPATCH, kernel_logger);
-    gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU-INTERRUPT", kernel_logger);
+    gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU-DISPATCH", kernel_logger);
 }
 
     // INTERRUPT

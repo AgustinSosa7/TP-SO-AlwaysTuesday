@@ -6,6 +6,7 @@ void inicializar_cpu(char* path){
     iniciar_config(path);
     imprimir_config();
     inicializar_estructuras();
+    inicializar_semaforos();
 }
 
 void inicializar_logs(){
@@ -53,7 +54,8 @@ void imprimir_config(){
 }
 
 void inicializar_estructuras(){
-    pcb_global = malloc(sizeof(t_pcb*));
+    pcb_global = malloc(sizeof(t_pcb));
+
     //pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu*));    // Ver si funciona cmabie contexto por PCB
     opcode_cpu = string_array_new();
     string_array_push(&opcode_cpu, "SET");
@@ -75,4 +77,9 @@ void inicializar_estructuras(){
     string_array_push(&opcode_cpu, "IO_FS_WRITE");
     string_array_push(&opcode_cpu, "IO_FS_READ");
 	string_array_push(&opcode_cpu, "EXIT");
+}
+
+void inicializar_semaforos(){
+
+    sem_init(&sem_ciclo_de_instruccion,0,0);
 }

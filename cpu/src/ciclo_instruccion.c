@@ -2,9 +2,9 @@
 
 
 void ciclo_instruccion(){                         
-    //Wait ciclo de instruccion
-    while(1){
     
+    while(1){
+    sem_wait(&sem_ciclo_de_instruccion);
     //FETCH 
 
     char ** instruccion = ciclo_instruccion_fetch();  
@@ -22,12 +22,9 @@ void ciclo_instruccion(){
         break;
     }
     } 
-    //Atender los mensajes de Kernel - Interrupt
-    pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_interrupciones,NULL);
-    pthread_detach(hilo_kernel_interrupt);
-    pthread_mutex_lock(&mutex_flag_interrupcion);
-    flag_hay_interrupcion = false;
-    pthread_mutex_unlock(&mutex_flag_interrupcion);
+    //se atienden los mensajes de Kernel - Interrupt 
+  
+
 }
 
 

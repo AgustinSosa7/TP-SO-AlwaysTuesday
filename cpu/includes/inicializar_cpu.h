@@ -12,6 +12,7 @@ void inicializar_logs();
 void iniciar_config(char* path);
 void imprimir_config();
 void inicializar_estructuras();
+void inicializar_semaforos();
 
 #endif
 

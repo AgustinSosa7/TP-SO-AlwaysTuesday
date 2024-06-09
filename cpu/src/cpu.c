@@ -34,7 +34,11 @@ int main(int argc, char** argv){
     //Atender los mensajes de Kernel - Dispatch
     pthread_t hilo_kernel_dispatch;
     pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
-    pthread_detach(hilo_kernel_dispatch);    
+    pthread_detach(hilo_kernel_dispatch);  
+
+    pthread_t hilo_ciclo_instruccion;
+    pthread_create(&hilo_ciclo_instruccion, NULL, (void*)ciclo_instruccion, NULL);
+    pthread_detach(hilo_ciclo_instruccion);  
 
     //Atender los mensajes de Kernel - Interrupt
     pthread_t hilo_kernel_interrupt;

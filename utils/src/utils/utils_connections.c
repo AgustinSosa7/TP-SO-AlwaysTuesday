@@ -323,10 +323,12 @@ void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
 t_pcb* recibir_pcb(t_paquete* paquete){
 	void* buffer = paquete->buffer;
 	t_pcb* pcb = malloc(sizeof(t_pcb));
-	leer_algo_del_stream(buffer, &(pcb->pid), sizeof(int));
-	leer_algo_del_stream(buffer,&(pcb->quantum),sizeof(int));
+	
+	pcb->pid= leer_algo_del_stream(buffer,sizeof(int));
+	printf("pid que llego en cpu");
+	pcb->quantum =leer_algo_del_stream(buffer,sizeof(int));
 	leer_registros_del_stream(buffer, pcb->registros_cpu);
-	leer_algo_del_stream(buffer,&(pcb->estado_pcb),sizeof(pcb->estado_pcb));
+	pcb->estado_pcb= leer_algo_del_stream(buffer,sizeof(pcb->estado_pcb));
 	return pcb; 
 }
 
@@ -344,7 +346,7 @@ log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
 log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
 log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
 log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
-log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
+log_info(un_logger,"PCB Estado: %d",pcb->estado_pcb);
 }
 
 char* enum_a_string(estado_pcb estado){
@@ -435,9 +437,9 @@ t_paquete* recibir_paquete(int unSocket)
 }
 
 
-void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio) 
-{
-	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
+void* leer_algo_del_stream(t_buffer* buffer, int tamanio) 
+{	void* valor;
+	memcpy(valor, buffer->stream + buffer->offset, tamanio);
 	buffer->offset += tamanio;
 	return valor;
 }
@@ -445,7 +447,7 @@ void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio)
 char* leer_string_del_stream(t_buffer* buffer) 
 {
 	int tamanio_string;
-	leer_algo_del_stream(buffer, &tamanio_string,sizeof(tamanio_string));
+	 tamanio_string=leer_algo_del_stream(buffer,sizeof(tamanio_string));
 
 	char *string = malloc(tamanio_string);
 	
@@ -456,16 +458,14 @@ char* leer_string_del_stream(t_buffer* buffer)
 }
 
 void leer_registros_del_stream(void* stream, t_registros_cpu* registros_CPU){
-	leer_algo_del_stream(stream,&registros_CPU->PC,sizeof(registros_CPU->PC));
-	leer_algo_del_stream(stream,&registros_CPU->AX,sizeof(registros_CPU->AX));
-	leer_algo_del_stream(stream,&registros_CPU->BX,sizeof(registros_CPU->BX));
-	leer_algo_del_stream(stream,&registros_CPU->CX,sizeof(registros_CPU->CX));
-	leer_algo_del_stream(stream,&registros_CPU->DX,sizeof(registros_CPU->DX));
-	leer_algo_del_stream(stream,&registros_CPU->EAX,sizeof(registros_CPU->EAX));
-	leer_algo_del_stream(stream,&registros_CPU->EBX,sizeof(registros_CPU->EBX));
-	leer_algo_del_stream(stream,&registros_CPU->ECX,sizeof(registros_CPU->ECX));
-	leer_algo_del_stream(stream,&registros_CPU->EDX,sizeof(registros_CPU->EDX));
-	leer_algo_del_stream(stream,&registros_CPU->SI,sizeof(registros_CPU->SI));
-	leer_algo_del_stream(stream,&registros_CPU->DI,sizeof(registros_CPU->DI));
-}
-
+	registros_CPU->PC=leer_algo_del_stream(stream,sizeof(registros_CPU->PC));
+	registros_CPU->AX=leer_algo_del_stream(stream,sizeof(registros_CPU->AX));
+	registros_CPU->BX=leer_algo_del_stream(stream,sizeof(registros_CPU->BX));
+	registros_CPU->CX=leer_algo_del_stream(stream,sizeof(registros_CPU->CX));
+	registros_CPU->DX=leer_algo_del_stream(stream,sizeof(registros_CPU->DX));
+	registros_CPU->EAX=leer_algo_del_stream(stream,sizeof(registros_CPU->EAX));
+	registros_CPU->EBX=leer_algo_del_stream(stream,sizeof(registros_CPU->EBX));
+	registros_CPU->ECX=leer_algo_del_stream(stream,sizeof(registros_CPU->ECX));
+	registros_CPU->EDX=leer_algo_del_stream(stream,sizeof(registros_CPU->EDX));
+	registros_CPU->SI=leer_algo_del_stream(stream,sizeof(registros_CPU->SI));
+	registros_CPU->DI=leer_algo_del_stream(stream,sizeof(registros_CPU->DI));

@@ -5,6 +5,9 @@ t_log* cpu_log_debug;
 t_config* cpu_config;
 
 t_pcb *pcb_global;
+////////////////////////////////////SEMAFOROS /////////////////////////////////
+sem_t sem_ciclo_de_instruccion;
+
 char ** opcode_cpu;
 
 int fd_cpu_dispatch;

@@ -19,7 +19,7 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
     void* stream = paquete->buffer->stream;
 
     if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-        leer_algo_del_stream(stream, &parametros->tiempo_espera,sizeof(parametros->tiempo_espera));
+         parametros->tiempo_espera=leer_algo_del_stream(stream,sizeof(parametros->tiempo_espera));
         return parametros;
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
@@ -96,7 +96,7 @@ void enviar_proceso_a_exit(t_pcb* un_pcb){
       un_pcb->estado_pcb = EXIT;
 
       pthread_mutex_lock(&mutex_exit);
-      queue_push(cola_exit,un_pcb);
+      list_add(lista_exit,un_pcb);
       pthread_mutex_unlock(&mutex_exit);
 
       log_info(kernel_logger, "Finaliza el proceso <%d> - Motivo: <INVALID_INTERFACE>", un_pcb->pid);

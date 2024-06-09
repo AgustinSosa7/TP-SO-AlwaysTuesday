@@ -6,6 +6,9 @@ void atender_interrupciones(){
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
+        pthread_mutex_lock(&mutex_flag_interrupcion);
+        flag_hay_interrupcion = false;
+        pthread_mutex_unlock(&mutex_flag_interrupcion);
         
 		switch (cod_op) {
             case INTERRUPCION_FIN_QUANTUM:

@@ -49,7 +49,7 @@ t_proceso* crear_proceso_nuevo(){
     if(code_op == CREAR_PROCESO)
     {
         //zint pid;
-        int pid = leer_algo_del_stream(buffer, &pid,sizeof(pid)); //cambiar a leer algo del buffer
+        int pid = leer_algo_del_stream(buffer,sizeof(pid)); //cambiar a leer algo del buffer
         char* direccion_pseudocodigo = leer_string_del_stream(buffer);
         procesoNuevo->pid = pid;
         procesoNuevo->direccion_pseudocodigo = direccion_pseudocodigo;
@@ -80,8 +80,8 @@ t_pedido* recibir_instruccion_a_enviar(){
     t_paquete* paquete = recibir_paquete(fd_cpu);
     t_buffer* buffer = paquete->buffer;
     t_pedido* pedido = malloc(sizeof(t_pedido*));
-    pedido->pid = leer_algo_del_stream(buffer, &pedido->pid,sizeof(pedido->pid));
-    pedido->pc = leer_algo_del_stream(buffer, &pedido->pc,sizeof(pedido->pc));
+    pedido->pid = leer_algo_del_stream(buffer,sizeof(pedido->pid));
+    pedido->pc = leer_algo_del_stream(buffer,sizeof(pedido->pc));
     printf("PID: %d\n",pedido->pid);
     printf("PROGRAM_COUNTER: %d\n",pedido->pc);
 
