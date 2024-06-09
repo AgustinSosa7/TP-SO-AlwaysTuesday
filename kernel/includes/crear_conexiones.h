@@ -4,22 +4,12 @@
 #include "k_gestor.h"
 #include "kernel_entradaSalida.h"
 
-// t_list* INSTRUCCIONES_GEN;
-// t_list* INSTRUCCIONES_STDIN;
-// t_list* INSTRUCCIONES_STDOUT;
-// t_list* INSTRUCCIONES_FS;
-// t_list* IOS_CONECTADOS;
-
-
-// extern t_list* INSTRUCCIONES_GEN;
-// extern t_list* INSTRUCCIONES_STDIN;
-// extern t_list* INSTRUCCIONES_STDOUT;
-// extern t_list* INSTRUCCIONES_FS;
-// extern t_list* IOS_CONECTADOS;
 
  void conexion_kernel_memoria();
  void conexion_kernel_cpu_dispatch();
+ void crear_conexion_kernel_cpu_dispatch();
  void conexion_kernel_cpu_interrupt();
+ void crear_conexion_kernel_cpu_interrupt();
  void conexion_kernel_entradaSalida();
 
 void gestionar_entrada_salida();
