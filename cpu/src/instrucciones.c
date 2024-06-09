@@ -30,16 +30,43 @@ void comparacion_de_strings(){
 			contexto->proceso_ip ++;
 		}
 
-	}else if(strcmp(instruccion_a_ejecutar[0], "SLEEP") == 0){// [SLEEP][tiempo]
-		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[1]);
-		contexto->proceso_ip = contexto->proceso_ip + 1;
+	}else if(strcmp(instruccion_a_ejecutar[0], "IO_GEN_SLEEP") == 0){// [IO_GEN_SLEEP][INTERFAZ][Tiempo]
+		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2]);
+		contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
 
-		//Enviar al KERNEL: [contexto]["SLEEP"][Tiempo]
-		mochila = crear_super_paquete(100);
-		cargar_string_al_super_paquete(mochila, instruccion_split[0]); // instruccion_split[0]: instruccion
-		cargar_int_al_super_paquete(mochila, atoi(instruccion_split[1])); //otros perametros necesarios, en este caso el tiempo
+		//Enviar al KERNEL: [PEDIDO_IO][SLEEP][INTERFAZ][Tiempo]
+		t_paquete* paquete = crear_paquete(PEDIDO_IO);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1])
+		agregar_algo_al_paquete(paquete, instruccion_a_ejecutar[2], sizeof(int));
 
-		hay_que_desalojar = true;
+		hay_que_desalojar = true; //tampoco se para que se haria
+
+	}else if(strcmp(instruccion_a_ejecutar[0], "IO_STDOUT_READ") == 0){// [IO_STDOUT_READ][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2], instruccion_a_ejecutar[3]);
+		contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+
+		//Enviar al KERNEL: [PEDIDO_IO][IO_STDOUT_READ][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		t_paquete* paquete = crear_paquete(PEDIDO_IO);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[2]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[3]);		
+
+		hay_que_desalojar = true; //tampoco se para que se haria
+
+	}else if(strcmp(instruccion_a_ejecutar[0], "IO_STDOUT_WRITE") == 0){// [IO_STDOUT_WRITE][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2], instruccion_a_ejecutar[3]);
+		contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+
+		//Enviar al KERNEL: [PEDIDO_IO][IO_STDOUT_WRITE][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		t_paquete* paquete = crear_paquete(PEDIDO_IO);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[2]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[3]);
+
+		hay_que_desalojar = true; //tampoco se para que se haria
 
 	}
 

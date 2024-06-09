@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include "../utils/src/utils/utils_connections.h"
 #include <../src/utils/utils_connections.h>
 
 #include <commons/log.h>

@@ -1,6 +1,8 @@
 # include "../includes/cpu_kernel_interrupt.h"
 
 void atender_interrupciones(){
+    log_info(cpu_logger, "Atendiendo a INTERRUPT...");
+
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_interrupt);

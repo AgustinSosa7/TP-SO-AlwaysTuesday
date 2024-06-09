@@ -49,31 +49,32 @@ t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){
       char* nombre_io = peticion->interfaz;
       char* instruccion = peticion->instruccion;
 
-    t_interfaz* interfaz = existe_la_interfaz(nombre_io, pcb); 
-    if(interfaz->esta_conectada){
-        validar_interfaz_admite_instruccion(interfaz, instruccion, pcb); 
-    }else{
-      //enviar_proceso_blocked_a_exit(interfaz->cola_procesos_blocked);
-
-      log_error(kernel_logger,"La interfaz %s no se encuentra conectada. Proceso enviado a EXIT.\n", interfaz->nombre);
-      //matar al hilo en el que me encuentro?
+      t_interfaz* interfaz = existe_la_interfaz(nombre_io); 
+      if (interfaz == NULL) {
+            enviar_proceso_a_exit(pcb);
+            log_error(kernel_logger, "No se ha encontrado la interfaz: %s.\n", nombre_io);
+            return NULL;
+      } else if(!(interfaz->esta_conectada)){
+            enviar_proceso_a_exit(pcb);
+            log_error(kernel_logger,"La interfaz %s no se encuentra conectada.\n", interfaz->nombre);
+            return NULL;
+      } else if(!(validar_interfaz_admite_instruccion(interfaz, instruccion))){
+            enviar_proceso_a_exit(pcb);
+            log_info(kernel_logger, "La interfaz %s no admite la instruccion %s.", interfaz->nombre, instruccion);
+            return NULL;
+      } else{
+            return interfaz;
     }
-    return interfaz;
-    }
+} 
 
 
-t_interfaz* existe_la_interfaz(char* nombre_io, t_pcb* pcb) {
+t_interfaz* existe_la_interfaz(char* nombre_io) {
+
     bool esta_la_io(void* io) {
       return esta_o_no(nombre_io, io);
     }
-    t_interfaz* interfaz = list_find(IOS_CONECTADOS, esta_la_io); 
-    if (interfaz != NULL) {
-        return interfaz;
-    } else {
-        log_error(kernel_logger, "No se ha encontrado la interfaz: %s. Proceso enviado a EXIT.\n", nombre_io);
-        cambiar_estado(pcb, EXIT);
-        return NULL; // Opcional: devuelve NULL para indicar que la interfaz no fue encontrada
-    }
+
+    return (list_find(IOS_CONECTADOS, esta_la_io)); 
 }   
 
 
@@ -82,18 +83,31 @@ bool esta_o_no(char* nombre_io, t_interfaz* io){
 }
 
 
-void validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion, t_pcb* un_pcb){
-      if(contains_string(interfaz->instrucciones_posibles, instruccion)){
-
-      }else{
-      //enviar_proceso_blocked_a_exit(interfaz->cola_procesos_blocked);
-            //matar al hilo en el que me encuentro?
-      }
+bool validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion){
+      return (contains_string(interfaz->instrucciones_posibles, instruccion));
 }
 
 
+void enviar_proceso_a_exit(t_pcb* un_pcb){
+
+      int estado_anterior = un_pcb->estado_pcb;
+
+      cambiar_estado(un_pcb,EXIT);
+      un_pcb->estado_pcb = EXIT;
+
+      pthread_mutex_lock(&mutex_exit);
+      queue_push(cola_exit,un_pcb);
+      pthread_mutex_unlock(&mutex_exit);
+
+      log_info(kernel_logger, "Finaliza el proceso <%d> - Motivo: <INVALID_INTERFACE>", un_pcb->pid);
+      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
+
+      // LIBERAR ESTRUCTURAS EN MEMORIA
+}
+
 void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
-{
+{   
+    estado_pcb estado_anterior = peticion_pcb_interfaz->un_pcb->estado_pcb;
     peticion_pcb_interfaz->un_pcb->estado_pcb = BLOCKED;
 
     t_proceso_blocked* proceso_blocked = malloc(sizeof(t_proceso_blocked));
@@ -106,6 +120,9 @@ void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
 
     sem_post(&(peticion_pcb_interfaz->interfaz->semaforo_cola_procesos_blocked));
 
+    log_info(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior), enum_a_string(proceso_blocked->un_pcb->estado_pcb));
+    log_info(kernel_logger, "Motivo de Bloqueo: PID: <%d> - Bloqueado por: <%s>", proceso_blocked->un_pcb->pid, peticion_pcb_interfaz->interfaz->nombre);
+
     eliminar_peticion(peticion_pcb_interfaz->peticion);
 }
 
@@ -113,39 +130,70 @@ void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
 void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion);
-      //agregar_algo_a_paquete(paquete, proceso_blocked->peticion->parametros,sizeof(proceso_blocked->peticion->parametros)); //revisar si hay que enviar parametro por parametro
+      agregar_parametros_a_paquete(paquete, proceso_blocked->peticion); 
+
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
       int err = send(fd_entradasalida, a_enviar, bytes, SIGPIPE); 
       if(err == -1){
         close(interfaz->fd_interfaz);
         interfaz->esta_conectada = false;
-        // enviar a todos los procesos que tiene bloqueado a exit 
-        //enviar_proceso_blocked_a_exit(interfaz->cola_procesos_blocked);
-        //matar al hilo en el que me encuentro?
+        enviar_procesos_blocked_a_exit(interfaz->cola_procesos_blocked);
     }
 	free(a_enviar);
       eliminar_paquete(paquete);
 } 
 
-//void enviar_proceso_blocked_a_exit(t_queue* cola_procesos_blocked){
-//      pthread_mutex_lock(interfaz->mutex_cola_blocked);
-//      t_pcb* un_pcb = queue_pop(cola_procesos_blocked);    
-//      pthread_mutex_unlock(interfaz->mutex_cola_blocked);
-//
-//      int estado_anterior = un_pcb->estado_pcb;
-//
-//      cambiar_estado(un_pcb,EXIT);
-//      un_pcb->estado_pcb = EXIT;
-//
-//      pthread_mutex_lock(mutex_exit);
-//      queue_push(cola_exit,un_pcb);
-//      pthread_mutex_unlock(mutex_exit);
-//      
-//      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
-//
-//      // LIBERAR ESTRUCTURAS EN MEMORIA
-//}
+void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
+      char* instruccion = peticion->instruccion;
+      t_peticion_param* parametros = peticion->parametros;
+
+            if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
+            agregar_algo_a_paquete(paquete, &(parametros->tiempo_espera), sizeof(int));
+
+      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
+      {     agregar_string_a_paquete(paquete, parametros->registroDireccion);
+            agregar_string_a_paquete(paquete, parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
+      {     agregar_string_a_paquete(paquete, parametros->registroDireccion);
+            agregar_string_a_paquete(paquete, parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      {     agregar_string_a_paquete(paquete, parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      {     agregar_string_a_paquete(paquete, parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      {     agregar_string_a_paquete(paquete, parametros->archivo);
+            agregar_string_a_paquete(paquete, parametros->registroTamanio); 
+
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
+      {     agregar_string_a_paquete(paquete, parametros->archivo);
+            agregar_string_a_paquete(paquete, parametros->registroDireccion);
+            agregar_string_a_paquete(paquete, parametros->registroTamanio);
+            agregar_string_a_paquete(paquete, parametros->registroPunteroArchivo);
+
+      }else //Es IO_FS_READ 
+      {     agregar_string_a_paquete(paquete, parametros->archivo);
+            agregar_string_a_paquete(paquete, parametros->registroDireccion);
+            agregar_string_a_paquete(paquete, parametros->registroTamanio);
+            agregar_string_a_paquete(paquete, parametros->registroPunteroArchivo);      
+      }       
+}
+
+
+
+void enviar_procesos_blocked_a_exit(t_queue* cola_procesos_blocked){
+      while(!(queue_is_empty(cola_procesos_blocked))){
+            t_proceso_blocked* proceso = queue_pop(cola_procesos_blocked);
+            enviar_proceso_a_exit(proceso->un_pcb);
+            eliminar_peticion(proceso->peticion);
+            free(proceso);
+      }
+}
+
 
 void recibir_fin_peticion(t_interfaz* interfaz){
     bool fin_peticion;
@@ -159,22 +207,20 @@ void recibir_fin_peticion(t_interfaz* interfaz){
 }
 
 
-
 void desbloquear_proceso(t_interfaz* interfaz){
-    pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
-    t_pcb* un_pcb = queue_pop(interfaz->cola_procesos_blocked);    
-    pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
+      
+     pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
+     t_pcb* un_pcb = queue_pop(interfaz->cola_procesos_blocked);    
+     pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
-      estado_pcb estado_anterior = un_pcb->estado_pcb;
+     estado_pcb estado_anterior = un_pcb->estado_pcb;
 
      if(tiempo_transcurrido < un_pcb->quantum){
        enviar_proceso_blocked_a_ready_plus(un_pcb);
-    } else{
-      enviar_proceso_blocked_a_ready(un_pcb);
-
-    }
+     } else{
+       enviar_proceso_blocked_a_ready(un_pcb);
+     }
       log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
-
 }
 
 void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
