@@ -145,8 +145,49 @@ switch (identificador_instruccion(instruccion[0]))
 
     break;
 
-    case IO_GEN_SLEEP:
+    case IO_GEN_SLEEP: // [IO_GEN_SLEEP][INTERFAZ][Tiempo]
+		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2]);
+		//contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+
+		//Enviar al KERNEL: [PEDIDO_IO][SLEEP][INTERFAZ][Tiempo]
+		t_paquete* paquete = crear_paquete(PEDIDO_IO);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1])
+		agregar_algo_al_paquete(paquete, instruccion_a_ejecutar[2], sizeof(int));
+
+		//hay_que_desalojar = true; //tampoco se para que se haria
     
+    break;
+
+    case IO_STDIN_READ:// [IO_STDOUT_READ][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2], instruccion_a_ejecutar[3]);
+		//contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+
+		//Enviar al KERNEL: [PEDIDO_IO][IO_STDOUT_READ][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		t_paquete* paquete = crear_paquete(PEDIDO_IO);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[2]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[3]);		
+
+		//hay_que_desalojar = true; //tampoco se para que se haria
+
+    break;
+
+    case IO_STDOUT_WRITE: / [IO_STDOUT_WRITE][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2], instruccion_a_ejecutar[3]);
+		// contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+
+		//Enviar al KERNEL: [PEDIDO_IO][IO_STDOUT_WRITE][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		t_paquete* paquete = crear_paquete(PEDIDO_IO);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[2]);
+		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[3]);
+
+		// hay_que_desalojar = true; //tampoco se para que se haria
+
+
     break;
 
 default:
