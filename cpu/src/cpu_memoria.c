@@ -22,8 +22,8 @@ void atender_cpu_memoria(){
 
 void pedir_instruccion_pseudocodigo(int pid,int pc){
     t_paquete* paquete = crear_paquete(PEDIDO_PSEUDOCODIGO);
-    agregar_algo_a_paquete(paquete,pid,sizeof(pid));
-    agregar_algo_a_paquete(paquete,pc,sizeof(pc));
+    agregar_algo_a_paquete(paquete,&pid,sizeof(pid));
+    agregar_algo_a_paquete(paquete,&pc,sizeof(pc));
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
 }

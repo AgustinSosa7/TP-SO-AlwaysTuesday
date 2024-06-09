@@ -307,74 +307,6 @@ agregar_algo_a_paquete(paquete,&(registros_cpu->SI),sizeof(registros_cpu->SI));
 agregar_algo_a_paquete(paquete,&(registros_cpu->DI),sizeof(registros_cpu->DI));
 }
 
-/////////////////////// PCB /////////////////////////
-
-
-void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
-	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
-	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
-  	agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->quantum));
-  	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
-	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
-	enviar_paquete(un_paquete, socket);
-	eliminar_paquete(un_paquete);
-}
-
-t_pcb* recibir_pcb(t_paquete* paquete){
-	void* buffer = paquete->buffer;
-	t_pcb* pcb = malloc(sizeof(t_pcb));
-	
-	pcb->pid= leer_algo_del_stream(buffer,sizeof(int));
-	printf("pid que llego en cpu");
-	pcb->quantum =leer_algo_del_stream(buffer,sizeof(int));
-	leer_registros_del_stream(buffer, pcb->registros_cpu);
-	pcb->estado_pcb= leer_algo_del_stream(buffer,sizeof(pcb->estado_pcb));
-	return pcb; 
-}
-
-void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
-log_info(un_logger,"PCB Pid %d", pcb->pid);
-log_info(un_logger,"PCB Quantum %d",pcb->quantum);	
-log_info(un_logger,"PCB PC: %d ", pcb->registros_cpu->PC);
-log_info(un_logger,"PCB AX: %d ", pcb->registros_cpu->AX);
-log_info(un_logger,"PCB BX: %d ", pcb->registros_cpu->BX);
-log_info(un_logger,"PCB CX: %d ", pcb->registros_cpu->CX);
-log_info(un_logger,"PCB DX: %d ", pcb->registros_cpu->DX);
-log_info(un_logger,"PCB EAX: %d ", pcb->registros_cpu->EAX);
-log_info(un_logger,"PCB EBX: %d ", pcb->registros_cpu->EBX);
-log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
-log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
-log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
-log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
-log_info(un_logger,"PCB Estado: %d",pcb->estado_pcb);
-}
-
-char* enum_a_string(estado_pcb estado){
-    switch (estado)
-    {
-      case NEW:
-        return "NEW";
-        break;
-        case READY:
-        return "READY";
-        break;
-      case EXEC:
-        return "EXEC";
-        break;
-      case EXIT:
-        return "EXIT";
-        break;
-      case BLOCKED:
-        return "BLOCKED";
-        break;
-	  case READYPLUS:
-        return "READYPLUS";
-        break;
-	  default:
-	  	break;
-	}
-}
-    
 ////////////////////// DESERIALIZACION //////////////
 void* recibir_mensaje(int socket_cliente)
 {	
@@ -437,9 +369,35 @@ t_paquete* recibir_paquete(int unSocket)
 }
 
 
-void* leer_algo_del_stream(t_buffer* buffer, int tamanio) 
-{	void* valor;
-	memcpy(valor, buffer->stream + buffer->offset, tamanio);
+//void* leer_algo_del_stream(t_buffer* buffer, int tamanio) 
+//{	
+//	void* valor = malloc(sizeof(void));
+//	memcpy(valor, buffer->stream + buffer->offset, tamanio);
+//	buffer->offset += tamanio;
+//	return valor;
+//}
+
+int leer_int_del_buffer(t_buffer* buffer) 
+{	
+	int valor;
+	int tamanio = sizeof(int);
+	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
+	buffer->offset += tamanio;
+	return valor;
+}
+uint8_t leer_uint_8_del_buffer(t_buffer* buffer) 
+{	
+	int valor;
+	int tamanio = sizeof(uint8_t);
+	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
+	buffer->offset += tamanio;
+	return valor;
+}
+uint32_t leer_uint_32_del_buffer(t_buffer* buffer) 
+{	
+	int valor;
+	int tamanio = sizeof(uint32_t);
+	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
 	buffer->offset += tamanio;
 	return valor;
 }
@@ -447,7 +405,7 @@ void* leer_algo_del_stream(t_buffer* buffer, int tamanio)
 char* leer_string_del_stream(t_buffer* buffer) 
 {
 	int tamanio_string;
-	 tamanio_string=leer_algo_del_stream(buffer,sizeof(tamanio_string));
+	 tamanio_string=leer_int_del_buffer(buffer);
 
 	char *string = malloc(tamanio_string);
 	
@@ -457,15 +415,84 @@ char* leer_string_del_stream(t_buffer* buffer)
 	return string;
 }
 
-void leer_registros_del_stream(void* stream, t_registros_cpu* registros_CPU){
-	registros_CPU->PC=leer_algo_del_stream(stream,sizeof(registros_CPU->PC));
-	registros_CPU->AX=leer_algo_del_stream(stream,sizeof(registros_CPU->AX));
-	registros_CPU->BX=leer_algo_del_stream(stream,sizeof(registros_CPU->BX));
-	registros_CPU->CX=leer_algo_del_stream(stream,sizeof(registros_CPU->CX));
-	registros_CPU->DX=leer_algo_del_stream(stream,sizeof(registros_CPU->DX));
-	registros_CPU->EAX=leer_algo_del_stream(stream,sizeof(registros_CPU->EAX));
-	registros_CPU->EBX=leer_algo_del_stream(stream,sizeof(registros_CPU->EBX));
-	registros_CPU->ECX=leer_algo_del_stream(stream,sizeof(registros_CPU->ECX));
-	registros_CPU->EDX=leer_algo_del_stream(stream,sizeof(registros_CPU->EDX));
-	registros_CPU->SI=leer_algo_del_stream(stream,sizeof(registros_CPU->SI));
-	registros_CPU->DI=leer_algo_del_stream(stream,sizeof(registros_CPU->DI));
+void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU){
+	registros_CPU->PC=leer_uint_32_del_buffer(buffer);
+	registros_CPU->AX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->BX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->CX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->DX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->EAX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->EBX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->ECX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->EDX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->SI=leer_uint_32_del_buffer(buffer);
+	registros_CPU->DI=leer_uint_32_del_buffer(buffer);
+}
+
+
+/////////////////////// PCB /////////////////////////
+
+
+void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
+	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
+	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
+  	agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->quantum));
+  	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
+	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
+	enviar_paquete(un_paquete, socket);
+	eliminar_paquete(un_paquete);
+}
+
+t_pcb* recibir_pcb(t_paquete* paquete){
+	void* buffer = paquete->buffer;
+	t_pcb* pcb = malloc(sizeof(t_pcb));
+	
+	pcb->pid= leer_int_del_buffer(buffer);
+	printf("pid que llego en cpu");
+	pcb->quantum =leer_int_del_buffer(buffer);
+	leer_registros_del_buffer(buffer, pcb->registros_cpu);
+	pcb->estado_pcb= leer_int_del_buffer(buffer);
+	return pcb; 
+}
+
+void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
+log_info(un_logger,"PCB Pid %d", pcb->pid);
+log_info(un_logger,"PCB Quantum %d",pcb->quantum);	
+log_info(un_logger,"PCB PC: %d ", pcb->registros_cpu->PC);
+log_info(un_logger,"PCB AX: %d ", pcb->registros_cpu->AX);
+log_info(un_logger,"PCB BX: %d ", pcb->registros_cpu->BX);
+log_info(un_logger,"PCB CX: %d ", pcb->registros_cpu->CX);
+log_info(un_logger,"PCB DX: %d ", pcb->registros_cpu->DX);
+log_info(un_logger,"PCB EAX: %d ", pcb->registros_cpu->EAX);
+log_info(un_logger,"PCB EBX: %d ", pcb->registros_cpu->EBX);
+log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
+log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
+log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
+log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
+log_info(un_logger,"PCB Estado: %d",pcb->estado_pcb);
+}
+
+char* enum_a_string(estado_pcb estado){
+    switch (estado)
+    {
+      case NEW:
+        return "NEW";
+        break;
+        case READY:
+        return "READY";
+        break;
+      case EXEC:
+        return "EXEC";
+        break;
+      case EXIT:
+        return "EXIT";
+        break;
+      case BLOCKED:
+        return "BLOCKED";
+        break;
+	  default: // READYPLUS
+        return "READYPLUS";
+	  	break;
+	}
+}
+    

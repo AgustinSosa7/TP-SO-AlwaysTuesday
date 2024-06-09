@@ -19,7 +19,7 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
     void* stream = paquete->buffer->stream;
 
     if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-         parametros->tiempo_espera=leer_algo_del_stream(stream,sizeof(parametros->tiempo_espera));
+         parametros->tiempo_espera=leer_int_del_buffer(stream);
         return parametros;
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
