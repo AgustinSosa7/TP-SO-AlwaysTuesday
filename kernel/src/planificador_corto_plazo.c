@@ -7,6 +7,7 @@ void planif_corto_plazo()
 {
     while(1){
         sem_wait(&sem_planificador_corto_plazo);
+        printf("entro al plani corto plazo");
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch (algoritmo)
             {
@@ -27,15 +28,16 @@ void planif_corto_plazo()
 
 void planif_fifo_RR()
 {
-
-    if(!queue_is_empty(cola_ready)){
+    printf("estamos en fifo");
+    if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
 
-            t_pcb* un_pcb = queue_pop(cola_ready);
+            t_pcb* un_pcb = list_remove(lista_ready,0);
             cambiar_estado(un_pcb, EXEC);
-            
-            enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
+            log_info(kernel_logger,"PID: < %d > - Estado Anterior: < READY > - Estado Actual: <EXEC >", un_pcb->pid);
 
+            enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
+            //signal a ciclo de instruccion
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
                 pthread_t hilo_quantum;
                 pthread_create(&hilo_quantum, NULL, (void*)gestionar_quantum, un_pcb);
@@ -52,6 +54,9 @@ void gestionar_quantum(t_pcb* un_pcb){
     usleep(un_pcb->quantum*1000);
         if(contains_algo(lista_exec, &(un_pcb->pid))){ 
         enviar_interrupción_a_cpu(INTERRUPCION_FIN_QUANTUM); 
+        pthread_mutex_lock(&mutex_flag_interrupcion);
+        flag_hay_interrupcion = true;
+        pthread_mutex_unlock(&mutex_flag_interrupcion);
         un_pcb->quantum = QUANTUM;
 
     }
@@ -60,10 +65,10 @@ void gestionar_quantum(t_pcb* un_pcb){
 // VRR
   void planif_VRR(){
     t_pcb* un_pcb;
-    if(!queue_is_empty(cola_ready_plus)){
-        un_pcb = queue_pop(cola_ready_plus); 
-    } else if(!queue_is_empty(cola_ready)){
-        un_pcb = queue_pop(cola_ready);
+    if(!list_is_empty(lista_ready_plus)){
+        un_pcb = list_remove(lista_ready_plus,0); 
+    } else if(!list_is_empty(lista_ready)){
+        un_pcb = list_remove(lista_ready,0);
     }
     cambiar_estado(un_pcb,EXEC);
     enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);

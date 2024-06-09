@@ -8,11 +8,11 @@ t_list* IOS_CONECTADOS;
 
 t_list* lista_instrucciones;
 
- t_queue* cola_new;
- t_queue* cola_ready;
- t_queue* cola_ready_plus;
- t_list* lista_exec;
- t_queue* cola_exit;
+t_list* lista_new;
+t_list* lista_ready;
+t_list* lista_ready_plus;
+t_list* lista_exec;
+t_list* lista_exit;
 ////////////////SEMAFOROS/////////////////////////////////////////
 pthread_mutex_t mutex_pid;
 pthread_mutex_t mutex_new;

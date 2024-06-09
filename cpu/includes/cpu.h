@@ -11,7 +11,7 @@
 
 //Estructuras
 
-
+pthread_t hilo_kernel_interrupt;
 
 
 t_log* cpu_logger;

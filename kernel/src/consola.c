@@ -3,7 +3,7 @@
 void iniciar_consola(){
 	lista_instrucciones = list_create();
 	agregar_instruccion(lista_instrucciones,EJECUTAR_SCRIPT,1,"EJECUTAR_SCRIPT");
-	agregar_instruccion(lista_instrucciones,INICIAR_PROCESO,1,"INICIAR_PROCESO");
+	agregar_instruccion(lista_instrucciones,INICIAR_PROCESO,0,"INICIAR_PROCESO");
 	agregar_instruccion(lista_instrucciones,FINALIZAR_PROCESO,1,"FINALIZAR_PROCESO");
 	agregar_instruccion(lista_instrucciones,DETENER_PLANIFICACION,0,"DETENER_PLANIFICACION");
 	agregar_instruccion(lista_instrucciones,INICIAR_PLANIFICACION,0,"INICIAR_PLANIFICACION");
@@ -33,10 +33,10 @@ void leer_comandos(){
     char* leido;
 	leido = readline("> ");
 	while(strcmp(leido,"\0") != 0){
-		/*if(validar_instruccion(leido)){
+		if(validar_instruccion(leido)){
 			printf("Comando válido\n");
 			atender_instruccion_validada(leido);
-		}*/
+		}
 
 		free(leido);
 		leido = readline("> ");
@@ -46,37 +46,54 @@ void leer_comandos(){
 
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
-	int size = string_array_size(array_leido);
-	char* tamanio_en_string = string_itoa(size);
-	t_list_iterator* lista = list_iterator_create(lista_instrucciones);
-	while(list_iterator_has_next(lista))
-	{
-        t_instruccion* instruccion = malloc(sizeof(t_instruccion));
-		instruccion = list_iterator_next(lista);
-		if(strcmp(array_leido[0],instruccion->nombre)!=0){
-			log_error(kernel_logger,"No se pudo reconocer el comando");
-            exit(EXIT_FAILURE);
-		} else if(strcmp(tamanio_en_string, array_leido[1])!=0){
-			log_error(kernel_logger,"No coincide la cantidad de parametros");
-            exit(EXIT_FAILURE);
-		} 
-	}
-	return true;
+	int size_parametros = string_array_size(array_leido) - 1;
+	return (validar_nombre_y_parametros(array_leido[0],size_parametros));
+
+
+}
+
+bool validar_nombre_y_parametros(char* nombre_instruccion,int cant_parametros) {
+
+    bool esta_la_instruccion(void* instruccion) {
+      return esta_o_noo(nombre_instruccion, cant_parametros, instruccion);
+    }
+
+    return (list_any_satisfy(lista_instrucciones, esta_la_instruccion)); 
 }
 
 
+bool esta_o_noo(char* nombre_instruccion, int cant_parametros, t_instruccion* instruccion){ 
+		printf("instrucciones posibles:%s \n",instruccion->nombre);
+        if(strcmp(nombre_instruccion, instruccion->nombre) == 0){  
+			printf("param posibles:%d \n",instruccion->cant_parametros);
+			printf("param recibidos:%d \n",cant_parametros);
+			return (instruccion->cant_parametros == cant_parametros);
+
+		} else return false; 
+}
+	
+
+
 void atender_instruccion_validada(char* leido){
-	//op_code_instruccion op_code_encontrado = encontrar_op_code(leido);
-	op_code_instruccion op_code_encontrado = 1;
+	char** array_leido = string_split(leido," ");
+	char* nombre_instruccion = array_leido[0];
+	bool encontrar_instruccion(void* instruccion){
+		return (estaa_o_no(instruccion, nombre_instruccion));
+	}
+	printf("voy a buscar la instruccion:\n");
+	t_instruccion* instruccion = list_find(lista_instrucciones,encontrar_instruccion);
+	op_code_instruccion op_code_encontrado = instruccion->op_code_instruccion;
+	printf("codigo encontrado: %d \n",op_code_encontrado);
 	switch (op_code_encontrado)
 	{
 	case EJECUTAR_SCRIPT:
-		
+		printf("hola");
 		break;
 	case INICIAR_PROCESO:
+		printf("entre a iniciar proceso");
 		t_pcb* nuevo_pcb = crearPcb();
 		pthread_mutex_lock(&mutex_new);
-		 queue_push(cola_new, nuevo_pcb);
+		list_add(lista_new, nuevo_pcb);
 		pthread_mutex_unlock(&mutex_new);	
 		log_info(kernel_logger,"Se crea el proceso < %d > en NEW",nuevo_pcb->pid);
 		sem_post(&sem_new_a_ready);
@@ -99,29 +116,12 @@ void atender_instruccion_validada(char* leido){
 
 }
 
-op_code_instruccion encontrar_op_code(char* leido){ 
-	op_code_instruccion op_code_instr;
-    char** array_leido = string_split(leido," ");
-	t_list_iterator* lista = list_iterator_create(lista_instrucciones);
-	while(list_iterator_has_next(lista)){
-        t_instruccion* instruccion = malloc(sizeof(t_instruccion));
-		instruccion = list_iterator_next(lista);
-		if(strcmp(array_leido[0],instruccion->nombre)==0){
-            op_code_instr = instruccion->op_code_instruccion;
-        }
-    }
-	return op_code_instr;
+bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
+	return (strcmp(instruccion->nombre,nombre_instruccion)==0);
 }
+
 
 
 // void proceso_estado(){
 // 	t_list* procesos_estado = list_create();
-
 // }
-
-// t_list* popear_elementos_de_la_queue(t_queue* cola){
-// 	//sacar size de la cola y hacer pop con un for
-// 	t_pcb elemento = queue_pop(cola);
-// 	list 
-// }
-

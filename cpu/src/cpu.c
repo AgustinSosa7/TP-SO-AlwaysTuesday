@@ -10,12 +10,12 @@ int main(int argc, char** argv){
 
     // Inicializar CPU
     inicializar_cpu(argv[1]);
-
+    
     // Conectarnos como cliente a MEMORIA
 
-    log_info(cpu_logger, "Creando conexion con MEMORIA...");
-    fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
-    gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
+    // log_info(cpu_logger, "Creando conexion con MEMORIA...");
+    // fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
+    // gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
 
     //printf("Guardo las nuevas variables?\n");
     //contexto_ejecucion->pid = 3;
@@ -38,18 +38,7 @@ int main(int argc, char** argv){
     fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL-INTERRUPT");
     gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger, "KERNEL-INTERRUPT");
     
-    
-    //Atender los mensajes de Kernel - Dispatch
-    pthread_t hilo_kernel_dispatch;
-    pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch,NULL);
-    pthread_detach(hilo_kernel_dispatch);
-    
-
-    //Atender los mensajes de Kernel - Interrupt
-    pthread_t hilo_kernel_interrupt;
-    pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_interrupciones,NULL);
-    pthread_join(hilo_kernel_interrupt, NULL);
-
+ 
     //Atender los mensajes de Memoria
    // pthread_t hilo_memoria;
    // pthread_create(&hilo_memoria, NULL, (void*)atender_cpu_memoria, NULL);

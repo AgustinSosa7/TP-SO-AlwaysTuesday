@@ -1,5 +1,8 @@
 #include "utils_connections.h"
+bool flag_hay_interrupcion;
 
+/////////SEMAFOROS////////
+pthread_mutex_t mutex_flag_interrupcion;
 // Funciones de Listas
 
 bool contains_string(t_list* lista, char* elemento){

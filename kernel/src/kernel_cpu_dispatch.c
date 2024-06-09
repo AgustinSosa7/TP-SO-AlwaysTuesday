@@ -17,9 +17,9 @@ void recibir_pcb_con_motivo()
             break;
       case PROCESO_EXIT:
            
+            //t_pcb* remover_pcb = list_remove(lista_exec,0);
+            cambiar_estado(pcb_recibido,EXIT);
             //decir a memoria que libere las estructuras
-            //cambiar de estado a exit 
-            //eliminar de la cola que estaba antes
             break;
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  

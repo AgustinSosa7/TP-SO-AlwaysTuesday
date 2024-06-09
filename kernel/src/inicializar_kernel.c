@@ -1,29 +1,12 @@
 #include <../includes/inicializar_kernel.h>
 
-//  t_queue* cola_new;
-//  t_queue* cola_ready;
-//  t_queue* cola_ready_plus;
-//  t_list* lista_exec;
-//  t_queue* cola_exit;
-// ////////////////SEMAFOROS/////////////////////////////////////////
-//  pthread_mutex_t* mutex_pid;
-//  pthread_mutex_t* mutex_new;
-//  pthread_mutex_t* mutex_ready;
-//  pthread_mutex_t* mutex_exec;
-//  pthread_mutex_t* mutex_ready_plus;
-//  pthread_mutex_t* mutex_exit;
-//  pthread_mutex_t* mutex_io;
-//  sem_t* sem_grado_multiprogram;
-//  sem_t* sem_new_a_ready;
-//  sem_t* sem_planificador_corto_plazo;
-
-
 void inicializar_kernel(char* path){
     inicializar_logs();
     inicializar_configs(path);
-	inicializar_listas_y_colas();
+	inicializar_listas();
 	inicializar_semaforos();
 	inicializar_pid();
+	flag_hay_interrupcion = false;
 }
 
 void inicializar_logs(void){
@@ -87,12 +70,12 @@ log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualment
 
 }
 
-void inicializar_listas_y_colas(void){
-	cola_new = queue_create();
-	cola_ready = queue_create();
-	cola_ready_plus = queue_create();
+void inicializar_listas(void){
+	lista_new = list_create();
+	lista_ready = list_create();
+	lista_ready_plus = list_create();
 	lista_exec = list_create();
-	cola_exit = queue_create();
+	lista_exit = list_create();
 	inicializar_listas_instrucciones();
 }
 
@@ -129,6 +112,7 @@ void inicializar_semaforos(){
 	pthread_mutex_init(&mutex_exec, NULL);
 	pthread_mutex_init(&mutex_ready_plus, NULL);
 	pthread_mutex_init(&mutex_exit, NULL);
+	pthread_mutex_init(&mutex_flag_interrupcion,NULL);
 	printf("listo las mutex_exit\n");
 }
 

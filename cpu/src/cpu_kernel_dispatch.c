@@ -40,4 +40,3 @@ void atender_cpu_kernel_dispatch(){
 
 }
 
-//enviar pcb

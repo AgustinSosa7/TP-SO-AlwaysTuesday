@@ -18,9 +18,16 @@ void ciclo_instruccion(){
     ejecucion_proceso(instruccion); // Podría hacerse dentro el decode
 
     //CHECK INTERRUPT
-    //verif del flag que modifico el kernel luego de mandar la interrupcion
-    }  // El Check I. debe estar en el while????
-    //atender interrupciones
+    if(flag_hay_interrupcion){
+        break;
+    }
+    } 
+    //Atender los mensajes de Kernel - Interrupt
+    pthread_create(&hilo_kernel_interrupt,NULL,(void*)atender_interrupciones,NULL);
+    pthread_detach(hilo_kernel_interrupt);
+    pthread_mutex_lock(&mutex_flag_interrupcion);
+    flag_hay_interrupcion = false;
+    pthread_mutex_unlock(&mutex_flag_interrupcion);
 }
 
 

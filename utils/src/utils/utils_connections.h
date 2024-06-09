@@ -99,6 +99,11 @@ typedef struct{
 
 extern t_log* logger;
 
+
+extern bool flag_hay_interrupcion;
+
+/////////SEMAFOROS////////
+extern pthread_mutex_t mutex_flag_interrupcion;
 // Funciones de Listas
 
 bool contains_string(t_list* lista, char* elemento);

@@ -26,8 +26,14 @@ void iniciar_consola();
 void agregar_instruccion(t_list* lista_instrucciones, op_code_instruccion op_code, int parametros,char* op_code_string);
 void leer_consola();
 void leer_comandos();
-//bool validar_instruccion(char* leido);
+bool validar_instruccion(char* leido);
 void atender_instruccion_validada(char* leido);
-//op_code_instruccion encontrar_op_code(char* leido);
+bool encontrar_instruccion(void* instruccion);
+bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion);
+bool validar_nombre_y_parametros(char* nombre_instruccion,int cant_parametros);
+bool esta_la_instruccion(void* instruccion) ;
+bool esta_o_noo(char* nombre_instruccion, int cant_parametros, t_instruccion* instruccion);
+
+
 
 #endif

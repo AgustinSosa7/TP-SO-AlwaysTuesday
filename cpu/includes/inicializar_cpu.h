@@ -6,7 +6,7 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-
+extern pthread_t hilo_kernel_interrupt;
 void inicializar_cpu(char* path);
 void inicializar_logs();
 void iniciar_config(char* path);

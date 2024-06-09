@@ -61,11 +61,11 @@ extern t_list* INSTRUCCIONES_FS;
 extern t_list* IOS_CONECTADOS;
 
 
-extern t_queue* cola_new;
-extern t_queue* cola_ready;
-extern t_queue* cola_ready_plus;
+extern t_list* lista_new;
+extern t_list* lista_ready;
+extern t_list* lista_ready_plus;
 extern t_list* lista_exec;
-extern t_queue* cola_exit;
+extern t_list* lista_exit;
 
 //////////////////////SEMAFOROS/////////////////////////////////////////
 

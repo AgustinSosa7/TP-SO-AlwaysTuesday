@@ -10,7 +10,7 @@
 #include <commons/config.h>
 
 // Variables GLOBALES
-
+extern pthread_t hilo_kernel_interrupt;
 typedef enum 
 {
     SET,
