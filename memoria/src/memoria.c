@@ -34,7 +34,8 @@ pthread_detach(hilo_generador_de_io);
 
 /////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
 
-list_add(procesos_memoria, crear_proceso_nuevo());
+t_proceso* proceso = crear_proceso_nuevo();
+list_add(procesos_memoria, proceso); 
 
 while(1){
 t_pedido* pedido = recibir_instruccion_a_enviar();
