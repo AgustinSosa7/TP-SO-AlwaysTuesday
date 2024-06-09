@@ -3,6 +3,7 @@
 
 
 void atender_cpu_kernel_dispatch(){
+    log_info(cpu_logger, "Atendiendo a DISPATCH...");
 
     bool control_key = 1;
     while (control_key) {
