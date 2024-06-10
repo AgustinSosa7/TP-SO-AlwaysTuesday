@@ -48,7 +48,10 @@ typedef enum
   CREAR_PROCESO,
   DESALOJO_QUANTUM,
   PROCESO_EXIT,
-  PEDIDO_IO
+  PEDIDO_IO,
+  // ------ IO - MEMORIA
+  GUARDAR_REGISTRO,
+  PEDIR_REGISTRO
 }op_code;
 
 typedef struct

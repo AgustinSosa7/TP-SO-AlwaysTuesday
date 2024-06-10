@@ -5,6 +5,10 @@ t_log* cpu_log_debug;
 t_config* cpu_config;
 
 t_pcb* pcb_global;
+
+t_list* lista_registros_prop_gen;
+t_list* lista_registros_extendidos;
+
 ////////////////////////////////////SEMAFOROS /////////////////////////////////
 sem_t sem_ciclo_de_instruccion;
 

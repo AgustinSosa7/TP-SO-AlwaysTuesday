@@ -154,7 +154,7 @@ switch (identificador_instruccion(instruccion[0]))
 		t_paquete* paquete = crear_paquete(PEDIDO_IO);
 		agregar_string_a_paquete(paquete, instruccion[0]);
 		agregar_string_a_paquete(paquete, instruccion[1]);
-		agregar_int_a_paquete(paquete, instruccion[2]);
+		agregar_int_a_paquete(paquete, atoi(instruccion[2]));
 
 		//hay_que_desalojar = true; //No se para que se haria
     
@@ -169,7 +169,7 @@ switch (identificador_instruccion(instruccion[0]))
 		agregar_string_a_paquete(paquete_, instruccion[0]);
 		agregar_string_a_paquete(paquete_, instruccion[1]);
 		agregar_string_a_paquete(paquete_, instruccion[2]);
-		agregar_string_a_paquete(paquete_, instruccion[3]);		
+		agregar_int_a_paquete(paquete_, obtener_tamanio_registro(instruccion[3]));	
 
 		//hay_que_desalojar = true; //No se para que se haria
 
@@ -184,7 +184,7 @@ switch (identificador_instruccion(instruccion[0]))
 		agregar_string_a_paquete(paquete__, instruccion[0]);
 		agregar_string_a_paquete(paquete__, instruccion[1]);
 		agregar_string_a_paquete(paquete__, instruccion[2]);
-		agregar_string_a_paquete(paquete__, instruccion[3]);
+		agregar_int_a_paquete(paquete__, obtener_tamanio_registro(instruccion[3]));	
 
 		// hay_que_desalojar = true; //No se para que se haria
 
@@ -258,3 +258,22 @@ cod_instruccion identificador_instruccion(char* codigo){
 }  
     return instruccion_a_ejecutar;
 } 
+
+int obtener_tamanio_registro(char* registroTamanio){
+	if(es_de_proposito_general(registroTamanio)){
+		return 2;
+	} else if(es_extendido(registroTamanio)){
+		return 4;
+	} else {
+		log_info(cpu_logger, "El tamanio de registro ingresado es incorrecto.");
+		exit(EXIT_FAILURE);
+	}
+}
+
+bool es_de_proposito_general(char* registroTamanio){
+	return (contains_string(lista_registros_prop_gen, registroTamanio));
+}
+
+bool es_extendido(char* registroTamanio){
+	return (contains_string(lista_registros_extendidos, registroTamanio));
+}

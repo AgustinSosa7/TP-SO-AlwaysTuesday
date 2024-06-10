@@ -39,6 +39,9 @@ extern t_pcb* pcb_global;
 extern char ** opcode_cpu;
 extern sem_t sem_ciclo_de_instruccion;
 
+extern t_list* lista_registros_prop_gen;
+extern t_list* lista_registros_extendidos;
+
 extern t_log* cpu_logger;
 extern t_log* cpu_log_debug;
 extern t_config* cpu_config;
