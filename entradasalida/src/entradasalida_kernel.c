@@ -30,22 +30,21 @@ void atender_entradasalida_kernel(){
 
 t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
-    peticion->instruccion = malloc(sizeof(char));
+    t_buffer* buffer = paquete->buffer;
 
-    void* stream = paquete->buffer->stream;
-    leer_string_del_stream(stream);
+    peticion->instruccion = leer_string_del_stream(buffer);
 
-    asignar_parametros_segun_tipo(peticion, stream);
+    asignar_parametros_segun_tipo(peticion, buffer);
 
     return peticion;
 } 
 
-void asignar_parametros_segun_tipo(t_peticion* peticion, void* stream){
+void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       char* instruccion = peticion->instruccion;
 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-           peticion->parametros->tiempo_espera= leer_algo_del_stream(stream,sizeof(peticion->parametros->tiempo_espera));
+           peticion->parametros->tiempo_espera= leer_int_del_buffer(buffer);
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {

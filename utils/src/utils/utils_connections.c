@@ -281,6 +281,27 @@ void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio)
 	paquete->buffer->offset += tamanio; 
 }
 
+void agregar_int_a_paquete(t_paquete* paquete, int valor)
+{
+	paquete->buffer->size += sizeof(int);
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, sizeof(int));
+	paquete->buffer->offset += sizeof(int); 
+}
+void agregar_uint8_a_paquete(t_paquete* paquete, uint8_t valor)
+{
+	paquete->buffer->size += sizeof(uint8_t);
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, sizeof(uint8_t));
+	paquete->buffer->offset += sizeof(uint8_t); 
+}
+void agregar_uint32_a_paquete(t_paquete* paquete, uint32_t valor)
+{
+	paquete->buffer->size += sizeof(uint32_t);
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, sizeof(uint32_t));
+	paquete->buffer->offset += sizeof(uint32_t); 
+}
 void agregar_string_a_paquete(t_paquete* paquete, char* string) 
 {	
 	int tamanio_string = strlen(string) + 1;
@@ -294,17 +315,17 @@ void agregar_string_a_paquete(t_paquete* paquete, char* string)
 }
 
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_cpu){
-agregar_algo_a_paquete(paquete,&(registros_cpu->PC),sizeof(registros_cpu->PC));
-agregar_algo_a_paquete(paquete,&(registros_cpu->AX),sizeof(registros_cpu->AX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->BX),sizeof(registros_cpu->BX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->CX),sizeof(registros_cpu->CX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->DX),sizeof(registros_cpu->DX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->EAX),sizeof(registros_cpu->EAX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->EBX),sizeof(registros_cpu->EBX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->ECX),sizeof(registros_cpu->ECX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->EDX),sizeof(registros_cpu->EDX));
-agregar_algo_a_paquete(paquete,&(registros_cpu->SI),sizeof(registros_cpu->SI));
-agregar_algo_a_paquete(paquete,&(registros_cpu->DI),sizeof(registros_cpu->DI));
+agregar_int_a_paquete(paquete,registros_cpu->PC);
+agregar_uint8_a_paquete(paquete,registros_cpu->AX);
+agregar_uint8_a_paquete(paquete,registros_cpu->BX);
+agregar_uint8_a_paquete(paquete,registros_cpu->CX);
+agregar_uint8_a_paquete(paquete,registros_cpu->DX);
+agregar_uint32_a_paquete(paquete,registros_cpu->EAX);
+agregar_uint32_a_paquete(paquete,registros_cpu->EBX);
+agregar_uint32_a_paquete(paquete,registros_cpu->ECX);
+agregar_uint32_a_paquete(paquete,registros_cpu->EDX);
+agregar_uint32_a_paquete(paquete,registros_cpu->SI);
+agregar_uint32_a_paquete(paquete,registros_cpu->DI);
 }
 
 ////////////////////// DESERIALIZACION //////////////
@@ -435,10 +456,10 @@ void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU)
 
 void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
 	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
-	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
-  	agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->quantum));
+	agregar_int_a_paquete(un_paquete, un_pcb->pid);
+  	agregar_int_a_paquete(un_paquete, un_pcb->quantum);
   	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
-	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
+	agregar_int_a_paquete(un_paquete,un_pcb->estado_pcb);
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
 }
@@ -446,9 +467,9 @@ void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
 t_pcb* recibir_pcb(t_paquete* paquete){
 	void* buffer = paquete->buffer;
 	t_pcb* pcb = malloc(sizeof(t_pcb));
+	pcb->registros_cpu = malloc(sizeof(t_registros_cpu));
 	
 	pcb->pid= leer_int_del_buffer(buffer);
-	printf("pid que llego en cpu");
 	pcb->quantum =leer_int_del_buffer(buffer);
 	leer_registros_del_buffer(buffer, pcb->registros_cpu);
 	pcb->estado_pcb= leer_int_del_buffer(buffer);
@@ -456,8 +477,8 @@ t_pcb* recibir_pcb(t_paquete* paquete){
 }
 
 void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
-log_info(un_logger,"PCB Pid %d", pcb->pid);
-log_info(un_logger,"PCB Quantum %d",pcb->quantum);	
+log_info(un_logger,"PCB Pid: %d", pcb->pid);
+log_info(un_logger,"PCB Quantum: %d",pcb->quantum);	
 log_info(un_logger,"PCB PC: %d ", pcb->registros_cpu->PC);
 log_info(un_logger,"PCB AX: %d ", pcb->registros_cpu->AX);
 log_info(un_logger,"PCB BX: %d ", pcb->registros_cpu->BX);

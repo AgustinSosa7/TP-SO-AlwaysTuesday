@@ -55,8 +55,8 @@ void imprimir_config(){
 
 void inicializar_estructuras(){
     pcb_global = malloc(sizeof(t_pcb));
-
-    //pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu*));    // Ver si funciona cmabie contexto por PCB
+    pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu));    // Ver si funciona cmabie contexto por PCB
+    
     opcode_cpu = string_array_new();
     string_array_push(&opcode_cpu, "SET");
 	string_array_push(&opcode_cpu, "SUM");

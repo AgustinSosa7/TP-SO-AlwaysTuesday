@@ -10,7 +10,7 @@ void identificarse_con_kernel(int socket, char* nombre_io);
 void atender_entradasalida_kernel();
 
 t_peticion* recibir_peticion(t_paquete* paquete);
-void asignar_parametros_segun_tipo(t_peticion* peticion, void* stream);
+void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer);
 void procesar_peticion(t_peticion* peticion);
 
 void finalizar_peticion(t_peticion* peticion);

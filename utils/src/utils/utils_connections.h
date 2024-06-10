@@ -138,6 +138,9 @@ void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio);
+void agregar_int_a_paquete(t_paquete* paquete, int valor);
+void agregar_uint8_a_paquete(t_paquete* paquete, uint8_t valor);
+void agregar_uint32_a_paquete(t_paquete* paquete, uint32_t valor);
 void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_CPU);
 

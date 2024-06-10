@@ -149,7 +149,7 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
       t_peticion_param* parametros = peticion->parametros;
 
             if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-            agregar_algo_a_paquete(paquete, &(parametros->tiempo_espera), sizeof(int));
+            agregar_int_a_paquete(paquete, parametros->tiempo_espera);
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {     agregar_string_a_paquete(paquete, parametros->registroDireccion);

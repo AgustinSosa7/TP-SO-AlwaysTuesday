@@ -39,8 +39,9 @@ char ** ciclo_instruccion_fetch(){ //
 	char* pseudo;
 	char** instruccion_spliteada;
 	//fin sacar
+		printf("pid del pcb_global: %d\n", pcb_global->pid);
 
-		log_info(cpu_log_debug, "PID: <%d> - FETCH - PC: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
+		log_info(cpu_logger, "PID: <%d> - FETCH - PC: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
 		pedir_instruccion_pseudocodigo(pcb_global->pid,pcb_global->registros_cpu->PC);
 		
 		//sacar
@@ -80,7 +81,7 @@ bool codigo_inexistente(char* instruccion){
 	int i = 0; 
 	
 	while(opcode_cpu[i] != NULL){
-		if((opcode_cpu[i], instruccion) == 0) {
+		if(strcmp(opcode_cpu[i], instruccion) == 0) {
 			respuesta = false;
 			printf("La instruccion %s existe ",instruccion);
 			break; // para que no siga buscando 
@@ -126,7 +127,7 @@ if(requiere_traduccion(instruccion)){ // Lo debería hacer la MMU | Concatena es
     /////////////////////////////////////////////     EXECUTE    ////////////////////////////////////////
 
 
-    void ejecucion_proceso(char** instruccion){
+void ejecucion_proceso(char** instruccion){
 switch (identificador_instruccion(instruccion[0]))
 {
     case SET: //Solo para probar
@@ -146,46 +147,46 @@ switch (identificador_instruccion(instruccion[0]))
     break;
 
     case IO_GEN_SLEEP: // [IO_GEN_SLEEP][INTERFAZ][Tiempo]
-		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2]);
-		//contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+		log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s>", pcb_global->pid, instruccion[0], instruccion[2]);
+		pcb_global->registros_cpu->PC = pcb_global->registros_cpu->PC + 1;
 
 		//Enviar al KERNEL: [PEDIDO_IO][SLEEP][INTERFAZ][Tiempo]
 		t_paquete* paquete = crear_paquete(PEDIDO_IO);
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1])
-		agregar_algo_al_paquete(paquete, instruccion_a_ejecutar[2], sizeof(int));
+		agregar_string_a_paquete(paquete, instruccion[0]);
+		agregar_string_a_paquete(paquete, instruccion[1]);
+		agregar_int_a_paquete(paquete, instruccion[2]);
 
-		//hay_que_desalojar = true; //tampoco se para que se haria
+		//hay_que_desalojar = true; //No se para que se haria
     
     break;
 
     case IO_STDIN_READ:// [IO_STDOUT_READ][INTERFAZ][RegistroDireccion][RegistroTamanio]
-		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2], instruccion_a_ejecutar[3]);
-		//contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+		log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", pcb_global->pid, instruccion[0], instruccion[2], instruccion[3]);
+		pcb_global->registros_cpu->PC = pcb_global->registros_cpu->PC + 1;
 
 		//Enviar al KERNEL: [PEDIDO_IO][IO_STDOUT_READ][INTERFAZ][RegistroDireccion][RegistroTamanio]
-		t_paquete* paquete = crear_paquete(PEDIDO_IO);
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1]);
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[2]);
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[3]);		
+		t_paquete* paquete_ = crear_paquete(PEDIDO_IO);
+		agregar_string_a_paquete(paquete_, instruccion[0]);
+		agregar_string_a_paquete(paquete_, instruccion[1]);
+		agregar_string_a_paquete(paquete_, instruccion[2]);
+		agregar_string_a_paquete(paquete_, instruccion[3]);		
 
-		//hay_que_desalojar = true; //tampoco se para que se haria
+		//hay_que_desalojar = true; //No se para que se haria
 
     break;
 
-    case IO_STDOUT_WRITE: / [IO_STDOUT_WRITE][INTERFAZ][RegistroDireccion][RegistroTamanio]
-		log_info(cpu_log_obligatorio, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", contexto->proceso_pid, instruccion_a_ejecutar[0], instruccion_a_ejecutar[2], instruccion_a_ejecutar[3]);
-		// contexto->proceso_ip = contexto->proceso_ip + 1; //esto no se para que se haria
+    case IO_STDOUT_WRITE: // [IO_STDOUT_WRITE][INTERFAZ][RegistroDireccion][RegistroTamanio]
+		log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> - <%s>", pcb_global->pid, instruccion[0], instruccion[2], instruccion[3]);
+		pcb_global->registros_cpu->PC = pcb_global->registros_cpu->PC + 1;
 
 		//Enviar al KERNEL: [PEDIDO_IO][IO_STDOUT_WRITE][INTERFAZ][RegistroDireccion][RegistroTamanio]
-		t_paquete* paquete = crear_paquete(PEDIDO_IO);
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[0])
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[1]);
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[2]);
-		agregar_string_al_paquete(paquete, instruccion_a_ejecutar[3]);
+		t_paquete* paquete__ = crear_paquete(PEDIDO_IO);
+		agregar_string_a_paquete(paquete__, instruccion[0]);
+		agregar_string_a_paquete(paquete__, instruccion[1]);
+		agregar_string_a_paquete(paquete__, instruccion[2]);
+		agregar_string_a_paquete(paquete__, instruccion[3]);
 
-		// hay_que_desalojar = true; //tampoco se para que se haria
+		// hay_que_desalojar = true; //No se para que se haria
 
 
     break;
