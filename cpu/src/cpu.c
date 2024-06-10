@@ -18,18 +18,15 @@ int main(int argc, char** argv){
 
     // Iniciar server de CPU - DISPATCH
 
-    fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
-    log_info(cpu_logger, "Esperando a DISPATCH...");
-    fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch, cpu_logger,"KERNEL-DISPATCH");
-    gestionar_handshake_como_server(fd_kernel_dispatch, cpu_logger, "KERNEL-DISPATCH");
+    pthread_t hilo_conexion_dispatch;
+    pthread_create(&hilo_conexion_dispatch, NULL, (void*)conexion_cpu_kernel_dispatch,NULL);
+    pthread_detach(hilo_conexion_dispatch); 
 
     // Iniciar server de CPU - INTERRUPT
 
-    fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, IP_CPU);
-    log_info(cpu_logger, "Esperando a INTERRUPT...");
-    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL-INTERRUPT");
-    gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger, "KERNEL-INTERRUPT");
-    
+    pthread_t hilo_conexion_interrupt;
+    pthread_create(&hilo_conexion_interrupt, NULL, (void*)conexion_cpu_kernel_interrupt, NULL);
+    pthread_join(hilo_conexion_interrupt, NULL);
 
     //Atender los mensajes de Kernel - Dispatch
     pthread_t hilo_kernel_dispatch;
@@ -49,3 +46,17 @@ int main(int argc, char** argv){
 }
 
 
+void conexion_cpu_kernel_dispatch(){
+    fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
+    log_info(cpu_logger, "Esperando a DISPATCH...");
+    fd_kernel_dispatch = esperar_cliente(fd_cpu_dispatch, cpu_logger,"KERNEL-DISPATCH");
+    gestionar_handshake_como_server(fd_kernel_dispatch, cpu_logger, "KERNEL-DISPATCH");
+}
+
+
+void conexion_cpu_kernel_interrupt(){
+    fd_cpu_interrupt= iniciar_servidor(PUERTO_ESCUCHA_INTERRUPT,cpu_logger, IP_CPU);
+    log_info(cpu_logger, "Esperando a INTERRUPT...");
+    fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger,"KERNEL-INTERRUPT");
+    gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger, "KERNEL-INTERRUPT");
+}  

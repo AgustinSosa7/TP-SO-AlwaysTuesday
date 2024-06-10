@@ -9,6 +9,9 @@
 #include "cpu_memoria.h"
 #include "ciclo_instruccion.h"
 
+void conexion_cpu_kernel_dispatch();
+void conexion_cpu_kernel_interrupt();
+
 
 void ciclo_instruccion();
 char ** ciclo_instruccion_fetch();
