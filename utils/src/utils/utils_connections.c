@@ -217,6 +217,24 @@ void enviar_mensaje(void* mensaje, int socket_cliente)
 	free(a_enviar);
 }
 
+void enviar_bool_mensaje(bool mensaje, int socket_cliente)
+{
+	int tamanio = sizeof(bool);
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+}
+
+void enviar_int_mensaje(int mensaje, int socket_cliente)
+{
+	int tamanio = sizeof(int);
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+}
+
 void enviar_mensaje_string(char* mensaje, int socket_cliente)
 {
 	int tamanio = strlen(mensaje)+1;
@@ -337,6 +355,21 @@ void* recibir_mensaje(int socket_cliente)
 	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
 	return mensaje;
 }
+
+bool recibir_bool_mensaje(int socket_cliente)
+{	
+	bool mensaje;
+	recv(socket_cliente, &mensaje, sizeof(bool), MSG_WAITALL);
+	return mensaje;
+}
+
+int recibir_int_mensaje(int socket_cliente)
+{	
+	int mensaje;
+	recv(socket_cliente, &mensaje, sizeof(int), MSG_WAITALL);
+	return mensaje;
+}
+
 char* recibir_mensaje_string(int socket_cliente)
 {	
 	int tamanio;

@@ -3,7 +3,7 @@
 
 #include "es_gestor.h"
 
-void guardar_en_memoria(char* leido, char* registroDireccion);
+bool guardar_en_memoria(char* leido, char* registroDireccion);
 char* pedir_a_memoria(char* registroDireccion, int registroTamanio);
 
 #endif 

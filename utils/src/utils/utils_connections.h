@@ -137,6 +137,8 @@ void eliminar_buffer(t_buffer *buffer);
 t_paquete* crear_paquete(op_code code_op);
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void enviar_mensaje(void* mensaje, int socket_cliente);
+void enviar_bool_mensaje(bool mensaje, int socket_cliente);
+void enviar_int_mensaje(int mensaje, int socket_cliente);
 void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
@@ -155,6 +157,8 @@ char* enum_a_string(estado_pcb estado);
 
 // DESERIALIZACION
 void* recibir_mensaje(int socket_cliente);
+bool recibir_bool_mensaje(int socket_cliente);
+int recibir_int_mensaje(int socket_cliente);
 char* recibir_mensaje_string(int socket_cliente);
 op_code recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);

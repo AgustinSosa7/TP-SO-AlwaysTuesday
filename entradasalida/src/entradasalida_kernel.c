@@ -83,7 +83,11 @@ void procesar_peticion(t_peticion* peticion) {
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
             char* leido = iniciar_la_consola(peticion->parametros->registroTamanio);
-            guardar_en_memoria(leido, peticion->parametros->registroDireccion);
+            if(guardar_en_memoria(leido, peticion->parametros->registroDireccion)){
+                  log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente en %s.", leido, peticion->parametros->registroDireccion);
+            } else{
+                  log_info(entradasalida_logger,"¨%s¨ no se gurardo correctamente en %s. (debido a problemas de memoria)", leido, peticion->parametros->registroDireccion);
+            }
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
@@ -128,8 +132,7 @@ bool validar_tamanio_leido(char* leido, int registroTamanio){
 
 
 void finalizar_peticion(t_peticion* peticion){
-      bool resultado = true;
-      enviar_mensaje(&resultado, fd_kernel);
+      enviar_bool_mensaje(true, fd_kernel);
       
       eliminar_peticion(peticion);
 }
