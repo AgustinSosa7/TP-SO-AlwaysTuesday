@@ -30,7 +30,7 @@ bool codigo_inexistente(char* instruccion);
 
 void ejecucion_proceso(char** codigo);
 cod_instruccion identificador_instruccion(char* codigo);
-
+*/
 
 #endif
 

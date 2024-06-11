@@ -23,7 +23,7 @@ void ciclo_instruccion(){
     
 	if (strcmp(nombre_instruccion, "SET") == 0)
 		{
-			log_info(logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro = strtok_r(saveptr, " ", &saveptr);
 			int valor = atoi(strtok_r(saveptr, " ", &saveptr));
 			escribir_valor_a_registro(nombre_registro, valor);
@@ -31,7 +31,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "SUM") == 0)
 		{
-			log_info(logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro_destino = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) + leer_valor_de_registro(nombre_registro_origen));
@@ -39,7 +39,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "SUB") == 0)
 		{
-			log_info(logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro_destino = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) - leer_valor_de_registro(nombre_registro_origen));
@@ -47,7 +47,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "JNZ") == 0)
 		{
-			log_info(logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro = strtok_r(saveptr, " ", &saveptr);
 			u_int32_t nuevo_program_counter = atoi(strtok_r(saveptr, " ", &saveptr));
 			if (leer_valor_de_registro(nombre_registro) != 0)
@@ -61,7 +61,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "IO_GEN_SLEEP") == 0)
 		{
-			log_info(logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = atoi(strtok_r(saveptr, " ", &saveptr));
 			int tiempo_sleep = atoi(strtok_r(saveptr, " ", &saveptr));
 			pcb_global->registros_cpu->PC++;
@@ -88,7 +88,7 @@ void ciclo_instruccion(){
 	if (!dejar_de_ejecutar)
 	{
 		// Sigo ejecutando
-		sem_post(&semaforo_ejecutar_ciclo_de_instruccion);
+		sem_post(&sem_ciclo_de_instruccion);
 	}
 	else
 	{
@@ -109,7 +109,7 @@ PROCESO_EXIT
 void devolver_contexto_por_ser_interrumpido()
 {
 	t_paquete* paquete = crear_paquete(DESALOJO_QUANTUM);
-	agregar_pcb_a_paquete(pcb_global);
+	agregar_pcb_a_paquete(pcb_global, paquete);
 	enviar_paquete(paquete, fd_cpu_dispatch);
     eliminar_paquete(paquete);
 }
@@ -117,10 +117,10 @@ void devolver_contexto_por_ser_interrumpido()
 void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz, int segundos_sleep)
 {
 	t_paquete* paquete = crear_paquete(PEDIDO_IO);
-	agregar_pcb_a_paquete(pcb_global);
-	agregar_string_a_paquete(nombre_instruccion);
-	agregar_string_a_paquete(nombre_interfaz);
-	agregar_int_a_paquete(segundos_sleep);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_int_a_paquete(paquete, segundos_sleep);
 	enviar_paquete(paquete, fd_cpu_dispatch);
     eliminar_paquete(paquete);
 }
@@ -246,7 +246,7 @@ uint32_t leer_valor_de_registro(char *nombre_registro)
 		return pcb_global->registros_cpu->DI;
 	}
 
-	log_error(logger, "No se leyo nada del registro '%s' porque es un registro no conocido.", nombre_registro);
+	log_error(cpu_log_debug, "No se leyo nada del registro '%s' porque es un registro no conocido.", nombre_registro);
 	return -1;
 }
 
@@ -456,3 +456,4 @@ cod_instruccion identificador_instruccion(char* codigo){
 }  
     return instruccion_a_ejecutar;
 } 
+*/

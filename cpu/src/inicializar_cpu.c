@@ -55,8 +55,8 @@ void imprimir_config(){
 
 void inicializar_estructuras(){
 
-    lista_registros_prop_gen = ["AX", "BX", "CX", "DX"];
-    lista_registros_extendidos = ["PC", "EAX", "EBX", "ECX", "EDX", "SI", "DI"];
+    lista_registros_prop_gen = list_create(); //["AX", "BX", "CX", "DX"]
+    lista_registros_extendidos = list_create(); //["PC", "EAX", "EBX", "ECX", "EDX", "SI", "DI"]
 
     pcb_global = malloc(sizeof(t_pcb));
     pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu));    // Ver si funciona cmabie contexto por PCB
