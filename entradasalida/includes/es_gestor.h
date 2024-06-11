@@ -14,7 +14,7 @@ typedef struct{
     int tiempo_espera;
     char* archivo;
     char* registroDireccion;
-    int registroTamanio;
+    char* registroTamanio;
     char* registroPunteroArchivo; 
 } t_peticion_param;
 

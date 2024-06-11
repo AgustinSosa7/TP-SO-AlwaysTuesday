@@ -6,7 +6,7 @@
 
 void atender_entradasalida();
 
-void guardar_leido_en_registro(char* leido, char* registroDireccion);
-char* devolver_registro(char* registro_Direccion, int registroTamanio);
+bool guardar_leido_en_registro(char* leido, char* registroDireccion);
+char* devolver_registro(char* registro_Direccion, char* registroTamanio);
 
 #endif /* MEMORIA_H_*/
