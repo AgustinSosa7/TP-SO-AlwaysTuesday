@@ -6,15 +6,16 @@ void atender_interrupciones(){
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
-        pthread_mutex_lock(&mutex_flag_interrupcion);
-        flag_hay_interrupcion = false;
-        pthread_mutex_unlock(&mutex_flag_interrupcion);
         
 		switch (cod_op) {
             case INTERRUPCION_FIN_QUANTUM:
-                //enviar_pcb_a(un_pcb, fd_kernel_dispatch, DESALOJO_QUANTUM);
+                log_debug(cpu_log_debug, "RECIBI INTERRUPT");
+                pthread_mutex_lock(&mutex_ocurrio_interrupcion);
+			    ocurrio_interrupcion = true;
+			    pthread_mutex_unlock(&mutex_ocurrio_interrupcion); 
                 break;
             case INTERRUPCION_FIN_PROCESO:
+                //TODO
                 //enviar_pcb_a(un_pcb, fd_kernel_dispatch, PROCESO_EXIT);
                 break;
             case -1:

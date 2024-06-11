@@ -5,6 +5,7 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     void* buffer = paquete->buffer;
     peticion->instruccion = malloc(sizeof(char));
     peticion->interfaz = malloc(sizeof(char));
+    peticion->parametros = malloc(sizeof(t_peticion_param));
 
     peticion->instruccion = leer_string_del_stream(buffer);
     peticion->interfaz = leer_string_del_stream(buffer);
@@ -16,31 +17,41 @@ t_peticion* recibir_peticion(t_paquete* paquete){
 t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
 
     t_peticion_param* parametros = malloc(sizeof(t_peticion_param*));
-    void* stream = paquete->buffer->stream;
+    void* buffer = paquete->buffer;
 
     if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-         parametros->tiempo_espera=leer_int_del_buffer(stream);
-        return parametros;
-      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
+           parametros->tiempo_espera= leer_int_del_buffer(buffer);
+           return parametros;
+      }
+      else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-            return parametros;
+           parametros->registroDireccion= leer_string_del_stream(buffer);
+           parametros->registroTamanio= leer_int_del_buffer(buffer);
+           return parametros;
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-            return parametros;
+           parametros->registroDireccion= leer_string_del_stream(buffer);
+           parametros->registroTamanio= leer_int_del_buffer(buffer);
+           return parametros;
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
+            /* code */
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
+            /* code */
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {
-            return parametros; 
+            /* code */
+            return parametros;
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {
-            return parametros; 
-      }else //Es IO_FS_READ 
+            /* code */
+            return parametros;
+      }else //DEFALUT IO_FS_READ
       {
+            /* code */
             return parametros;
       }
 }           

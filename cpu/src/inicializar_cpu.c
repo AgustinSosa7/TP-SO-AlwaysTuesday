@@ -55,8 +55,8 @@ void imprimir_config(){
 
 void inicializar_estructuras(){
 
-    lista_registros_prop_gen = list_create();
-    lista_registros_extendidos = list_create();
+    lista_registros_prop_gen = ["AX", "BX", "CX", "DX"];
+    lista_registros_extendidos = ["PC", "EAX", "EBX", "ECX", "EDX", "SI", "DI"];
 
     pcb_global = malloc(sizeof(t_pcb));
     pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu));    // Ver si funciona cmabie contexto por PCB
@@ -81,9 +81,12 @@ void inicializar_estructuras(){
     string_array_push(&opcode_cpu, "IO_FS_WRITE");
     string_array_push(&opcode_cpu, "IO_FS_READ");
 	string_array_push(&opcode_cpu, "EXIT");
+
+    dejar_de_ejecutar = false;
+    ocurrio_interrupcion = false;
 }
 
 void inicializar_semaforos(){
-
     sem_init(&sem_ciclo_de_instruccion,0,0);
+    pthread_mutex_init(&mutex_ocurrio_interrupcion, NULL);
 }

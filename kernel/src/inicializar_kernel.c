@@ -6,7 +6,6 @@ void inicializar_kernel(char* path){
 	inicializar_listas();
 	inicializar_semaforos();
 	inicializar_pid();
-	flag_hay_interrupcion = false;
 }
 
 void inicializar_logs(void){
@@ -112,7 +111,6 @@ void inicializar_semaforos(){
 	pthread_mutex_init(&mutex_exec, NULL);
 	pthread_mutex_init(&mutex_ready_plus, NULL);
 	pthread_mutex_init(&mutex_exit, NULL);
-	pthread_mutex_init(&mutex_flag_interrupcion,NULL);
 	printf("listo las mutex_exit\n");
 }
 

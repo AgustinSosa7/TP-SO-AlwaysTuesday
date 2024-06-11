@@ -38,6 +38,7 @@ typedef enum
 extern t_pcb* pcb_global;
 extern char ** opcode_cpu;
 extern sem_t sem_ciclo_de_instruccion;
+extern pthread_mutex_t mutex_ocurrio_interrupcion;
 
 extern t_list* lista_registros_prop_gen;
 extern t_list* lista_registros_extendidos;
@@ -60,5 +61,8 @@ extern char* PUERTO_ESCUCHA_DISPATCH;
 extern char* PUERTO_ESCUCHA_INTERRUPT;
 extern int CANTIDAD_ENTRADAS_TLB;
 extern char* ALGORITMO_TLB;
+
+extern bool dejar_de_ejecutar;
+extern bool ocurrio_interrupcion;
 
 #endif

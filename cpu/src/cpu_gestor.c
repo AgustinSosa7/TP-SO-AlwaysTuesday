@@ -11,6 +11,7 @@ t_list* lista_registros_extendidos;
 
 ////////////////////////////////////SEMAFOROS /////////////////////////////////
 sem_t sem_ciclo_de_instruccion;
+pthread_mutex_t mutex_ocurrio_interrupcion;
 
 char ** opcode_cpu;
 
@@ -27,3 +28,6 @@ char* PUERTO_ESCUCHA_DISPATCH;
 char* PUERTO_ESCUCHA_INTERRUPT;
 int CANTIDAD_ENTRADAS_TLB;
 char* ALGORITMO_TLB;
+
+bool dejar_de_ejecutar;
+bool ocurrio_interrupcion;

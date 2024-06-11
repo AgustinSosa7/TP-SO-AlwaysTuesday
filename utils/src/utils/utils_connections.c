@@ -1,8 +1,7 @@
 #include "utils_connections.h"
-bool flag_hay_interrupcion;
+
 
 /////////SEMAFOROS////////
-pthread_mutex_t mutex_flag_interrupcion;
 // Funciones de Listas
 
 bool contains_string(t_list* lista, char* elemento){
@@ -486,13 +485,16 @@ void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU)
 
 /////////////////////// PCB /////////////////////////
 
-
-void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
-	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
+void agregar_pcb_a_paquete(t_pcb* un_pcb, t_paquete* un_paquete) {
 	agregar_int_a_paquete(un_paquete, un_pcb->pid);
   	agregar_int_a_paquete(un_paquete, un_pcb->quantum);
   	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
 	agregar_int_a_paquete(un_paquete,un_pcb->estado_pcb);
+}
+
+void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
+	t_paquete* un_paquete = crear_paquete(mensaje);
+	agregar_pcb_a_paquete(un_pcb, un_paquete);
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
 }
