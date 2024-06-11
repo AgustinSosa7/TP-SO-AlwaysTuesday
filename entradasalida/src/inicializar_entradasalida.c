@@ -66,6 +66,8 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			BLOCK_SIZE = config_get_int_value(entradasalida_config,"BLOCK_SIZE");
 			BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
 			RETRASO_COMPACTACION = config_get_int_value(entradasalida_config,"RETRASO_COMPACTACION");
+
+			iniciar_file_system();
 	
 		} else {
 	        printf("Tipo de interfaz desconocida.");
@@ -79,3 +81,21 @@ void imprimir_configs(){
 
 }
 
+void iniciar_file_system(){
+	inicializar_archivo_de_bloques();
+}
+
+void inicializar_archivo_de_bloques(){
+	fd_archivoBloques = open(PATH_BASE_DIALFS, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	int tamanio_archivo_bloques = BLOCK_COUNT * BLOCK_SIZE;
+	ftruncate(fd_archivoBloques, tamanio_archivo_bloques);
+
+	//bitmap_swap = calloc(CANT_BLOQUES_SWAP, sizeof(char));
+	//bitmapSWAP = bitarray_create_with_mode(bitmap_swap, CANT_BLOQUES_SWAP/8, LSB_FIRST);
+//
+	//bloquesEnMemoria = mmap(NULL, CANT_BLOQUES_TOTAL*TAM_BLOQUE, PROT_READ | PROT_WRITE, MAP_SHARED, fd_archivoBloques, 0);
+	//if (bloquesEnMemoria == MAP_FAILED) {
+	//	log_error(filesystem_logger, "Error al mapear los bloques SWAP");
+	//	exit(1);
+	//}
+}

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h> 
+#include <fcntl.h>
 
 #include <../src/utils/utils_connections.h>
 #include <commons/log.h>
@@ -27,7 +28,8 @@ extern t_log* entradasalida_logger;
 extern t_log* entradasalida_log_debug;
 extern t_config* entradasalida_config;
 
-extern int fd_entradasalida;  
+extern int fd_entradasalida; 
+extern int fd_archivoBloques;
 extern int fd_memoria;
 extern int fd_kernel;      
 
