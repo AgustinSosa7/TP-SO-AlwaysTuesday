@@ -25,10 +25,6 @@ bool codigo_inexistente(char* instruccion);
 void ejecucion_proceso(char** codigo);
 cod_instruccion identificador_instruccion(char* codigo);
 
-int obtener_tamanio_registro(char* registroTamanio);
-bool es_de_proposito_general(char* registroTamanio);
-bool es_extendido(char* registroTamanio);
-
 
 #endif
 

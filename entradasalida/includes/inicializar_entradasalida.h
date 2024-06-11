@@ -3,9 +3,6 @@
 
 #include "es_gestor.h"
 
-#include <commons/log.h>
-#include <commons/config.h>
-
 void inicializar_entradasalida(char** argv);
 void inicializar_logs();
 void inicializar_configs(char** argv);

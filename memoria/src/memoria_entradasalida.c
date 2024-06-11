@@ -14,13 +14,14 @@ void atender_entradasalida()
       case GUARDAR_REGISTRO:
             char* leido = leer_string_del_stream(buffer);
             char* registroDireccion = leer_string_del_stream(buffer);
-            guardar_leido_en_registro(leido, registroDireccion); // definir comportamiento de la funcion
-            enviar_bool_mensaje(true, fd_entradasalida); // Se guardo correctamente (quizas no siempre se guarda bien y tengo que enviar false)
-            
+            if(guardar_leido_en_registro(leido, registroDireccion)){ // definir comportamiento de la funcion
+                  enviar_bool_mensaje(true, fd_entradasalida); 
+            } else{
+                  enviar_bool_mensaje(true, fd_entradasalida);}
             break;
       case PEDIR_REGISTRO:
             char* registro_Direccion = leer_string_del_stream(buffer);
-            int registroTamanio = leer_int_del_buffer(buffer);
+            char* registroTamanio = leer_string_del_stream(buffer);
             char* escrito = devolver_registro(registro_Direccion, registroTamanio); // definir comportamiento de la funcion
             enviar_mensaje_string(escrito, fd_entradasalida);
             break;
@@ -39,10 +40,10 @@ void atender_entradasalida()
       }
 }
 
-void guardar_leido_en_registro(char* leido, char* registroDireccion){
-
+bool guardar_leido_en_registro(char* leido, char* registroDireccion){ 
+      return NULL;
 }
 
-char* devolver_registro(char* registro_Direccion, int registroTamanio){
+char* devolver_registro(char* registro_Direccion, char* registroTamanio){
     return NULL;
 }
