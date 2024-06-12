@@ -26,12 +26,12 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
            parametros->registroDireccion= leer_string_del_stream(buffer);
-           parametros->registroTamanio= leer_int_del_buffer(buffer);
+           parametros->registroTamanio= leer_string_del_stream(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
            parametros->registroDireccion= leer_string_del_stream(buffer);
-           parametros->registroTamanio= leer_int_del_buffer(buffer);
+           parametros->registroTamanio= leer_string_del_stream(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
@@ -99,21 +99,11 @@ bool validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion
 }
 
 
-void enviar_proceso_a_exit(t_pcb* un_pcb){
+void enviar_proceso_a_exit(t_pcb* un_pcb){ //Revisar (mili)
 
-      int estado_anterior = un_pcb->estado_pcb;
-
-      cambiar_estado(un_pcb,EXIT);
-      un_pcb->estado_pcb = EXIT;
-
-      pthread_mutex_lock(&mutex_exit);
-      list_add(lista_exit,un_pcb);
-      pthread_mutex_unlock(&mutex_exit);
+      cambiar_de_estado_y_de_lista(EXEC, EXIT);    // LIBERAR ESTRUCTURAS EN MEMORIA
 
       log_info(kernel_logger, "Finaliza el proceso <%d> - Motivo: <INVALID_INTERFACE>", un_pcb->pid);
-      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
-
-      // LIBERAR ESTRUCTURAS EN MEMORIA
 }
 
 void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
@@ -235,21 +225,27 @@ void desbloquear_proceso(t_interfaz* interfaz){
 }
 
 void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
-      cambiar_estado(un_pcb,READY);
+      estado_pcb estado_anterior = un_pcb->estado_pcb;
       un_pcb->estado_pcb = READY;
 
       pthread_mutex_lock(&mutex_ready);
       list_add(lista_ready,un_pcb); 
       pthread_mutex_unlock(&mutex_ready);
+
+      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
+
 }
 
 void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
+      estado_pcb estado_anterior = un_pcb->estado_pcb;
       un_pcb->quantum = un_pcb->quantum - tiempo_transcurrido;
       un_pcb->estado_pcb = READYPLUS;
+
       pthread_mutex_lock(&mutex_ready_plus);
       list_add(lista_ready_plus,un_pcb); 
       pthread_mutex_unlock(&mutex_ready_plus);
-      // LIBERAR ESTRUCTURAS EN MEMORIA
+
+      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
 }
 
 void eliminar_peticion(t_peticion* peticion){

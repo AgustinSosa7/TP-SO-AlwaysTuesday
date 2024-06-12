@@ -111,11 +111,8 @@ void inicializar_semaforos(){
 	pthread_mutex_init(&mutex_exec, NULL);
 	pthread_mutex_init(&mutex_ready_plus, NULL);
 	pthread_mutex_init(&mutex_exit, NULL);
-<<<<<<< HEAD
-	pthread_mutex_init(&mutex_flag_interrupcion,NULL);
-	pthread_mutex_init(&mutex_flag_detener_planificacion,NULL);
-=======
->>>>>>> refs/remotes/origin/main
+//	pthread_mutex_init(&mutex_flag_interrupcion,NULL);
+//	pthread_mutex_init(&mutex_flag_detener_planificacion,NULL);
 	printf("listo las mutex_exit\n");
 }
 

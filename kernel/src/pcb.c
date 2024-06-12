@@ -52,7 +52,7 @@ void cambiar_de_estado_y_de_lista(estado_pcb estado_anterior, estado_pcb nuevo_e
         list_add(lista_exec,un_pcb);
         break;
     case EXIT:
-        list_add(lista_exit,un_pcb);
+        list_add(lista_exit,un_pcb); //Se deben liberar las estructuras en memoria
         break;
     case READYPLUS:
         list_add(lista_ready_plus,un_pcb);

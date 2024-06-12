@@ -118,6 +118,6 @@ extern int GRADO_MULTIPROGRAMACION;
 extern char * IP_KERNEL;
 
 void enviar_interrupción_a_cpu(op_code tipo_interrupción);
-void eliminar_proceso(pid);
+void eliminar_proceso(int pid);
 void detener_planificacion();
 #endif

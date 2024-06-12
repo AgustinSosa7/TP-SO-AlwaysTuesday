@@ -19,8 +19,8 @@ typedef enum
     JNZ,
     RESIZE,
     COPY_STRING,
-    WAIT,
-    SIGNAL,
+    //WAIT,   ya definidos en utils.h
+    //SIGNAL,
     IO_GEN_SLEEP,
     IO_STDIN_READ,
     IO_STDOUT_WRITE,

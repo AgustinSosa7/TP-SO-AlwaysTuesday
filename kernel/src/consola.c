@@ -86,13 +86,13 @@ void atender_instruccion_validada(char* leido){
 	printf("codigo encontrado: %d \n",op_code_encontrado);
 	switch (op_code_encontrado)
 	{
-	case EJECUTAR_SCRIPT:
-		t_list* lista_comandos = leer_archivo(array_leido[1]);
-		while(!list_is_empty(lista_comandos)){
-			char* comando = list_remove(lista_comandos,0);
-			atender_instruccion_validada(comando);
-		}
-		break;
+	//case EJECUTAR_SCRIPT:
+	//	t_list* lista_comandos = leer_archivo(array_leido[1]);
+	//	while(!list_is_empty(lista_comandos)){
+	//		char* comando = list_remove(lista_comandos,0);
+	//		atender_instruccion_validada(comando);
+	//	}
+	//	break;
 	case INICIAR_PROCESO:
 		printf("entre a iniciar proceso");
 		t_pcb* nuevo_pcb = crearPcb();
@@ -104,56 +104,56 @@ void atender_instruccion_validada(char* leido){
 		//enviar algo a memoria array_leido[1];
 
 		break;
-	case FINALIZAR_PROCESO: 
-		t_list* lista_encontrada;
-		int pid = atoi(array_leido[1]);
-		t_pcb* pcb_ejecutando = list_get(lista_exec,0);
-		if(pcb_ejecutando->pid == pid){
-			enviar_interrupción_a_cpu(INTERRUPCION_FIN_PROCESO);
-			
-		} else {
-			t_pcb* pcb = buscar_pcb(pid,lista_encontrada);
-			//remover de la lista encontrada;
-			pcb->estado_pcb = EXIT;
-			//hacer caso de que el pcb se encuentre en exit
-			eliminar_proceso(pid);
-		}
-		break;
-	case DETENER_PLANIFICACION:
-			pthread_mutex_lock(&mutex_flag_detener_planificacion);
-			flag_detener_planificacion = true;
-			pthread_mutex_unlock(&mutex_flag_detener_planificacion);
-		break;
-	case INICIAR_PLANIFICACION:
-		if(flag_detener_planificacion){
-			pthread_mutex_lock(&mutex_flag_detener_planificacion);
-			flag_detener_planificacion = false;
-			pthread_mutex_unlock(&mutex_flag_detener_planificacion);
-		}
-		break;
-	case MULTIPROGRAMACION:
-		int nuevo_valor = atoi(array_leido[1]);
-		int anterior_valor = GRADO_MULTIPROGRAMACION;
-		int valor;
-		if(nuevo_valor >= 1){
-			GRADO_MULTIPROGRAMACION = nuevo_valor;
-			valor = nuevo_valor - anterior_valor;
-			if(valor > 0){
-				for (int i = 0; i < valor; i++)
-				{
-					sem_post(&sem_grado_multiprogram);
-				} else {
-					for (int i = 0; i < valor; i++)
-					{
-					sem_wait(&sem_grado_multiprogram);
-					}			
-				}		
-		    }
-		} else {
-			log_error(kernel_logger,"el grado de multiprogramacion no es válido");
-		}	
-		break;
-	case PROCESO_ESTADO:
+	//case FINALIZAR_PROCESO: 
+	//	t_list* lista_encontrada;
+	//	int pid = atoi(array_leido[1]);
+	//	t_pcb* pcb_ejecutando = list_get(lista_exec,0);
+	//	if(pcb_ejecutando->pid == pid){
+	//		enviar_interrupción_a_cpu(INTERRUPCION_FIN_PROCESO);
+	//		
+	//	} else {
+	//		t_pcb* pcb = buscar_pcb(pid,lista_encontrada);
+	//		//remover de la lista encontrada;
+	//		pcb->estado_pcb = EXIT;
+	//		//hacer caso de que el pcb se encuentre en exit
+	//		eliminar_proceso(pid);
+	//	}
+	//	break;
+	//case DETENER_PLANIFICACION:
+	//		pthread_mutex_lock(&mutex_flag_detener_planificacion);
+	//		flag_detener_planificacion = true;
+	//		pthread_mutex_unlock(&mutex_flag_detener_planificacion);
+	//	break;
+	//case INICIAR_PLANIFICACION:
+	//	if(flag_detener_planificacion){
+	//		pthread_mutex_lock(&mutex_flag_detener_planificacion);
+	//		flag_detener_planificacion = false;
+	//		pthread_mutex_unlock(&mutex_flag_detener_planificacion);
+	//	}
+	//	break;
+	//case MULTIPROGRAMACION:
+	//	int nuevo_valor = atoi(array_leido[1]);
+	//	int anterior_valor = GRADO_MULTIPROGRAMACION;
+	//	int valor;
+	//	if(nuevo_valor >= 1){
+	//		GRADO_MULTIPROGRAMACION = nuevo_valor;
+	//		valor = nuevo_valor - anterior_valor;
+	//		if(valor > 0){
+	//			for (int i = 0; i < valor; i++)
+	//			{
+	//				sem_post(&sem_grado_multiprogram);
+	//			} else {
+	//				for (int i = 0; i < valor; i++)
+	//				{
+	//				sem_wait(&sem_grado_multiprogram);
+	//				}			
+	//			}		
+	//	    }
+	//	} else {
+	//		log_error(kernel_logger,"el grado de multiprogramacion no es válido");
+	//	}	
+	//	break;
+	//case PROCESO_ESTADO:
 	//	quiero hacer corte de control pero no es posible :((((((
 		// t_list* lista_de_procesos = agregar_listas_a_super_lista();
 		// estado_pcb estado_anterior;
@@ -170,39 +170,40 @@ void atender_instruccion_validada(char* leido){
 		// }
 		
 
-		break;
+		//break;
 	default:
 		break;
 	
-
+	}
 }
 
 bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
 	return (strcmp(instruccion->nombre,nombre_instruccion)==0);
 }
-// /// EJECUTAR_SCRIPT [path]
-t_list* leer_archivo(char* path){
-    FILE * archivo_comandos = fopen(path, "r");
-	if (archivo_comandos == NULL){
-        perror("Error al intentar cargar el archivo de comandos \n");
-        exit(EXIT_FAILURE);
-    }
-	t_list* lista_comandos = list_create();
-	int longitud= 0;
-	char* comando_leido = malloc(100 *sizeof(char));
 
-	while (fgets(comando_leido,100,archivo_comandos)){
-		longitud = strlen(comando_leido);
-		if(comando_leido[longitud] == '\n'){
-			char* nuevo_comando = string_new();
-			string_n_append(&nuevo_comando,comando_leido,longitud-1);
-			free(comando_leido);
-			list_add(lista_comandos, nuevo_comando);
-		}
-	}
-	return lista_comandos;
-	
- } 
+// /// EJECUTAR_SCRIPT [path]
+//t_list* leer_archivo(char* path){
+//    FILE * archivo_comandos = fopen(path, "r");
+//	if (archivo_comandos == NULL){
+//        perror("Error al intentar cargar el archivo de comandos \n");
+//        exit(EXIT_FAILURE);
+//    }
+//	t_list* lista_comandos = list_create();
+//	int longitud= 0;
+//	char* comando_leido = malloc(100 *sizeof(char));
+//
+//	while (fgets(comando_leido,100,archivo_comandos)){
+//		longitud = strlen(comando_leido);
+//		if(comando_leido[longitud] == '\n'){
+//			char* nuevo_comando = string_new();
+//			string_n_append(&nuevo_comando,comando_leido,longitud-1);
+//			free(comando_leido);
+//			list_add(lista_comandos, nuevo_comando);
+//		}
+//	}
+//	return lista_comandos;
+//	
+// } 
 
 // ///FINALIZAR_PROCESO
 
@@ -228,19 +229,19 @@ t_list* leer_archivo(char* path){
 
 ///////////PROCESO_ESTADO////////////
 
-t_list* agregar_listas_a_super_lista(){
-	t_list* lista = list_create()
-	t_list* lista_auxiliar = list_create();
-	lista_auxiliar = list_duplicate(lista_new);
-	list_add_all(lista, lista_auxiliar);
-	lista_auxiliar = list_duplicate(lista_ready);
-	list_add_all(lista, lista_ready);
-	lista_auxiliar = list_duplicate(lista_ready_plus);
-	list_add_all(lista, lista_ready_plus);
-	//list_add_all(lista, blocked);
-	lista_auxiliar = list_duplicate(lista_exec);
-	list_add_all(lista, exec);
-	lista_auxiliar = list_duplicate(lista_exit);
-	list_add_all(lista, lista_exit);
-	return lista;
-}
+//t_list* agregar_listas_a_super_lista(){
+//	t_list* lista = list_create();
+//	t_list* lista_auxiliar = list_create();
+//	lista_auxiliar = list_duplicate(lista_new);
+//	list_add_all(lista, lista_auxiliar);
+//	lista_auxiliar = list_duplicate(lista_ready);
+//	list_add_all(lista, lista_ready);
+//	lista_auxiliar = list_duplicate(lista_ready_plus);
+//	list_add_all(lista, lista_ready_plus);
+//	//list_add_all(lista, blocked);
+//	lista_auxiliar = list_duplicate(lista_exec);
+//	list_add_all(lista, exec);
+//	lista_auxiliar = list_duplicate(lista_exit);
+//	list_add_all(lista, lista_exit);
+//	return lista;
+//}
