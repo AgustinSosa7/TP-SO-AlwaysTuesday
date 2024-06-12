@@ -12,6 +12,7 @@ t_list* asignar_instrucciones_posibles(char* tipo);
 void inicializar_kernel(char* path);
 void inicializar_semaforos();
 void inicializar_pid();
+void inicializar_recursos();
 
 
 

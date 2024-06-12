@@ -19,10 +19,23 @@ int asignarPID(){
 	//pthread_mutex_unlock(mutex_pid); ARREGLAR SEMAFORO
 	return a;
 }
+void inicializar_registros(t_pcb* un_pcb){
+	un_pcb->registros_cpu->PC= 0;
+    un_pcb->registros_cpu->AX= 0;
+    un_pcb->registros_cpu->BX= 0;
+    un_pcb->registros_cpu->CX= 0;
+    un_pcb->registros_cpu->DX= 0;
+    un_pcb->registros_cpu->EAX= 0;
+    un_pcb->registros_cpu->EBX= 0;
+    un_pcb->registros_cpu->ECX= 0;
+    un_pcb->registros_cpu->EDX= 0;
+    un_pcb->registros_cpu->SI= 0;
+    un_pcb->registros_cpu->DI= 0;
+}
 
-void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
-    estado_pcb estado_anterior = un_pcb->estado_pcb;
-   // sacar_de_la_lista_vieja(estado_anterior);
+//solo funciona para sacar elementos de la posicion 0;
+void cambiar_de_estado_y_de_lista(estado_pcb estado_anterior, estado_pcb nuevo_estado){
+    t_pcb * un_pcb = sacar_de_la_lista_vieja(estado_anterior);
 	un_pcb->estado_pcb = nuevo_estado;
     log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
 
@@ -44,56 +57,44 @@ void cambiar_estado(t_pcb* un_pcb, estado_pcb nuevo_estado){
     case READYPLUS:
         list_add(lista_ready_plus,un_pcb);
         break;    
+        
     default:
         break;
     }
     
 }
 
-void inicializar_registros(t_pcb* un_pcb){
-	un_pcb->registros_cpu->PC= 0;
-    un_pcb->registros_cpu->AX= 0;
-    un_pcb->registros_cpu->BX= 0;
-    un_pcb->registros_cpu->CX= 0;
-    un_pcb->registros_cpu->DX= 0;
-    un_pcb->registros_cpu->EAX= 0;
-    un_pcb->registros_cpu->EBX= 0;
-    un_pcb->registros_cpu->ECX= 0;
-    un_pcb->registros_cpu->EDX= 0;
-    un_pcb->registros_cpu->SI= 0;
-    un_pcb->registros_cpu->DI= 0;
+
+t_pcb* sacar_de_la_lista_vieja(estado_pcb estado_anterior){
+    t_pcb* un_pcb = list_remove(buscar_lista(estado_anterior),0);
+    return un_pcb;
 }
 
-// t_pcb* sacar_de_la_lista_vieja(estado_pcb estado_anterior){
-//     t_pcb* un_pcb = list_remove(buscar_lista(estado_anterior),0);
-//     return un_pcb;
-// }
-
-//  t_list* buscar_lista(estado_pcb estado_anterior){
-//     t_list* lista;
-//     switch (estado_anterior)
-//     {
-//     case NEW:
-//         lista = list_remove(lista_new,0);
-//         break;
-//     case READY:
-//         lista = list_remove(lista_ready,0);
-//         break;
-//     case READYPLUS:
-//         lista = list_remove(lista_ready_plus,0);
-//         break;
-//  //   case BLOCKED:
-//         /* code */
-//         break;
-//     case EXEC:
-//         lista = list_remove(lista_exec,0);
-//         break;
-//     case EXIT:
-//         lista = list_remove(lista_exit,0);
-//         break;
+t_list* buscar_lista(estado_pcb estado_anterior){
+    t_list* lista;
+    switch (estado_anterior)
+    {
+    case NEW:
+        lista = list_remove(lista_new,0);
+        break;
+    case READY:
+        lista = list_remove(lista_ready,0);
+        break;
+    case READYPLUS:
+        lista = list_remove(lista_ready_plus,0);
+        break;
+ //   case BLOCKED:
+        /* code */
+ //       break;
+    case EXEC:
+        lista = list_remove(lista_exec,0);
+        break;
+    case EXIT:
+        lista = list_remove(lista_exit,0);
+        break;
     
-//     default:
-//         break;
-//     }
-//     return lista;
-// }
+    default:
+        break;
+    }
+    return lista;
+}

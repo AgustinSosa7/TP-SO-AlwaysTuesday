@@ -4,12 +4,11 @@
 
 void planif_largo_plazo(){
    while(1){
+      detener_planificacion();
       sem_wait(&sem_new_a_ready);
  	    sem_wait(&sem_grado_multiprogram);
       if(!list_is_empty(lista_new)){
-      t_pcb* un_pcb = list_remove(lista_new,0);
-      cambiar_estado(un_pcb, READY);
-      log_info(kernel_logger,"PID: < %d > - Estado Anterior: < NEW > - Estado Actual: <READY>", un_pcb->pid);
+      cambiar_de_estado_y_de_lista(NEW, READY);
       sem_post(&sem_planificador_corto_plazo);
          }
       }

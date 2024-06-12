@@ -6,6 +6,7 @@
 void planif_corto_plazo()
 {
     while(1){
+        detener_planificacion();
         sem_wait(&sem_planificador_corto_plazo);
         printf("entro al plani corto plazo");
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
@@ -31,13 +32,9 @@ void planif_fifo_RR()
     printf("estamos en fifo");
     if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
-
-            t_pcb* un_pcb = list_remove(lista_ready,0);
-            cambiar_estado(un_pcb, EXEC);
-            log_info(kernel_logger,"PID: < %d > - Estado Anterior: < READY > - Estado Actual: <EXEC >", un_pcb->pid);
-
+            cambiar_de_estado_y_de_lista(READY,EXEC);
+            t_pcb* un_pcb = list_get(lista_exec,0);
             enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
-            //signal a ciclo de instruccion
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
                 pthread_t hilo_quantum;
                 pthread_create(&hilo_quantum, NULL, (void*)gestionar_quantum, un_pcb);
@@ -66,11 +63,11 @@ void gestionar_quantum(t_pcb* un_pcb){
   void planif_VRR(){
     t_pcb* un_pcb;
     if(!list_is_empty(lista_ready_plus)){
-        un_pcb = list_remove(lista_ready_plus,0); 
+        cambiar_de_estado_y_de_lista(READYPLUS,EXEC); 
     } else if(!list_is_empty(lista_ready)){
-        un_pcb = list_remove(lista_ready,0);
+        cambiar_de_estado_y_de_lista(READY,EXEC); 
     }
-    cambiar_estado(un_pcb,EXEC);
+    un_pcb = list_get(lista_exec,0);
     enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
     pthread_t hilo_quantum_VRR;
     pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);
