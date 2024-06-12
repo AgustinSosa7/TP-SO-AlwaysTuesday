@@ -105,10 +105,9 @@ typedef struct{
 extern t_log* logger;
 
 
-extern bool flag_hay_interrupcion;
+
 
 /////////SEMAFOROS////////
-extern pthread_mutex_t mutex_flag_interrupcion;
 // Funciones de Listas
 
 bool contains_string(t_list* lista, char* elemento);
@@ -152,6 +151,7 @@ void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_CPU);
 
 //PCB
+void agregar_pcb_a_paquete(t_pcb* un_pcb, t_paquete* un_paquete);
 void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje);
 t_pcb* recibir_pcb(t_paquete* paquete);
 void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);

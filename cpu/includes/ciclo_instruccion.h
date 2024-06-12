@@ -3,12 +3,20 @@
 
 #include "cpu_gestor.h"
 #include "cpu_memoria.h"
+#include "cpu_kernel_interrupt.h"
 #include "stdbool.h"
 #include <commons/log.h>
 #include <commons/config.h>
-#include "../includes/cpu_kernel_interrupt.h"
+
 void ciclo_instruccion();
 
+void devolver_contexto_por_ser_interrumpido();
+void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz, int segundos_sleep);
+
+void escribir_valor_a_registro(char *nombre_registro, u_int32_t valor);
+uint32_t leer_valor_de_registro(char *nombre_registro);
+
+/*
 //FETCH
 
 char** ciclo_instruccion_fetch();
@@ -24,11 +32,6 @@ bool codigo_inexistente(char* instruccion);
 
 void ejecucion_proceso(char** codigo);
 cod_instruccion identificador_instruccion(char* codigo);
-
-int obtener_tamanio_registro(char* registroTamanio);
-bool es_de_proposito_general(char* registroTamanio);
-bool es_extendido(char* registroTamanio);
-
+*/
 
 #endif
-

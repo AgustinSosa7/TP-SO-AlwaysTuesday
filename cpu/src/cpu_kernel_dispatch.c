@@ -1,7 +1,5 @@
 # include "../includes/cpu_kernel_dispatch.h"
 
-
-
 void atender_cpu_kernel_dispatch(){
     log_info(cpu_logger, "Atendiendo a DISPATCH...");
 
@@ -10,14 +8,8 @@ void atender_cpu_kernel_dispatch(){
 		int cod_op = recibir_operacion(fd_kernel_dispatch);
         t_paquete* paquete = recibir_paquete(fd_kernel_dispatch);
         log_info(cpu_logger, "Se recibio algo de KERNEL_Dispatch : %d", cod_op);
-	//	t_buffer* unBuffer;
+
 		switch (cod_op) {
-            case MENSAJE:
-                //recibir_mensaje(cliente_fd);
-                break;
-            case PAQUETE:
-                //
-                break;
             case PCB:
                     //Recibe el paquete lo deserealiza y recibe el PCB
                     log_info(cpu_logger,"LLego el PCB");
@@ -39,4 +31,3 @@ void atender_cpu_kernel_dispatch(){
     }
 
 }
-

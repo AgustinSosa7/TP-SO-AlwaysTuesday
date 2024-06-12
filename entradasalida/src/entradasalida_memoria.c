@@ -11,11 +11,11 @@ bool guardar_en_memoria(char* leido, char* registroDireccion){
     return fin_guardado;
 }
 
-char* pedir_a_memoria(char* registroDireccion, int registroTamanio){
+char* pedir_a_memoria(char* registroDireccion, char* registroTamanio){
     //Enviar al MEMORIA: [GUARDAR_REGISTRO][RegistroDireccion][RegistroTamanio]
     t_paquete* paquete = crear_paquete(PEDIR_REGISTRO);
     agregar_string_a_paquete(paquete, registroDireccion);
-    agregar_int_a_paquete(paquete, registroTamanio);
+    agregar_string_a_paquete(paquete, registroTamanio);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
     char* escrito = recibir_mensaje_string(fd_memoria); // MEMORIA le envia al string con la funcion enviar_mensaje();
