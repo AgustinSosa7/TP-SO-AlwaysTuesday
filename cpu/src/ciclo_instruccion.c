@@ -15,7 +15,7 @@ void ciclo_instruccion(){
 	log_info(cpu_logger, "PID: <%d> - FETCH - PC: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
-	char * instruccion_con_parametros = recibir_instruccion_pseudocodigo();
+	char *instruccion_con_parametros = recibir_instruccion_pseudocodigo();
 
 	//DECODE & EXECUTE
 	char *saveptr = instruccion_con_parametros;
@@ -62,7 +62,7 @@ void ciclo_instruccion(){
 	else if (strcmp(nombre_instruccion, "IO_GEN_SLEEP") == 0)
 		{
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
-			char *nombre_interfaz = atoi(strtok_r(saveptr, " ", &saveptr));
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			int tiempo_sleep = atoi(strtok_r(saveptr, " ", &saveptr));
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
