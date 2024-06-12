@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv) {
 
-if(validar_parametros_incorrectos_main(argc, 3, argv)){
+if(validar_parametros_incorrectos_main(argc, 2, argv)){
     return EXIT_FAILURE;
  }
 

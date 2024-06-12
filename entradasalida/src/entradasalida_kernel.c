@@ -49,11 +49,11 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
            peticion->parametros->registroDireccion= leer_string_del_stream(buffer);
-           peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_string_del_stream(buffer);
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
            peticion->parametros->registroDireccion= leer_string_del_stream(buffer);
-           peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_string_del_stream(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             /* code */
@@ -92,7 +92,7 @@ void procesar_peticion(t_peticion* peticion) {
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
             char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
-            log_info(entradasalida_logger,"En la posicion de memoria %s con tamanio %d se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
+            log_info(entradasalida_logger,"En la posicion de memoria %s con tamanio %s se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             /* code */
@@ -111,7 +111,7 @@ void procesar_peticion(t_peticion* peticion) {
       }
 }      
 
-char* iniciar_la_consola(int registroTamanio){
+char* iniciar_la_consola(char* registroTamanio){
       char* leido;
 	leido = readline("> ");
 	while(strcmp(leido,"\0") != 0){
@@ -120,16 +120,30 @@ char* iniciar_la_consola(int registroTamanio){
                   break;
 		}
 		free(leido);
-		log_info(entradasalida_logger, "El valor ingresado no debe superar los %d caracteres. Por favor reingrese un nuevo valor...\n", registroTamanio);
+		log_info(entradasalida_logger, "El valor ingresado no debe superar el tamanio del registro %s. Por favor reingrese un nuevo valor...\n", registroTamanio);
 		leido = readline("> ");
 	}
       return leido;
 }
 
-bool validar_tamanio_leido(char* leido, int registroTamanio){
-      return ((registroTamanio >= strlen(leido))); 
+bool validar_tamanio_leido(char* leido, char* registroTamanio){
+      if(esDePropositoGeneral(registroTamanio)){
+            return (2 >= strlen(leido)); //REVISAR CUANTOS CARACTERES PUEDE GUARDAR UN REGISTRO  
+      }else if(esExtendido(registroTamanio)){
+            return (4 >= strlen(leido)); 
+      } else{
+            log_warning(entradasalida_logger, "El tamanio del registro ingresado no es valido.\n");
+            return EXIT_FAILURE;
+      }
 }
 
+bool esDePropositoGeneral(char* registroTamanio){
+      return contains_string(lista_registros_propisito_general, registroTamanio);
+}
+
+bool esExtendido(char* registroTamanio){
+      return contains_string(lista_registros_extendidos, registroTamanio);
+}
 
 void finalizar_peticion(t_peticion* peticion){
       enviar_bool_mensaje(true, fd_kernel);

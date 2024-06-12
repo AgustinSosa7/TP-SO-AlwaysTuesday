@@ -46,7 +46,8 @@ extern int BLOCK_SIZE;
 extern int BLOCK_COUNT;
 extern int RETRASO_COMPACTACION;
 
-
+extern t_list* lista_registros_propisito_general;
+extern t_list* lista_registros_extendidos;
 
 
 #endif /* ES_GESTOR_H_ */

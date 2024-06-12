@@ -5,6 +5,7 @@ void inicializar_entradasalida(char** argv){
     inicializar_logs();
     inicializar_configs(argv);
     imprimir_configs();
+	inicializar_listas();
 }
 
 void inicializar_logs (){
@@ -23,10 +24,11 @@ if (entradasalida_log_debug == NULL) {
 }
 
 void inicializar_configs(char** argv){
-	NOMBRE_INTERFAZ = argv[1];
-	char* path = argv[2];
-		
+	char* path = argv[1];
 	entradasalida_config = config_create(path);
+
+	truncateString(path, 7); // Le saco los ultimos 7 caracteres (".config") 
+	NOMBRE_INTERFAZ = path;
 
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");
@@ -75,10 +77,31 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			}
 }
 
+
+void truncateString(char *str, int n){ //Corta los ultimos n caracteres de un string
+    int len = strlen(str);
+    if (len > n) {
+        str[len - n] = '\0';
+    }
+}
+
 void imprimir_configs(){
     log_info(entradasalida_logger, "NOMBRE_INTERFAZ: %s",NOMBRE_INTERFAZ);
 	log_info(entradasalida_logger, "TIPO_INTERFAZ: %s",TIPO_INTERFAZ);
 
+}
+
+void inicializar_listas(){
+	lista_registros_propisito_general = list_create();
+	lista_registros_extendidos = list_create();
+	list_add(lista_registros_propisito_general, "AX");
+	list_add(lista_registros_propisito_general, "BX");
+	list_add(lista_registros_propisito_general, "CX");
+	list_add(lista_registros_propisito_general, "DX");
+	list_add(lista_registros_extendidos, "EAX");
+	list_add(lista_registros_extendidos, "EBX");
+	list_add(lista_registros_extendidos, "ECX");
+	list_add(lista_registros_extendidos, "EDX");
 }
 
 void iniciar_file_system(){

@@ -24,3 +24,6 @@ char* PATH_BASE_DIALFS;
 int BLOCK_SIZE;
 int BLOCK_COUNT;
 int RETRASO_COMPACTACION;
+
+t_list* lista_registros_propisito_general;
+t_list* lista_registros_extendidos;
