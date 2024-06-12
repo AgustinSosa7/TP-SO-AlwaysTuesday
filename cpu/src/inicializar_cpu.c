@@ -1,6 +1,5 @@
 #include "../includes/inicializar_cpu.h"
 
-
 void inicializar_cpu(char* path){
     inicializar_logs();
     iniciar_config(path);
@@ -16,7 +15,6 @@ void inicializar_logs(){
 	    exit(EXIT_FAILURE);
 	}
 
-
     cpu_log_debug = log_create("cpu.log","CPU_LOG",1,LOG_LEVEL_INFO);
     if (cpu_log_debug == NULL) {
 	    perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
@@ -24,9 +22,6 @@ void inicializar_logs(){
 	}
 
     log_info(cpu_log_debug, "Se inicializo el cpu debug logger"); //Sacar eventualmente
-
-
-
 }
 
 void iniciar_config(char* path){
@@ -43,7 +38,6 @@ void iniciar_config(char* path){
     PUERTO_ESCUCHA_INTERRUPT = config_get_string_value(cpu_config,"PUERTO_ESCUCHA_INTERRUPT");
     CANTIDAD_ENTRADAS_TLB = config_get_int_value(cpu_config,"CANTIDAD_ENTRADAS_TLB");
     ALGORITMO_TLB = config_get_string_value(cpu_config,"ALGORITMO_TLB");    
-
 }
 
 void imprimir_config(){
@@ -54,12 +48,8 @@ void imprimir_config(){
 }
 
 void inicializar_estructuras(){
-
-    lista_registros_prop_gen = list_create(); //["AX", "BX", "CX", "DX"]
-    lista_registros_extendidos = list_create(); //["PC", "EAX", "EBX", "ECX", "EDX", "SI", "DI"]
-
     pcb_global = malloc(sizeof(t_pcb));
-    pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu));    // Ver si funciona cmabie contexto por PCB
+    pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu));
     
     opcode_cpu = string_array_new();
     string_array_push(&opcode_cpu, "SET");
@@ -87,6 +77,6 @@ void inicializar_estructuras(){
 }
 
 void inicializar_semaforos(){
-    sem_init(&sem_ciclo_de_instruccion,0,0);
+    sem_init(&sem_ciclo_de_instruccion,false,0);
     pthread_mutex_init(&mutex_ocurrio_interrupcion, NULL);
 }

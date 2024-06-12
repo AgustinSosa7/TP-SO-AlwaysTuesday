@@ -87,11 +87,12 @@ void ciclo_instruccion(){
 
 	if (!dejar_de_ejecutar)
 	{
-		// Sigo ejecutando
+		// Reinicio el ciclo de instruccion, ejecutando la próxima.
 		sem_post(&sem_ciclo_de_instruccion);
 	}
 	else
-	{
+	{	
+		// Queda bloqueado esperando que vuelvan a ejecutar un proceso en la CPU.
 		log_debug(cpu_log_debug, "FRENO");
 	}
 
@@ -110,7 +111,8 @@ void devolver_contexto_por_ser_interrumpido()
 {
 	t_paquete* paquete = crear_paquete(DESALOJO_QUANTUM);
 	agregar_pcb_a_paquete(pcb_global, paquete);
-	enviar_paquete(paquete, fd_cpu_dispatch);
+	//Falta agregar el motivo de la interrupción...
+	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
 
@@ -121,7 +123,7 @@ void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz
 	agregar_string_a_paquete(paquete, nombre_instruccion);
 	agregar_string_a_paquete(paquete, nombre_interfaz);
 	agregar_int_a_paquete(paquete, segundos_sleep);
-	enviar_paquete(paquete, fd_cpu_dispatch);
+	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
 

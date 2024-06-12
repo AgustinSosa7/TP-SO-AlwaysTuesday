@@ -20,11 +20,10 @@ void atender_interrupciones(){
                 break;
             case -1:
                 log_error(cpu_logger, "Desconexión de KERNEL - Interrupt");
-                control_key= 0;
+                control_key = 0;
             default:
                 log_warning(cpu_logger,"Operacion desconocida de KERNEL - Interrupt");
                 break;
 		}
     }
 }
-
