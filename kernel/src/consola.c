@@ -3,7 +3,7 @@
 void iniciar_consola(){
 	lista_instrucciones = list_create();
 	agregar_instruccion(lista_instrucciones,EJECUTAR_SCRIPT,1,"EJECUTAR_SCRIPT");
-	agregar_instruccion(lista_instrucciones,INICIAR_PROCESO,0,"INICIAR_PROCESO");
+	agregar_instruccion(lista_instrucciones,INICIAR_PROCESO,1,"INICIAR_PROCESO");
 	agregar_instruccion(lista_instrucciones,FINALIZAR_PROCESO,1,"FINALIZAR_PROCESO");
 	agregar_instruccion(lista_instrucciones,DETENER_PLANIFICACION,0,"DETENER_PLANIFICACION");
 	agregar_instruccion(lista_instrucciones,INICIAR_PLANIFICACION,0,"INICIAR_PLANIFICACION");
@@ -101,7 +101,7 @@ void atender_instruccion_validada(char* leido){
 		pthread_mutex_unlock(&mutex_new);	
 		log_info(kernel_logger,"Se crea el proceso < %d > en NEW",nuevo_pcb->pid);
 		sem_post(&sem_new_a_ready);
-		//enviar algo a memoria array_leido[1];
+		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
 
 		break;
 	//case FINALIZAR_PROCESO: 
@@ -245,3 +245,13 @@ bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
 //	list_add_all(lista, lista_exit);
 //	return lista;
 //}
+
+void enviar_path_a_memoria(char* path,int pid,int socket){
+	t_paquete* un_paquete = crear_paquete(CREAR_PROCESO);
+	agregar_int_a_paquete(un_paquete,pid);
+	agregar_string_a_paquete(un_paquete,path);
+	enviar_paquete(un_paquete, socket);
+	eliminar_paquete(un_paquete);
+}
+
+

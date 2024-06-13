@@ -33,12 +33,12 @@ int main(int argc, char** argv){
     // Atender los mensajes de Kernel - Interrupt
     pthread_t hilo_kernel_interrupt;
     pthread_create(&hilo_kernel_interrupt, NULL, (void*)atender_interrupciones, NULL);
-    pthread_join(hilo_kernel_interrupt, NULL);
+    pthread_detach(hilo_kernel_interrupt);
 
     // Método principal
     pthread_t hilo_ciclo_instruccion;
     pthread_create(&hilo_ciclo_instruccion, NULL, (void*)ciclo_instruccion, NULL);
-    pthread_detach(hilo_ciclo_instruccion);
+    pthread_join(hilo_ciclo_instruccion,NULL);
 
     return EXIT_SUCCESS;
 }

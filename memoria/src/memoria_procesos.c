@@ -45,7 +45,7 @@ t_proceso* crear_proceso_nuevo(){
     op_code code_op = recibir_operacion(fd_kernel);
     t_paquete* paquete = recibir_paquete(fd_kernel);
     t_buffer* buffer = paquete->buffer;
-    t_proceso* procesoNuevo = malloc(sizeof(t_proceso*));
+    t_proceso* procesoNuevo = malloc(sizeof(t_proceso));
     if(code_op == CREAR_PROCESO)
     {
         int pid = leer_int_del_buffer(buffer); //cambiar a leer algo del buffer

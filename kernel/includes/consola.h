@@ -34,6 +34,6 @@ bool validar_nombre_y_parametros(char* nombre_instruccion,int cant_parametros);
 bool esta_la_instruccion(void* instruccion) ;
 bool esta_o_noo(char* nombre_instruccion, int cant_parametros, t_instruccion* instruccion);
 t_list* leer_archivo(char* path);
-
+void enviar_path_a_memoria(char* path,int pid,int socket);
 
 #endif

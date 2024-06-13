@@ -35,7 +35,7 @@ void inicializar_registros(t_pcb* un_pcb){
 
 //solo funciona para sacar elementos de la posicion 0;
 void cambiar_de_estado_y_de_lista(estado_pcb estado_anterior, estado_pcb nuevo_estado){
-    t_pcb * un_pcb = sacar_de_la_lista_vieja(estado_anterior);
+    t_pcb* un_pcb = sacar_de_la_lista_vieja(estado_anterior);
 	un_pcb->estado_pcb = nuevo_estado;
     log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
 
@@ -75,26 +75,26 @@ t_list* buscar_lista(estado_pcb estado_anterior){
     switch (estado_anterior)
     {
     case NEW:
-        lista = list_remove(lista_new,0);
+        return lista_new;
         break;
     case READY:
-        lista = list_remove(lista_ready,0);
+        return lista_ready;
         break;
     case READYPLUS:
-        lista = list_remove(lista_ready_plus,0);
+        return lista_ready_plus;
         break;
  //   case BLOCKED:
         /* code */
  //       break;
     case EXEC:
-        lista = list_remove(lista_exec,0);
+        return lista_exec;
         break;
     case EXIT:
-        lista = list_remove(lista_exit,0);
+        return lista_exit;
         break;
     
     default:
         break;
     }
-    return lista;
+    
 }
