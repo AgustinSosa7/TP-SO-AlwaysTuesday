@@ -9,6 +9,9 @@ t_pcb* pcb_global;
 
 char ** opcode_cpu;
 
+int tamanio_pagina;
+int tamanio_memoria;
+
 bool dejar_de_ejecutar;
 bool ocurrio_interrupcion;
 
