@@ -8,6 +8,7 @@ void atender_entradasalida_kernel(){
         int cod_op = recibir_operacion(fd_kernel);
         t_paquete* paquete = recibir_paquete(fd_kernel);
 	  log_info(entradasalida_logger, "Se recibio algo de Kernel..");
+        log_info(entradasalida_logger, "CODIGO DE OPERACION: %d", cod_op);
 
         switch (cod_op)
         {
@@ -30,8 +31,9 @@ void atender_entradasalida_kernel(){
 
 t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
-    t_buffer* buffer = paquete->buffer;
+    void* buffer = paquete->buffer;
 
+    peticion->instruccion = malloc(sizeof(char));
     peticion->instruccion = leer_string_del_stream(buffer);
 
     asignar_parametros_segun_tipo(peticion, buffer);

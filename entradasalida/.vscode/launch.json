@@ -8,7 +8,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/${workspaceFolderBasename}",
-      "args": ["/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/entradasalida.config"],
+      "args": ["INT1"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
