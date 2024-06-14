@@ -6,7 +6,7 @@ void recibir_pcb_con_motivo()
       detener_planificacion();
       int code_op = recibir_operacion(fd_cpu_dispatch);
       t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
-      t_pcb* pcb_recibido = recibir_pcb(paquete);
+      t_pcb* pcb_recibido = recibir_pcb(paquete); 
       log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
       detener_planificacion();
       switch (code_op)
@@ -36,7 +36,7 @@ void recibir_pcb_con_motivo()
             break;
       //case WAIT:
       //      //preguntar por el parametro paquete->buffer
-      //      char* recurso_solicitado = leer_string_del_stream(paquete->buffer);
+      //      char* recurso_solicitado = leer_string_del_buffer(paquete->buffer);
       //      bool esta_o_no_el_recurso(t_recursos* recurso){
       //            return(esta_el_recurso(recurso,recurso_solicitado));
       //      }
@@ -58,7 +58,7 @@ void recibir_pcb_con_motivo()
       //            }
       //      break;
       //case SIGNAL:
-      //      char* recurso_solicitado = leer_string_del_stream(paquete->buffer);
+      //      char* recurso_solicitado = leer_string_del_buffer(paquete->buffer);
       //      bool esta_o_no_el_recurso(t_recursos* recurso){
       //            return(esta_el_recurso(recurso,recurso_solicitado));
       //      }

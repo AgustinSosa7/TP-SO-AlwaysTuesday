@@ -7,8 +7,8 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     peticion->interfaz = malloc(sizeof(char));
     peticion->parametros = malloc(sizeof(t_peticion_param));
 
-    peticion->instruccion = leer_string_del_stream(buffer);
-    peticion->interfaz = leer_string_del_stream(buffer);
+    peticion->instruccion = leer_string_del_buffer(buffer);
+    peticion->interfaz = leer_string_del_buffer(buffer);
     peticion->parametros = leer_parametros(paquete,peticion->instruccion);
 
     return peticion;
@@ -25,13 +25,13 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       }
       else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           parametros->registroDireccion= leer_string_del_stream(buffer);
-           parametros->registroTamanio= leer_string_del_stream(buffer);
+           parametros->registroDireccion= leer_string_del_buffer(buffer);
+           parametros->registroTamanio= leer_string_del_buffer(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           parametros->registroDireccion= leer_string_del_stream(buffer);
-           parametros->registroTamanio= leer_string_del_stream(buffer);
+           parametros->registroDireccion= leer_string_del_buffer(buffer);
+           parametros->registroTamanio= leer_string_del_buffer(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {

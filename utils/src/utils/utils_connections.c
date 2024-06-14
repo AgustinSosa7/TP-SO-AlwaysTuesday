@@ -440,7 +440,7 @@ uint32_t leer_uint_32_del_buffer(t_buffer* buffer)
 	return valor;
 }
 
-char* leer_string_del_stream(t_buffer* buffer) 
+char* leer_string_del_buffer(t_buffer* buffer) 
 {
 	int tamanio_string;
 	 tamanio_string=leer_int_del_buffer(buffer);

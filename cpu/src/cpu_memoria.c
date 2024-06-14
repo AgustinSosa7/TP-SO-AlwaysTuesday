@@ -34,7 +34,7 @@ char* recibir_instruccion_pseudocodigo(){
     t_buffer* buffer = paquete->buffer;
     if(code_op == PSEUDOCODIGO)
     {
-        char* instruccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
+        char* instruccion_pseudocodigo = leer_string_del_buffer(buffer);//REVISAR POR QUE NO FUNCIONA
         printf("Instruccion_pseudocodigo: %s \n", instruccion_pseudocodigo);
         free(paquete);
         return instruccion_pseudocodigo;

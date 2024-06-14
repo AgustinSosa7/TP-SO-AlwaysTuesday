@@ -167,7 +167,7 @@ t_paquete* recibir_paquete(int unSocket);
 int leer_int_del_buffer(t_buffer* buffer);
 uint8_t leer_uint_8_del_buffer(t_buffer* buffer);
 uint32_t leer_uint_32_del_buffer(t_buffer* buffer);
-char* leer_string_del_stream(t_buffer* buffer);
+char* leer_string_del_buffer(t_buffer* buffer);
 void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU);
 
 //Funciones Superpaquete

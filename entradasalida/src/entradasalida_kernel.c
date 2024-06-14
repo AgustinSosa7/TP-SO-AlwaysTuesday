@@ -34,7 +34,7 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     void* buffer = paquete->buffer;
 
     peticion->instruccion = malloc(sizeof(char));
-    peticion->instruccion = leer_string_del_stream(buffer);
+    peticion->instruccion = leer_string_del_buffer(buffer);
 
     asignar_parametros_segun_tipo(peticion, buffer);
 
@@ -50,12 +50,12 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_stream(buffer);
-           peticion->parametros->registroTamanio= leer_string_del_stream(buffer);
+           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_stream(buffer);
-           peticion->parametros->registroTamanio= leer_string_del_stream(buffer);
+           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             /* code */

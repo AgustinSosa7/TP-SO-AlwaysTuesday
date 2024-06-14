@@ -12,16 +12,16 @@ void atender_entradasalida()
       switch (code_op)
       {
       case GUARDAR_REGISTRO:
-            char* leido = leer_string_del_stream(buffer);
-            char* registroDireccion = leer_string_del_stream(buffer);
+            char* leido = leer_string_del_buffer(buffer);
+            char* registroDireccion = leer_string_del_buffer(buffer);
             if(guardar_leido_en_registro(leido, registroDireccion)){ // definir comportamiento de la funcion
                   enviar_bool_mensaje(true, fd_entradasalida); 
             } else{
                   enviar_bool_mensaje(true, fd_entradasalida);}
             break;
       case PEDIR_REGISTRO:
-            char* registro_Direccion = leer_string_del_stream(buffer);
-            char* registroTamanio = leer_string_del_stream(buffer);
+            char* registro_Direccion = leer_string_del_buffer(buffer);
+            char* registroTamanio = leer_string_del_buffer(buffer);
             char* escrito = devolver_registro(registro_Direccion, registroTamanio); // definir comportamiento de la funcion
             enviar_mensaje_string(escrito, fd_entradasalida);
             break;

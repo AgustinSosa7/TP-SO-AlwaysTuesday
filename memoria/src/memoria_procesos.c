@@ -49,7 +49,7 @@ t_proceso* crear_proceso_nuevo(){
     if(code_op == CREAR_PROCESO)
     {
         int pid = leer_int_del_buffer(buffer); //cambiar a leer algo del buffer
-        char* direccion_pseudocodigo = leer_string_del_stream(buffer);
+        char* direccion_pseudocodigo = leer_string_del_buffer(buffer);
         procesoNuevo->pid = pid;
         procesoNuevo->direccion_pseudocodigo = direccion_pseudocodigo;
         procesoNuevo->instrucciones = list_create();
