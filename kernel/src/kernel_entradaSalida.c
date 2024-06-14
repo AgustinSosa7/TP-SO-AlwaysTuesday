@@ -124,12 +124,13 @@ void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz)
     log_info(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior), enum_a_string(proceso_blocked->un_pcb->estado_pcb));
     log_info(kernel_logger, "Motivo de Bloqueo: PID: <%d> - Bloqueado por: <%s>", proceso_blocked->un_pcb->pid, peticion_pcb_interfaz->interfaz->nombre);
 
-    eliminar_peticion(peticion_pcb_interfaz->peticion);
+    eliminar_peticion(peticion_pcb_interfaz->peticion); 
 }
 
 
 void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
+      printf("Instruccion a enviar: %s.\n",proceso_blocked->peticion->instruccion);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion);
       agregar_parametros_a_paquete(paquete, proceso_blocked->peticion); 
 
@@ -249,12 +250,45 @@ void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
 }
 
 void eliminar_peticion(t_peticion* peticion){
+      eliminar_parametros_segun_instruccion(peticion->instruccion, peticion->parametros);
       free(peticion->instruccion);
       free(peticion->interfaz);
-      free(peticion->parametros->archivo);
-      free(peticion->parametros->registroDireccion);
-      free(peticion->parametros->registroTamanio);
-      free(peticion->parametros->registroPunteroArchivo);
-      free(peticion->parametros);
       free(peticion);
+}
+
+void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros){
+      if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
+
+      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
+      {     free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
+      {     free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      {     free(parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      {     free(parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      {     free(parametros->archivo);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
+      {     free(parametros->archivo);
+            free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+            free(parametros->registroPunteroArchivo);
+
+      }else //Es IO_FS_READ 
+      {     free(parametros->archivo);
+            free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+            free(parametros->registroPunteroArchivo);
+      }     
+      
+      free(parametros);
 }

@@ -153,10 +153,45 @@ void finalizar_peticion(t_peticion* peticion){
       eliminar_peticion(peticion);
 }
 
-void eliminar_peticion(t_peticion* peticion){ 
-      free(peticion->parametros->archivo);
-      free(peticion->parametros->registroDireccion);
-      free(peticion->parametros->registroPunteroArchivo);
-      free(peticion->parametros);
+void eliminar_peticion(t_peticion* peticion){
+      eliminar_parametros_segun_instruccion(peticion->instruccion, peticion->parametros);
+      free(peticion->instruccion);
       free(peticion);
-}      
+}
+
+void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros){
+      if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
+
+      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
+      {     free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
+      {     free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      {     free(parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      {     free(parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      {     free(parametros->archivo);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
+      {     free(parametros->archivo);
+            free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+            free(parametros->registroPunteroArchivo);
+
+      }else //Es IO_FS_READ 
+      {     free(parametros->archivo);
+            free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+            free(parametros->registroPunteroArchivo);
+      }     
+      
+      free(parametros);
+}
