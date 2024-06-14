@@ -3,6 +3,7 @@
 
 #include "cpu_gestor.h"
 #include "cpu_memoria.h"
+#include "cpu_kernel_dispatch.h"
 #include "cpu_kernel_interrupt.h"
 #include "stdbool.h"
 #include <commons/log.h>

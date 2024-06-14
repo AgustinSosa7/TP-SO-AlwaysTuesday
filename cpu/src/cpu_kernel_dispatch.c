@@ -14,7 +14,7 @@ void atender_cpu_kernel_dispatch(){
                     //Recibe el paquete lo deserealiza y recibe el PCB
                     log_info(cpu_logger,"LLego el PCB");
                     t_pcb* un_pcb = recibir_pcb(paquete);
-                    imprimir_pcb( un_pcb,cpu_logger);
+                    imprimir_pcb(un_pcb, cpu_logger);
                     log_info(cpu_logger,"pid del pcb global antes: %d", pcb_global->pid);
                     pcb_global = un_pcb;
                     log_info(cpu_logger,"pid del pcb global: %d", pcb_global->pid);

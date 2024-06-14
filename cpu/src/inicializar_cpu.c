@@ -15,7 +15,7 @@ void inicializar_logs(){
 	    exit(EXIT_FAILURE);
 	}
 
-    cpu_log_debug = log_create("cpu.log","CPU_LOG",1,LOG_LEVEL_INFO);
+    cpu_log_debug = log_create("cpu_debug.log","CPU_LOG",1,LOG_LEVEL_INFO);
     if (cpu_log_debug == NULL) {
 	    perror("Algo raro pasa con el log. No se pudo crear o encontrar el archivo.");
 	    exit(EXIT_FAILURE);
