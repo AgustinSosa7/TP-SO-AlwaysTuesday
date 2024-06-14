@@ -290,13 +290,6 @@ void eliminar_paquete(t_paquete* paquete)
 	free(paquete);
 }
 
-void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio)
-{
-	paquete->buffer->size += tamanio;
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
-	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
-	paquete->buffer->offset += tamanio; 
-}
 
 void agregar_int_a_paquete(t_paquete* paquete, int valor)
 {
@@ -421,14 +414,6 @@ t_paquete* recibir_paquete(int unSocket)
 	return paquete;
 }
 
-
-//void* leer_algo_del_stream(t_buffer* buffer, int tamanio) 
-//{	
-//	void* valor = malloc(sizeof(void));
-//	memcpy(valor, buffer->stream + buffer->offset, tamanio);
-//	buffer->offset += tamanio;
-//	return valor;
-//}
 
 int leer_int_del_buffer(t_buffer* buffer) 
 {	

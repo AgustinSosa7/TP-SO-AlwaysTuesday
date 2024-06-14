@@ -22,8 +22,8 @@ void atender_cpu_memoria(){
 
 void pedir_instruccion_pseudocodigo(int pid,int pc){
     t_paquete* paquete = crear_paquete(PEDIDO_PSEUDOCODIGO);
-    agregar_algo_a_paquete(paquete,&pid,sizeof(pid));
-    agregar_algo_a_paquete(paquete,&pc,sizeof(pc));
+    agregar_int_a_paquete(paquete,pid);
+    agregar_int_a_paquete(paquete,pc);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
 }
@@ -35,6 +35,7 @@ char* recibir_instruccion_pseudocodigo(){
     if(code_op == PSEUDOCODIGO)
     {
         char* instruccion_pseudocodigo = leer_string_del_stream(buffer);//REVISAR POR QUE NO FUNCIONA
+        printf("Instruccion_pseudocodigo: %s \n", instruccion_pseudocodigo);
         free(paquete);
         return instruccion_pseudocodigo;
     }
