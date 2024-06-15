@@ -15,10 +15,12 @@ inicializar_memoria(argv[1]);
 // Iniciar servidor de memoria
 fd_memoria = iniciar_servidor(PUERTO_ESCUCHA, memoria_logger, IP_MEMORIA);  //Tercer argumento, ip del server
 
+
 // Esperar conexion de CPU
 log_info(memoria_logger, "Esperando a CPU...");
 fd_cpu = esperar_cliente(fd_memoria, memoria_logger,"CPU");
 gestionar_handshake_como_server(fd_cpu, memoria_logger, "CPU");
+
 
 // Esperar conexion de KERNEL
 log_info(memoria_logger, "Esperando a KERNEL...");
@@ -34,8 +36,21 @@ pthread_detach(hilo_generador_de_io);
 
 /////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
 
-t_proceso* proceso = crear_proceso_nuevo();
-list_add(procesos_memoria, proceso); 
+list_add(procesos_memoria, crear_proceso_nuevo());
+t_proceso* proceso1 = buscar_proceso_en_memoria(3);
+printf("longitud: %d\n",(proceso1->long_tabla_pags));
+
+int numero_marco = traer_numero_marco(proceso1,1);
+printf("numero_marco: %d\n",numero_marco);
+
+printf("marco libre encontrado: %d\n",buscar_marco_libre());
+
+/*
+t_proceso* proceso1 = buscar_proceso_en_memoria(3);
+
+longitud_tabla_paginas()
+*/
+
 
 while(1){
 t_pedido* pedido = recibir_instruccion_a_enviar();

@@ -22,21 +22,20 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     //Escribo en la lista y guardo las instrucciones.
     t_list* lista_de_instrucciones = list_create();
     int longitud = 0;
-    char* INSTRUCCION = malloc(256 * sizeof(char));;//Averiguar por que 256
-    
+    char* INSTRUCCION = malloc(256 * sizeof(char));//Averiguar por que 256
     while(fgets(INSTRUCCION, 256, Pseudocodigo)){  
         longitud = strlen(INSTRUCCION);
     		if(INSTRUCCION[longitud - 1] == '\n'){
 				char* nueva_instruccion = string_new();
 				string_n_append(&nueva_instruccion, INSTRUCCION, longitud - 1);
 				free(INSTRUCCION);
-				INSTRUCCION = malloc(256 * sizeof(int));
+				INSTRUCCION = malloc(256 * sizeof(char));
 				strcpy(INSTRUCCION,nueva_instruccion);
                 list_add(lista_de_instrucciones, nueva_instruccion);
     		}
     }
     fgets(INSTRUCCION, 256, Pseudocodigo);
-    list_add(lista_de_instrucciones, INSTRUCCION);
+    list_add(lista_de_instrucciones, INSTRUCCION);//ES EL ESPACIO DE MEMORIA DE INSTRUCCION
     return lista_de_instrucciones;
 };
 
@@ -54,9 +53,9 @@ t_proceso* crear_proceso_nuevo(){
         procesoNuevo->direccion_pseudocodigo = direccion_pseudocodigo;
         procesoNuevo->instrucciones = list_create();
         procesoNuevo->instrucciones = leer_archivo_pseudocodigo(direccion_pseudocodigo);
+        procesoNuevo->long_tabla_pags = 0;
+        procesoNuevo->tabla_de_paginas = (int *)malloc(0 * sizeof(int)); //REVISAR INICIALIZA LA TABLA DE PAGINAS SIN NINGUNA CANTIDAD DE PAGINAS ASIGNADA
         free(paquete);
-        //list_add(procesos_memoria, procesoNuevo);
-        //log_info(memoria_logger, "Se agrego un proceso a memoria %d",procesoNuevo->pid);
         return procesoNuevo;
     }
     else
