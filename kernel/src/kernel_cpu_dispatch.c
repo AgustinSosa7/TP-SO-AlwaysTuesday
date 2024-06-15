@@ -95,15 +95,6 @@ bool esta_el_recurso(t_recursos* recurso, char* recurso_solicitado){
 }
 
 
-void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
-      if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
-            if(tiempo_transcurrido < un_pcb->quantum){
-                  enviar_proceso_blocked_a_ready_plus(un_pcb);
-            } 
-      } else{
-            enviar_proceso_blocked_a_ready(un_pcb);
-            tiempo_transcurrido = 0;
-            }
-}
+
 
 
