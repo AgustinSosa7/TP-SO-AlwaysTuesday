@@ -11,6 +11,7 @@
 #include <commons/config.h>
 #include <commons/collections/list.h>
 #include <commons/txt.h>
+#include <commons/bitarray.h>
 
 //Estructuras
 typedef struct
@@ -18,14 +19,16 @@ typedef struct
 	int pid;
 	char* direccion_pseudocodigo;
 	t_list* instrucciones;
+	int long_tabla_pags;
+	int* tabla_de_paginas;
 } t_proceso;
-
 
 typedef struct
 {
 	int pid;
 	int pc;
 } t_pedido;
+
 
 //Variables GLOBALES
 
@@ -52,6 +55,11 @@ extern int fd_kernel;
 
 extern char* server_name;
 
+extern void* bitmap_memoria_usuario;
+extern t_bitarray* tabla_de_marcos;
+extern size_t size_de_tabla_marcos;
+
+extern void* espacio_memoria;
 
 #endif /*M_GESTOR_H_*/
 

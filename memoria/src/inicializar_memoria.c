@@ -5,6 +5,7 @@ void inicializar_memoria(char* path){
     _iniciar_config(path);
     _imprimir_config();
     _inicializar_listas();
+    _inicializar_estructuras();
 }
 
 void _iniciar_log(){  // t_log* _iniciar_log()
@@ -29,15 +30,11 @@ void _iniciar_config(char* path){
         exit(EXIT_FAILURE);
     }
     
-    //IP_MEMORIA = config_get_string_value(memoria_config,"IP_MEMORIA");
     PUERTO_ESCUCHA = config_get_string_value(memoria_config, "PUERTO_ESCUCHA");
-    //IP_FILESYSTEM = config_get_string_value(memoria_config,"IP_FILESYSTEM");
-    //PUERTO_FILESYSTEM = config_get_string_value(memoria_config,"PUERTO_FILESYSTEM");
     TAM_MEMORIA = config_get_int_value(memoria_config, "TAM_MEMORIA");
     TAM_PAGINA = config_get_int_value(memoria_config, "TAM_PAGINA");
     PATH_INSTRUCCIONES = config_get_string_value(memoria_config,"PATH_INSTRUCCIONES");
     RETARDO_RESPUESTA = config_get_int_value(memoria_config, "RETARDO_RESPUESTA");
-    //ALGORITMO_REEMPLAZO = config_get_string_value(memoria_config,"ALGORITMO_REEMPLAZO");
 }
 
 void _imprimir_config(){
@@ -50,4 +47,38 @@ void _imprimir_config(){
 
 void _inicializar_listas(){
     procesos_memoria = list_create();
+}
+
+void _inicializar_estructuras(){
+    size_t tamanio_memoria = TAM_MEMORIA;
+    espacio_memoria = malloc(tamanio_memoria);
+    int cantidad_de_marcos = TAM_MEMORIA/TAM_PAGINA;
+
+    bitmap_memoria_usuario = malloc (cantidad_de_marcos/8);
+
+    tabla_de_marcos = bitarray_create_with_mode(bitmap_memoria_usuario, cantidad_de_marcos/8, LSB_FIRST); 
+    //LSB_FIRST Completa los bits en un byte priorizando el bit menos significativo 00000001
+
+    size_de_tabla_marcos = bitarray_get_max_bit(tabla_de_marcos);
+    
+    for(int i = 0; i<size_de_tabla_marcos;i++){ //SE INICIALIZAN ALGUNOS BITS EN 1 POR ESO LOS LIMPIO
+            liberar_marco(i);
+    }
+
+    ocupar_marco(0);
+    ocupar_marco(1);
+    ocupar_marco(2);
+    ocupar_marco(3);
+    ocupar_marco(4);
+    ocupar_marco(6);
+    ocupar_marco(7);
+
+    /*TEST!*/
+    for(int ii = 0; ii<size_de_tabla_marcos;ii++){
+            log_info(memoria_log_debug, "valor del %d bit: %d",ii, bitarray_test_bit(tabla_de_marcos, ii));
+    }
+    /**/
+    log_info(memoria_log_debug, "Cantidad de marcos: %d", cantidad_de_marcos);
+    log_info(memoria_log_debug, "Cantidad de marcos/8: %d", cantidad_de_marcos/8);
+    log_info(memoria_log_debug, "long de bitarray: %ld", size_de_tabla_marcos);
 }

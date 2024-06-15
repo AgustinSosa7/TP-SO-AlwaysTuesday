@@ -4,6 +4,7 @@
 #include "m_gestor.h"
 #include "inicializar_memoria.h"
 #include "memoria_procesos.h"
+#include "gestion_paginas.h"
 
 // Variables GLOBALES
 
@@ -36,6 +37,9 @@ char* PUERTO_FILESYSTEM;
 char* ALGORITMO_REEMPLAZO;
 
 
-
+void* bitmap_memoria_usuario;
+t_bitarray* tabla_de_marcos;
+size_t size_de_tabla_marcos;
+void* espacio_memoria;
 
 #endif /* MEMORIA_H_*/
