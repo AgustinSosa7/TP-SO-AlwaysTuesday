@@ -5,8 +5,7 @@
 #include "k_gestor.h"
 #include "pcb.h"
 
-void enviar_proceso_a_blocked(t_peticion_pcb_interfaz* peticion_pcb_interfaz);
-
+void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* interfaz);
 
 t_peticion* recibir_peticion(t_paquete* paquete);
 t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion);

@@ -31,12 +31,12 @@ void atender_entradasalida_kernel(){
 
 t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
-    void* buffer = paquete->buffer;
+    t_buffer* buffer = paquete->buffer;
 
     peticion->instruccion = malloc(sizeof(char));
     peticion->instruccion = leer_string_del_buffer(buffer);
 
-    asignar_parametros_segun_tipo(peticion, buffer);
+    asignar_parametros_segun_tipo(peticion, buffer); 
 
     return peticion;
 } 
@@ -44,7 +44,8 @@ t_peticion* recibir_peticion(t_paquete* paquete){
 void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       char* instruccion = peticion->instruccion;
-
+      peticion->parametros = malloc(sizeof(t_peticion_param));
+      
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
            peticion->parametros->tiempo_espera= leer_int_del_buffer(buffer);
 
@@ -79,8 +80,10 @@ void procesar_peticion(t_peticion* peticion) {
       char* instruccion = peticion->instruccion;
 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-            int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera;
-            usleep(tiempo_espera*1000);
+            int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera; 
+            printf("Estoy por dormir...ZZZ...\n");
+            usleep(tiempo_espera*1000); 
+            printf("Ya dormi mi tiempo.\n");
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {

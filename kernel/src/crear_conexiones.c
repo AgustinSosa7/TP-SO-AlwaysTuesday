@@ -108,7 +108,7 @@ void gestionar_procesos_io(t_interfaz* interfaz){
     sem_wait(&(interfaz->semaforo_cola_procesos_blocked));
 
     pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
-    t_proceso_blocked* proceso_a_ejecutar = queue_pop(interfaz->cola_procesos_blocked);
+    t_proceso_blocked* proceso_a_ejecutar = queue_peek(interfaz->cola_procesos_blocked);
     pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
     enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
