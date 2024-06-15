@@ -1,13 +1,13 @@
 #include "../includes/inicializar_memoria.h"
 
 void inicializar_memoria(char* path){
-    _iniciar_log();  //memoria_logger = _iniciar_log();
+    _iniciar_log();  
     _iniciar_config(path);
     _imprimir_config();
     _inicializar_listas();
 }
 
-void _iniciar_log(){  // t_log* _iniciar_log()
+void _iniciar_log(){  
     memoria_logger = log_create("cliente.log", "CL_LOG", 1, LOG_LEVEL_INFO);
     if (memoria_logger == NULL){
         perror("Algo raro paso con el log. No se pudo crear o encontrar el archivo.");
@@ -23,7 +23,15 @@ void _iniciar_log(){  // t_log* _iniciar_log()
 
 
 void _iniciar_config(char* path){
-    memoria_config = config_create(path);
+    
+    char* PATH = string_new();
+
+    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/memoria/configs/");
+	string_append(&PATH, path);
+	string_append(&PATH, ".config");
+
+	memoria_config = config_create(PATH);
+
     if (memoria_config == NULL){
         perror("Error al intentar cargar el config.");
         exit(EXIT_FAILURE);

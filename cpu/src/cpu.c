@@ -36,7 +36,7 @@ int main(int argc, char** argv){
     pthread_detach(hilo_kernel_interrupt);
 
     // Pedimos el Tamaño de las Páginas y de la Memoria
-    pedir_info_inicial_a_memoria();
+    // pedir_info_inicial_a_memoria(); descomentar cuando este desarrolada la respuesta desde memoria 
 
     // Método principal
     pthread_t hilo_ciclo_instruccion;

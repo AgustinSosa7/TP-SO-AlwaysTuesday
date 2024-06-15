@@ -28,7 +28,7 @@ void inicializar_configs(char** argv){
 	char* PATH = string_new();
     NOMBRE_INTERFAZ = path;
 
-    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/interfaces/");
+    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/configs/");
 	string_append(&PATH, path);
 	string_append(&PATH, ".config");
 
