@@ -41,6 +41,9 @@ extern t_pcb* pcb_global;
 
 extern char ** opcode_cpu;      // Chequear si me sirve o no esta variable.
 
+extern int tamanio_pagina;
+extern int tamanio_memoria;
+
 extern bool dejar_de_ejecutar;
 extern bool ocurrio_interrupcion;
 
