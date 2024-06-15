@@ -1,27 +1,9 @@
 #include <../includes/inicializar_kernel.h>
 
-//  t_queue* cola_new;
-//  t_queue* cola_ready;
-//  t_queue* cola_ready_plus;
-//  t_list* lista_exec;
-//  t_queue* cola_exit;
-// ////////////////SEMAFOROS/////////////////////////////////////////
-//  pthread_mutex_t* mutex_pid;
-//  pthread_mutex_t* mutex_new;
-//  pthread_mutex_t* mutex_ready;
-//  pthread_mutex_t* mutex_exec;
-//  pthread_mutex_t* mutex_ready_plus;
-//  pthread_mutex_t* mutex_exit;
-//  pthread_mutex_t* mutex_io;
-//  sem_t* sem_grado_multiprogram;
-//  sem_t* sem_new_a_ready;
-//  sem_t* sem_planificador_corto_plazo;
-
-
 void inicializar_kernel(char* path){
     inicializar_logs();
     inicializar_configs(path);
-	inicializar_listas_y_colas();
+	inicializar_listas();
 	inicializar_semaforos();
 	inicializar_pid();
 }
@@ -35,7 +17,6 @@ if (kernel_logger == NULL) {
 	exit(EXIT_FAILURE);
     }
 
-log_info(kernel_logger, "Se inicializo el kernel logger"); //Sacar eventualmente
 
 
 kernel_log_debug = log_create("kernel_debug.log","KERNEL_DEBUG_LOG",1,LOG_LEVEL_INFO);
@@ -44,13 +25,17 @@ if (kernel_log_debug == NULL) {
 	exit(EXIT_FAILURE);
    }
 
-log_info(kernel_log_debug, "Se inicializo el kernel debug logger"); //Sacar eventualmente
-
 }    
     
 void inicializar_configs(char* path) {
+    char* PATH = string_new();
+    
+    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/configs/");
+	string_append(&PATH, path);
+	string_append(&PATH, ".config");
 
-	kernel_config = config_create(path);
+	kernel_config = config_create(PATH);
+
 	if (kernel_config == NULL) {
 		perror("Error al intentar cargar el config.");
 		exit(EXIT_FAILURE);
@@ -87,12 +72,12 @@ log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualment
 
 }
 
-void inicializar_listas_y_colas(void){
-	cola_new = queue_create();
-	cola_ready = queue_create();
-	cola_ready_plus = queue_create();
+void inicializar_listas(void){
+	lista_new = list_create();
+	lista_ready = list_create();
+	lista_ready_plus = list_create();
 	lista_exec = list_create();
-	cola_exit = queue_create();
+	lista_exit = list_create();
 	inicializar_listas_instrucciones();
 }
 
@@ -119,7 +104,7 @@ void inicializar_semaforos(){
 	sem_init(&sem_new_a_ready,0,0);
 	sem_init(&sem_planificador_corto_plazo,0,0);
 	printf("listo las sem_planificador_corto_plazo\n");
-
+	sem_init(&sem_detener_planificacion,0,0);
 	
 	pthread_mutex_init(&mutex_pid, NULL);
 	printf("listo las mutex_pid\n");
@@ -129,9 +114,25 @@ void inicializar_semaforos(){
 	pthread_mutex_init(&mutex_exec, NULL);
 	pthread_mutex_init(&mutex_ready_plus, NULL);
 	pthread_mutex_init(&mutex_exit, NULL);
+//	pthread_mutex_init(&mutex_flag_interrupcion,NULL);
+//	pthread_mutex_init(&mutex_flag_detener_planificacion,NULL);
 	printf("listo las mutex_exit\n");
 }
 
 void inicializar_pid(){
 	pid_global = 0;
 	} 
+
+void inicializar_recursos(){
+	lista_recursos = list_create();
+	int i = 0;
+	while(RECURSOS[i]!=0){
+		t_recursos* recurso = malloc(sizeof(t_recursos));
+		recurso->nombre_recurso = RECURSOS[i];
+		recurso->instancias = atoi(INSTANCIAS_RECURSOS[i]);
+		recurso->cola_recursos_bloqueados = queue_create();
+		
+		list_add(lista_recursos,recurso);
+	}
+}
+

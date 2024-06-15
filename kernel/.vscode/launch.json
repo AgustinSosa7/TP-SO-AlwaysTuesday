@@ -8,7 +8,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/${workspaceFolderBasename}",
-      "args": ["/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/kernel.config"],
+      "args": ["KERNEL"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

@@ -1,5 +1,7 @@
 #include "utils_connections.h"
 
+
+/////////SEMAFOROS////////
 // Funciones de Listas
 
 bool contains_string(t_list* lista, char* elemento){
@@ -214,6 +216,24 @@ void enviar_mensaje(void* mensaje, int socket_cliente)
 	free(a_enviar);
 }
 
+void enviar_bool_mensaje(bool mensaje, int socket_cliente)
+{
+	int tamanio = sizeof(bool);
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+}
+
+void enviar_int_mensaje(int mensaje, int socket_cliente)
+{
+	int tamanio = sizeof(int);
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &mensaje, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+}
+
 void enviar_mensaje_string(char* mensaje, int socket_cliente)
 {
 	int tamanio = strlen(mensaje)+1;
@@ -229,32 +249,6 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 	int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
-	// BORRAR ES PARA LAS PRUEBAS  
-		/*int op_code; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&op_code, a_enviar, sizeof(op_code)); //cambiar por offset el size of int
-		printf("op code: %d\n",op_code);
-
-		int buffer_size; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&buffer_size, a_enviar + sizeof(op_code), sizeof(buffer_size)); //cambiar por offset el size of int
-		printf("buffer size: %d\n",buffer_size);
-
-		int pid; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&pid, a_enviar + sizeof(op_code) + sizeof(buffer_size), sizeof(pid)); //cambiar por offset el size of int
-		printf("pid: %d\n",pid);
-
-		int tamanio_string; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&tamanio_string, a_enviar + sizeof(op_code) + sizeof(buffer_size) + sizeof(pid), sizeof(tamanio_string)); //cambiar por offset el size of int
-		printf("long_string: %d\n",tamanio_string);
-
-      	char *string = malloc((tamanio_string * sizeof(char))); // En caso de pisar algun valor, hacerle free antes
-	    memcpy(string, a_enviar + + sizeof(op_code) + sizeof(buffer_size) + sizeof(pid) + sizeof(tamanio_string), tamanio_string); //cambiar por offset el size of int
-	    paquete->buffer->offset += strlen(string)+1;//tamanio_string;
-        printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
-	    printf("offset: %d\n",paquete->buffer->offset);
-	    printf("Se guardo en el string:%s\n",string);
-        */
-    //FIN DE BORRAR ES PARA LAS PRUEBAS  
-
 	int bytes_enviados = send(socket_cliente, a_enviar, bytes, MSG_NOSIGNAL);
 	
 	if(bytes_enviados < 0) {
@@ -266,108 +260,59 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 void eliminar_paquete(t_paquete* paquete)
 {
 	//free(paquete->buffer->stream);
-	//free(paquete->buffer);
+	//free(paquete->buffer);	
 	free(paquete);
 }
 
-void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio)
-{
-	paquete->buffer->size += tamanio;
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
-	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
-	paquete->buffer->offset += tamanio; 
-}
 
+void agregar_int_a_paquete(t_paquete* paquete, int valor)
+{
+	paquete->buffer->size += sizeof(int);
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, sizeof(int));
+	paquete->buffer->offset += sizeof(int); 
+}
+void agregar_uint8_a_paquete(t_paquete* paquete, uint8_t valor)
+{
+	paquete->buffer->size += sizeof(uint8_t);
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, sizeof(uint8_t));
+	paquete->buffer->offset += sizeof(uint8_t); 
+}
+void agregar_uint32_a_paquete(t_paquete* paquete, uint32_t valor)
+{
+	paquete->buffer->size += sizeof(uint32_t);
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, sizeof(uint32_t));
+	paquete->buffer->offset += sizeof(uint32_t); 
+}
 void agregar_string_a_paquete(t_paquete* paquete, char* string) 
 {	
 	int tamanio_string = strlen(string) + 1;
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string);
-	
-	memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio_string, sizeof(int));
-	memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), string, sizeof(char)*tamanio_string);
 	paquete->buffer->size += sizeof(int);
 	paquete->buffer->size += sizeof(char)*tamanio_string;
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size);
 	
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &tamanio_string, sizeof(int));
+	memcpy(paquete->buffer->stream + paquete->buffer->offset + sizeof(int), string, sizeof(char)*tamanio_string);	
+	paquete->buffer->offset += sizeof(int);
+	paquete->buffer->offset += sizeof(char) * tamanio_string; 
 }
 
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_cpu){
-agregar_algo_a_paquete(paquete,&registros_cpu->PC,sizeof(registros_cpu->PC));
-agregar_algo_a_paquete(paquete,&registros_cpu->AX,sizeof(registros_cpu->AX));
-agregar_algo_a_paquete(paquete,&registros_cpu->BX,sizeof(registros_cpu->BX));
-agregar_algo_a_paquete(paquete,&registros_cpu->CX,sizeof(registros_cpu->CX));
-agregar_algo_a_paquete(paquete,&registros_cpu->DX,sizeof(registros_cpu->DX));
-agregar_algo_a_paquete(paquete,&registros_cpu->EAX,sizeof(registros_cpu->EAX));
-agregar_algo_a_paquete(paquete,&registros_cpu->EBX,sizeof(registros_cpu->EBX));
-agregar_algo_a_paquete(paquete,&registros_cpu->ECX,sizeof(registros_cpu->ECX));
-agregar_algo_a_paquete(paquete,&registros_cpu->EDX,sizeof(registros_cpu->EDX));
-agregar_algo_a_paquete(paquete,&registros_cpu->SI,sizeof(registros_cpu->SI));
-agregar_algo_a_paquete(paquete,&registros_cpu->DI,sizeof(registros_cpu->DI));
+agregar_int_a_paquete(paquete,registros_cpu->PC);
+agregar_uint8_a_paquete(paquete,registros_cpu->AX);
+agregar_uint8_a_paquete(paquete,registros_cpu->BX);
+agregar_uint8_a_paquete(paquete,registros_cpu->CX);
+agregar_uint8_a_paquete(paquete,registros_cpu->DX);
+agregar_uint32_a_paquete(paquete,registros_cpu->EAX);
+agregar_uint32_a_paquete(paquete,registros_cpu->EBX);
+agregar_uint32_a_paquete(paquete,registros_cpu->ECX);
+agregar_uint32_a_paquete(paquete,registros_cpu->EDX);
+agregar_uint32_a_paquete(paquete,registros_cpu->SI);
+agregar_uint32_a_paquete(paquete,registros_cpu->DI);
 }
 
-/////////////////////// PCB /////////////////////////
-
-
-void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
-	t_paquete* un_paquete = crear_paquete(mensaje); //Ejecutar, ver si tiene ese nombre;
-	agregar_algo_a_paquete(un_paquete, &(un_pcb->pid),sizeof(un_pcb->pid));
-  	agregar_algo_a_paquete(un_paquete,&(un_pcb->quantum),sizeof(un_pcb->pid));
-  	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
-	agregar_algo_a_paquete(un_paquete,&(un_pcb->estado_pcb),sizeof(un_pcb->estado_pcb));
-	enviar_paquete(un_paquete, socket);
-	eliminar_paquete(un_paquete);
-}
-
-t_pcb* recibir_pcb(t_paquete* paquete){
-	void* buffer = paquete->buffer;
-	t_pcb* pcb = malloc(sizeof(t_pcb));
-	leer_algo_del_stream(buffer, &(pcb->pid), sizeof(int));
-	leer_algo_del_stream(buffer,&(pcb->quantum),sizeof(int));
-	leer_registros_del_stream(buffer, pcb->registros_cpu);
-	leer_algo_del_stream(buffer,&(pcb->estado_pcb),sizeof(pcb->estado_pcb));
-	return pcb; 
-}
-
-void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
-log_info(un_logger,"PCB Pid %d", pcb->pid);
-log_info(un_logger,"PCB Quantum %d",pcb->quantum);	
-log_info(un_logger,"PCB PC: %d ", pcb->registros_cpu->PC);
-log_info(un_logger,"PCB AX: %d ", pcb->registros_cpu->AX);
-log_info(un_logger,"PCB BX: %d ", pcb->registros_cpu->BX);
-log_info(un_logger,"PCB CX: %d ", pcb->registros_cpu->CX);
-log_info(un_logger,"PCB DX: %d ", pcb->registros_cpu->DX);
-log_info(un_logger,"PCB EAX: %d ", pcb->registros_cpu->EAX);
-log_info(un_logger,"PCB EBX: %d ", pcb->registros_cpu->EBX);
-log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
-log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
-log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
-log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
-//log_info(un_logger,"PCB Estado: %s",pcb->estado_pcb);
-}
-
-char* enum_a_string(estado_pcb estado){
-    switch (estado)
-    {
-      case NEW:
-        return "NEW";
-        break;
-        case READY:
-        return "READY";
-        break;
-      case EXEC:
-        return "EXEC";
-        break;
-      case EXIT:
-        return "EXIT";
-        break;
-      case BLOCKED:
-        return "BLOCKED";
-        break;
-	  case READYPLUS:
-        return "READYPLUS";
-        break;
-	}
-}
-    
 ////////////////////// DESERIALIZACION //////////////
 void* recibir_mensaje(int socket_cliente)
 {	
@@ -377,6 +322,21 @@ void* recibir_mensaje(int socket_cliente)
 	recv(socket_cliente, mensaje, tamanio_mensaje, MSG_WAITALL);
 	return mensaje;
 }
+
+bool recibir_bool_mensaje(int socket_cliente)
+{	
+	bool mensaje;
+	recv(socket_cliente, &mensaje, sizeof(bool), MSG_WAITALL);
+	return mensaje;
+}
+
+int recibir_int_mensaje(int socket_cliente)
+{	
+	int mensaje;
+	recv(socket_cliente, &mensaje, sizeof(int), MSG_WAITALL);
+	return mensaje;
+}
+
 char* recibir_mensaje_string(int socket_cliente)
 {	
 	int tamanio;
@@ -430,17 +390,35 @@ t_paquete* recibir_paquete(int unSocket)
 }
 
 
-void* leer_algo_del_stream(t_buffer* buffer, void* valor, int tamanio) 
-{
+int leer_int_del_buffer(t_buffer* buffer) 
+{	
+	int valor;
+	int tamanio = sizeof(int);
+	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
+	buffer->offset += tamanio;
+	return valor;
+}
+uint8_t leer_uint_8_del_buffer(t_buffer* buffer) 
+{	
+	int valor;
+	int tamanio = sizeof(uint8_t);
+	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
+	buffer->offset += tamanio;
+	return valor;
+}
+uint32_t leer_uint_32_del_buffer(t_buffer* buffer) 
+{	
+	int valor;
+	int tamanio = sizeof(uint32_t);
 	memcpy(&valor, buffer->stream + buffer->offset, tamanio);
 	buffer->offset += tamanio;
 	return valor;
 }
 
-char* leer_string_del_stream(t_buffer* buffer) 
+char* leer_string_del_buffer(t_buffer* buffer) 
 {
 	int tamanio_string;
-	leer_algo_del_stream(buffer, &tamanio_string,sizeof(tamanio_string));
+	 tamanio_string=leer_int_del_buffer(buffer);
 
 	char *string = malloc(tamanio_string);
 	
@@ -450,17 +428,87 @@ char* leer_string_del_stream(t_buffer* buffer)
 	return string;
 }
 
-void leer_registros_del_stream(void* stream, t_registros_cpu* registros_CPU){
-	leer_algo_del_stream(stream,&registros_CPU->PC,sizeof(registros_CPU->PC));
-	leer_algo_del_stream(stream,&registros_CPU->AX,sizeof(registros_CPU->AX));
-	leer_algo_del_stream(stream,&registros_CPU->BX,sizeof(registros_CPU->BX));
-	leer_algo_del_stream(stream,&registros_CPU->CX,sizeof(registros_CPU->CX));
-	leer_algo_del_stream(stream,&registros_CPU->DX,sizeof(registros_CPU->DX));
-	leer_algo_del_stream(stream,&registros_CPU->EAX,sizeof(registros_CPU->EAX));
-	leer_algo_del_stream(stream,&registros_CPU->EBX,sizeof(registros_CPU->EBX));
-	leer_algo_del_stream(stream,&registros_CPU->ECX,sizeof(registros_CPU->ECX));
-	leer_algo_del_stream(stream,&registros_CPU->EDX,sizeof(registros_CPU->EDX));
-	leer_algo_del_stream(stream,&registros_CPU->SI,sizeof(registros_CPU->SI));
-	leer_algo_del_stream(stream,&registros_CPU->DI,sizeof(registros_CPU->DI));
+void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU){
+	registros_CPU->PC=leer_uint_32_del_buffer(buffer);
+	registros_CPU->AX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->BX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->CX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->DX=leer_uint_8_del_buffer(buffer);
+	registros_CPU->EAX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->EBX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->ECX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->EDX=leer_uint_32_del_buffer(buffer);
+	registros_CPU->SI=leer_uint_32_del_buffer(buffer);
+	registros_CPU->DI=leer_uint_32_del_buffer(buffer);
 }
 
+
+/////////////////////// PCB /////////////////////////
+
+void agregar_pcb_a_paquete(t_pcb* un_pcb, t_paquete* un_paquete) {
+	agregar_int_a_paquete(un_paquete, un_pcb->pid);
+  	agregar_int_a_paquete(un_paquete, un_pcb->quantum);
+  	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
+	agregar_int_a_paquete(un_paquete,un_pcb->estado_pcb);
+}
+
+void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
+	t_paquete* un_paquete = crear_paquete(mensaje);
+	agregar_pcb_a_paquete(un_pcb, un_paquete);
+	enviar_paquete(un_paquete, socket);
+	eliminar_paquete(un_paquete);
+}
+
+t_pcb* recibir_pcb(t_paquete* paquete){
+	void* buffer = paquete->buffer;
+	t_pcb* pcb = malloc(sizeof(t_pcb));
+	pcb->registros_cpu = malloc(sizeof(t_registros_cpu));
+	
+	pcb->pid= leer_int_del_buffer(buffer);
+	pcb->quantum =leer_int_del_buffer(buffer);
+	leer_registros_del_buffer(buffer, pcb->registros_cpu);
+	pcb->estado_pcb= leer_int_del_buffer(buffer);
+	return pcb; 
+}
+
+void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
+log_info(un_logger,"PCB Pid: %d", pcb->pid);
+log_info(un_logger,"PCB Quantum: %d",pcb->quantum);	
+log_info(un_logger,"PCB PC: %d ", pcb->registros_cpu->PC);
+log_info(un_logger,"PCB AX: %d ", pcb->registros_cpu->AX);
+log_info(un_logger,"PCB BX: %d ", pcb->registros_cpu->BX);
+log_info(un_logger,"PCB CX: %d ", pcb->registros_cpu->CX);
+log_info(un_logger,"PCB DX: %d ", pcb->registros_cpu->DX);
+log_info(un_logger,"PCB EAX: %d ", pcb->registros_cpu->EAX);
+log_info(un_logger,"PCB EBX: %d ", pcb->registros_cpu->EBX);
+log_info(un_logger,"PCB ECX: %d ", pcb->registros_cpu->ECX);
+log_info(un_logger,"PCB EDX: %d ", pcb->registros_cpu->EDX);
+log_info(un_logger,"PCB SI: %d ", pcb->registros_cpu->SI);
+log_info(un_logger,"PCB DI: %d ", pcb->registros_cpu->DI);
+log_info(un_logger,"PCB Estado: %d",pcb->estado_pcb);
+}
+
+char* enum_a_string(estado_pcb estado){
+    switch (estado)
+    {
+      case NEW:
+        return "NEW";
+        break;
+        case READY:
+        return "READY";
+        break;
+      case EXEC:
+        return "EXEC";
+        break;
+      case EXIT:
+        return "EXIT";
+        break;
+      case BLOCKED:
+        return "BLOCKED";
+        break;
+	  default: // READYPLUS
+        return "READYPLUS";
+	  	break;
+	}
+}
+    

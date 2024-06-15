@@ -11,36 +11,41 @@ int main(int argc, char** argv)
 
 
 /////////////////////////--INICIAR PLANIFICADORES-//////////////////////
+
     pthread_t plani_largo_plazo;
     pthread_create(&plani_largo_plazo,NULL,(void*) planif_largo_plazo,NULL);
     pthread_detach(plani_largo_plazo);
-
+    printf("se iniciaron los planificadores");
     pthread_t plani_corto_plazo;
     pthread_create(&plani_corto_plazo,NULL,(void*) planif_corto_plazo,NULL);
     pthread_detach(plani_corto_plazo);
     
-
-
 /////////////////////////--CONEXIONES--//////////////////////
 
     conexion_kernel_memoria();
 
     conexion_kernel_cpu_dispatch();
-    sleep(5);
+    
     conexion_kernel_cpu_interrupt();
     
     conexion_kernel_entradaSalida();
 
-   // leer consola interactiva
+    // PRUEBA
+    
+    //t_pcb *pcb_prueba= crearPcb();
+    //enviar_pcb_a(pcb_prueba, fd_cpu_dispatch, PCB);
+
+// leer consola interactiva
      iniciar_consola();
      leer_consola();
 
 
-   // int pid = 3;
-   // char* pseudocogido = "PLANI1.txt"; 
-   // log_info(kernel_log_debug, "ENVIO DE PSEUDO: %s con un pid de: %d\n",pseudocogido,pid);
-   // enviar_direccion_pesudocodigo(pseudocogido,pid);
-   // sleep(5);
+//   int pid = 3;
+//   char* pseudocogido = "PLANI1.txt"; 
+//   log_info(kernel_log_debug, "ENVIO DE PSEUDO: %s con un pid de: %d\n",pseudocogido,pid);
+//   enviar_direccion_pesudocodigo(pseudocogido,pid);
+//   sleep(5);
+   
     return EXIT_SUCCESS;
 }
 

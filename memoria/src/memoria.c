@@ -1,5 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
+
 #include "../includes/memoria.h"
 
 int main(int argc, char** argv) {
@@ -30,12 +29,12 @@ gestionar_handshake_como_server(fd_kernel, memoria_logger, "KERNEL");
 
 
 // Esperar conexion de ENTRADASALIDA
-log_info(memoria_logger, "Esperando a EntradaSalida...");
-fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
-gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");
+   
+pthread_t hilo_generador_de_io;
+pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
+pthread_detach(hilo_generador_de_io);
 
 /////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
-
 
 list_add(procesos_memoria, crear_proceso_nuevo());
 t_proceso* proceso1 = buscar_proceso_en_memoria(3);
@@ -51,6 +50,7 @@ t_proceso* proceso1 = buscar_proceso_en_memoria(3);
 
 longitud_tabla_paginas()
 */
+
 
 while(1){
 t_pedido* pedido = recibir_instruccion_a_enviar();
@@ -70,3 +70,13 @@ return EXIT_SUCCESS;
 
 
 
+void gestionar_entrada_salida(){
+  while(1){
+    log_info(memoria_logger, "Esperando a EntradaSalida...");
+    fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
+    gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");
+    pthread_t hilo_atender_io;
+    pthread_create(&hilo_atender_io, NULL, (void*)atender_entradasalida, NULL);
+    pthread_detach(hilo_atender_io);
+  }
+}

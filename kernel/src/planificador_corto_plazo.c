@@ -6,7 +6,9 @@
 void planif_corto_plazo()
 {
     while(1){
+        detener_planificacion();
         sem_wait(&sem_planificador_corto_plazo);
+        printf("entro al plani corto plazo.\n");
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch (algoritmo)
             {
@@ -27,15 +29,12 @@ void planif_corto_plazo()
 
 void planif_fifo_RR()
 {
-
-    if(!queue_is_empty(cola_ready)){
+    printf("Estamos en fifo.\n");
+    if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
-
-            t_pcb* un_pcb = queue_pop(cola_ready);
-            cambiar_estado(un_pcb, EXEC);
-            
+            cambiar_de_estado_y_de_lista(READY,EXEC);
+            t_pcb* un_pcb = list_get(lista_exec,0);
             enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
-
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
                 pthread_t hilo_quantum;
                 pthread_create(&hilo_quantum, NULL, (void*)gestionar_quantum, un_pcb);
@@ -60,12 +59,12 @@ void gestionar_quantum(t_pcb* un_pcb){
 // VRR
   void planif_VRR(){
     t_pcb* un_pcb;
-    if(!queue_is_empty(cola_ready_plus)){
-        un_pcb = queue_pop(cola_ready_plus); 
-    } else if(!queue_is_empty(cola_ready)){
-        un_pcb = queue_pop(cola_ready);
+    if(!list_is_empty(lista_ready_plus)){
+        cambiar_de_estado_y_de_lista(READYPLUS,EXEC); 
+    } else if(!list_is_empty(lista_ready)){
+        cambiar_de_estado_y_de_lista(READY,EXEC); 
     }
-    cambiar_estado(un_pcb,EXEC);
+    un_pcb = list_get(lista_exec,0);
     enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
     pthread_t hilo_quantum_VRR;
     pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);

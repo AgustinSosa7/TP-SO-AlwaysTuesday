@@ -61,12 +61,13 @@ extern t_list* INSTRUCCIONES_FS;
 extern t_list* IOS_CONECTADOS;
 
 
-extern t_queue* cola_new;
-extern t_queue* cola_ready;
-extern t_queue* cola_ready_plus;
+extern t_list* lista_new;
+extern t_list* lista_ready;
+extern t_list* lista_ready_plus;
 extern t_list* lista_exec;
-extern t_queue* cola_exit;
+extern t_list* lista_exit;
 
+extern t_list* lista_recursos;
 //////////////////////SEMAFOROS/////////////////////////////////////////
 
 extern pthread_mutex_t mutex_pid;
@@ -76,13 +77,20 @@ extern pthread_mutex_t mutex_exec;
 extern pthread_mutex_t mutex_ready_plus;
 extern pthread_mutex_t mutex_exit;
 extern pthread_mutex_t mutex_io;
+extern pthread_mutex_t mutex_detener_planificacion;
 
 extern sem_t sem_grado_multiprogram;
 extern sem_t sem_new_a_ready;
 extern sem_t sem_planificador_corto_plazo;
+extern sem_t sem_detener_planificacion;
+////////////////////RECURSOS////////////////////////////////
+typedef struct{
+    char* nombre_recurso;
+    int instancias;
+    t_queue* cola_recursos_bloqueados;
+    sem_t* sem_tipo_recurso;
+} t_recursos;
 ///////////////////////////////////////////////////////////////
-
-
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;
 extern t_config* kernel_config;
@@ -94,7 +102,7 @@ extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
 
 extern int pid_global;
-extern int procesos_activos;
+extern bool flag_detener_planificacion;
 
 extern char* PUERTO_ESCUCHA;
 extern char* IP_MEMORIA;
@@ -109,4 +117,7 @@ extern char ** INSTANCIAS_RECURSOS; // POR FAVOR REVISAR EL TIPO EN EL ENUNCIADO
 extern int GRADO_MULTIPROGRAMACION;
 extern char * IP_KERNEL;
 
+void enviar_interrupción_a_cpu(op_code tipo_interrupción);
+void eliminar_proceso(int pid);
+void detener_planificacion();
 #endif

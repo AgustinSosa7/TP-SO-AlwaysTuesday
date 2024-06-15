@@ -1,6 +1,6 @@
 #include "../includes/crear_conexiones.h"
 
-        // Conectarse con Memoria
+    // Conectarse con Memoria
     void conexion_kernel_memoria(){
     log_info(kernel_logger, "Creando conexion con MEMORIA...");
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, kernel_logger);
@@ -8,22 +8,34 @@
 
   }
     // Conectarse con CPU
-    void conexion_kernel_cpu_dispatch(){
-    log_info(kernel_logger, "Creando conexion con CPU DISPATCH...");
-    //  DISPATCH
-    fd_cpu_dispatch = crear_conexion(IP_CPU, PUERTO_CPU_DISPATCH, kernel_logger);
-    gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU", kernel_logger);
+void conexion_kernel_cpu_dispatch(){
+    pthread_t hilo_kernel_cpu_dispatch;
+    pthread_create(&hilo_kernel_cpu_dispatch, NULL, (void*) crear_conexion_kernel_cpu_dispatch, NULL);
+    pthread_detach(hilo_kernel_cpu_dispatch);
  }
+
+void crear_conexion_kernel_cpu_dispatch(){
+    log_info(kernel_logger, "Creando conexion con CPU DISPATCH...");
+    fd_cpu_dispatch = crear_conexion(IP_CPU, PUERTO_CPU_DISPATCH, kernel_logger);
+    gestionar_handshake_como_cliente(fd_cpu_dispatch, "CPU-DISPATCH", kernel_logger);
+}
+
     // INTERRUPT
-    void conexion_kernel_cpu_interrupt(){
+void conexion_kernel_cpu_interrupt(){
+    pthread_t hilo_kernel_cpu_interrupt;
+    pthread_create(&hilo_kernel_cpu_interrupt, NULL, (void*) crear_conexion_kernel_cpu_interrupt, NULL);
+    pthread_join(hilo_kernel_cpu_interrupt, NULL); // Esta bie que sea join? no hay algun problema con nada? 
+}
+
+void crear_conexion_kernel_cpu_interrupt(){
     log_info(kernel_logger, "Creando conexion con CPU INTERRUPT...");
     fd_cpu_interrupt = crear_conexion(IP_CPU, PUERTO_CPU_INTERRUPT, kernel_logger);
-    gestionar_handshake_como_cliente(fd_cpu_interrupt, "CPU", kernel_logger);
+    gestionar_handshake_como_cliente(fd_cpu_interrupt, "CPU-INTERRUPT", kernel_logger);
 }
 
 
 // INICIAR EL SERVIDOR PARA ENTRADA Y SALIDA. 
-    void conexion_kernel_entradaSalida(){
+void conexion_kernel_entradaSalida(){
     fd_kernel = iniciar_servidor(PUERTO_ESCUCHA, kernel_logger, IP_KERNEL);
 
     IOS_CONECTADOS = list_create();
@@ -96,7 +108,7 @@ void gestionar_procesos_io(t_interfaz* interfaz){
     sem_wait(&(interfaz->semaforo_cola_procesos_blocked));
 
     pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
-    t_proceso_blocked* proceso_a_ejecutar = queue_pop(interfaz->cola_procesos_blocked);
+    t_proceso_blocked* proceso_a_ejecutar = queue_peek(interfaz->cola_procesos_blocked);
     pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
     enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
