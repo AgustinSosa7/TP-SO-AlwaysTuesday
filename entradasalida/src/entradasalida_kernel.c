@@ -8,6 +8,7 @@ void atender_entradasalida_kernel(){
         int cod_op = recibir_operacion(fd_kernel);
         t_paquete* paquete = recibir_paquete(fd_kernel);
 	  log_info(entradasalida_logger, "Se recibio algo de Kernel..");
+        log_info(entradasalida_logger, "CODIGO DE OPERACION: %d", cod_op);
 
         switch (cod_op)
         {
@@ -32,9 +33,10 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
     t_buffer* buffer = paquete->buffer;
 
-    peticion->instruccion = leer_string_del_stream(buffer);
+    peticion->instruccion = malloc(sizeof(char));
+    peticion->instruccion = leer_string_del_buffer(buffer);
 
-    asignar_parametros_segun_tipo(peticion, buffer);
+    asignar_parametros_segun_tipo(peticion, buffer); 
 
     return peticion;
 } 
@@ -42,18 +44,19 @@ t_peticion* recibir_peticion(t_paquete* paquete){
 void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       char* instruccion = peticion->instruccion;
-
+      peticion->parametros = malloc(sizeof(t_peticion_param));
+      
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
            peticion->parametros->tiempo_espera= leer_int_del_buffer(buffer);
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_stream(buffer);
-           peticion->parametros->registroTamanio= leer_string_del_stream(buffer);
+           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_stream(buffer);
-           peticion->parametros->registroTamanio= leer_string_del_stream(buffer);
+           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             /* code */
@@ -77,8 +80,10 @@ void procesar_peticion(t_peticion* peticion) {
       char* instruccion = peticion->instruccion;
 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-            int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera;
-            usleep(tiempo_espera*1000);
+            int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera; 
+            printf("Estoy por dormir...ZZZ...\n");
+            usleep(tiempo_espera*1000); 
+            printf("Ya dormi mi tiempo.\n");
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
@@ -151,10 +156,45 @@ void finalizar_peticion(t_peticion* peticion){
       eliminar_peticion(peticion);
 }
 
-void eliminar_peticion(t_peticion* peticion){ 
-      free(peticion->parametros->archivo);
-      free(peticion->parametros->registroDireccion);
-      free(peticion->parametros->registroPunteroArchivo);
-      free(peticion->parametros);
+void eliminar_peticion(t_peticion* peticion){
+      eliminar_parametros_segun_instruccion(peticion->instruccion, peticion->parametros);
+      free(peticion->instruccion);
       free(peticion);
-}      
+}
+
+void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros){
+      if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
+
+      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
+      {     free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
+      {     free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      {     free(parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      {     free(parametros->archivo);
+
+      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      {     free(parametros->archivo);
+            free(parametros->registroTamanio);
+
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
+      {     free(parametros->archivo);
+            free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+            free(parametros->registroPunteroArchivo);
+
+      }else //Es IO_FS_READ 
+      {     free(parametros->archivo);
+            free(parametros->registroDireccion);
+            free(parametros->registroTamanio);
+            free(parametros->registroPunteroArchivo);
+      }     
+      
+      free(parametros);
+}

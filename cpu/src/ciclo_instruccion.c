@@ -35,6 +35,38 @@ void ciclo_instruccion(){
 			escribir_valor_a_registro(nombre_registro, valor);
 			pcb_global->registros_cpu->PC++;
 		}
+	else if (strcmp(nombre_instruccion, "MOV_IN") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *registro_datos = strtok_r(saveptr, " ", &saveptr);
+			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
+			int direccion_logica = leer_valor_de_registro(registro_direccion);
+			int direccion_fisica = mmu(direccion_logica);
+			
+			if (direccion_fisica != -1)
+			{
+				u_int32_t valor_leido_en_memoria = leer_valor_de_memoria(pcb_global->pid, direccion_fisica);
+				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_leido_en_memoria);
+				pcb_global->registros_cpu->PC++;
+			}
+		}
+	else if (strcmp(nombre_instruccion, "MOV_OUT") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
+			char *registro_datos = strtok_r(saveptr, " ", &saveptr);
+			int direccion_logica = leer_valor_de_registro(registro_direccion);
+			int direccion_fisica = mmu(direccion_logica);
+			
+			if (direccion_fisica != -1)
+			{
+				uint32_t valor_a_escribir = leer_valor_de_registro(registro_datos);
+				escribir_valor_en_memoria(pcb_global->pid, direccion_fisica, valor_a_escribir);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_a_escribir);
+				pcb_global->registros_cpu->PC++;
+			}
+		}	
 	else if (strcmp(nombre_instruccion, "SUM") == 0)
 		{
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
@@ -118,6 +150,15 @@ void devolver_contexto_por_ser_interrumpido()
 	t_paquete* paquete = crear_paquete(DESALOJO_QUANTUM);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	//Falta agregar el motivo de la interrupción...
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_page_fault(int numero_de_pagina)
+{
+	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_PAGEFAULT);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_int_a_paquete(paquete, numero_de_pagina);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
@@ -258,7 +299,26 @@ uint32_t leer_valor_de_registro(char *nombre_registro)
 	return -1;
 }
 
-    
+int mmu(int direccion_logica)
+{
+	int numero_de_pagina = floor(direccion_logica / tamanio_pagina);
+	int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina);
+	bool page_fault = numero_de_marco == -1;
+
+	if (page_fault)
+	{
+		log_info(cpu_logger, "Page Fault: Page Fault PID: %d - Pagina: %d", pcb_global->pid, numero_de_pagina);
+		dejar_de_ejecutar = true;
+		devolver_contexto_por_page_fault(numero_de_pagina);
+		return -1;
+	}
+
+	log_info(cpu_logger, "Obtener Marco: \"PID: %d - OBTENER MARCO - Página: %d - Marco: %d\"", pcb_global->pid, numero_de_pagina, numero_de_marco);
+	int desplazamiento = direccion_logica - numero_de_pagina * tamanio_pagina;
+	int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
+
+	return direccion_fisica;
+}
 	
 	
 	
@@ -321,30 +381,10 @@ bool codigo_inexistente(char* instruccion){
 	return respuesta;
 }*/
 
-////////////////////////MMU///////////////////////
 
-/* Hay que corregirla:
-int mmu(int direccion_logica)
-{
-	int numero_de_pagina = floor(direccion_logica / tamanio_pagina);
-	int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina);
-	bool page_fault = numero_de_marco == -1;
 
-	if (page_fault)
-	{
-		log_info(logger, "Page Fault: Page Fault PID: %d - Pagina: %d", pid_ejecutando, numero_de_pagina);
-		dejar_de_ejecutar = true;
-		devolver_contexto_por_page_fault(numero_de_pagina);
-		return -1;
-	}
 
-	log_info(logger, "Obtener Marco: PID: %d - OBTENER MARCO - Pagina: %d - Marco: %d", pid_ejecutando, numero_de_pagina, numero_de_marco);
-	int desplazamiento = direccion_logica - numero_de_pagina * tamanio_pagina;
-	int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
 
-	return direccion_fisica;
-}
-*/
 
     /////////////////////////////////////////////     EXECUTE    ////////////////////////////////////////
 

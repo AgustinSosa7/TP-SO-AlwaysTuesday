@@ -17,7 +17,6 @@ if (kernel_logger == NULL) {
 	exit(EXIT_FAILURE);
     }
 
-log_info(kernel_logger, "Se inicializo el kernel logger"); //Sacar eventualmente
 
 
 kernel_log_debug = log_create("kernel_debug.log","KERNEL_DEBUG_LOG",1,LOG_LEVEL_INFO);
@@ -26,13 +25,17 @@ if (kernel_log_debug == NULL) {
 	exit(EXIT_FAILURE);
    }
 
-log_info(kernel_log_debug, "Se inicializo el kernel debug logger"); //Sacar eventualmente
-
 }    
     
 void inicializar_configs(char* path) {
+    char* PATH = string_new();
+    
+    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/configs/");
+	string_append(&PATH, path);
+	string_append(&PATH, ".config");
 
-	kernel_config = config_create(path);
+	kernel_config = config_create(PATH);
+
 	if (kernel_config == NULL) {
 		perror("Error al intentar cargar el config.");
 		exit(EXIT_FAILURE);

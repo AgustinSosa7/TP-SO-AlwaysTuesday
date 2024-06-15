@@ -249,32 +249,6 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 	int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
-	// BORRAR ES PARA LAS PRUEBAS  
-		/*int op_code; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&op_code, a_enviar, sizeof(op_code)); //cambiar por offset el size of int
-		printf("op code: %d\n",op_code);
-
-		int buffer_size; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&buffer_size, a_enviar + sizeof(op_code), sizeof(buffer_size)); //cambiar por offset el size of int
-		printf("buffer size: %d\n",buffer_size);
-
-		int pid; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&pid, a_enviar + sizeof(op_code) + sizeof(buffer_size), sizeof(pid)); //cambiar por offset el size of int
-		printf("pid: %d\n",pid);
-
-		int tamanio_string; // En caso de pisar algun valor, hacerle free antes
-	    memcpy(&tamanio_string, a_enviar + sizeof(op_code) + sizeof(buffer_size) + sizeof(pid), sizeof(tamanio_string)); //cambiar por offset el size of int
-		printf("long_string: %d\n",tamanio_string);
-
-      	char *string = malloc((tamanio_string * sizeof(char))); // En caso de pisar algun valor, hacerle free antes
-	    memcpy(string, a_enviar + + sizeof(op_code) + sizeof(buffer_size) + sizeof(pid) + sizeof(tamanio_string), tamanio_string); //cambiar por offset el size of int
-	    paquete->buffer->offset += strlen(string)+1;//tamanio_string;
-        printf("Longitud de lo guardado en el string: %ld\n",strlen(string));
-	    printf("offset: %d\n",paquete->buffer->offset);
-	    printf("Se guardo en el string:%s\n",string);
-        */
-    //FIN DE BORRAR ES PARA LAS PRUEBAS  
-
 	int bytes_enviados = send(socket_cliente, a_enviar, bytes, MSG_NOSIGNAL);
 	
 	if(bytes_enviados < 0) {
@@ -290,13 +264,6 @@ void eliminar_paquete(t_paquete* paquete)
 	free(paquete);
 }
 
-void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio)
-{
-	paquete->buffer->size += tamanio;
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size); //Agranda el tamanio del stream
-	memcpy(paquete->buffer->stream + paquete->buffer->offset, &valor, tamanio);
-	paquete->buffer->offset += tamanio; 
-}
 
 void agregar_int_a_paquete(t_paquete* paquete, int valor)
 {
@@ -322,13 +289,14 @@ void agregar_uint32_a_paquete(t_paquete* paquete, uint32_t valor)
 void agregar_string_a_paquete(t_paquete* paquete, char* string) 
 {	
 	int tamanio_string = strlen(string) + 1;
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + sizeof(int) + sizeof(char)*tamanio_string);
-	
-	memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio_string, sizeof(int));
-	memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), string, sizeof(char)*tamanio_string);
 	paquete->buffer->size += sizeof(int);
 	paquete->buffer->size += sizeof(char)*tamanio_string;
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size);
 	
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, &tamanio_string, sizeof(int));
+	memcpy(paquete->buffer->stream + paquete->buffer->offset + sizeof(int), string, sizeof(char)*tamanio_string);	
+	paquete->buffer->offset += sizeof(int);
+	paquete->buffer->offset += sizeof(char) * tamanio_string; 
 }
 
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_cpu){
@@ -422,14 +390,6 @@ t_paquete* recibir_paquete(int unSocket)
 }
 
 
-//void* leer_algo_del_stream(t_buffer* buffer, int tamanio) 
-//{	
-//	void* valor = malloc(sizeof(void));
-//	memcpy(valor, buffer->stream + buffer->offset, tamanio);
-//	buffer->offset += tamanio;
-//	return valor;
-//}
-
 int leer_int_del_buffer(t_buffer* buffer) 
 {	
 	int valor;
@@ -455,7 +415,7 @@ uint32_t leer_uint_32_del_buffer(t_buffer* buffer)
 	return valor;
 }
 
-char* leer_string_del_stream(t_buffer* buffer) 
+char* leer_string_del_buffer(t_buffer* buffer) 
 {
 	int tamanio_string;
 	 tamanio_string=leer_int_del_buffer(buffer);

@@ -8,7 +8,7 @@ void planif_corto_plazo()
     while(1){
         detener_planificacion();
         sem_wait(&sem_planificador_corto_plazo);
-        printf("entro al plani corto plazo");
+        printf("entro al plani corto plazo.\n");
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch (algoritmo)
             {
@@ -29,7 +29,7 @@ void planif_corto_plazo()
 
 void planif_fifo_RR()
 {
-    printf("estamos en fifo");
+    printf("Estamos en fifo.\n");
     if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
             cambiar_de_estado_y_de_lista(READY,EXEC);

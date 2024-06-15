@@ -43,9 +43,7 @@ typedef enum
     INTERRUPCION_FIN_QUANTUM,
     INTERRUPCION_FIN_PROCESO,
 	//---- KERNEL - MEMORIA
-	PSEUDOCODIGO,
-  PEDIDO_PSEUDOCODIGO,
-  CREAR_PROCESO,
+	CREAR_PROCESO,
   DESALOJO_QUANTUM,
   PROCESO_EXIT,
   PEDIDO_IO,
@@ -53,7 +51,19 @@ typedef enum
   SIGNAL,
   // ------ IO - MEMORIA
   GUARDAR_REGISTRO,
-  PEDIR_REGISTRO
+  PEDIR_REGISTRO,
+  // ------ CPU - MEMORIA
+  SOLICITUD_INFO_INICIAL_A_MEMORIA,
+  RESPUESTA_INFO_INICIAL_A_CPU,
+  PEDIDO_PSEUDOCODIGO,
+  PSEUDOCODIGO,
+  SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA,
+  RESPUESTA_NUMERO_DE_MARCO_A_CPU,
+  SOLICITUD_LEER_VALOR_EN_MEMORIA,
+  RESPUESTA_LEER_VALOR_EN_MEMORIA,
+  SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA,
+  RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA,
+  DEVOLVER_PROCESO_POR_PAGEFAULT
 }op_code;
 
 typedef struct
@@ -151,7 +161,6 @@ void enviar_int_mensaje(int mensaje, int socket_cliente);
 void enviar_mensaje_string(char* mensaje, int socket_cliente);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
-void agregar_algo_a_paquete(t_paquete* paquete, void* valor,int tamanio);
 void agregar_int_a_paquete(t_paquete* paquete, int valor);
 void agregar_uint8_a_paquete(t_paquete* paquete, uint8_t valor);
 void agregar_uint32_a_paquete(t_paquete* paquete, uint32_t valor);
@@ -173,11 +182,10 @@ char* recibir_mensaje_string(int socket_cliente);
 op_code recibir_operacion(int);
 t_buffer* recibir_buffer(int unSocket);
 t_paquete* recibir_paquete(int unSocket);
-//void* leer_algo_del_stream(t_buffer* buffer, int tamanio);
 int leer_int_del_buffer(t_buffer* buffer);
 uint8_t leer_uint_8_del_buffer(t_buffer* buffer);
 uint32_t leer_uint_32_del_buffer(t_buffer* buffer);
-char* leer_string_del_stream(t_buffer* buffer);
+char* leer_string_del_buffer(t_buffer* buffer);
 void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU);
 
 //Funciones Superpaquete

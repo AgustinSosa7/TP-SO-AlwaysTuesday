@@ -25,10 +25,14 @@ if (entradasalida_log_debug == NULL) {
 
 void inicializar_configs(char** argv){
 	char* path = argv[1];
-	entradasalida_config = config_create(path);
+	char* PATH = string_new();
+    NOMBRE_INTERFAZ = path;
 
-	truncateString(path, 7); // Le saco los ultimos 7 caracteres (".config") 
-	NOMBRE_INTERFAZ = path;
+    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/configs/");
+	string_append(&PATH, path);
+	string_append(&PATH, ".config");
+
+	entradasalida_config = config_create(PATH);
 
 if (entradasalida_config == NULL) {
 	perror("Error al intentar cargar el config.");
@@ -38,6 +42,8 @@ if (entradasalida_config == NULL) {
 	TIPO_INTERFAZ = config_get_string_value(entradasalida_config,"TIPO_INTERFAZ");
 	recibir_configs(TIPO_INTERFAZ);
 }
+
+
 void recibir_configs(char* TIPO_INTERFAZ){
 
 	 if (strcmp(TIPO_INTERFAZ, "GEN") == 0) {
@@ -77,13 +83,6 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			}
 }
 
-
-void truncateString(char *str, int n){ //Corta los ultimos n caracteres de un string
-    int len = strlen(str);
-    if (len > n) {
-        str[len - n] = '\0';
-    }
-}
 
 void imprimir_configs(){
     log_info(entradasalida_logger, "NOMBRE_INTERFAZ: %s",NOMBRE_INTERFAZ);

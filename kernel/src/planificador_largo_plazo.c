@@ -4,15 +4,15 @@
 
 void planif_largo_plazo(){
    while(1){
-      printf("plani largo plazo");
+      printf("Plani largo plazo.\n");
       detener_planificacion();
-      printf("paso funcion detener plani");
+      printf("Paso funcion detener plani.\n");
       sem_wait(&sem_new_a_ready);
  	   sem_wait(&sem_grado_multiprogram);
-      printf("paso semaforos");
+      printf("Paso semaforos.\n");
       if(!list_is_empty(lista_new)){
       cambiar_de_estado_y_de_lista(NEW, READY);
-      printf("cambio de lista");
+      printf("Cambio de lista.\n");
       sem_post(&sem_planificador_corto_plazo);
          }
       }

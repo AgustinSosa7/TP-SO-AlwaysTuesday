@@ -6,7 +6,7 @@ void recibir_pcb_con_motivo()
       detener_planificacion();
       int code_op = recibir_operacion(fd_cpu_dispatch);
       t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
-      t_pcb* pcb_recibido = recibir_pcb(paquete);
+      t_pcb* pcb_recibido = recibir_pcb(paquete); 
       log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
       detener_planificacion();
 

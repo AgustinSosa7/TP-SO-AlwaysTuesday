@@ -95,12 +95,12 @@ void atender_instruccion_validada(char* leido){
 		}
 		break;
 	case INICIAR_PROCESO:
-		printf("entré a iniciar proceso \n");
+		printf("Entre a iniciar proceso. \n");
 		t_pcb* nuevo_pcb = crearPcb();
 		pthread_mutex_lock(&mutex_new);
 		list_add(lista_new, nuevo_pcb);
 		pthread_mutex_unlock(&mutex_new);	
-		log_info(kernel_logger,"Se crea el proceso < %d > en NEW \n",nuevo_pcb->pid);
+		log_info(kernel_logger,"Se crea el proceso < %d > en NEW. \n",nuevo_pcb->pid);
 		sem_post(&sem_new_a_ready);
 		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
 

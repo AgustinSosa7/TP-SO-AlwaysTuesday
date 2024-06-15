@@ -20,5 +20,6 @@ bool esExtendido(char* registroTamanio);
 
 void finalizar_peticion(t_peticion* peticion);
 void eliminar_peticion(t_peticion* peticion);
+void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros);
 
 #endif 
