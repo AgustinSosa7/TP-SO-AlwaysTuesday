@@ -9,16 +9,18 @@ void recibir_pcb_con_motivo()
       t_pcb* pcb_recibido = recibir_pcb(paquete);
       log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
       detener_planificacion();
+
       switch (code_op)
       {
       case DESALOJO_QUANTUM:
             log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum",pcb_recibido->pid);
             cambiar_de_estado_y_de_lista(EXEC,READY);
+            sem_post(&sem_planificador_corto_plazo);
             
             break;
       case PROCESO_EXIT:
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
-            eliminar_proceso(pcb_recibido->pid);
+            eliminar_proceso(pcb_recibido->pid,SUCCESS);
             break;
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  
@@ -30,51 +32,52 @@ void recibir_pcb_con_motivo()
             peticion_pcb_interfaz->interfaz = interfaz; 
 
             enviar_proceso_a_blocked(peticion_pcb_interfaz); 
-            
+            sem_post(&sem_planificador_corto_plazo);
             }
 
             break;
-      //case WAIT:
-      //      //preguntar por el parametro paquete->buffer
-      //      char* recurso_solicitado = leer_string_del_stream(paquete->buffer);
-      //      bool esta_o_no_el_recurso(t_recursos* recurso){
-      //            return(esta_el_recurso(recurso,recurso_solicitado));
-      //      }
-      //      if(list_any_satisfy(lista_recursos, esta_o_no_el_recurso)){
-      //           t_recurso* recurso = list_find(lista_recursos, esta_o_no_el_recurso);
-      //           recurso->instancias = recurso->instancias -1;
-      //            if(recurso->instancias <0){
-      //                  t_pcb* pcb = list_remove_(lista_exec, 0);//o mejor list_remove_and_destroy_element ?
-      //                  pcb_recibido->estado_pcb = BLOCKED;
-      //                  queue_push(recurso->cola_recursos_bloqueados,pcb_recibido);
-      //                  //signal sem plani corto plazo?
-      //            }else{ //debería volver a ejecutar el mismo proceso.
-//
-      //            }
-//
-      //      } else{
-      //                  cambiar_de_estado_y_de_lista(EXEC,EXIT);
-      //                  eliminar_proceso(pcb_recibido->pid);
-      //            }
-      //      break;
-      //case SIGNAL:
-      //      char* recurso_solicitado = leer_string_del_stream(paquete->buffer);
-      //      bool esta_o_no_el_recurso(t_recursos* recurso){
-      //            return(esta_el_recurso(recurso,recurso_solicitado));
-      //      }
-      //      if(list_any_satisfy(lista_recursos, esta_o_no_el_recurso)){
-      //           t_recurso* recurso = list_find(lista_recursos, esta_o_no_el_recurso);
-      //           recurso->instancias = recurso->instancias +1;
-      //           if(!queue_is_empty(recurso->cola_recursos_bloqueados)){
-      //            t_pcb* un_pcb = queue_pop(recurso->cola_recursos_bloqueados);
-      //            enviar_pcb_a
-      //           }
-      //      }else {
-      //            cambiar_de_estado_y_de_lista(EXEC,EXIT);
-      //             eliminar_proceso(pcb_recibido->pid);
-      //            }
-      //            //deberia hacer un semaforo que me bloquee en cpu y acá hago un post! supongo
-      //      break;
+      case WAIT:
+           //preguntar por el parametro paquete->buffer
+            char* recurso_solicitado = leer_string_del_stream(paquete->buffer);
+            bool esta_o_no_el_recurso(void* recurso){
+                 return(esta_el_recurso(recurso,recurso_solicitado));
+            }
+            if(list_any_satisfy(lista_recursos, esta_o_no_el_recurso)){
+                  t_recursos* recurso = list_find(lista_recursos, esta_o_no_el_recurso);
+                  recurso->instancias = recurso->instancias -1;
+                  if(recurso->instancias <0){
+                       list_remove_element(lista_exec,pcb_recibido);
+                       pcb_recibido->estado_pcb = BLOCKED;
+                       queue_push(recurso->cola_procesos_bloqueados,pcb_recibido);
+                       sem_post(&sem_planificador_corto_plazo);
+                  } else{ 
+                        list_add(recurso->lista_procesos_asignados,pcb_recibido->pid);
+                        enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
+                  }
+            } else{
+                       cambiar_de_estado_y_de_lista(EXEC,EXIT);
+                       eliminar_proceso(pcb_recibido->pid, INVALID_RESOURCE);
+            }
+           break;
+      case SIGNAL:
+            char* recurso_solicitadoo = leer_string_del_stream(paquete->buffer);
+            bool estaa_o_no_el_recurso(void* recurso){
+                 return(esta_el_recurso(recurso,recurso_solicitadoo));
+            }
+            if(list_any_satisfy(lista_recursos, estaa_o_no_el_recurso)){
+                 t_recursos* recurso = list_find(lista_recursos, estaa_o_no_el_recurso);
+                 recurso->instancias = recurso->instancias +1;
+                 if(!queue_is_empty(recurso->cola_procesos_bloqueados)){
+                        t_pcb* un_pcb = queue_pop(recurso->cola_procesos_bloqueados);
+                        list_add(recurso->lista_procesos_asignados,un_pcb->pid);
+                        enviar_proceso_blocked_a_ready(un_pcb);
+                        enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
+                  } else{
+                        cambiar_de_estado_y_de_lista(EXEC,EXIT);
+                        eliminar_proceso(pcb_recibido->pid, INVALID_RESOURCE);
+                  }
+            }
+           break;
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
             control_key = 0;
@@ -92,6 +95,15 @@ bool esta_el_recurso(t_recursos* recurso, char* recurso_solicitado){
 }
 
 
-
+void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
+      if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
+            if(tiempo_transcurrido < un_pcb->quantum){
+                  enviar_proceso_blocked_a_ready_plus(un_pcb);
+            } 
+      } else{
+            enviar_proceso_blocked_a_ready(un_pcb);
+            tiempo_transcurrido = 0;
+            }
+}
 
 

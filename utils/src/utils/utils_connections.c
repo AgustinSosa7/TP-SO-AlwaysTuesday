@@ -551,4 +551,27 @@ char* enum_a_string(estado_pcb estado){
 	  	break;
 	}
 }
+
+char* enum_a_string_fin_de_proceso(motivo_fin_de_proceso motivo){
+    switch (motivo)
+    {
+      case SUCCESS:
+        return "SUCCESS";
+        break;
+        case INVALID_RESOURCE:
+        return "INVALID_RESOURCE";
+        break;
+      case INVALID_INTERFACE:
+        return "INVALID_INTERFACE";
+        break;
+      case OUT_OF_MEMORY:
+        return "OUT_OF_MEMORY";
+        break;
+      case INTERRUPTED_BY_USER:
+        return "INTERRUPTED_BY_USER";
+        break;
+	  default:
+		break;
+	}
+}
     

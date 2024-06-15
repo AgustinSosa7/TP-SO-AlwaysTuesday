@@ -6,5 +6,6 @@
 #include "kernel_entradaSalida.h"
 
 void recibir_pcb_con_motivo();
-
+void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb);
+bool esta_el_recurso(t_recursos* recurso, char* recurso_solicitado);
 #endif 

@@ -244,7 +244,7 @@ void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
       pthread_mutex_lock(&mutex_ready_plus);
       list_add(lista_ready_plus,un_pcb); 
       pthread_mutex_unlock(&mutex_ready_plus);
-
+      
       log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(un_pcb->estado_pcb));
 }
 

@@ -400,10 +400,7 @@ switch (identificador_instruccion(instruccion[0]))
 		log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s>", pcb_global->pid, instruccion[0], instruccion[1]);
 		pcb_global->registros_cpu->PC = pcb_global->registros_cpu->PC + 1;
 		t_paquete* paquete_wait = crear_paquete(WAIT);
-		agregar_int_a_paquete(paquete_wait, pcb_global->pid);
-  		agregar_int_a_paquete(paquete_wait, pcb_global->quantum);
-  		agregar_registro_a_paquete(paquete_wait, pcb_global->registros_cpu);
-		agregar_int_a_paquete(paquete_wait, pcb_global->estado_pcb);
+		agregar pcb
 		agregar_string_a_paquete(paquete_wait,instruccion[1]);
 		enviar_paquete(paquete_wait,fd_kernel_dispatch);
 		eliminar_paquete(paquete_wait);
@@ -412,10 +409,7 @@ switch (identificador_instruccion(instruccion[0]))
 		log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s>", pcb_global->pid, instruccion[0], instruccion[1]);
 		pcb_global->registros_cpu->PC = pcb_global->registros_cpu->PC + 1;
 		t_paquete* paquete_signal = crear_paquete(SIGNAL);
-		agregar_int_a_paquete(paquete_signal, pcb_global->pid);
-  		agregar_int_a_paquete(paquete_signal, pcb_global->quantum);
-  		agregar_registro_a_paquete(paquete_signal, pcb_global->registros_cpu);
-		agregar_int_a_paquete(paquete_signal, pcb_global->estado_pcb);
+		agregar pcb
 		agregar_string_a_paquete(paquete_signal, instruccion[1]);
 		enviar_paquete(paquete_signal,fd_kernel_dispatch);
 		eliminar_paquete(paquete_signal);

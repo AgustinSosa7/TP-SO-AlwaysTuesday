@@ -38,17 +38,55 @@ void enviar_interrupción_a_cpu(op_code tipo_interrupción){
 	enviar_paquete(un_paquete,fd_cpu_interrupt);
     eliminar_paquete(un_paquete);
 } 
-void eliminar_proceso(int pid){
+void eliminar_proceso(int pid, motivo_fin_de_proceso motivo){
     //solicitar a la memoria que libere todas las estructuras asociadas 
     //liberar recursos
-    //enviar mensaje a lucas(OO CODE FIN DE PROCESO,pid);
-    //al proceso y marque como libre todo el espacio que este ocupaba.
-    
+    //enviar mensaje a lucas(Op CODE FIN DE PROCESO,pid);
+    log_info(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pid, enum_a_string_fin_de_proceso(motivo));
+
+    pthread_mutex_lock(&mutex_new);
+    if(!list_is_empty(lista_new)){
     sem_post(&sem_grado_multiprogram);
+    }
+    pthread_mutex_unlock(&mutex_new);
 }
 
+
 void detener_planificacion(){
+    pthread_mutex_lock(&mutex_detener_planificacion);
     if(flag_detener_planificacion){
         sem_wait(&sem_detener_planificacion);
     }
+    pthread_mutex_lock(&mutex_detener_planificacion);
+}
+
+void liberar_recursos(int pid){
+    t_pcb* pcb_encontrado = buscar_pcb(pid);
+    //
+}
+
+t_pcb* buscar_pcb(int pid){
+	t_pcb* pcb_encontrado;
+	bool esta_el_pcb(void* pcb){
+		return encontre_el_pcb(pcb, pid);
+	}
+	
+	if(list_any_satisfy(lista_new, esta_el_pcb)){
+		pcb_encontrado = list_find(lista_new, esta_el_pcb);
+	} else if(list_any_satisfy(lista_ready, esta_el_pcb)){
+		pcb_encontrado = list_find(lista_ready, esta_el_pcb);
+	} else if(list_any_satisfy(lista_ready_plus, esta_el_pcb)){
+		pcb_encontrado = list_find(lista_ready_plus, esta_el_pcb);
+	//} else if(list_any_satisfy(lista_bloqued,esta_el_pcb)){
+	//pcb_encontrado = list_find(lista_bloqued, esta_el_pcb);
+	//} preguntar por la queue de bloqued
+	}else{
+		printf("no se encontró el pcb con PID : %d \n", pid);
+	}
+	return pcb_encontrado;
+
+}
+
+bool encontre_el_pcb(t_pcb* pcb, int pid){
+	return (pcb->pid == pid);
 }

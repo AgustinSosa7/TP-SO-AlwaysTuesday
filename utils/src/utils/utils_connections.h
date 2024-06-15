@@ -102,6 +102,14 @@ typedef struct{
     estado_pcb estado_pcb;
 } t_pcb;
 
+typedef enum{
+    SUCCESS,
+    INVALID_RESOURCE,
+    INVALID_INTERFACE,
+    OUT_OF_MEMORY, 
+    INTERRUPTED_BY_USER,
+} motivo_fin_de_proceso;
+
 extern t_log* logger;
 
 
@@ -177,6 +185,7 @@ void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU)
 //void cargar_int_al_super_paquete(t_paquete* paquete, int numero);
 //void cargar_choclo_al_super_paquete(t_paquete* paquete, void* choclo, int size);
 
-
+//FIN DE PROCESO
+char* enum_a_string_fin_de_proceso(motivo_fin_de_proceso motivo);
 
 #endif /* UTILS_CONNECTIONS_H_ */
