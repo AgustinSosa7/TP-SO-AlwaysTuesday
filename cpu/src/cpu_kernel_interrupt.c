@@ -6,21 +6,23 @@ void atender_interrupciones(){
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
+        t_paquete* paquete = recibir_paquete(fd_memoria);
+        t_buffer* buffer = paquete->buffer;
         
 		switch (cod_op) {
-            case INTERRUPCION_FIN_QUANTUM:
-                log_debug(cpu_log_debug, "RECIBI INTERRUPT");
+            case SOLICITUD_INTERRUMPIR_PROCESO:
+                log_debug(cpu_log_debug, "Recibi una interrupción (Fin de Quantum)!");
+                motivo_interrupcion = leer_int_del_buffer(buffer);
+                
                 pthread_mutex_lock(&mutex_ocurrio_interrupcion);
 			    ocurrio_interrupcion = true;
 			    pthread_mutex_unlock(&mutex_ocurrio_interrupcion); 
                 break;
-            case INTERRUPCION_FIN_PROCESO:
-                //TODO
-                //enviar_pcb_a(un_pcb, fd_kernel_dispatch, PROCESO_EXIT);
-                break;
+            
             case -1:
                 log_error(cpu_logger, "Desconexión de KERNEL - Interrupt");
                 control_key = 0;
+            
             default:
                 log_warning(cpu_logger,"Operacion desconocida de KERNEL - Interrupt");
                 break;

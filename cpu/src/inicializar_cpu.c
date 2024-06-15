@@ -84,6 +84,7 @@ void inicializar_estructuras(){
 
     dejar_de_ejecutar = false;
     ocurrio_interrupcion = false;
+    motivo_interrupcion = -1;
 }
 
 void inicializar_semaforos(){

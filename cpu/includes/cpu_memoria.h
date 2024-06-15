@@ -5,6 +5,7 @@
 
 // Tamaño pagina y tamaño memoria
 void pedir_info_inicial_a_memoria();
+int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo);
 
 // Instrucciones
 void pedir_instruccion_pseudocodigo(int pid,int pc);
