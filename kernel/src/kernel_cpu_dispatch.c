@@ -31,14 +31,14 @@ void recibir_pcb_con_motivo()
             peticion_pcb_interfaz->un_pcb = pcb_recibido;
             peticion_pcb_interfaz->interfaz = interfaz; 
 
-            enviar_proceso_a_blocked(peticion_pcb_interfaz); 
+            //enviar_proceso_a_blocked(peticion_pcb_interfaz); 
             sem_post(&sem_planificador_corto_plazo);
             }
 
             break;
       case WAIT:
            //preguntar por el parametro paquete->buffer
-            char* recurso_solicitado = leer_string_del_stream(paquete->buffer);
+            char* recurso_solicitado = leer_string_del_buffer(paquete->buffer);
             bool esta_o_no_el_recurso(void* recurso){
                  return(esta_el_recurso(recurso,recurso_solicitado));
             }
@@ -60,7 +60,7 @@ void recibir_pcb_con_motivo()
             }
            break;
       case SIGNAL:
-            char* recurso_solicitadoo = leer_string_del_stream(paquete->buffer);
+            char* recurso_solicitadoo = leer_string_del_buffer(paquete->buffer);
             bool estaa_o_no_el_recurso(void* recurso){
                  return(esta_el_recurso(recurso,recurso_solicitadoo));
             }
