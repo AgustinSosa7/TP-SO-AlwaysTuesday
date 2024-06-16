@@ -41,12 +41,11 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
 
 
 t_proceso* crear_proceso_nuevo(){
-    op_code code_op = recibir_operacion(fd_kernel);
+    //op_code code_op = recibir_operacion(fd_kernel);
     t_paquete* paquete = recibir_paquete(fd_kernel);
     t_buffer* buffer = paquete->buffer;
     t_proceso* procesoNuevo = malloc(sizeof(t_proceso));
-    if(code_op == CREAR_PROCESO)
-    {
+
         int pid = leer_int_del_buffer(buffer); //cambiar a leer algo del buffer
         char* direccion_pseudocodigo = leer_string_del_buffer(buffer);
         procesoNuevo->pid = pid;
@@ -54,16 +53,10 @@ t_proceso* crear_proceso_nuevo(){
         procesoNuevo->instrucciones = list_create();
         procesoNuevo->instrucciones = leer_archivo_pseudocodigo(direccion_pseudocodigo);
         procesoNuevo->long_tabla_pags = 0;
-        procesoNuevo->tabla_de_paginas = (int *)malloc(0 * sizeof(int)); //REVISAR INICIALIZA LA TABLA DE PAGINAS SIN NINGUNA CANTIDAD DE PAGINAS ASIGNADA
+        procesoNuevo->tabla_de_paginas = (int *)malloc(0 * sizeof(int));
         free(paquete);
+        log_info(memoria_logger, "Cree el proceso: %d",procesoNuevo->pid);
         return procesoNuevo;
-    }
-    else
-    {   
-        log_error(memoria_logger, "No se recibio un proceso a crear correctamente.");
-        free(paquete);
-        exit(EXIT_FAILURE);
-    }
 };
 
 void enviar_instruccion_pesudocodigo(t_list* lista_proceso,int pc){
@@ -74,7 +67,6 @@ void enviar_instruccion_pesudocodigo(t_list* lista_proceso,int pc){
 }
 
 t_pedido* recibir_instruccion_a_enviar(){
-    op_code code_op = recibir_operacion(fd_cpu);
     t_paquete* paquete = recibir_paquete(fd_cpu);
     t_buffer* buffer = paquete->buffer;
     t_pedido* pedido = malloc(sizeof(t_pedido*));

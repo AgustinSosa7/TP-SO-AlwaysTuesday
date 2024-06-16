@@ -26,6 +26,7 @@ typedef struct
 {
 	int pid;
 	int pc;
+	int tamanio_nuevo;
 } t_pedido;
 
 

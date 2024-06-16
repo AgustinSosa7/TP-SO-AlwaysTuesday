@@ -14,6 +14,7 @@ int main(int argc, char** argv){
     log_info(cpu_logger, "Creando conexion con MEMORIA...");
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
+    pedir_info_inicial_a_memoria();
 
     // Iniciar server de CPU - DISPATCH
     pthread_t hilo_conexion_dispatch;
