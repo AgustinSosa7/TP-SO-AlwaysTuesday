@@ -2,9 +2,7 @@
 
 void pedir_info_inicial_a_memoria(){
     // Enviar
-	t_paquete* paquete1 = crear_paquete(SOLICITUD_INFO_INICIAL_A_MEMORIA);
-    enviar_paquete(paquete1, fd_memoria);
-    eliminar_paquete(paquete1);
+    enviar_opcode(SOLICITUD_INFO_INICIAL_A_MEMORIA,fd_memoria);
 
     // Recibir
     op_code code_op = recibir_operacion(fd_memoria);

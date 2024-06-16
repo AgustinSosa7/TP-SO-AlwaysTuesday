@@ -6,7 +6,7 @@ void atender_interrupciones(){
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
-        t_paquete* paquete = recibir_paquete(fd_memoria);
+        t_paquete* paquete = recibir_paquete(fd_kernel_interrupt);
         t_buffer* buffer = paquete->buffer;
         
 		switch (cod_op) {

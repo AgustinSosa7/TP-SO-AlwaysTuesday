@@ -25,7 +25,7 @@ void atender_cpu(){
     enviar_info_inicial();
     while(1){
         op_code code_op = recibir_operacion(fd_cpu);
-
+        printf("OP Code recibido %d\n",code_op);
         if(code_op == PEDIDO_PSEUDOCODIGO) 
         { 
             t_pedido* pedido = recibir_instruccion_a_enviar();
@@ -45,6 +45,7 @@ void atender_cpu(){
         else
         {
             log_error(memoria_logger,"NO ENTIENDO QUE ME PIDE EL CPU"); //BORRAR
+            exit(EXIT_FAILURE);
         }
     }
     printf("FIN ATENDER CPU");

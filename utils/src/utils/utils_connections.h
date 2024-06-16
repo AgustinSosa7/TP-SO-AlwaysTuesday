@@ -169,6 +169,7 @@ void enviar_mensaje(void* mensaje, int socket_cliente);
 void enviar_bool_mensaje(bool mensaje, int socket_cliente);
 void enviar_int_mensaje(int mensaje, int socket_cliente);
 void enviar_mensaje_string(char* mensaje, int socket_cliente);
+void enviar_opcode(op_code op_code_a_enviar, int socket_cliente);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void agregar_int_a_paquete(t_paquete* paquete, int valor);
