@@ -3,6 +3,7 @@
 void recibir_pcb_con_motivo()
 {     
       detener_planificacion();
+      printf("Esperando un PCB con MOTIVO.\n");
       int code_op = recibir_operacion(fd_cpu_dispatch);
       t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
       t_pcb* pcb_recibido = recibir_pcb(paquete); 

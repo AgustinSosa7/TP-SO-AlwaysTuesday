@@ -14,10 +14,8 @@ void atender_cpu_kernel_dispatch(){
                     //Recibe el paquete lo deserealiza y recibe el PCB
                     log_info(cpu_logger,"LLego un PCB para ser ejecutado en el CPU!");
                     t_pcb* un_pcb = recibir_pcb(paquete);
-                    imprimir_pcb(un_pcb, cpu_logger);
-                    log_info(cpu_logger,"pid del pcb global antes: %d", pcb_global->pid);
+                    //imprimir_pcb(un_pcb, cpu_logger);
                     pcb_global = un_pcb;
-                    log_info(cpu_logger,"pid del pcb global: %d", pcb_global->pid);
                     //free(un_pcb);
                     sem_post(&sem_ciclo_de_instruccion);
                 break;

@@ -5,8 +5,11 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     void* buffer = paquete->buffer;
 
     peticion->instruccion = leer_string_del_buffer(buffer);
+    printf("Instruccion: %s. \n", peticion->instruccion);
     peticion->interfaz = leer_string_del_buffer(buffer);
+    printf("Interfaz: %s. \n", peticion->instruccion);
     peticion->parametros = leer_parametros(paquete, peticion->instruccion);
+    printf("Tiempo de espera: %d. \n", peticion->parametros->tiempo_espera);
 
     return peticion;
 } 
@@ -112,6 +115,8 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
  
     proceso_blocked->peticion = peticion;
     proceso_blocked->un_pcb = pcb;
+//SACAR PCB DE EXECUTE (revisar mili)
+    t_pcb* un_pcb = list_remove(lista_exec,0);
     
     pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
     queue_push(interfaz->cola_procesos_blocked, proceso_blocked);
@@ -133,10 +138,12 @@ void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* 
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int); 
 	void* a_enviar = serializar_paquete(paquete, bytes);
       int err = send(interfaz->fd_interfaz, a_enviar, bytes, SIGPIPE); 
+      printf("Instruccion enviada...\n");
+
       if(err == -1){
         close(interfaz->fd_interfaz);
         interfaz->esta_conectada = false;
-        enviar_procesos_blocked_a_exit(interfaz->cola_procesos_blocked);
+        enviar_procesos_blocked_a_exit(interfaz);
     }
 	free(a_enviar);
       eliminar_paquete(paquete);
@@ -182,13 +189,16 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
 
 
 
-void enviar_procesos_blocked_a_exit(t_queue* cola_procesos_blocked){
+void enviar_procesos_blocked_a_exit(t_interfaz* interfaz){
+      t_queue* cola_procesos_blocked = interfaz->cola_procesos_blocked;
       while(!(queue_is_empty(cola_procesos_blocked))){
             t_proceso_blocked* proceso = queue_pop(cola_procesos_blocked);
             enviar_proceso_a_exit(proceso->un_pcb);
             eliminar_peticion(proceso->peticion);
             free(proceso);
       }
+      log_error(kernel_logger,"La interfaz %s se ha desconectado repentinamente. Proceso enviado a EXIT.\n", interfaz->nombre);
+      // Hay que hacer free?
 }
 
 

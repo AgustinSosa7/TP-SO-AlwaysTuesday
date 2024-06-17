@@ -17,7 +17,7 @@ bool esta_o_no(char* nombre_io, t_interfaz* io);
 bool esta_conectada_la_interfaz(t_interfaz* interfaz, t_pcb* pcb);
 bool validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion);
 void enviar_proceso_a_exit(t_pcb* un_pcb);
-void enviar_procesos_blocked_a_exit(t_queue* cola_procesos_blocked);
+void enviar_procesos_blocked_a_exit(t_interfaz* interfaz);
 
 void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz);
 void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion);
