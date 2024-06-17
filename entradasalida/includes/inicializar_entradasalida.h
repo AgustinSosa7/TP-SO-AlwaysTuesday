@@ -12,7 +12,9 @@ void truncateString(char *str, int n);
 void inicializar_listas();
 
 void iniciar_file_system();
-void inicializar_archivo_de_bloques();
+void crear_path(char* path, char* nombre_archivo);
+void crear_paths();
+void inicializar_archivos();
 
 
 
