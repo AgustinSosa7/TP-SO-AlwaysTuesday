@@ -40,10 +40,10 @@ typedef enum
 	//---- KERNEL - CPU
 	PCB,
 	EJECUTAR_PROCESO_KC,
-    INTERRUPCION_FIN_QUANTUM,
-    INTERRUPCION_FIN_PROCESO,
+    SOLICITUD_INTERRUMPIR_PROCESO,
 	//---- KERNEL - MEMORIA
 	CREAR_PROCESO,
+    FINALIZAR_PROCESO_MEMORIA,
   DESALOJO_QUANTUM,
   PROCESO_EXIT,
   PEDIDO_IO,
@@ -55,6 +55,8 @@ typedef enum
   // ------ CPU - MEMORIA
   SOLICITUD_INFO_INICIAL_A_MEMORIA,
   RESPUESTA_INFO_INICIAL_A_CPU,
+  SOLICITUD_MODIFICAR_TAMANIO,
+  RESPUESTA_MODIFICAR_TAMANIO,
   PEDIDO_PSEUDOCODIGO,
   PSEUDOCODIGO,
   SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA,
@@ -63,7 +65,9 @@ typedef enum
   RESPUESTA_LEER_VALOR_EN_MEMORIA,
   SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA,
   RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA,
-  DEVOLVER_PROCESO_POR_PAGEFAULT
+  DEVOLVER_PROCESO_POR_PAGEFAULT,
+  DEVOLVER_PROCESO_POR_OUT_OF_MEMORY,
+  DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION
 }op_code;
 
 typedef struct
@@ -112,6 +116,20 @@ typedef struct{
     estado_pcb estado_pcb;
 } t_pcb;
 
+typedef enum{
+    SUCCESS,
+    INVALID_RESOURCE,
+    INVALID_INTERFACE,
+    OUT_OF_MEMORY, 
+    INTERRUPTED_BY_USER,
+} motivo_fin_de_proceso;
+
+typedef enum{
+    INTERRUPCION_POR_DESALOJO,
+    INTERRUPCION_POR_KILL
+} motivo_de_interrupcion;
+
+
 extern t_log* logger;
 
 
@@ -151,6 +169,7 @@ void enviar_mensaje(void* mensaje, int socket_cliente);
 void enviar_bool_mensaje(bool mensaje, int socket_cliente);
 void enviar_int_mensaje(int mensaje, int socket_cliente);
 void enviar_mensaje_string(char* mensaje, int socket_cliente);
+void enviar_opcode(op_code op_code_a_enviar, int socket_cliente);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void agregar_int_a_paquete(t_paquete* paquete, int valor);
@@ -185,6 +204,7 @@ void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU)
 //void cargar_int_al_super_paquete(t_paquete* paquete, int numero);
 //void cargar_choclo_al_super_paquete(t_paquete* paquete, void* choclo, int size);
 
-
+//FIN DE PROCESO
+char* enum_a_string_fin_de_proceso(motivo_fin_de_proceso motivo);
 
 #endif /* UTILS_CONNECTIONS_H_ */

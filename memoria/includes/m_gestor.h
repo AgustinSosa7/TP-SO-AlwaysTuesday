@@ -22,12 +22,6 @@ typedef struct
 	int* tabla_de_paginas;
 } t_proceso;
 
-typedef struct
-{
-	int pid;
-	int pc;
-} t_pedido;
-
 
 //Variables GLOBALES
 

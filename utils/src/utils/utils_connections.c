@@ -244,6 +244,15 @@ void enviar_mensaje_string(char* mensaje, int socket_cliente)
 	free(a_enviar);
 }
 
+void enviar_opcode(op_code op_code_a_enviar, int socket_cliente)
+{
+	int tamanio = sizeof(op_code);
+	void* a_enviar = malloc(tamanio);
+	memcpy(a_enviar, &op_code_a_enviar, tamanio);
+	send(socket_cliente, a_enviar, tamanio, 0);
+	free(a_enviar);
+}
+
 void enviar_paquete(t_paquete* paquete, int socket_cliente)
 {
 	int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int);
@@ -509,6 +518,29 @@ char* enum_a_string(estado_pcb estado){
 	  default: // READYPLUS
         return "READYPLUS";
 	  	break;
+	}
+}
+
+char* enum_a_string_fin_de_proceso(motivo_fin_de_proceso motivo){
+    switch (motivo)
+    {
+      case SUCCESS:
+        return "SUCCESS";
+        break;
+        case INVALID_RESOURCE:
+        return "INVALID_RESOURCE";
+        break;
+      case INVALID_INTERFACE:
+        return "INVALID_INTERFACE";
+        break;
+      case OUT_OF_MEMORY:
+        return "OUT_OF_MEMORY";
+        break;
+      case INTERRUPTED_BY_USER:
+        return "INTERRUPTED_BY_USER";
+        break;
+	  default:
+		break;
 	}
 }
     

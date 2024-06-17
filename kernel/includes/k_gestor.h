@@ -24,7 +24,7 @@ typedef struct{
     int tiempo_espera;
     char* archivo;
     char* registroDireccion;
-    char* registroTamanio;
+    int registroTamanio;
     char* registroPunteroArchivo;
 } t_peticion_param;
 
@@ -87,8 +87,9 @@ extern sem_t sem_detener_planificacion;
 typedef struct{
     char* nombre_recurso;
     int instancias;
-    t_queue* cola_recursos_bloqueados;
-    sem_t* sem_tipo_recurso;
+    t_queue* cola_procesos_bloqueados;
+    t_list* lista_procesos_asignados;
+    //sem_t* sem_tipo_recurso; ver después
 } t_recursos;
 ///////////////////////////////////////////////////////////////
 extern t_log* kernel_logger;
@@ -118,6 +119,8 @@ extern int GRADO_MULTIPROGRAMACION;
 extern char * IP_KERNEL;
 
 void enviar_interrupción_a_cpu(op_code tipo_interrupción);
-void eliminar_proceso(int pid);
+void eliminar_proceso(int pid, motivo_fin_de_proceso motivo);
 void detener_planificacion();
+t_pcb* buscar_pcb(int pid);
+bool encontre_el_pcb(t_pcb* pcb, int pid);
 #endif

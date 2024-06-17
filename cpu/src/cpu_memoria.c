@@ -2,9 +2,7 @@
 
 void pedir_info_inicial_a_memoria(){
     // Enviar
-	t_paquete* paquete1 = crear_paquete(SOLICITUD_INFO_INICIAL_A_MEMORIA);
-    enviar_paquete(paquete1, fd_memoria);
-    eliminar_paquete(paquete1);
+    enviar_opcode(SOLICITUD_INFO_INICIAL_A_MEMORIA,fd_memoria);
 
     // Recibir
     op_code code_op = recibir_operacion(fd_memoria);
@@ -126,6 +124,32 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_
     {   
         log_error(cpu_log_debug, "No se recibio una respuesta sobre la solicitud de escribir un valor en memoria.");
         free(paquete);
+        exit(EXIT_FAILURE);
+    }
+}
+
+int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
+    // Enviar
+    t_paquete* paquete = crear_paquete(SOLICITUD_MODIFICAR_TAMANIO);
+    agregar_int_a_paquete(paquete,pid);
+    agregar_int_a_paquete(paquete,tamanioNuevo);
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+
+    // Recibir
+    op_code code_op = recibir_operacion(fd_memoria);
+    t_paquete* paquete2 = recibir_paquete(fd_memoria);
+    t_buffer* buffer = paquete2->buffer;
+    if(code_op == RESPUESTA_MODIFICAR_TAMANIO)
+    {
+        int nuevo_tamanio = leer_int_del_buffer(buffer);
+        log_info(cpu_log_debug, "El nuevo tamanio del proceso en Memoria es de = %d", nuevo_tamanio);
+        return nuevo_tamanio;
+    }
+    else
+    {   
+        log_error(cpu_log_debug, "No se recibio una respuesta sobre la modificacion del tamanio del proceso en memoria.");
+        free(paquete2);
         exit(EXIT_FAILURE);
     }
 }

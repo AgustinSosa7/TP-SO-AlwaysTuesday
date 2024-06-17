@@ -28,7 +28,8 @@
         "cpu_gestor.h": "c",
         "log.h": "c",
         "fetch.h": "c",
-        "execute.h": "c"
+        "execute.h": "c",
+        "memoria_cpu.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

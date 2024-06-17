@@ -10,6 +10,7 @@ int buscar_marco_libre();
 void cambiar_tamanio_proceso(t_proceso*,int);
 void asignar_marcos_memoria(t_proceso*);
 void liberar_marcos_memoria();
+int calcular_paginas_necesarias();
 void ajustar_tamanio_proceso(t_proceso*,int);
 
 

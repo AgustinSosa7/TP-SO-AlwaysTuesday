@@ -14,8 +14,8 @@ t_pcb* crearPcb(){
 int asignarPID(){
 	int a = 1;
 	//pthread_mutex_lock(mutex_pid); ARREGLAR SEMAFORO
-	//pid_global ++;
-	//a = pid_global;
+	pid_global ++;
+	a = pid_global;
 	//pthread_mutex_unlock(mutex_pid); ARREGLAR SEMAFORO
 	return a;
 }

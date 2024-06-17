@@ -9,15 +9,11 @@ void ciclo_instruccion(){
 	log_info(cpu_log_debug, "Tome el semaforo del ciclo de instruccion.\n");
 
 	dejar_de_ejecutar = false;
-	log_info(cpu_log_debug, "Antes del mutex. \n");
 	pthread_mutex_lock(&mutex_ocurrio_interrupcion);
 	ocurrio_interrupcion = false;
 	pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
     
 	//FETCH 
-	log_info(cpu_log_debug, "Antes de recibir el pcb_global. \n");
-	printf("pcb_global->pid: %d \n", pcb_global->pid);
-	log_info(cpu_log_debug,"Despues de recibir el pcb_global. \n");
 	log_info(cpu_logger, "PID: <%d> - FETCH - PC: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
@@ -90,12 +86,41 @@ void ciclo_instruccion(){
 			u_int32_t nuevo_program_counter = atoi(strtok_r(saveptr, " ", &saveptr));
 			if (leer_valor_de_registro(nombre_registro) != 0)
 			{
-				escribir_valor_a_registro(nombre_registro, nuevo_program_counter);
+				escribir_valor_a_registro(pcb_global->registros_cpu->PC, nuevo_program_counter);
 			}
 			else
 			{
 				pcb_global->registros_cpu->PC++;
 			}
+		}
+	else if (strcmp(nombre_instruccion, "RESIZE") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			int tamanio = atoi(strtok_r(saveptr, " ", &saveptr));
+			int nuevoTamanioDelProceso = pedir_ajustar_tamanio_del_proceso(pcb_global->pid, tamanio);
+			bool outOfMemory = nuevoTamanioDelProceso == -1;
+			if(outOfMemory){
+				log_info(cpu_logger, "Out of Memory: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, tamanio);
+				dejar_de_ejecutar = true;
+				devolver_contexto_por_out_of_memory();
+			}
+			pcb_global->registros_cpu->PC++;
+		}
+	else if (strcmp(nombre_instruccion, "WAIT") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_wait(nombre_recurso);
+		}
+	else if (strcmp(nombre_instruccion, "SIGNAL") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_signal(nombre_recurso);
 		}
 	else if (strcmp(nombre_instruccion, "IO_GEN_SLEEP") == 0)
 		{
@@ -106,7 +131,50 @@ void ciclo_instruccion(){
 			dejar_de_ejecutar = true;
 			devolver_contexto_por_sleep(nombre_instruccion, nombre_interfaz, tiempo_sleep);
 		}
-	
+	else if (strcmp(nombre_instruccion, "IO_STDIN_READ") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
+			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
+
+			int direccion_logica = leer_valor_de_registro(registro_direccion);
+			int direccion_fisica = mmu(direccion_logica);
+			int tamanio = leer_valor_de_registro(registro_tamanio);
+
+			if (direccion_fisica != -1) // Si la traduccion de la direccion logica arroja un Page Fault, se devuelve el contexto por page fault y no se ejecuta el resto!.
+			{
+				pcb_global->registros_cpu->PC++;
+				dejar_de_ejecutar = true;
+				devolver_contexto_por_stdin_read(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
+			}
+			
+		}
+	else if (strcmp(nombre_instruccion, "IO_FS_CREATE") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_fs_create(nombre_instruccion, nombre_interfaz, nombre_archivo);
+		}
+	else if (strcmp(nombre_instruccion, "IO_FS_DELETE") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_fs_delete(nombre_instruccion, nombre_interfaz, nombre_archivo);
+		}
+	else if (strcmp(nombre_instruccion, "EXIT") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s \"", pcb_global->pid, nombre_instruccion);
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_correcta_finalizacion();
+		}
+
 	free(instruccion_con_parametros);
 
     //CHECK INTERRUPT
@@ -149,7 +217,7 @@ void devolver_contexto_por_ser_interrumpido()
 {
 	t_paquete* paquete = crear_paquete(DESALOJO_QUANTUM);
 	agregar_pcb_a_paquete(pcb_global, paquete);
-	//Falta agregar el motivo de la interrupción...
+	agregar_int_a_paquete(motivo_interrupcion, paquete);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
@@ -159,6 +227,32 @@ void devolver_contexto_por_page_fault(int numero_de_pagina)
 	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_PAGEFAULT);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_int_a_paquete(paquete, numero_de_pagina);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_out_of_memory() // Si Kernel lo necesitara, podría pasarle además del PCB, el tamaño al cual se intentó agrandar el tamaño del proceso en Memoria.
+{
+	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_OUT_OF_MEMORY);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_wait(char* nombre_recurso)
+{
+	t_paquete* paquete = crear_paquete(WAIT);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_recurso);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_signal(char* nombre_recurso)
+{
+	t_paquete* paquete = crear_paquete(SIGNAL);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_recurso);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
@@ -174,7 +268,49 @@ void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz
     eliminar_paquete(paquete);
 }
 
-void escribir_valor_a_registro(char *nombre_registro, u_int32_t valor)
+void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_int_a_paquete(paquete, direccion_fisica);
+	agregar_int_a_paquete(paquete, tamanio);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_fs_create(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_string_a_paquete(paquete, nombre_archivo);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_fs_delete(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_string_a_paquete(paquete, nombre_archivo);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_correcta_finalizacion()
+{
+	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void escribir_valor_a_registro(char* nombre_registro, u_int32_t valor)
 {
 	if (strcmp(nombre_registro, "AX") == 0)
 	{
@@ -237,7 +373,7 @@ void escribir_valor_a_registro(char *nombre_registro, u_int32_t valor)
 	}
 }
 
-uint32_t leer_valor_de_registro(char *nombre_registro)
+uint32_t leer_valor_de_registro(char* nombre_registro)
 {
 	if (strcmp(nombre_registro, "AX") == 0)
 	{
@@ -434,33 +570,7 @@ switch (identificador_instruccion(instruccion[0]))
 
 		// hay_que_desalojar = true; //No se para que se haria
 
-
-    break;
-	case WAIT: 
-		log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s>", pcb_global->pid, instruccion[0], instruccion[1]);
-		pcb_global->registros_cpu->PC = pcb_global->registros_cpu->PC + 1;
-		t_paquete* paquete_wait = crear_paquete(WAIT);
-		agregar_int_a_paquete(paquete_wait, pcb_global->pid);
-  		agregar_int_a_paquete(paquete_wait, pcb_global->quantum);
-  		agregar_registro_a_paquete(paquete_wait, pcb_global->registros_cpu);
-		agregar_int_a_paquete(paquete_wait, pcb_global->estado_pcb);
-		agregar_string_a_paquete(paquete_wait,instruccion[1]);
-		enviar_paquete(paquete_wait,fd_kernel_dispatch);
-		eliminar_paquete(paquete_wait);
-	break;
-	case SIGNAL: 
-		log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s>", pcb_global->pid, instruccion[0], instruccion[1]);
-		pcb_global->registros_cpu->PC = pcb_global->registros_cpu->PC + 1;
-		t_paquete* paquete_signal = crear_paquete(SIGNAL);
-		agregar_int_a_paquete(paquete_signal, pcb_global->pid);
-  		agregar_int_a_paquete(paquete_signal, pcb_global->quantum);
-  		agregar_registro_a_paquete(paquete_signal, pcb_global->registros_cpu);
-		agregar_int_a_paquete(paquete_signal, pcb_global->estado_pcb);
-		agregar_string_a_paquete(paquete_signal, instruccion[1]);
-		enviar_paquete(paquete_signal,fd_kernel_dispatch);
-		eliminar_paquete(paquete_signal);
-
-default:
+	default:
     break;
 }
 }

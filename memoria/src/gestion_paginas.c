@@ -15,8 +15,8 @@ int traer_numero_marco(t_proceso* proceso,int pagina_consultada){
     }
     else
     {
-        printf("error\n");
-        return 1;
+        log_error(memoria_logger,"Pagina no encontrada. No existe esa pagina en memoria."); //BORRAR
+        return -1;
     }
 }
 
@@ -56,6 +56,15 @@ void asignar_marcos_memoria(t_proceso* proceso){
 
 void liberar_marcos_memoria(){
 
+}
+
+int calcular_paginas_necesarias(int tamanio_nuevo){
+    int paginas_necesarias = tamanio_nuevo/TAM_PAGINA;
+    // Verifica si hay residuo
+    if (tamanio_nuevo % TAM_PAGINA != 0) {
+        paginas_necesarias += 1;
+    }
+    return paginas_necesarias;
 }
 
 void ajustar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){

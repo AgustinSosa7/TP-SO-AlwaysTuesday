@@ -14,10 +14,19 @@ void ciclo_instruccion();
 
 void devolver_contexto_por_ser_interrumpido();
 void devolver_contexto_por_page_fault(int numero_de_pagina);
-void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz, int segundos_sleep);
+void devolver_contexto_por_out_of_memory();
 
-void escribir_valor_a_registro(char *nombre_registro, u_int32_t valor);
-uint32_t leer_valor_de_registro(char *nombre_registro);
+void devolver_contexto_por_wait(char* nombre_recurso);
+void devolver_contexto_por_signal(char* nombre_recurso);
+void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz, int segundos_sleep);
+void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio);
+void devolver_contexto_por_fs_create(nombre_instruccion, nombre_interfaz, nombre_archivo);
+void devolver_contexto_por_fs_delete(nombre_instruccion, nombre_interfaz, nombre_archivo);
+
+void devolver_contexto_por_correcta_finalizacion();
+
+void escribir_valor_a_registro(char* nombre_registro, u_int32_t valor);
+uint32_t leer_valor_de_registro(char* nombre_registro);
 int mmu(int direccion_logica);
 
 #endif

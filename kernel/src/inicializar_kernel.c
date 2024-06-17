@@ -115,7 +115,7 @@ void inicializar_semaforos(){
 	pthread_mutex_init(&mutex_ready_plus, NULL);
 	pthread_mutex_init(&mutex_exit, NULL);
 //	pthread_mutex_init(&mutex_flag_interrupcion,NULL);
-//	pthread_mutex_init(&mutex_flag_detener_planificacion,NULL);
+	pthread_mutex_init(&mutex_detener_planificacion,NULL);
 	printf("listo las mutex_exit\n");
 }
 
@@ -126,13 +126,14 @@ void inicializar_pid(){
 void inicializar_recursos(){
 	lista_recursos = list_create();
 	int i = 0;
+	t_recursos* recurso = malloc(sizeof(t_recursos));
 	while(RECURSOS[i]!=0){
-		t_recursos* recurso = malloc(sizeof(t_recursos));
 		recurso->nombre_recurso = RECURSOS[i];
 		recurso->instancias = atoi(INSTANCIAS_RECURSOS[i]);
-		recurso->cola_recursos_bloqueados = queue_create();
-		
+		recurso->cola_procesos_bloqueados = queue_create();
+		recurso->lista_procesos_asignados = list_create();
 		list_add(lista_recursos,recurso);
+		free(recurso);
 	}
 }
 
