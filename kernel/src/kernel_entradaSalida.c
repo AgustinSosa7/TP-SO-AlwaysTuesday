@@ -3,17 +3,10 @@
 t_peticion* recibir_peticion(t_paquete* paquete){ 
     t_peticion* peticion = malloc(sizeof(t_peticion));
     void* buffer = paquete->buffer;
-    //peticion->instruccion = malloc(sizeof(char));
-    //peticion->interfaz = malloc(sizeof(char));
-    //peticion->parametros = malloc(sizeof(t_peticion_param));
-
 
     peticion->instruccion = leer_string_del_buffer(buffer);
-    printf("Instruccion: %s.\n", peticion->instruccion);
     peticion->interfaz = leer_string_del_buffer(buffer);
-    printf("Interfaz: %s.\n", peticion->interfaz);
     peticion->parametros = leer_parametros(paquete, peticion->instruccion);
-    printf("Tiempo de espera: %d.\n", peticion->parametros->tiempo_espera);
 
     return peticion;
 } 
@@ -30,12 +23,12 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
            parametros->registroDireccion= leer_string_del_buffer(buffer);
-           parametros->registroTamanio= leer_string_del_buffer(buffer);
+           parametros->registroTamanio= leer_int_del_buffer(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
            parametros->registroDireccion= leer_string_del_buffer(buffer);
-           parametros->registroTamanio= leer_string_del_buffer(buffer);
+           parametros->registroTamanio= leer_int_del_buffer(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
@@ -157,11 +150,11 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroTamanio);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroTamanio);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
@@ -171,18 +164,18 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroTamanio); 
+            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio); 
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
             agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroTamanio);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
             agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
             agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroTamanio);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
             agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);      
       }       
 }
@@ -263,11 +256,9 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {     free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {     free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {     free(parametros->archivo);
@@ -277,18 +268,15 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {     free(parametros->archivo);
-            free(parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     free(parametros->archivo);
             free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
             free(parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     free(parametros->archivo);
             free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
             free(parametros->registroPunteroArchivo);
       }     
       
