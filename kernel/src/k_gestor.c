@@ -57,7 +57,7 @@ void detener_planificacion(){
     if(flag_detener_planificacion){
         sem_wait(&sem_detener_planificacion);
     }
-    pthread_mutex_lock(&mutex_detener_planificacion);
+    pthread_mutex_unlock(&mutex_detener_planificacion);
 }
 
 void liberar_recursos(int pid){

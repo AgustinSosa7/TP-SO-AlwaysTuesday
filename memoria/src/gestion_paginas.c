@@ -15,8 +15,8 @@ int traer_numero_marco(t_proceso* proceso,int pagina_consultada){
     }
     else
     {
-        printf("error\n");
-        return 1;
+        log_error(memoria_logger,"Pagina no encontrada. No existe esa pagina en memoria."); //BORRAR
+        return -1;
     }
 }
 

@@ -1,8 +1,7 @@
 #include "../includes/kernel_cpu_dispatch.h"
 
 void recibir_pcb_con_motivo()
-{     int control_key = 1;
-      while (control_key){
+{     
       detener_planificacion();
       int code_op = recibir_operacion(fd_cpu_dispatch);
       t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
@@ -26,12 +25,7 @@ void recibir_pcb_con_motivo()
             t_peticion* peticion = recibir_peticion(paquete);  
             t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
             if(interfaz!=NULL){
-            t_peticion_pcb_interfaz* peticion_pcb_interfaz = malloc(sizeof(t_peticion_pcb_interfaz));
-            peticion_pcb_interfaz->peticion = peticion;
-            peticion_pcb_interfaz->un_pcb = pcb_recibido;
-            peticion_pcb_interfaz->interfaz = interfaz; 
-
-            enviar_proceso_a_blocked(peticion_pcb_interfaz); 
+            enviar_proceso_a_blocked(peticion,pcb_recibido,interfaz); 
             sem_post(&sem_planificador_corto_plazo);
             }
 
@@ -80,14 +74,12 @@ void recibir_pcb_con_motivo()
            break;
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
-            control_key = 0;
             break;
       default:
             log_warning(kernel_logger, "Operacion desconocida de CPU - DISPATCH");
             break;
         }
-        eliminar_paquete(paquete);    
-      }
+        eliminar_paquete(paquete);
 }
 
 bool esta_el_recurso(t_recursos* recurso, char* recurso_solicitado){

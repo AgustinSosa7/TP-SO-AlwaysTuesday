@@ -20,33 +20,62 @@ void enviar_info_inicial(){
     }
 }
 
+void recibir_pedido_instruccion_y_enviar(){
+    t_paquete* paquete = recibir_paquete(fd_cpu);
+    t_buffer* buffer = paquete->buffer;
+    int pid = leer_int_del_buffer(buffer);
+    int pc = leer_int_del_buffer(buffer);
+    printf("Busco el proceso...\n");
+    //t_proceso* proceso = malloc(sizeof(proceso));
+    t_proceso* proceso = buscar_proceso_en_memoria(pid);
+    printf("encontre el proceso %d",proceso->pid);
+    enviar_instruccion_pesudocodigo((proceso->instrucciones),pc);
+    free(buffer);
+    free(paquete);
+    log_info(memoria_logger,"Pseudocodigo enviado. PID: %d PROGRAM COUNTER: %d",pid,pc); //BORRAR
+};
+
+void recibir_pedido_marco_y_enviar(){
+    t_paquete* paquete = recibir_paquete(fd_cpu);
+    t_buffer* buffer = paquete->buffer;
+    int pid = leer_int_del_buffer(buffer);
+    int numero_de_pagina = leer_int_del_buffer(buffer);
+    int marco_pedido = traer_numero_marco(buscar_proceso_en_memoria(pid)->pid,numero_de_pagina);
+    free(buffer);
+    free(paquete);
+
+    t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_NUMERO_DE_MARCO_A_CPU);
+    agregar_int_a_paquete(paquete_a_enviar, marco_pedido);
+    enviar_paquete(paquete_a_enviar, fd_cpu);
+    eliminar_paquete(paquete_a_enviar);
+    log_info(memoria_logger,"Marco enviado. PID: %d PAGINA: %d MARCO: %d",pid,numero_de_pagina,marco_pedido); //BORRAR
+};
+
 void atender_cpu(){
     
     enviar_info_inicial();
     while(1){
         op_code code_op = recibir_operacion(fd_cpu);
+        sleep(2);
         printf("OP Code recibido %d\n",code_op);
-        if(code_op == PEDIDO_PSEUDOCODIGO) 
-        { 
-            t_pedido* pedido = recibir_instruccion_a_enviar();
-            printf("Proceso pedido: %d\n",pedido->pid);
-            //recv_cpu lo que tengo que pasarte. pid PC
-            t_proceso* proceso1 = buscar_proceso_en_memoria(pedido->pid);
-            printf("ENCONTRADO %d\n",proceso1->pid); //BORRAR
-            enviar_instruccion_pesudocodigo(proceso1->instrucciones,pedido->pc);//PROGRAM_COUNTER_PEDIDO);
-            free(pedido);
-            sleep(3);
-        }
-        else if (code_op == SOLICITUD_MODIFICAR_TAMANIO)
-        {
-            printf("PEDIDO DE RESIZE\n"); //BORRAR
-
-        }
-        else
-        {
-            log_error(memoria_logger,"NO ENTIENDO QUE ME PIDE EL CPU"); //BORRAR
-            exit(EXIT_FAILURE);
-        }
+            if(code_op == PEDIDO_PSEUDOCODIGO) 
+            { 
+                recibir_pedido_instruccion_y_enviar();
+            }
+            else if (code_op == SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA)
+            {
+                recibir_pedido_marco_y_enviar();
+            }
+            else if (code_op == SOLICITUD_MODIFICAR_TAMANIO)
+            {
+                printf("PEDIDO DE RESIZE\n"); //BORRAR
+            }
+            else
+            {
+                log_error(memoria_logger,"NO ENTIENDO QUE ME PIDE EL CPU"); //BORRAR
+                exit(EXIT_FAILURE);
+            }
     }
     printf("FIN ATENDER CPU");
 }
+

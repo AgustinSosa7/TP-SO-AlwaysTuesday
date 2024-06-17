@@ -213,15 +213,17 @@ void recibir_fin_peticion(t_interfaz* interfaz){
 
 void desbloquear_proceso(t_interfaz* interfaz){
       
-     pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
-     t_proceso_blocked* proceso_blocked = queue_pop(interfaz->cola_procesos_blocked);    
-     pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
+      pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
+      t_proceso_blocked* proceso_blocked = queue_pop(interfaz->cola_procesos_blocked);    
+      pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
-     estado_pcb estado_anterior = proceso_blocked->un_pcb->estado_pcb;
+      estado_pcb estado_anterior = proceso_blocked->un_pcb->estado_pcb;
       enviar_proceso_a_ready_o_ready_plus(proceso_blocked->un_pcb);
      
+      sem_post(&sem_planificador_corto_plazo);
       log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(proceso_blocked->un_pcb->estado_pcb));
 }
+
 void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
       if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
             if(tiempo_transcurrido < un_pcb->quantum){

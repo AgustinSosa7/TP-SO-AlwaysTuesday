@@ -39,47 +39,12 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     return lista_de_instrucciones;
 };
 
-
-t_proceso* crear_proceso_nuevo(){
-    //op_code code_op = recibir_operacion(fd_kernel);
-    t_paquete* paquete = recibir_paquete(fd_kernel);
-    t_buffer* buffer = paquete->buffer;
-    t_proceso* procesoNuevo = malloc(sizeof(t_proceso));
-
-        int pid = leer_int_del_buffer(buffer); //cambiar a leer algo del buffer
-        char* direccion_pseudocodigo = leer_string_del_buffer(buffer);
-        procesoNuevo->pid = pid;
-        procesoNuevo->direccion_pseudocodigo = direccion_pseudocodigo;
-        procesoNuevo->instrucciones = list_create();
-        procesoNuevo->instrucciones = leer_archivo_pseudocodigo(direccion_pseudocodigo);
-        procesoNuevo->long_tabla_pags = 0;
-        procesoNuevo->tabla_de_paginas = (int *)malloc(0 * sizeof(int));
-        free(paquete);
-        log_info(memoria_logger, "Cree el proceso: %d",procesoNuevo->pid);
-        return procesoNuevo;
-};
-
 void enviar_instruccion_pesudocodigo(t_list* lista_proceso,int pc){
     t_paquete* paquete = crear_paquete(PSEUDOCODIGO);
     agregar_string_a_paquete(paquete, list_get(lista_proceso, pc));
     enviar_paquete(paquete, fd_cpu);
     eliminar_paquete(paquete);
 }
-
-t_pedido* recibir_instruccion_a_enviar(){
-    t_paquete* paquete = recibir_paquete(fd_cpu);
-    t_buffer* buffer = paquete->buffer;
-    t_pedido* pedido = malloc(sizeof(t_pedido*));
-    pedido->pid = leer_int_del_buffer(buffer);
-    pedido->pc = leer_int_del_buffer(buffer);
-    printf("PID: %d\n",pedido->pid);
-    printf("PROGRAM_COUNTER: %d\n",pedido->pc);
-
-    //enviar_instruccion_pesudocodigo((buscar_proceso_en_memoria(PROCESSID))->instrucciones,PROGRAM_COUNTER);
-    free(buffer);
-    free(paquete);
-    return pedido;
-};
 
 t_proceso* buscar_proceso_en_memoria(int process_id){
     bool buscar_proceso(t_proceso* proceso){
@@ -92,3 +57,24 @@ t_proceso* buscar_proceso_en_memoria(int process_id){
 	}
     return proceso_encontrado;
 }
+
+/*
+t_proceso* buscar_proceso_en_memoria(int process_id){
+     printf("Busco el proceso...1\n");
+    bool buscar_proceso(void* proceso){
+	    return (buscar_pid(proceso,process_id));
+    }
+     printf("Busco el proceso...2\n");
+    t_proceso* proceso_encontrado = list_find(procesos_memoria, buscar_proceso);
+     printf("Busco el proceso...3\n");
+    if(proceso_encontrado == NULL){
+		log_error(memoria_log_debug, "El proceso %d no se encontro en memoria.", process_id);
+		exit(EXIT_FAILURE);
+	}
+    return proceso_encontrado;
+}
+
+bool buscar_pid(t_proceso* proceso,int process_id){
+    int processid = proceso->pid;
+    return (processid==process_id);
+}*/

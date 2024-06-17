@@ -7,6 +7,7 @@ void planif_corto_plazo()
 {
     while(1){
         detener_planificacion();
+        printf("WAIT sem_planificador_corto_plazo");
         sem_wait(&sem_planificador_corto_plazo);
         printf("entro al plani corto plazo.\n");
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
@@ -14,6 +15,7 @@ void planif_corto_plazo()
             {
             case FIFO:
                 planif_fifo_RR();
+                printf("YA hice fifardo");
                 break;
             case RR:
                 planif_fifo_RR();
@@ -50,7 +52,7 @@ void planif_fifo_RR()
 void gestionar_quantum(t_pcb* un_pcb){
     usleep(un_pcb->quantum*1000);
         if(contains_algo(lista_exec, &(un_pcb->pid))){ 
-        enviar_interrupción_a_cpu(INTERRUPCION_FIN_QUANTUM); 
+        //enviar_interrupción_a_cpu(INTERRUPCION_FIN_QUANTUM); 
         un_pcb->quantum = QUANTUM;
 
     }

@@ -111,7 +111,7 @@ void atender_instruccion_validada(char* leido){
 		estado_pcb estado_anterior = pcb->estado_pcb;
 		t_pcb* pcb_ejecutando = list_get(lista_exec,0);
 		if(pcb_ejecutando->pid == pid){
-			enviar_interrupción_a_cpu(INTERRUPCION_FIN_PROCESO);
+			//enviar_interrupción_a_cpu(INTERRUPCION_FIN_PROCESO);
 			 /*tengo que madarle un op code a cpu en el que diga que se interrumpio por la consola*/
 			
 		} else if(pcb->estado_pcb == EXIT){
