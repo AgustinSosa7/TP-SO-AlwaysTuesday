@@ -25,6 +25,7 @@ void atender_interrupciones(){
             
             default:
                 log_warning(cpu_logger,"Operacion desconocida de KERNEL - Interrupt");
+                exit(EXIT_FAILURE);
                 break;
 		}
     }
