@@ -100,7 +100,9 @@ void procesar_peticion(t_peticion* peticion) {
             log_info(entradasalida_logger,"En la posicion de memoria %s con tamanio %d se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
-            /* code */
+            char* nombre_archivo = peticion->parametros->archivo;
+            crear_fcb(nombre_archivo); // archivo viene ewewe.txt???
+            
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
             /* code */

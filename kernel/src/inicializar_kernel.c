@@ -130,7 +130,7 @@ void inicializar_recursos(){
 	while(RECURSOS[i]!=0){
 		recurso->nombre_recurso = RECURSOS[i];
 		recurso->instancias = atoi(INSTANCIAS_RECURSOS[i]);
-		recurso->cola_procesos_bloqueados = queue_create();
+		recurso->lista_procesos_bloqueados = list_create();
 		recurso->lista_procesos_asignados = list_create();
 		list_add(lista_recursos,recurso);
 		free(recurso);

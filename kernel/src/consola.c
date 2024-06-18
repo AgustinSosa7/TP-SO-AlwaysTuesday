@@ -108,22 +108,26 @@ void atender_instruccion_validada(char* leido){
 	case FINALIZAR_PROCESO: 
 		int pid = atoi(array_leido[1]);
 	 	t_pcb* pcb = buscar_pcb(pid);
-		estado_pcb estado_anterior = pcb->estado_pcb;
-		t_pcb* pcb_ejecutando = list_get(lista_exec,0);
-		if(pcb_ejecutando->pid == pid){
-			//enviar_interrupción_a_cpu(INTERRUPCION_FIN_PROCESO);
-			 /*tengo que madarle un op code a cpu en el que diga que se interrumpio por la consola*/
-			
-		} else if(pcb->estado_pcb == EXIT){
-			eliminar_proceso(pid,INTERRUPTED_BY_USER);
-			} else {
-			
-			list_remove_element(buscar_lista(estado_anterior),pcb);
-			pcb->estado_pcb = EXIT;
-	   		log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
-			eliminar_proceso(pid,INTERRUPTED_BY_USER);
-			
-		}
+		if(pcb != NULL){
+			estado_pcb estado_anterior = pcb->estado_pcb;
+			t_pcb* pcb_ejecutando = list_get(lista_exec,0);
+			if(pcb_ejecutando->pid == pid){
+				enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO,"FIN_POR_CONSOLA");		
+			} else if(pcb->estado_pcb == EXIT){
+				eliminar_proceso(pid,INTERRUPTED_BY_USER);
+				} else if(pcb->estado_pcb != BLOCKED){
+					list_remove_element(buscar_lista(estado_anterior),pcb);
+					pcb->estado_pcb = EXIT;
+					log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
+					eliminar_proceso(pid,INTERRUPTED_BY_USER);
+				
+			} else{
+				log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
+				eliminar_proceso(pid,INTERRUPTED_BY_USER);
+			}
+		} 	else{
+			printf("No se encontró el pcb con PID: %d \n", pid);
+			}
 		break;
 	case DETENER_PLANIFICACION:
 			pthread_mutex_lock(&mutex_detener_planificacion);
@@ -153,6 +157,7 @@ void atender_instruccion_validada(char* leido){
 					sem_post(&sem_grado_multiprogram);
 				} 	
 				}else {
+					valor = anterior_valor - nuevo_valor;
 					for (int i = 0; i < valor; i++)
 					{
 					sem_wait(&sem_grado_multiprogram);
@@ -167,7 +172,7 @@ void atender_instruccion_validada(char* leido){
 		imprimir_lista(lista_new, NEW);
 		imprimir_lista(lista_ready, READY);
 		imprimir_lista(lista_ready_plus, READYPLUS);
-		//imprimir_lista(lista_, READY); ver blocked 
+		//imprimir_lista(lista_, BLOCKED); ver blocked 
 		imprimir_lista(lista_exec, EXEC);
 		imprimir_lista(lista_exit, EXIT);
 		break;
