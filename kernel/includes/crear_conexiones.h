@@ -17,8 +17,5 @@ t_interfaz* identificar_io(int socket);
 t_list* asignar_instrucciones_posibles(char* tipo);
 void agregar_io(t_interfaz* interfaz);
 void gestionar_procesos_io(t_interfaz* interfaz);
-void recibir_fin_peticion();
-void desbloquear_proceso(t_interfaz* interfaz);
-
 
 #endif 
