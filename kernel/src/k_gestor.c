@@ -60,7 +60,12 @@ void detener_planificacion(){
 }
 
 void liberar_recursos(t_pcb* un_pcb){
-    list_remove_element(buscar_lista_de_recursos_pcb(un_pcb),un_pcb);
+    t_list*lista_de_recursos_encontrada = buscar_lista_de_recursos_pcb(un_pcb);
+    if(lista_de_recursos_encontrada !=NULL){
+        bool a = list_remove_element(lista_de_recursos_encontrada,un_pcb);
+    } else {
+        printf("No hay recursos para liberar.\n");
+    }
 }
 
 t_pcb* buscar_pcb(int pid){
@@ -106,8 +111,9 @@ t_pcb* buscar_pcb_en_bloqueados(int pid){
         t_recursos* recurso = list_iterator_next(lista); 
         if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
             pcb_encontrado = list_find(recurso->lista_procesos_bloqueados, esta_el_pcb);
-            return pcb_encontrado;
+            
         }
+        return pcb_encontrado;
     }
 
 }
@@ -120,6 +126,8 @@ t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb){
         t_recursos* recurso =list_iterator_next(lista); 
         if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
            return recurso->lista_procesos_bloqueados;
+        } else {
+            return NULL;
         }
     }
 }

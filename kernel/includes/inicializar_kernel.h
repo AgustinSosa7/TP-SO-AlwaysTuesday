@@ -13,7 +13,7 @@ void inicializar_kernel(char* path);
 void inicializar_semaforos();
 void inicializar_pid();
 void inicializar_recursos();
-
+void imprimir_recursos(t_recursos *recurso);
 
 
 #endif 
