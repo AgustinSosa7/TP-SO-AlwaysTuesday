@@ -52,7 +52,7 @@ void planif_fifo_RR()
 void gestionar_quantum(t_pcb* un_pcb){
     usleep(un_pcb->quantum*1000);
         if(contains_algo(lista_exec, &(un_pcb->pid))){ 
-        enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO,"FIN_DE_QUANTUM"); 
+        enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_DESALOJO); 
         un_pcb->quantum = QUANTUM;
 
     }

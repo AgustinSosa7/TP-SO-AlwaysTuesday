@@ -32,17 +32,18 @@ sem_t sem_planificador_corto_plazo;
 sem_t sem_detener_planificacion;
 bool flag_detener_planificacion = false;
 
-void enviar_interrupción_a_cpu(op_code tipo_interrupción, char* motivo){
+void enviar_interrupción_a_cpu(op_code tipo_interrupción, int motivo){
     t_paquete* un_paquete = crear_paquete(tipo_interrupción);
-    agregar_string_a_paquete(un_paquete, motivo);
+    agregar_int_a_paquete(un_paquete, motivo);
 	enviar_paquete(un_paquete,fd_cpu_interrupt);
     eliminar_paquete(un_paquete);
 } 
-void eliminar_proceso(int pid, motivo_fin_de_proceso motivo){
-    //solicitar a la memoria que libere todas las estructuras asociadas 
-    //liberar recursos
-    //enviar mensaje a lucas(Op CODE FIN DE PROCESO,pid);
-    log_info(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pid, enum_a_string_fin_de_proceso(motivo));
+void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
+    printf("liberando recursos.\n");
+    liberar_recursos(pcb);
+    printf("liberando estructuras en memoria.\n");
+    liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA,pcb->pid);
+    log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
 
     pthread_mutex_lock(&mutex_new);
     sem_post(&sem_grado_multiprogram);
@@ -59,7 +60,6 @@ void detener_planificacion(){
 }
 
 void liberar_recursos(t_pcb* un_pcb){
-    //avisarle a memoria
     list_remove_element(buscar_lista_de_recursos_pcb(un_pcb),un_pcb);
 }
 
@@ -122,4 +122,11 @@ t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb){
            return recurso->lista_procesos_bloqueados;
         }
     }
+}
+
+void liberar_estructuras_en_memoria(int code_op ,int pid){
+    t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
+    agregar_int_a_paquete(paquete,pid);
+    enviar_paquete(paquete,fd_memoria);
+    eliminar_paquete(paquete);
 }

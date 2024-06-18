@@ -103,7 +103,7 @@ void atender_instruccion_validada(char* leido){
 		log_info(kernel_logger,"Se crea el proceso < %d > en NEW. \n",nuevo_pcb->pid);
 		sem_post(&sem_new_a_ready);
 		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
-
+    
 		break;
 	case FINALIZAR_PROCESO: 
 		int pid = atoi(array_leido[1]);
@@ -112,18 +112,19 @@ void atender_instruccion_validada(char* leido){
 			estado_pcb estado_anterior = pcb->estado_pcb;
 			t_pcb* pcb_ejecutando = list_get(lista_exec,0);
 			if(pcb_ejecutando->pid == pid){
-				enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO,"FIN_POR_CONSOLA");		
+				enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_KILL);		
 			} else if(pcb->estado_pcb == EXIT){
-				eliminar_proceso(pid,INTERRUPTED_BY_USER);
+				eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 				} else if(pcb->estado_pcb != BLOCKED){
 					list_remove_element(buscar_lista(estado_anterior),pcb);
 					pcb->estado_pcb = EXIT;
+					eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 					log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
-					eliminar_proceso(pid,INTERRUPTED_BY_USER);
+					
 				
 			} else{
+				eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 				log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
-				eliminar_proceso(pid,INTERRUPTED_BY_USER);
 			}
 		} 	else{
 			printf("No se encontró el pcb con PID: %d \n", pid);
