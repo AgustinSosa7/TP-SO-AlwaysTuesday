@@ -88,11 +88,11 @@ t_list* asignar_instrucciones_posibles(char* tipo){
     if (strcmp(tipo, "GEN") == 0) {
       instrucciones_posibles = INSTRUCCIONES_GEN;      
     } else if (strcmp(tipo, "STDIN") == 0) {
-	    instrucciones_posibles = INSTRUCCIONES_GEN;
+	    instrucciones_posibles = INSTRUCCIONES_STDIN;
     } else if (strcmp(tipo, "STDOUT") == 0) {
-	    instrucciones_posibles = INSTRUCCIONES_GEN;
+	    instrucciones_posibles = INSTRUCCIONES_STDOUT;
     } else if (strcmp(tipo, "FS") == 0) {
-      instrucciones_posibles = INSTRUCCIONES_GEN;
+      instrucciones_posibles = INSTRUCCIONES_FS;
 		}
   return instrucciones_posibles;
 }
