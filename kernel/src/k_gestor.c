@@ -32,9 +32,9 @@ sem_t sem_planificador_corto_plazo;
 sem_t sem_detener_planificacion;
 bool flag_detener_planificacion = false;
 
-void enviar_interrupción_a_cpu(op_code tipo_interrupción){
+void enviar_interrupción_a_cpu(op_code tipo_interrupción, char* motivo){
     t_paquete* un_paquete = crear_paquete(tipo_interrupción);
-    // no tiene nada en el buffer.
+    agregar_string_a_paquete(un_paquete, motivo);
 	enviar_paquete(un_paquete,fd_cpu_interrupt);
     eliminar_paquete(un_paquete);
 } 
@@ -45,9 +45,7 @@ void eliminar_proceso(int pid, motivo_fin_de_proceso motivo){
     log_info(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pid, enum_a_string_fin_de_proceso(motivo));
 
     pthread_mutex_lock(&mutex_new);
-    if(!list_is_empty(lista_new)){
     sem_post(&sem_grado_multiprogram);
-    }
     pthread_mutex_unlock(&mutex_new);
 }
 
@@ -60,9 +58,9 @@ void detener_planificacion(){
     pthread_mutex_unlock(&mutex_detener_planificacion);
 }
 
-void liberar_recursos(int pid){
-    t_pcb* pcb_encontrado = buscar_pcb(pid);
-    //
+void liberar_recursos(t_pcb* un_pcb){
+    //avisarle a memoria
+    list_remove_element(buscar_lista_de_recursos_pcb(un_pcb),un_pcb);
 }
 
 t_pcb* buscar_pcb(int pid){
@@ -70,23 +68,58 @@ t_pcb* buscar_pcb(int pid){
 	bool esta_el_pcb(void* pcb){
 		return encontre_el_pcb(pcb, pid);
 	}
-	
-	if(list_any_satisfy(lista_new, esta_el_pcb)){
-		pcb_encontrado = list_find(lista_new, esta_el_pcb);
-	} else if(list_any_satisfy(lista_ready, esta_el_pcb)){
-		pcb_encontrado = list_find(lista_ready, esta_el_pcb);
-	} else if(list_any_satisfy(lista_ready_plus, esta_el_pcb)){
-		pcb_encontrado = list_find(lista_ready_plus, esta_el_pcb);
-	//} else if(list_any_satisfy(lista_bloqued,esta_el_pcb)){
-	//pcb_encontrado = list_find(lista_bloqued, esta_el_pcb);
-	//} preguntar por la queue de bloqued
-	}else{
-		printf("no se encontró el pcb con PID : %d \n", pid);
-	}
-	return pcb_encontrado;
+	pcb_encontrado = list_find(lista_new, esta_el_pcb);
+    if(pcb_encontrado != NULL){
+       return pcb_encontrado;
+    }
+    pcb_encontrado = list_find(lista_ready, esta_el_pcb);
+    if(pcb_encontrado != NULL){
+       return pcb_encontrado;
+    }
+    pcb_encontrado = list_find(lista_ready_plus, esta_el_pcb);
+    if(pcb_encontrado != NULL){
+       return pcb_encontrado;
+    }
+    pcb_encontrado = list_find(lista_exec, esta_el_pcb);
+    if(pcb_encontrado != NULL){
+       return pcb_encontrado;   
+    }
+    pcb_encontrado = list_find(lista_exit, esta_el_pcb);
+    if(pcb_encontrado != NULL){
+       return pcb_encontrado;
+    }
+    pcb_encontrado = buscar_pcb_en_bloqueados(pid);
+    return pcb_encontrado;
 
 }
-
 bool encontre_el_pcb(t_pcb* pcb, int pid){
 	return (pcb->pid == pid);
+}
+
+t_pcb* buscar_pcb_en_bloqueados(int pid){
+    t_pcb* pcb_encontrado = NULL;
+	bool esta_el_pcb(void* pcb){
+		return encontre_el_pcb(pcb, pid);
+	}
+    t_list_iterator* lista = list_iterator_create(lista_recursos);
+    while(list_iterator_has_next(lista)){
+        t_recursos* recurso = list_iterator_next(lista); 
+        if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
+            pcb_encontrado = list_find(recurso->lista_procesos_bloqueados, esta_el_pcb);
+            return pcb_encontrado;
+        }
+    }
+
+}
+t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb){
+	bool esta_el_pcb(void* un_pcb){
+		return encontre_el_pcb(un_pcb, pcb->pid);
+	}
+    t_list_iterator* lista = list_iterator_create(lista_recursos);
+    while(list_iterator_has_next(lista)){
+        t_recursos* recurso =list_iterator_next(lista); 
+        if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
+           return recurso->lista_procesos_bloqueados;
+        }
+    }
 }

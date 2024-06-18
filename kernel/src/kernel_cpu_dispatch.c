@@ -42,7 +42,7 @@ void recibir_pcb_con_motivo()
                   if(recurso->instancias <0){
                        list_remove_element(lista_exec,pcb_recibido);
                        pcb_recibido->estado_pcb = BLOCKED;
-                       queue_push(recurso->cola_procesos_bloqueados,pcb_recibido);
+                       list_add(recurso->lista_procesos_bloqueados,pcb_recibido);
                        sem_post(&sem_planificador_corto_plazo);
                   } else{ 
                         list_add(recurso->lista_procesos_asignados,pcb_recibido->pid);
@@ -61,8 +61,8 @@ void recibir_pcb_con_motivo()
             if(list_any_satisfy(lista_recursos, estaa_o_no_el_recurso)){
                  t_recursos* recurso = list_find(lista_recursos, estaa_o_no_el_recurso);
                  recurso->instancias = recurso->instancias +1;
-                 if(!queue_is_empty(recurso->cola_procesos_bloqueados)){
-                        t_pcb* un_pcb = queue_pop(recurso->cola_procesos_bloqueados);
+                 if(!list_is_empty(recurso->lista_procesos_bloqueados)){
+                        t_pcb* un_pcb = list_remove(recurso->lista_procesos_bloqueados,0);
                         list_add(recurso->lista_procesos_asignados,un_pcb->pid);
                         enviar_proceso_blocked_a_ready(un_pcb);
                         enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);

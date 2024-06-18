@@ -71,7 +71,6 @@ t_pcb* sacar_de_la_lista_vieja(estado_pcb estado_anterior){
 }
 
 t_list* buscar_lista(estado_pcb estado_anterior){
-    t_list* lista;
     switch (estado_anterior)
     {
     case NEW:
@@ -83,18 +82,15 @@ t_list* buscar_lista(estado_pcb estado_anterior){
     case READYPLUS:
         return lista_ready_plus;
         break;
- //   case BLOCKED:
-        /* code */
- //       break;
     case EXEC:
         return lista_exec;
         break;
     case EXIT:
         return lista_exit;
         break;
-    
     default:
         break;
     }
     
 }
+
