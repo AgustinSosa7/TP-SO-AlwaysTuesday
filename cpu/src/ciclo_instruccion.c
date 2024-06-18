@@ -9,15 +9,11 @@ void ciclo_instruccion(){
 	log_info(cpu_log_debug, "Tome el semaforo del ciclo de instruccion.\n");
 
 	dejar_de_ejecutar = false;
-	log_info(cpu_log_debug, "Antes del mutex. \n");
 	pthread_mutex_lock(&mutex_ocurrio_interrupcion);
 	ocurrio_interrupcion = false;
 	pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
     
 	//FETCH 
-	log_info(cpu_log_debug, "Antes de recibir el pcb_global. \n");
-	printf("pcb_global->pid: %d \n", pcb_global->pid);
-	log_info(cpu_log_debug,"Despues de recibir el pcb_global. \n");
 	log_info(cpu_logger, "PID: <%d> - FETCH - PC: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
