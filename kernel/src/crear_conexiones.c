@@ -111,9 +111,17 @@ void gestionar_procesos_io(t_interfaz* interfaz){
     t_proceso_blocked* proceso_a_ejecutar = queue_peek(interfaz->cola_procesos_blocked);
     pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
-    enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
-    recibir_fin_peticion(interfaz);
-
-    desbloquear_proceso(interfaz);
+    bool ocurrio_error = enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
+    
+    if(ocurrio_error){
+          break;
+    } else{
+          bool ocurrio_otro_error = recibir_fin_peticion(interfaz);
+          if(ocurrio_otro_error){
+                  break;
+            } else{
+                  desbloquear_proceso(interfaz);
+                  }
+        }
   }
 }

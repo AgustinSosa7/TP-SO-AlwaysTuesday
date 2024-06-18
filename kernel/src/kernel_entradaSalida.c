@@ -7,7 +7,7 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     peticion->instruccion = leer_string_del_buffer(buffer);
     printf("Instruccion: %s. \n", peticion->instruccion);
     peticion->interfaz = leer_string_del_buffer(buffer);
-    printf("Interfaz: %s. \n", peticion->instruccion);
+    printf("Interfaz: %s. \n", peticion->interfaz);
     peticion->parametros = leer_parametros(paquete, peticion->instruccion);
     printf("Tiempo de espera: %d. \n", peticion->parametros->tiempo_espera);
 
@@ -56,21 +56,21 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       }
 }           
 
-t_interfaz* validar_peticion(t_peticion* peticion, t_pcb* pcb){ 
+t_interfaz* validar_peticion(t_peticion* peticion){ 
       char* nombre_io = peticion->interfaz;
       char* instruccion = peticion->instruccion;
 
       t_interfaz* interfaz = existe_la_interfaz(nombre_io); 
       if (interfaz == NULL) {
-            enviar_proceso_a_exit(pcb);
+            enviar_proceso_execute_a_exit();
             log_error(kernel_logger, "No se ha encontrado la interfaz: %s.\n", nombre_io);
             return NULL;
       } else if(!(interfaz->esta_conectada)){
-            enviar_proceso_a_exit(pcb);
+            enviar_proceso_execute_a_exit();
             log_error(kernel_logger,"La interfaz %s no se encuentra conectada.\n", interfaz->nombre);
             return NULL;
       } else if(!(validar_interfaz_admite_instruccion(interfaz, instruccion))){
-            enviar_proceso_a_exit(pcb);
+            enviar_proceso_execute_a_exit();
             log_info(kernel_logger, "La interfaz %s no admite la instruccion %s.", interfaz->nombre, instruccion);
             return NULL;
       } else{
@@ -99,11 +99,13 @@ bool validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion
 }
 
 
-void enviar_proceso_a_exit(t_pcb* un_pcb){ //Revisar (mili)
+void enviar_proceso_execute_a_exit(){ 
+
+      t_pcb* pcb = list_get(lista_exec, 0); //Revisar LOGICA (mili)
 
       cambiar_de_estado_y_de_lista(EXEC, EXIT);    // LIBERAR ESTRUCTURAS EN MEMORIA
 
-      log_info(kernel_logger, "Finaliza el proceso <%d> - Motivo: <INVALID_INTERFACE>", un_pcb->pid);
+      eliminar_proceso(pcb->pid, INVALID_INTERFACE);
 }
 
 void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* interfaz)
@@ -115,8 +117,10 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
  
     proceso_blocked->peticion = peticion;
     proceso_blocked->un_pcb = pcb;
-//SACAR PCB DE EXECUTE (revisar mili)
-    t_pcb* un_pcb = list_remove(lista_exec,0);
+
+    //SACAR PCB DE EXECUTE (revisar mili) 
+    //Uso el que me viene por parametro.
+    t_pcb* un_pcb = list_remove(lista_exec,0); 
     
     pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
     queue_push(interfaz->cola_procesos_blocked, proceso_blocked);
@@ -129,24 +133,26 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
 }
 
 
-void enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
+bool enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
-      printf("Instruccion a enviar: %s.\n",proceso_blocked->peticion->instruccion);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion); 
       agregar_parametros_a_paquete(paquete, proceso_blocked->peticion); 
 
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int); 
 	void* a_enviar = serializar_paquete(paquete, bytes);
-      int err = send(interfaz->fd_interfaz, a_enviar, bytes, SIGPIPE); 
+      int err = send(interfaz->fd_interfaz, a_enviar, bytes, MSG_NOSIGNAL); 
       printf("Instruccion enviada...\n");
 
       if(err == -1){
         close(interfaz->fd_interfaz);
         interfaz->esta_conectada = false;
-        enviar_procesos_blocked_a_exit(interfaz);
-    }
+        enviar_cola_de_procesos_blocked_io_a_exit(interfaz);
+      return true; //salgo del while de "gestionar_procesos_io"
+    } else{
 	free(a_enviar);
       eliminar_paquete(paquete);
+      return false;
+   }   
 } 
 
 void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
@@ -189,28 +195,42 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
 
 
 
-void enviar_procesos_blocked_a_exit(t_interfaz* interfaz){
+void enviar_cola_de_procesos_blocked_io_a_exit(t_interfaz* interfaz){
       t_queue* cola_procesos_blocked = interfaz->cola_procesos_blocked;
+      printf("Cantidad de procesos en blocked: %d.\n", queue_size(cola_procesos_blocked));
       while(!(queue_is_empty(cola_procesos_blocked))){
             t_proceso_blocked* proceso = queue_pop(cola_procesos_blocked);
-            enviar_proceso_a_exit(proceso->un_pcb);
+            enviar_proceso_blocked_io_a_exit(proceso->un_pcb);
             eliminar_peticion(proceso->peticion);
-            free(proceso);
       }
-      log_error(kernel_logger,"La interfaz %s se ha desconectado repentinamente. Proceso enviado a EXIT.\n", interfaz->nombre);
+      log_error(kernel_logger,"La interfaz %s se ha desconectado repentinamente. Procesos en cola de BLOCKED enviados a EXIT.\n", interfaz->nombre);
       // Hay que hacer free?
 }
 
+void enviar_proceso_blocked_io_a_exit(t_pcb* pcb){
+      
+      estado_pcb estado_anterior = pcb->estado_pcb;
 
-void recibir_fin_peticion(t_interfaz* interfaz){
+      pcb->estado_pcb = EXIT; //Hay que avisarle al semaforo de largo plazo?
+
+      //sem_post(&sem_new_a_ready); // preguntar
+
+      eliminar_proceso(pcb->pid, INVALID_INTERFACE);
+
+      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
+
+      list_add(lista_exit, pcb);
+}
+
+bool recibir_fin_peticion(t_interfaz* interfaz){
     bool fin_peticion;
     int err = recv(interfaz->fd_interfaz, &fin_peticion, sizeof(bool), MSG_WAITALL);
     if(err == 0){
         close(interfaz->fd_interfaz);
         interfaz->esta_conectada = false;
-
-        log_error(kernel_logger,"La interfaz %s se ha desconectado repentinamente. Proceso enviado a READY.\n", interfaz->nombre);
-      }
+        enviar_cola_de_procesos_blocked_io_a_exit(interfaz);
+        return true;
+      } else { return false;}
 }
 
 
