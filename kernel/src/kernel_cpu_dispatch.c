@@ -24,7 +24,7 @@ void recibir_pcb_con_motivo()
             break;
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  
-            t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
+            t_interfaz* interfaz = validar_peticion(peticion);
             if(interfaz!=NULL){
             enviar_proceso_a_blocked(peticion,pcb_recibido,interfaz); 
             sem_post(&sem_planificador_corto_plazo);
