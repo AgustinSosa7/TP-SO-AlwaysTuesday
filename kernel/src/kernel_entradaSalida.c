@@ -243,8 +243,9 @@ void desbloquear_proceso(t_interfaz* interfaz){
       estado_pcb estado_anterior = proceso_blocked->un_pcb->estado_pcb;
       enviar_proceso_a_ready_o_ready_plus(proceso_blocked->un_pcb);
      
-      sem_post(&sem_planificador_corto_plazo);
       log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(proceso_blocked->un_pcb->estado_pcb));
+
+      sem_post(&sem_planificador_corto_plazo);
 }
 
 void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
