@@ -19,7 +19,7 @@ typedef struct{
     char* archivo;
     char* registroDireccion;
     int registroTamanio;
-    char* registroPunteroArchivo; 
+    char* registroPunteroArchivo;
 } t_peticion_param;
 
 typedef struct{

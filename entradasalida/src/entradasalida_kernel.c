@@ -59,7 +59,7 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
            peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
-            /* code */
+            /* Recibir datos de oeticion del buffer :D*/
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
             /* code */
@@ -102,13 +102,38 @@ void procesar_peticion(t_peticion* peticion) {
       {
             char* nombre_archivo = peticion->parametros->archivo;
             crear_fcb(nombre_archivo); // archivo viene ewewe.txt???
+  		log_info(entradasalida_logger, "Crear Archivo: %s", nombre_archivo);
+            // DPS donde mando el el fcb?
             
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
-            /* code */
+            //eliminar_fcb(peticion);
+
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {
-            /* code */
+            char* nombre_archivo = peticion->parametros->archivo;
+            int tamanio_nuevo = peticion->parametros->registroTamanio;
+            //int pid_proceso = peticion->parametros. ??? // Hace falta el pid
+            t_fcb* fcb = obtener_fcb();
+
+            int tamanio_viejo = fcb->tamanio;
+            fcb->tamanio = tamanio_nuevo;
+            modificar_tamanio_fcb(fcb,tamanio_nuevo); //Pensar un mejor nombre :D
+            char * bloque_inicial = malloc (10);
+            
+            sprintf(bloque_inicial,%d,fcb->bloque_inicial);
+
+            int cantidad_bloques_nuevo = tamanio_nuevo /8;      
+            int cantidad_bloques_viejo = tamanio_viejo /8;
+
+            if (cantidad_bloques_nuevo > cantidad_bloques_viejo)
+            {
+                  if(cantidad_bloques_viejo==0){
+                        
+                  }
+            }
+            
+
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {
             /* code */

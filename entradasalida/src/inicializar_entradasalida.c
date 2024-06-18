@@ -142,10 +142,15 @@ void inicializar_archivos(){  //Cambiar nombre
 		log_error(entradasalida_logger, "Error al mapear los bloques SWAP");
 		exit(1);
 	}
+	// Hace falta acá un Sync??? 
 	
 	fd_archivoBitmap = open(PATH_BITMAP, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	ftruncate(fd_archivoBitmap, tamanio_bitmap);
 	bitmap_swap = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_archivoBitmap, 0); 
+	if (bitmap_swap == MAP_FAILED) {
+		log_error(entradasalida_logger, "Error al mapear los bitmap SWAP");
+		exit(1);
+	}
 	//bitmap_swap = calloc(BLOCK_COUNT, sizeof(char)); // Ver bien el size of 
 	//bitmap_swap = (char*)fd_archivoBitmap;
 	//fd_archivoBitmap = malloc(tamanio_bitmap);
@@ -153,6 +158,7 @@ void inicializar_archivos(){  //Cambiar nombre
 
 	// USO bitmapSWAP para el tema del bitmap
 	bitmapSWAP = bitarray_create_with_mode(bitmap_swap, tamanio_bitmap, LSB_FIRST); 
+	msync(bitmapSWAP->bitarray,tamanio_bitmap,MS_SYNC);
 	//LSB_FIRST Completa los bits en un byte priorizando el bit menos significativo 00000001
 }
 

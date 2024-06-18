@@ -22,5 +22,6 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
 //FS
 void crear_fcb();
+void modificar_tamanio_fcb(t_fcb* fcb,int tamanio_nuevo);
 
 #endif 
