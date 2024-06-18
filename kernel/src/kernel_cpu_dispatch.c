@@ -18,9 +18,9 @@ void recibir_pcb_con_motivo()
             sem_post(&sem_planificador_corto_plazo);
             
             break;
-      case PROCESO_EXIT:
+      case DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION:
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
-            eliminar_proceso(pcb_recibido->pid,SUCCESS);
+            eliminar_proceso(pcb_recibido,SUCCESS);
             break;
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  
@@ -51,7 +51,7 @@ void recibir_pcb_con_motivo()
                   }
             } else{
                        cambiar_de_estado_y_de_lista(EXEC,EXIT);
-                       eliminar_proceso(pcb_recibido->pid, INVALID_RESOURCE);
+                       eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
             }
            break;
       case SIGNAL:
@@ -69,10 +69,15 @@ void recibir_pcb_con_motivo()
                         enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
                   } else{
                         cambiar_de_estado_y_de_lista(EXEC,EXIT);
-                        eliminar_proceso(pcb_recibido->pid, INVALID_RESOURCE);
+                        eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
                   }
             }
-           break;
+            break;
+      case DEVOLVER_PROCESO_POR_PAGEFAULT:
+            break;
+      case DEVOLVER_PROCESO_POR_OUT_OF_MEMORY:
+            break;
+
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
             break;

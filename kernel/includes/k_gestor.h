@@ -118,11 +118,13 @@ extern char ** INSTANCIAS_RECURSOS; // POR FAVOR REVISAR EL TIPO EN EL ENUNCIADO
 extern int GRADO_MULTIPROGRAMACION;
 extern char * IP_KERNEL;
 
-void enviar_interrupción_a_cpu(op_code tipo_interrupción,char* motivo);
-void eliminar_proceso(int pid, motivo_fin_de_proceso motivo);
+void enviar_interrupción_a_cpu(op_code interrupción,int motivo);
+void eliminar_proceso(t_pcb* un_pcb, motivo_fin_de_proceso motivo);
 void detener_planificacion();
 t_pcb* buscar_pcb(int pid);
 bool encontre_el_pcb(t_pcb* pcb, int pid);
 t_pcb* buscar_pcb_en_bloqueados(int pid);
 t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb);
+void liberar_recursos(pcb);
+void liberar_estructuras_en_memoria(int code_op ,int pid);
 #endif
