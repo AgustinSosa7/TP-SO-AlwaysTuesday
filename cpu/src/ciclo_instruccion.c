@@ -4,7 +4,7 @@
 void ciclo_instruccion(){                         
     
     while(1){
-	log_info(cpu_log_debug, "Esperando al semaforo del ciclo de instruccion. \n");
+	log_warning(cpu_log_debug, "Esperando una nueva instruccion... \n");
     sem_wait(&sem_ciclo_de_instruccion);
 	log_info(cpu_log_debug, "Tome el semaforo del ciclo de instruccion.\n");
 

@@ -37,7 +37,7 @@ void inicializar_registros(t_pcb* un_pcb){
 void cambiar_de_estado_y_de_lista(estado_pcb estado_anterior, estado_pcb nuevo_estado){
     t_pcb* un_pcb = sacar_de_la_lista_vieja(estado_anterior);
 	un_pcb->estado_pcb = nuevo_estado;
-    log_warning(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
+    log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
 
 	switch(nuevo_estado)
     {

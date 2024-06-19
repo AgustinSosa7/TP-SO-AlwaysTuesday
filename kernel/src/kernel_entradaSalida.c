@@ -138,7 +138,7 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
 
     sem_post(&(interfaz->semaforo_cola_procesos_blocked));
 
-    log_info(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->pid, enum_a_string(estado_anterior), enum_a_string(pcb->estado_pcb));
+    log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->pid, enum_a_string(estado_anterior), enum_a_string(pcb->estado_pcb));
     log_info(kernel_logger, "Motivo de Bloqueo: PID: <%d> - Bloqueado por: <%s>", un_pcb->pid, interfaz->nombre);
 }
 
@@ -232,7 +232,7 @@ void enviar_proceso_blocked_io_a_exit(t_proceso_blocked* proceso_blocked){
 
       eliminar_proceso(pcb, INVALID_INTERFACE);
 
-      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
+      log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
 
       list_add(lista_exit, pcb);
 }
@@ -259,7 +259,7 @@ void desbloquear_proceso(t_interfaz* interfaz){
       estado_pcb estado_anterior = proceso_blocked->un_pcb->estado_pcb;
       enviar_proceso_a_ready_o_ready_plus(proceso_blocked->un_pcb);
      
-      log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(proceso_blocked->un_pcb->estado_pcb));
+      log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(proceso_blocked->un_pcb->estado_pcb));
 
       sem_post(&sem_planificador_corto_plazo);
 }
