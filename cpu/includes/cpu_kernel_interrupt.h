@@ -3,6 +3,6 @@
 
 #include "cpu_gestor.h"
 
-void atender_interrupciones();
+void atender_interrupt();
 
 #endif 

@@ -86,7 +86,7 @@ void ciclo_instruccion(){
 			u_int32_t nuevo_program_counter = atoi(strtok_r(saveptr, " ", &saveptr));
 			if (leer_valor_de_registro(nombre_registro) != 0)
 			{
-				escribir_valor_a_registro(pcb_global->registros_cpu->PC, nuevo_program_counter);
+				escribir_valor_a_registro("PC", nuevo_program_counter);
 			}
 			else
 			{
@@ -217,7 +217,7 @@ void devolver_contexto_por_ser_interrumpido()
 {
 	t_paquete* paquete = crear_paquete(DESALOJO_QUANTUM);
 	agregar_pcb_a_paquete(pcb_global, paquete);
-	agregar_int_a_paquete(motivo_interrupcion, paquete);
+	agregar_int_a_paquete(paquete, motivo_interrupcion);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
@@ -449,7 +449,7 @@ int mmu(int direccion_logica)
 		return -1;
 	}
 
-	log_info(cpu_logger, "Obtener Marco: \"PID: %d - OBTENER MARCO - Página: %d - Marco: %d\"", pcb_global->pid, numero_de_pagina, numero_de_marco);
+	log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_de_pagina, numero_de_marco);
 	int desplazamiento = direccion_logica - numero_de_pagina * tamanio_pagina;
 	int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
 
