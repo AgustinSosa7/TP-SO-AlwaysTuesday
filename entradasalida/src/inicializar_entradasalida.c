@@ -58,7 +58,6 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");   
 
     } else if (strcmp(TIPO_INTERFAZ, "STDOUT") == 0) {
-			TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
 			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
 			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
 			IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
