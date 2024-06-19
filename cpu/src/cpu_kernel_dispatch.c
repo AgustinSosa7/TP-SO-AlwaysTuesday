@@ -1,6 +1,6 @@
 # include "../includes/cpu_kernel_dispatch.h"
 
-void atender_cpu_kernel_dispatch(){
+void atender_dispatch(){
     log_info(cpu_logger, "Atendiendo a DISPATCH...");
 
     bool control_key = 1;
@@ -26,6 +26,7 @@ void atender_cpu_kernel_dispatch(){
             
             default:
                 log_warning(cpu_logger,"Operacion desconocida de KERNEL - Dispatch");
+                exit(EXIT_FAILURE);
                 break;
 		}
     }
