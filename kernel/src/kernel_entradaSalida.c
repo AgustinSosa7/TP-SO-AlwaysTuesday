@@ -5,11 +5,8 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     void* buffer = paquete->buffer;
 
     peticion->instruccion = leer_string_del_buffer(buffer);
-    printf("Instruccion: %s. \n", peticion->instruccion);
     peticion->interfaz = leer_string_del_buffer(buffer);
-    printf("Interfaz: %s. \n", peticion->interfaz);
     peticion->parametros = leer_parametros(paquete, peticion->instruccion);
-    printf("Tiempo de espera: %d. \n", peticion->parametros->tiempo_espera);
 
     return peticion;
 } 
@@ -25,12 +22,12 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       }
       else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           parametros->registroDireccion= leer_string_del_buffer(buffer);
+           parametros->registroDireccion= leer_int_del_buffer(buffer);
            parametros->registroTamanio= leer_int_del_buffer(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           parametros->registroDireccion= leer_string_del_buffer(buffer);
+           parametros->registroDireccion= leer_int_del_buffer(buffer);
            parametros->registroTamanio= leer_int_del_buffer(buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
@@ -105,7 +102,7 @@ void enviar_proceso_execute_a_exit(){
 
       cambiar_de_estado_y_de_lista(EXEC, EXIT);    // LIBERAR ESTRUCTURAS EN MEMORIA
 
-      eliminar_proceso(pcb->pid, INVALID_INTERFACE);
+      eliminar_proceso(pcb, INVALID_INTERFACE);
 }
 
 void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* interfaz)
@@ -162,11 +159,11 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
             agregar_int_a_paquete(paquete, peticion->parametros->tiempo_espera);
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
-      {     agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
+      {     agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
             agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
-      {     agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
+      {     agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
             agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
@@ -181,13 +178,13 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
             agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
             agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroDireccion);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
             agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
             agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);      
       }       
@@ -215,7 +212,7 @@ void enviar_proceso_blocked_io_a_exit(t_pcb* pcb){
 
       //sem_post(&sem_new_a_ready); // preguntar
 
-      eliminar_proceso(pcb->pid, INVALID_INTERFACE);
+      eliminar_proceso(pcb, INVALID_INTERFACE);
 
       log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
 
@@ -286,10 +283,10 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
-      {     free(parametros->registroDireccion);
+      {    
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
-      {     free(parametros->registroDireccion);
+      {     
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {     free(parametros->archivo);
@@ -302,12 +299,10 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     free(parametros->archivo);
-            free(parametros->registroDireccion);
             free(parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     free(parametros->archivo);
-            free(parametros->registroDireccion);
             free(parametros->registroPunteroArchivo);
       }     
       

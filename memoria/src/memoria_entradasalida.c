@@ -13,7 +13,7 @@ void atender_entradasalida()
       {
       case GUARDAR_REGISTRO:
             char* leido = leer_string_del_buffer(buffer);
-            char* registroDireccion = leer_string_del_buffer(buffer);
+            int registroDireccion = leer_int_del_buffer(buffer);
             if(guardar_leido_en_registro(leido, registroDireccion)){ // definir comportamiento de la funcion
                   enviar_bool_mensaje(true, fd_entradasalida); 
             } else{
@@ -40,7 +40,7 @@ void atender_entradasalida()
       }
 }
 
-bool guardar_leido_en_registro(char* leido, char* registroDireccion){ 
+bool guardar_leido_en_registro(char* leido, int registroDireccion){ 
       return NULL;
 }
 
