@@ -42,7 +42,7 @@ void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
     printf("liberando recursos.\n");
     liberar_recursos(pcb);
     printf("liberando estructuras en memoria.\n");
-    liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA,pcb->pid);
+    liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA,pcb->pid); //Esta hardcodeado el motivo, no enviarlo como parametro
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
 
     pthread_mutex_lock(&mutex_new);
@@ -132,7 +132,7 @@ t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb){
     }
 }
 
-void liberar_estructuras_en_memoria(int code_op ,int pid){
+void liberar_estructuras_en_memoria(int pid){
     t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
     agregar_int_a_paquete(paquete,pid);
     enviar_paquete(paquete,fd_memoria);
