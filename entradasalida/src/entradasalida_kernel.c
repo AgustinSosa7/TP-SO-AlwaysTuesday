@@ -51,11 +51,11 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
+           peticion->parametros->registroDireccion= leer_int_del_buffer(buffer);
            peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
+           peticion->parametros->registroDireccion= leer_int_del_buffer(buffer);
            peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
@@ -89,15 +89,15 @@ void procesar_peticion(t_peticion* peticion) {
       {
             char* leido = iniciar_la_consola(peticion->parametros->registroTamanio);
             if(guardar_en_memoria(leido, peticion->parametros->registroDireccion)){
-                  log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente en %s.", leido, peticion->parametros->registroDireccion);
+                  log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente en %d.", leido, peticion->parametros->registroDireccion);
             } else{
-                  log_info(entradasalida_logger,"¨%s¨ no se gurardo correctamente en %s. (debido a problemas de memoria)", leido, peticion->parametros->registroDireccion);
+                  log_info(entradasalida_logger,"¨%s¨ no se gurardo correctamente en el registro direccion: %d. (debido a problemas de memoria)", leido, peticion->parametros->registroDireccion);
             }
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
             char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
-            log_info(entradasalida_logger,"En la posicion de memoria %s con tamanio %d se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
+            log_info(entradasalida_logger,"En la posicion de memoria %d con tamanio %d se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             char* nombre_archivo = peticion->parametros->archivo;
@@ -153,10 +153,10 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
-      {     free(parametros->registroDireccion);
+      {     
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
-      {     free(parametros->registroDireccion);
+      {     
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {     free(parametros->archivo);
@@ -169,12 +169,10 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     free(parametros->archivo);
-            free(parametros->registroDireccion);
             free(parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     free(parametros->archivo);
-            free(parametros->registroDireccion);
             free(parametros->registroPunteroArchivo);
       }     
       

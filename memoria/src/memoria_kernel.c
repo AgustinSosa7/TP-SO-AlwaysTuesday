@@ -29,8 +29,13 @@ void atender_kernel(){
             list_add(procesos_memoria, crear_proceso_nuevo());
         }
         else if(code_op_recibido == FINALIZAR_PROCESO_MEMORIA){
+            t_paquete* paquete = recibir_paquete(fd_kernel);
+            t_buffer* buffer = paquete->buffer;
+            int pid = leer_int_del_buffer(buffer);
+ 
             //finalizar_proceso(proceso); ESto debe abuscar un proceso en memoria. Marcar libres todos los marcos del proceso, y luego de esto hacerle free.
-            log_info(memoria_logger, "Se pidio finalizar un proceso");
+            
+            log_info(memoria_logger, "Se pidio finalizar el proceso %d", pid);
         }
         else{
             log_error(memoria_logger, "No se recibio un pedido correcto de kernel.");

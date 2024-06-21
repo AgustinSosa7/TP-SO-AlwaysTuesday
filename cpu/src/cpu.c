@@ -14,6 +14,8 @@ int main(int argc, char** argv){
     log_info(cpu_logger, "Creando conexion con MEMORIA...");
     fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, cpu_logger);  
     gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", cpu_logger);    
+    
+    // Pedimos el Tamaño de las Páginas y de la Memoria
     pedir_info_inicial_a_memoria();
 
     // Iniciar server de CPU - DISPATCH
@@ -28,16 +30,13 @@ int main(int argc, char** argv){
 
     // Atender los mensajes de Kernel - Dispatch
     pthread_t hilo_kernel_dispatch;
-    pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_cpu_kernel_dispatch, NULL);
+    pthread_create(&hilo_kernel_dispatch, NULL, (void*)atender_dispatch, NULL);
     pthread_detach(hilo_kernel_dispatch);    
 
     // Atender los mensajes de Kernel - Interrupt
     pthread_t hilo_kernel_interrupt;
-    pthread_create(&hilo_kernel_interrupt, NULL, (void*)atender_interrupciones, NULL);
+    pthread_create(&hilo_kernel_interrupt, NULL, (void*)atender_interrupt, NULL);
     pthread_detach(hilo_kernel_interrupt);
-
-    // Pedimos el Tamaño de las Páginas y de la Memoria
-    // pedir_info_inicial_a_memoria(); descomentar cuando este desarrolada la respuesta desde memoria 
 
     // Método principal
     pthread_t hilo_ciclo_instruccion;

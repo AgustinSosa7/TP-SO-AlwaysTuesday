@@ -3,6 +3,6 @@
 
 #include "cpu_gestor.h"
 
-void atender_cpu_kernel_dispatch();
+void atender_dispatch();
 
 #endif 
