@@ -79,12 +79,14 @@ void recibir_pcb_con_motivo()
                         t_pcb* un_pcb = list_remove(recurso->lista_procesos_bloqueados,0);
                         list_add(recurso->lista_procesos_asignados,un_pcb);
                         enviar_proceso_blocked_a_ready(un_pcb);
-                        enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
-                        recibir_pcb_con_motivo();
-                  } else{
+                        sem_post(&sem_planificador_corto_plazo);
+                        
+                  } 
+                  enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
+                  recibir_pcb_con_motivo();
+                  }else{
                         cambiar_de_estado_y_de_lista(EXEC,EXIT);
                         eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
-                  }
             }
             break;
       case DEVOLVER_PROCESO_POR_PAGEFAULT:

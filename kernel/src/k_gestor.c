@@ -42,7 +42,7 @@ void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
     printf("liberando recursos.\n");
     liberar_recursos(pcb);
     printf("liberando estructuras en memoria.\n");
-    liberar_estructuras_en_memoria(pcb->pid); //Esta hardcodeado el motivo, no enviarlo como parametro
+    liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA,pcb->pid);
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
 
     sem_post(&sem_grado_multiprogram);
