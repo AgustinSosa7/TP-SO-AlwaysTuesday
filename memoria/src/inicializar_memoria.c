@@ -72,7 +72,7 @@ void _inicializar_estructuras(){
     for(int i = 0; i<size_de_tabla_marcos;i++){ //SE INICIALIZAN ALGUNOS BITS EN 1 POR ESO LOS LIMPIO
             liberar_marco(i);
     }
-
+    
     ocupar_marco(0);
     ocupar_marco(1);
     ocupar_marco(2);

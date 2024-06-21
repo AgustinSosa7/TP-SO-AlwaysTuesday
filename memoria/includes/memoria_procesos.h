@@ -6,7 +6,6 @@
 
 t_list* leer_archivo_pseudocodigo(char*);
 void enviar_instruccion_pesudocodigo(t_list* lista_proceso,int pc); 
-
 t_proceso* buscar_proceso_en_memoria(int process_id);
 
 

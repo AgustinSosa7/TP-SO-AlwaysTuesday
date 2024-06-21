@@ -3,6 +3,7 @@
 
 #include "m_gestor.h"
 #include "memoria_procesos.h"
+#include "gestion_paginas.h"
 
 void enviar_info_inicial();
 void recibir_pedido_instruccion_y_enviar();

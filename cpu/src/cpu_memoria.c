@@ -135,12 +135,11 @@ int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
     agregar_int_a_paquete(paquete,tamanioNuevo);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
-
     // Recibir
-    op_code code_op = recibir_operacion(fd_memoria);
+    op_code code_op_recibido = recibir_operacion(fd_memoria);
     t_paquete* paquete2 = recibir_paquete(fd_memoria);
     t_buffer* buffer = paquete2->buffer;
-    if(code_op == RESPUESTA_MODIFICAR_TAMANIO)
+    if(code_op_recibido == RESPUESTA_MODIFICAR_TAMANIO)
     {
         int nuevo_tamanio = leer_int_del_buffer(buffer);
         log_info(cpu_log_debug, "El nuevo tamanio del proceso en Memoria es de = %d", nuevo_tamanio);
@@ -148,6 +147,8 @@ int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
     }
     else
     {   
+        printf("NO RESPUESTA_MODIFICAR_TAMANIO\n");
+
         log_error(cpu_log_debug, "No se recibio una respuesta sobre la modificacion del tamanio del proceso en memoria.");
         free(paquete2);
         exit(EXIT_FAILURE);

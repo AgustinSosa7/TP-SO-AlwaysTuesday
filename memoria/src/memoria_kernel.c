@@ -13,7 +13,7 @@ t_proceso* crear_proceso_nuevo(){
         procesoNuevo->instrucciones = list_create();
         procesoNuevo->instrucciones = leer_archivo_pseudocodigo(procesoNuevo->direccion_pseudocodigo);
         procesoNuevo->long_tabla_pags = 0;
-        procesoNuevo->tabla_de_paginas = (int *)malloc(0 * sizeof(int));
+        procesoNuevo->tabla_de_paginas = NULL;
         //free(paquete);
         log_info(memoria_logger, "Cree el proceso: %d",procesoNuevo->pid);
         log_info(memoria_logger, "Direccion el proceso: %s",procesoNuevo->direccion_pseudocodigo);
@@ -21,7 +21,7 @@ t_proceso* crear_proceso_nuevo(){
 };
 
 void atender_kernel(){
-        int i = 0;//SACAR
+        //int i = 0;//SACAR
     while(1){
         //printf("Atender kernel. Vez: %d\n",i);
         op_code code_op_recibido = recibir_operacion(fd_kernel);
