@@ -58,11 +58,11 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
            peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
            peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
-      {
-            /* Recibir datos de oeticion del buffer :D*/
+      {     
+            peticion->parametros->archivo = leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
-            /* code */
+            peticion->instruccion->archivo = leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {
             /* code */
@@ -101,42 +101,36 @@ void procesar_peticion(t_peticion* peticion) {
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             char* nombre_archivo = peticion->parametros->archivo;
-            crear_fcb(nombre_archivo); // archivo viene ewewe.txt???
+            crear_config(nombre_archivo); // archivo viene ewewe.txt???
   		log_info(entradasalida_logger, "Crear Archivo: %s", nombre_archivo);
-            // DPS donde mando el el fcb?
             
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
-            //eliminar_fcb(peticion);
+            char* nombre_archivo = peticion->parametros->archivo;
+            delete_archivo(nombre_archivo);
+            log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
+
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
-      {
+      {     
+            //CONSIGO DATOS DEL CONFIG CON EL NOMBRE 
             char* nombre_archivo = peticion->parametros->archivo;
             int tamanio_nuevo = peticion->parametros->registroTamanio;
-            //int pid_proceso = peticion->parametros. ??? // Hace falta el pid
-            t_fcb* fcb = obtener_fcb();
-
-            int tamanio_viejo = fcb->tamanio;
-            fcb->tamanio = tamanio_nuevo;
-            modificar_tamanio_fcb(fcb,tamanio_nuevo); //Pensar un mejor nombre :D
-            char * bloque_inicial = malloc (10);
-            
-            sprintf(bloque_inicial,%d,fcb->bloque_inicial);
-
-            int cantidad_bloques_nuevo = tamanio_nuevo /8;      
-            int cantidad_bloques_viejo = tamanio_viejo /8;
-
-            if (cantidad_bloques_nuevo > cantidad_bloques_viejo)
-            {
-                  if(cantidad_bloques_viejo==0){
-                        
-                  }
-            }
+      
+            if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  // Falta la parte de Compactación
+                  log_info(entradasalida_logger, "Se pudo truncar el archivo: %s", nombre_archivo);
+            }else{ log_info(entradasalida_logger, "No se pudo truncar el archivo: %s", nombre_archivo);}
             
 
-      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0) // Recibo tamanio del mensaje, el mensaje, archivo.
       {
-            /* code */
+       char* nombre_archivo = peticion->parametros->archivo;
+       int registro_archivo = peticion->parametros->registroPunteroArchivo; // Ver como va a llegar :D.
+       char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
+       escribir_archivo(nombre_archivo,registro_archivo,escrito);
+      
+
+
       }else //DEFALUT IO_FS_READ
       {
             /* code */
@@ -184,6 +178,7 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       {     free(parametros->registroDireccion);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+
       {     free(parametros->archivo);
 
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
@@ -205,3 +200,4 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       
       free(parametros);
 }
+

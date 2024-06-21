@@ -47,8 +47,8 @@ extern int fd_memoria;
 extern int fd_kernel;
 extern t_list * lista_struct_fcbs;
 
-extern char* bitmap_swap;
-extern t_bitarray* bitmapSWAP; 
+extern char* pre_bitmap;
+extern t_bitarray* bitmap; 
 extern void* bloquesEnMemoria;   
       
 
