@@ -12,11 +12,11 @@ t_pcb* crearPcb(){
 }
 //deberia poner una variable global PID=0
 int asignarPID(){
-	int a = 1;
-	//pthread_mutex_lock(mutex_pid); ARREGLAR SEMAFORO
+	int a;
+	pthread_mutex_lock(&mutex_pid);
 	pid_global ++;
 	a = pid_global;
-	//pthread_mutex_unlock(mutex_pid); ARREGLAR SEMAFORO
+	pthread_mutex_unlock(&mutex_pid);
 	return a;
 }
 void inicializar_registros(t_pcb* un_pcb){
@@ -42,20 +42,30 @@ void cambiar_de_estado_y_de_lista(estado_pcb estado_anterior, estado_pcb nuevo_e
 	switch(nuevo_estado)
     {
     case NEW:
+        pthread_mutex_lock(&mutex_new);
         list_add(lista_new,un_pcb);
+        pthread_mutex_unlock(&mutex_new);
         break;
     case READY:
+        pthread_mutex_lock(&mutex_ready);
         list_add(lista_ready,un_pcb);
+        pthread_mutex_unlock(&mutex_ready);
         //log info(Ingreso a Ready: “Cola Ready <COLA>: [<LISTA DE PIDS>]”)
         break;
     case EXEC:
+        pthread_mutex_lock(&mutex_exec);
         list_add(lista_exec,un_pcb);
+        pthread_mutex_unlock(&mutex_exec);
         break;
     case EXIT:
-        list_add(lista_exit,un_pcb); //Se deben liberar las estructuras en memoria
+        pthread_mutex_lock(&mutex_exit);
+        list_add(lista_exit,un_pcb); 
+        pthread_mutex_unlock(&mutex_exit);
         break;
     case READYPLUS:
+        pthread_mutex_lock(&mutex_ready_plus);
         list_add(lista_ready_plus,un_pcb);
+        pthread_mutex_unlock(&mutex_ready_plus);
         break;    
         
     default:

@@ -307,6 +307,7 @@ void devolver_contexto_por_correcta_finalizacion()
 	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	enviar_paquete(paquete, fd_kernel_dispatch);
+	printf("paquete enviado al kernel por EXIT\n");
     eliminar_paquete(paquete);
 }
 

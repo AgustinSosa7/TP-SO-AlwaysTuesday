@@ -14,6 +14,6 @@ void inicializar_semaforos();
 void inicializar_pid();
 void inicializar_recursos();
 void imprimir_recursos(t_recursos *recurso);
-
+void imprimir_lista_recursos(t_list* lista_a_mostrar);
 
 #endif 

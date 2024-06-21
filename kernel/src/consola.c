@@ -66,8 +66,8 @@ bool validar_nombre_y_parametros(char* nombre_instruccion,int cant_parametros) {
 bool esta_o_noo(char* nombre_instruccion, int cant_parametros, t_instruccion* instruccion){ 
 		
         if(strcmp(nombre_instruccion, instruccion->nombre) == 0){  
-			printf("parametros posibles:%d \n",instruccion->cant_parametros);
-			printf("parametros recibidos:%d \n",cant_parametros);
+			//printf("parametros posibles:%d \n",instruccion->cant_parametros);
+			//printf("parametros recibidos:%d \n",cant_parametros);
 			return (instruccion->cant_parametros == cant_parametros);
 
 		} else return false; 
@@ -110,7 +110,9 @@ void atender_instruccion_validada(char* leido){
 	 	t_pcb* pcb = buscar_pcb(pid);
 		if(pcb != NULL){
 			estado_pcb estado_anterior = pcb->estado_pcb;
+			pthread_mutex_lock(&mutex_exec);
 			t_pcb* pcb_ejecutando = list_get(lista_exec,0);
+			pthread_mutex_unlock(&mutex_exec);
 			if(pcb_ejecutando->pid == pid){
 				enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_KILL);		
 			} else if(pcb->estado_pcb == EXIT){
@@ -139,8 +141,8 @@ void atender_instruccion_validada(char* leido){
 			pthread_mutex_unlock(&mutex_detener_planificacion);
 		break;
 	case INICIAR_PLANIFICACION:
-		if(flag_detener_planificacion){
 			pthread_mutex_lock(&mutex_detener_planificacion);
+			if(flag_detener_planificacion){
 			flag_detener_planificacion = false;
 			pthread_mutex_unlock(&mutex_detener_planificacion);
 		}
@@ -170,12 +172,26 @@ void atender_instruccion_validada(char* leido){
 		}	
 		break;
 	case PROCESO_ESTADO:
+		pthread_mutex_lock(&mutex_new);
 		imprimir_lista(lista_new, NEW);
+		pthread_mutex_unlock(&mutex_new);
+
+		pthread_mutex_lock(&mutex_ready);
 		imprimir_lista(lista_ready, READY);
+		pthread_mutex_unlock(&mutex_ready);
+
+		pthread_mutex_lock(&mutex_ready_plus);
 		imprimir_lista(lista_ready_plus, READYPLUS);
+		pthread_mutex_unlock(&mutex_ready_plus);
 		//imprimir_lista(lista_, BLOCKED); ver blocked 
+		pthread_mutex_lock(&mutex_exec);
 		imprimir_lista(lista_exec, EXEC);
+		pthread_mutex_unlock(&mutex_exec);
+
+		pthread_mutex_lock(&mutex_exit);
 		imprimir_lista(lista_exit, EXIT);
+		pthread_mutex_unlock(&mutex_exit);
+
 		break;
 	default:
 		break;
@@ -213,9 +229,9 @@ t_list* leer_archivo(char* path){
 
 // ///FINALIZAR_PROCESO
 
-///////////PROCESO_ESTADO////////////
 
 
+// INICIAR_PROCESO
 void enviar_path_a_memoria(char* path,int pid,int socket){
 	t_paquete* un_paquete = crear_paquete(CREAR_PROCESO);
 	agregar_int_a_paquete(un_paquete,pid);
@@ -223,7 +239,7 @@ void enviar_path_a_memoria(char* path,int pid,int socket){
 	enviar_paquete(un_paquete, socket);
 	eliminar_paquete(un_paquete);
 }
-
+///////////PROCESO_ESTADO////////////
 void imprimir_lista(t_list* lista_a_mostrar,estado_pcb estado){
 	printf("************LISTA <%s>************\n", enum_a_string(estado));
 	t_list_iterator* lista = list_iterator_create(lista_a_mostrar);

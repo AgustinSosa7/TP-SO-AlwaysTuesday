@@ -125,6 +125,6 @@ t_pcb* buscar_pcb(int pid);
 bool encontre_el_pcb(t_pcb* pcb, int pid);
 t_pcb* buscar_pcb_en_bloqueados(int pid);
 t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb);
-void liberar_recursos(pcb);
-void liberar_estructuras_en_memoria(int code_op ,int pid);
+void liberar_recursos(t_pcb* pcb);
+void liberar_estructuras_en_memoria(op_code code_op ,int pid);
 #endif

@@ -45,9 +45,8 @@ void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
     liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA,pcb->pid);
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
 
-    pthread_mutex_lock(&mutex_new);
     sem_post(&sem_grado_multiprogram);
-    pthread_mutex_unlock(&mutex_new);
+
 }
 
 
@@ -73,23 +72,33 @@ t_pcb* buscar_pcb(int pid){
 	bool esta_el_pcb(void* pcb){
 		return encontre_el_pcb(pcb, pid);
 	}
+    pthread_mutex_lock(&mutex_new);
 	pcb_encontrado = list_find(lista_new, esta_el_pcb);
+    pthread_mutex_unlock(&mutex_new);
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }
+    pthread_mutex_lock(&mutex_ready);
     pcb_encontrado = list_find(lista_ready, esta_el_pcb);
+    pthread_mutex_unlock(&mutex_ready);
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }
+    pthread_mutex_lock(&mutex_ready_plus);
     pcb_encontrado = list_find(lista_ready_plus, esta_el_pcb);
+    pthread_mutex_unlock(&mutex_ready_plus);
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }
+    pthread_mutex_lock(&mutex_exec);
     pcb_encontrado = list_find(lista_exec, esta_el_pcb);
+    pthread_mutex_unlock(&mutex_exec);
     if(pcb_encontrado != NULL){
        return pcb_encontrado;   
     }
+    pthread_mutex_lock(&mutex_exit);
     pcb_encontrado = list_find(lista_exit, esta_el_pcb);
+    pthread_mutex_unlock(&mutex_exit);
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }
@@ -132,8 +141,8 @@ t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb){
     }
 }
 
-void liberar_estructuras_en_memoria(int code_op ,int pid){
-    t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
+void liberar_estructuras_en_memoria(op_code code_op ,int pid){
+    t_paquete* paquete = crear_paquete(code_op);
     agregar_int_a_paquete(paquete,pid);
     enviar_paquete(paquete,fd_memoria);
     eliminar_paquete(paquete);
