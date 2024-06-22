@@ -88,11 +88,11 @@ t_list* asignar_instrucciones_posibles(char* tipo){
     if (strcmp(tipo, "GEN") == 0) {
       instrucciones_posibles = INSTRUCCIONES_GEN;      
     } else if (strcmp(tipo, "STDIN") == 0) {
-	    instrucciones_posibles = INSTRUCCIONES_GEN;
+	    instrucciones_posibles = INSTRUCCIONES_STDIN;
     } else if (strcmp(tipo, "STDOUT") == 0) {
-	    instrucciones_posibles = INSTRUCCIONES_GEN;
+	    instrucciones_posibles = INSTRUCCIONES_STDOUT;
     } else if (strcmp(tipo, "FS") == 0) {
-      instrucciones_posibles = INSTRUCCIONES_GEN;
+      instrucciones_posibles = INSTRUCCIONES_FS;
 		}
   return instrucciones_posibles;
 }
@@ -111,9 +111,17 @@ void gestionar_procesos_io(t_interfaz* interfaz){
     t_proceso_blocked* proceso_a_ejecutar = queue_peek(interfaz->cola_procesos_blocked);
     pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 
-    enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
-    recibir_fin_peticion(interfaz);
-
-    desbloquear_proceso(interfaz);
+    bool ocurrio_error = enviar_peticion_a_interfaz(proceso_a_ejecutar, interfaz);
+    
+    if(ocurrio_error){
+          break;
+    } else{
+          bool ocurrio_otro_error = recibir_fin_peticion(interfaz);
+          if(ocurrio_otro_error){
+                  break;
+            } else{
+                  desbloquear_proceso(interfaz);
+                  }
+        }
   }
 }

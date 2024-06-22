@@ -36,15 +36,15 @@ gestionar_handshake_como_server(fd_kernel, memoria_logger, "KERNEL");
   // Atender los mensajes de Kernel
   pthread_t hilo_atender_kernel;
   pthread_create(&hilo_atender_kernel, NULL, (void*)atender_kernel, NULL);
-  pthread_join(hilo_atender_kernel,NULL); 
+  pthread_detach(hilo_atender_kernel); 
 
 
 
 // Esperar conexion de ENTRADASALIDA
    
-//pthread_t hilo_generador_de_io;
-//pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
-//pthread_detach(hilo_generador_de_io);
+pthread_t hilo_generador_de_io;
+pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
+pthread_join(hilo_generador_de_io, NULL);
 
 /////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
 /*sleep(40);

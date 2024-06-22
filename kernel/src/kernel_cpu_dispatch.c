@@ -3,6 +3,7 @@
 void recibir_pcb_con_motivo()
 {     
       detener_planificacion();
+      printf("Esperando un PCB con MOTIVO.\n");
       int code_op = recibir_operacion(fd_cpu_dispatch);
       t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
       t_pcb* pcb_recibido = recibir_pcb(paquete); 
@@ -12,18 +13,18 @@ void recibir_pcb_con_motivo()
       switch (code_op)
       {
       case DESALOJO_QUANTUM:
-            log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum",pcb_recibido->pid);
+            log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum.\n",pcb_recibido->pid);
             cambiar_de_estado_y_de_lista(EXEC,READY);
             sem_post(&sem_planificador_corto_plazo);
             
             break;
-      case PROCESO_EXIT:
+      case DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION:
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
-            eliminar_proceso(pcb_recibido->pid,SUCCESS);
+            eliminar_proceso(pcb_recibido,SUCCESS);
             break;
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  
-            t_interfaz* interfaz = validar_peticion(peticion, pcb_recibido);
+            t_interfaz* interfaz = validar_peticion(peticion);
             if(interfaz!=NULL){
             enviar_proceso_a_blocked(peticion,pcb_recibido,interfaz); 
             sem_post(&sem_planificador_corto_plazo);
@@ -31,47 +32,68 @@ void recibir_pcb_con_motivo()
 
             break;
       case WAIT:
-           //preguntar por el parametro paquete->buffer
-            char* recurso_solicitado = leer_string_del_buffer(paquete->buffer);
+            void* buff = paquete->buffer;
+            char* recurso_solicitado = leer_string_del_buffer(buff);
             bool esta_o_no_el_recurso(void* recurso){
                  return(esta_el_recurso(recurso,recurso_solicitado));
             }
+            
             if(list_any_satisfy(lista_recursos, esta_o_no_el_recurso)){
                   t_recursos* recurso = list_find(lista_recursos, esta_o_no_el_recurso);
                   recurso->instancias = recurso->instancias -1;
                   if(recurso->instancias <0){
-                       list_remove_element(lista_exec,pcb_recibido);
+                       pthread_mutex_lock(&mutex_exec);
+                       t_pcb* pcb = list_remove(lista_exec,0);
+                       pthread_mutex_unlock(&mutex_exec);
                        pcb_recibido->estado_pcb = BLOCKED;
-                       queue_push(recurso->cola_procesos_bloqueados,pcb_recibido);
+                       list_add(recurso->lista_procesos_bloqueados,pcb_recibido);
+                       log_warning(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb_recibido->pid, enum_a_string(EXEC),enum_a_string(pcb_recibido->estado_pcb));
+                       log_warning(kernel_logger,"PID: <%d> - Bloqueado por: <%s>\n",pcb_recibido->pid,recurso_solicitado);
                        sem_post(&sem_planificador_corto_plazo);
                   } else{ 
-                        list_add(recurso->lista_procesos_asignados,pcb_recibido->pid);
+                        list_add(recurso->lista_procesos_asignados,pcb_recibido);  
+                        //t_pcb* pcb = list_get(recurso->lista_procesos_asignados,0);  
+                        //log_warning(kernel_logger,"Lista de recuros tiene pcb:%d \n", pcb->pid);                         
+                        log_warning(kernel_logger,"Se agrega a la lista de recursos: <%s>.\n",recurso_solicitado);
+                        //t_pcb* pcb = list_get(lista_exec,0);
+                        printf("Vuelvo a mandar el proceso <%d> a ejecutar\n",pcb_recibido->pid);
                         enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
+                        recibir_pcb_con_motivo();
+                        //log_warning(kernel_logger,"Lista de exec, pid:%d \n", pcb->pid);
                   }
             } else{
                        cambiar_de_estado_y_de_lista(EXEC,EXIT);
-                       eliminar_proceso(pcb_recibido->pid, INVALID_RESOURCE);
+                       eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
             }
            break;
       case SIGNAL:
-            char* recurso_solicitadoo = leer_string_del_buffer(paquete->buffer);
+            void* buffer = paquete->buffer;
+            char* recurso_solicitadoo = leer_string_del_buffer(buffer);
             bool estaa_o_no_el_recurso(void* recurso){
                  return(esta_el_recurso(recurso,recurso_solicitadoo));
             }
             if(list_any_satisfy(lista_recursos, estaa_o_no_el_recurso)){
                  t_recursos* recurso = list_find(lista_recursos, estaa_o_no_el_recurso);
                  recurso->instancias = recurso->instancias +1;
-                 if(!queue_is_empty(recurso->cola_procesos_bloqueados)){
-                        t_pcb* un_pcb = queue_pop(recurso->cola_procesos_bloqueados);
-                        list_add(recurso->lista_procesos_asignados,un_pcb->pid);
+                 if(!list_is_empty(recurso->lista_procesos_bloqueados)){
+                        t_pcb* un_pcb = list_remove(recurso->lista_procesos_bloqueados,0);
+                        list_add(recurso->lista_procesos_asignados,un_pcb);
                         enviar_proceso_blocked_a_ready(un_pcb);
-                        enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
-                  } else{
+                        sem_post(&sem_planificador_corto_plazo);
+                        
+                  } 
+                  enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
+                  recibir_pcb_con_motivo();
+                  }else{
                         cambiar_de_estado_y_de_lista(EXEC,EXIT);
-                        eliminar_proceso(pcb_recibido->pid, INVALID_RESOURCE);
-                  }
+                        eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
             }
-           break;
+            break;
+      case DEVOLVER_PROCESO_POR_PAGEFAULT:
+            break;
+      case DEVOLVER_PROCESO_POR_OUT_OF_MEMORY:
+            break;
+
       case -1:
             log_error(kernel_logger, "Desconexion de CPU - DISPATCH");      
             break;
@@ -83,6 +105,7 @@ void recibir_pcb_con_motivo()
 }
 
 bool esta_el_recurso(t_recursos* recurso, char* recurso_solicitado){
+      //printf("nomre del recurso: %s\n",recurso->nombre_recurso);
       return(strcmp(recurso->nombre_recurso,recurso_solicitado)==0);
 }
 

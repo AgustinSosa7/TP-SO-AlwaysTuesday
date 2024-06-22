@@ -6,6 +6,7 @@ void inicializar_kernel(char* path){
 	inicializar_listas();
 	inicializar_semaforos();
 	inicializar_pid();
+	inicializar_recursos();
 }
 
 void inicializar_logs(void){
@@ -124,16 +125,32 @@ void inicializar_pid(){
 	} 
 
 void inicializar_recursos(){
+	printf("Inicializando la lista de recursos.\n");
 	lista_recursos = list_create();
 	int i = 0;
-	t_recursos* recurso = malloc(sizeof(t_recursos));
-	while(RECURSOS[i]!=0){
+
+	while(RECURSOS[i]!= NULL){
+		t_recursos* recurso = malloc(sizeof(t_recursos));
 		recurso->nombre_recurso = RECURSOS[i];
 		recurso->instancias = atoi(INSTANCIAS_RECURSOS[i]);
-		recurso->cola_procesos_bloqueados = queue_create();
+		recurso->lista_procesos_bloqueados = list_create();
 		recurso->lista_procesos_asignados = list_create();
 		list_add(lista_recursos,recurso);
-		free(recurso);
+		i++;
 	}
+	imprimir_lista_recursos(lista_recursos);
 }
 
+void imprimir_recursos(t_recursos* recurso){
+	printf("nombre de recurso: %s\n",recurso->nombre_recurso);
+	printf("instancias de recurso: %d\n",recurso->instancias );
+}
+void imprimir_lista_recursos(t_list* lista_a_mostrar){
+	printf("************LISTA <RECURSOS>************\n");
+	t_list_iterator* lista = list_iterator_create(lista_a_mostrar);
+	t_recursos* recurso;
+	while(list_iterator_has_next(lista)){
+		recurso = list_iterator_next(lista);
+		printf("recurso: %s \n", recurso->nombre_recurso);
+	}
+}

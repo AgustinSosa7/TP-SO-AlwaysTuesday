@@ -58,13 +58,12 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");   
 
     } else if (strcmp(TIPO_INTERFAZ, "STDOUT") == 0) {
-			TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
 			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
 			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
 			IP_MEMORIA = config_get_string_value(entradasalida_config,"IP_MEMORIA");
 			PUERTO_MEMORIA = config_get_string_value(entradasalida_config,"PUERTO_MEMORIA");
 
-	} else if (strcmp(TIPO_INTERFAZ, "FS") == 0) {
+	} else if (strcmp(TIPO_INTERFAZ, "FS") == 0) {      // VER PORQUE ENTRADA SALIDA_config tiene esos datos
 			TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
 			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
 			PUERTO_KERNEL= config_get_string_value(entradasalida_config,"PUERTO_KERNEL");
@@ -74,8 +73,9 @@ void recibir_configs(char* TIPO_INTERFAZ){
 			BLOCK_SIZE = config_get_int_value(entradasalida_config,"BLOCK_SIZE");
 			BLOCK_COUNT = config_get_int_value(entradasalida_config,"BLOCK_COUNT");
 			RETRASO_COMPACTACION = config_get_int_value(entradasalida_config,"RETRASO_COMPACTACION");
-
 			iniciar_file_system();
+
+			//finalizar_filesystem();
 	
 		} else {
 	        printf("Tipo de interfaz desconocida.");
@@ -93,6 +93,7 @@ void imprimir_configs(){
 void inicializar_listas(){
 	lista_registros_propisito_general = list_create();
 	lista_registros_extendidos = list_create();
+	lista_struct_fcbs = list_create();
 	list_add(lista_registros_propisito_general, "AX");
 	list_add(lista_registros_propisito_general, "BX");
 	list_add(lista_registros_propisito_general, "CX");
@@ -104,20 +105,53 @@ void inicializar_listas(){
 }
 
 void iniciar_file_system(){
-	inicializar_archivo_de_bloques();
+	log_info(entradasalida_logger,"Busacando FileSystem existente");
+	crear_paths();
+	inicializar_archivos(); // Inicia archivo Bloques y Bitmap
+	log_info(entradasalida_logger, "FileSystem inicializado");
+
 }
 
-void inicializar_archivo_de_bloques(){
-	fd_archivoBloques = open(PATH_BASE_DIALFS, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+void crear_paths(){
+	log_info(entradasalida_logger, "Creando paths");
+	crear_path(PATH_BLOQUES,"/Bloques.dat");
+	crear_path(PATH_BITMAP,"/Bitmap.dat");
+	crear_path(PATH_METADATA,"/FILES/"); //VER si cambiar 2do parametro
+	log_info(entradasalida_logger, "Paths creados correctamente");
+}
+
+void crear_path(char* path, char* nombre_archivo){ 	// Nombra el directorio y lo guarda en el PATH
+	path = string_new();
+	string_append(&path,PATH_BASE_DIALFS);
+	string_append(&path,nombre_archivo); 
+}
+
+void inicializar_archivos(){  //Cambiar nombre
+	// fd archivoBloques es bloques.dat imagino
+
+	fd_archivoBloques = open(PATH_BLOQUES, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);  // ???
+
 	int tamanio_archivo_bloques = BLOCK_COUNT * BLOCK_SIZE;
-	ftruncate(fd_archivoBloques, tamanio_archivo_bloques);
+	int tamanio_bitmap = ceil(BLOCK_COUNT/8);   
+	
+	ftruncate(fd_archivoBloques, tamanio_archivo_bloques); // hace que un archivo tenga ese tamanio
+	
+	bloquesEnMemoria = mmap(NULL, tamanio_archivo_bloques, PROT_READ | PROT_WRITE, MAP_SHARED, fd_archivoBloques, 0); // Verificar 2 parametro
+	if (bloquesEnMemoria == MAP_FAILED) {
+		log_error(entradasalida_logger, "Error al mapear los bloques SWAP");
+		exit(1);
+	}
+	
+	fd_archivoBitmap = open(PATH_BITMAP, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	ftruncate(fd_archivoBitmap, tamanio_bitmap);
+	bitmap_swap = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_archivoBitmap, 0); 
+	//bitmap_swap = calloc(BLOCK_COUNT, sizeof(char)); // Ver bien el size of 
+	//bitmap_swap = (char*)fd_archivoBitmap;
+	//fd_archivoBitmap = malloc(tamanio_bitmap);
+	bitmap_swap = malloc(tamanio_bitmap);
 
-	//bitmap_swap = calloc(CANT_BLOQUES_SWAP, sizeof(char));
-	//bitmapSWAP = bitarray_create_with_mode(bitmap_swap, CANT_BLOQUES_SWAP/8, LSB_FIRST);
-//
-	//bloquesEnMemoria = mmap(NULL, CANT_BLOQUES_TOTAL*TAM_BLOQUE, PROT_READ | PROT_WRITE, MAP_SHARED, fd_archivoBloques, 0);
-	//if (bloquesEnMemoria == MAP_FAILED) {
-	//	log_error(filesystem_logger, "Error al mapear los bloques SWAP");
-	//	exit(1);
-	//}
+	// USO bitmapSWAP para el tema del bitmap
+	bitmapSWAP = bitarray_create_with_mode(bitmap_swap, tamanio_bitmap, LSB_FIRST); 
+	//LSB_FIRST Completa los bits en un byte priorizando el bit menos significativo 00000001
 }
+

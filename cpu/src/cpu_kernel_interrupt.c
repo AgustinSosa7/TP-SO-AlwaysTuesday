@@ -1,6 +1,6 @@
 # include "../includes/cpu_kernel_interrupt.h"
 
-void atender_interrupciones(){
+void atender_interrupt(){
     log_info(cpu_logger, "Atendiendo a INTERRUPT...");
 
     bool control_key = 1;
@@ -11,9 +11,14 @@ void atender_interrupciones(){
         
 		switch (cod_op) {
             case SOLICITUD_INTERRUMPIR_PROCESO:
-                log_debug(cpu_log_debug, "Recibi una interrupción (Fin de Quantum)!");
+                log_debug(cpu_log_debug, "Recibi una interrupción desde Kernel!");
                 motivo_interrupcion = leer_int_del_buffer(buffer);
-                
+                if(motivo_interrupcion == 0) {
+                    log_debug(cpu_log_debug, "Motivo de la interrupción = Fin de Quantum (Desalojo)");}
+                else if(motivo_interrupcion == 1) {
+                    log_debug(cpu_log_debug, "Motivo de la interrupción = Terminar proceso (Kill)");}
+
+
                 pthread_mutex_lock(&mutex_ocurrio_interrupcion);
 			    ocurrio_interrupcion = true;
 			    pthread_mutex_unlock(&mutex_ocurrio_interrupcion); 
@@ -25,6 +30,7 @@ void atender_interrupciones(){
             
             default:
                 log_warning(cpu_logger,"Operacion desconocida de KERNEL - Interrupt");
+                exit(EXIT_FAILURE);
                 break;
 		}
     }

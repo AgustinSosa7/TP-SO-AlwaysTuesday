@@ -4,20 +4,16 @@
 void ciclo_instruccion(){                         
     
     while(1){
-	log_info(cpu_log_debug, "Esperando al semaforo del ciclo de instruccion. \n");
+	log_warning(cpu_log_debug, "Esperando una nueva instruccion... \n");
     sem_wait(&sem_ciclo_de_instruccion);
 	log_info(cpu_log_debug, "Tome el semaforo del ciclo de instruccion.\n");
 
 	dejar_de_ejecutar = false;
-	log_info(cpu_log_debug, "Antes del mutex. \n");
 	pthread_mutex_lock(&mutex_ocurrio_interrupcion);
 	ocurrio_interrupcion = false;
 	pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
     
 	//FETCH 
-	log_info(cpu_log_debug, "Antes de recibir el pcb_global. \n");
-	printf("pcb_global->pid: %d \n", pcb_global->pid);
-	log_info(cpu_log_debug,"Despues de recibir el pcb_global. \n");
 	log_info(cpu_logger, "PID: <%d> - FETCH - PC: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
@@ -90,7 +86,7 @@ void ciclo_instruccion(){
 			u_int32_t nuevo_program_counter = atoi(strtok_r(saveptr, " ", &saveptr));
 			if (leer_valor_de_registro(nombre_registro) != 0)
 			{
-				escribir_valor_a_registro(pcb_global->registros_cpu->PC, nuevo_program_counter);
+				escribir_valor_a_registro("PC", nuevo_program_counter);
 			}
 			else
 			{
@@ -154,6 +150,25 @@ void ciclo_instruccion(){
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
 				devolver_contexto_por_stdin_read(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
+			}
+			
+		}
+	else if (strcmp(nombre_instruccion, "IO_STDOUT_WRITE") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
+			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
+
+			int direccion_logica = leer_valor_de_registro(registro_direccion);
+			int direccion_fisica = mmu(direccion_logica);
+			int tamanio = leer_valor_de_registro(registro_tamanio);
+
+			if (direccion_fisica != -1) // Si la traduccion de la direccion logica arroja un Page Fault, se devuelve el contexto por page fault y no se ejecuta el resto!.
+			{
+				pcb_global->registros_cpu->PC++;
+				dejar_de_ejecutar = true;
+				devolver_contexto_por_stdout_write(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
 			}
 			
 		}
@@ -224,7 +239,7 @@ void devolver_contexto_por_ser_interrumpido()
 {
 	t_paquete* paquete = crear_paquete(DESALOJO_QUANTUM);
 	agregar_pcb_a_paquete(pcb_global, paquete);
-	agregar_int_a_paquete(motivo_interrupcion, paquete);
+	agregar_int_a_paquete(paquete, motivo_interrupcion);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
@@ -287,6 +302,18 @@ void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_int
     eliminar_paquete(paquete);
 }
 
+void devolver_contexto_por_stdout_write(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_int_a_paquete(paquete, direccion_fisica);
+	agregar_int_a_paquete(paquete, tamanio);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
 void devolver_contexto_por_fs_create(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo)
 {
 	t_paquete* paquete = crear_paquete(PEDIDO_IO);
@@ -314,6 +341,7 @@ void devolver_contexto_por_correcta_finalizacion()
 	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	enviar_paquete(paquete, fd_kernel_dispatch);
+	printf("paquete enviado al kernel por EXIT\n");
     eliminar_paquete(paquete);
 }
 
@@ -456,7 +484,7 @@ int mmu(int direccion_logica)
 		return -1;
 	}
 
-	log_info(cpu_logger, "Obtener Marco: \"PID: %d - OBTENER MARCO - Página: %d - Marco: %d\"", pcb_global->pid, numero_de_pagina, numero_de_marco);
+	log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_de_pagina, numero_de_marco);
 	int desplazamiento = direccion_logica - numero_de_pagina * tamanio_pagina;
 	int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
 

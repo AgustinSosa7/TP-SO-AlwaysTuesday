@@ -51,12 +51,12 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
-           peticion->parametros->registroTamanio= leer_string_del_buffer(buffer);
+           peticion->parametros->registroDireccion= leer_int_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           peticion->parametros->registroDireccion= leer_string_del_buffer(buffer);
-           peticion->parametros->registroTamanio= leer_string_del_buffer(buffer);
+           peticion->parametros->registroDireccion= leer_int_del_buffer(buffer);
+           peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             /* code */
@@ -89,18 +89,20 @@ void procesar_peticion(t_peticion* peticion) {
       {
             char* leido = iniciar_la_consola(peticion->parametros->registroTamanio);
             if(guardar_en_memoria(leido, peticion->parametros->registroDireccion)){
-                  log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente en %s.", leido, peticion->parametros->registroDireccion);
+                  log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente en %d.", leido, peticion->parametros->registroDireccion);
             } else{
-                  log_info(entradasalida_logger,"¨%s¨ no se gurardo correctamente en %s. (debido a problemas de memoria)", leido, peticion->parametros->registroDireccion);
+                  log_info(entradasalida_logger,"¨%s¨ no se gurardo correctamente en el registro direccion: %d. (debido a problemas de memoria)", leido, peticion->parametros->registroDireccion);
             }
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
             char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
-            log_info(entradasalida_logger,"En la posicion de memoria %s con tamanio %s se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
+            log_info(entradasalida_logger,"En la posicion de memoria %d con tamanio %d se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
-            /* code */
+            char* nombre_archivo = peticion->parametros->archivo;
+            crear_fcb(nombre_archivo); // archivo viene ewewe.txt???
+            
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
             /* code */
@@ -116,7 +118,7 @@ void procesar_peticion(t_peticion* peticion) {
       }
 }      
 
-char* iniciar_la_consola(char* registroTamanio){
+char* iniciar_la_consola(int registroTamanio){
       char* leido;
 	leido = readline("> ");
 	while(strcmp(leido,"\0") != 0){
@@ -125,29 +127,14 @@ char* iniciar_la_consola(char* registroTamanio){
                   break;
 		}
 		free(leido);
-		log_info(entradasalida_logger, "El valor ingresado no debe superar el tamanio del registro %s. Por favor reingrese un nuevo valor...\n", registroTamanio);
+		log_info(entradasalida_logger, "El valor ingresado no debe superar el tamanio del registro: %d. Por favor reingrese un nuevo valor...\n", registroTamanio);
 		leido = readline("> ");
 	}
       return leido;
 }
 
-bool validar_tamanio_leido(char* leido, char* registroTamanio){
-      if(esDePropositoGeneral(registroTamanio)){
-            return (2 >= strlen(leido)); //REVISAR CUANTOS CARACTERES PUEDE GUARDAR UN REGISTRO  
-      }else if(esExtendido(registroTamanio)){
-            return (4 >= strlen(leido)); 
-      } else{
-            log_warning(entradasalida_logger, "El tamanio del registro ingresado no es valido.\n");
-            return EXIT_FAILURE;
-      }
-}
-
-bool esDePropositoGeneral(char* registroTamanio){
-      return contains_string(lista_registros_propisito_general, registroTamanio);
-}
-
-bool esExtendido(char* registroTamanio){
-      return contains_string(lista_registros_extendidos, registroTamanio);
+bool validar_tamanio_leido(char* leido, int registroTamanio){
+      return ( registroTamanio > strlen(leido));
 }
 
 void finalizar_peticion(t_peticion* peticion){
@@ -166,12 +153,10 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
-      {     free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
+      {     
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
-      {     free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
+      {     
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {     free(parametros->archivo);
@@ -181,18 +166,13 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {     free(parametros->archivo);
-            free(parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     free(parametros->archivo);
-            free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
             free(parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     free(parametros->archivo);
-            free(parametros->registroDireccion);
-            free(parametros->registroTamanio);
             free(parametros->registroPunteroArchivo);
       }     
       

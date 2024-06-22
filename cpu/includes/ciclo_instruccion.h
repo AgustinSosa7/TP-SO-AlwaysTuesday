@@ -20,8 +20,9 @@ void devolver_contexto_por_wait(char* nombre_recurso);
 void devolver_contexto_por_signal(char* nombre_recurso);
 void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz, int segundos_sleep);
 void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio);
-void devolver_contexto_por_fs_create(nombre_instruccion, nombre_interfaz, nombre_archivo);
-void devolver_contexto_por_fs_delete(nombre_instruccion, nombre_interfaz, nombre_archivo);
+void devolver_contexto_por_stdout_write(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio);
+void devolver_contexto_por_fs_create(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo);
+void devolver_contexto_por_fs_delete(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo);
 
 void devolver_contexto_por_correcta_finalizacion();
 

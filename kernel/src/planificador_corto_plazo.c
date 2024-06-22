@@ -7,15 +7,15 @@ void planif_corto_plazo()
 {
     while(1){
         detener_planificacion();
-        printf("WAIT sem_planificador_corto_plazo");
+        printf("WAIT del plani CORTO plazo.\n");
         sem_wait(&sem_planificador_corto_plazo);
-        printf("entro al plani corto plazo.\n");
+        printf("Entro al plani corto plazo.\n");
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch (algoritmo)
             {
             case FIFO:
                 planif_fifo_RR();
-                printf("YA hice fifardo");
+                printf("FIFO realizado.\n");
                 break;
             case RR:
                 planif_fifo_RR();
@@ -31,12 +31,13 @@ void planif_corto_plazo()
 
 void planif_fifo_RR()
 {
-    printf("Estamos en fifo.\n");
+    printf("Entro a FIFO.\n");
     if(!list_is_empty(lista_ready)){
         if(list_is_empty(lista_exec)){
             cambiar_de_estado_y_de_lista(READY,EXEC);
             t_pcb* un_pcb = list_get(lista_exec,0);
             enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
+            printf("Envie el pcb a DISPATCH. \n");
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
                 pthread_t hilo_quantum;
                 pthread_create(&hilo_quantum, NULL, (void*)gestionar_quantum, un_pcb);
@@ -45,14 +46,13 @@ void planif_fifo_RR()
 
             }
         recibir_pcb_con_motivo();  
-        }
-        
-    }
+        } else{printf("La cola de EXECUTE estaba OCUPADA :(\n");}
+    } else{printf("La cola de READY estaba vacia :(\n");}
 }
 void gestionar_quantum(t_pcb* un_pcb){
     usleep(un_pcb->quantum*1000);
         if(contains_algo(lista_exec, &(un_pcb->pid))){ 
-        //enviar_interrupción_a_cpu(INTERRUPCION_FIN_QUANTUM); 
+        enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_DESALOJO); 
         un_pcb->quantum = QUANTUM;
 
     }

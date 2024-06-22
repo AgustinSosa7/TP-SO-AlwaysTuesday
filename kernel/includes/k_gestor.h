@@ -23,8 +23,8 @@ typedef struct
 typedef struct{
     int tiempo_espera;
     char* archivo;
-    char* registroDireccion;
-    char* registroTamanio;
+    int registroDireccion;
+    int registroTamanio;
     char* registroPunteroArchivo;
 } t_peticion_param;
 
@@ -87,7 +87,7 @@ extern sem_t sem_detener_planificacion;
 typedef struct{
     char* nombre_recurso;
     int instancias;
-    t_queue* cola_procesos_bloqueados;
+    t_list* lista_procesos_bloqueados;
     t_list* lista_procesos_asignados;
     //sem_t* sem_tipo_recurso; ver después
 } t_recursos;
@@ -118,9 +118,13 @@ extern char ** INSTANCIAS_RECURSOS; // POR FAVOR REVISAR EL TIPO EN EL ENUNCIADO
 extern int GRADO_MULTIPROGRAMACION;
 extern char * IP_KERNEL;
 
-void enviar_interrupción_a_cpu(op_code tipo_interrupción);
-void eliminar_proceso(int pid, motivo_fin_de_proceso motivo);
+void enviar_interrupción_a_cpu(op_code interrupción,int motivo);
+void eliminar_proceso(t_pcb* un_pcb, motivo_fin_de_proceso motivo);
 void detener_planificacion();
 t_pcb* buscar_pcb(int pid);
 bool encontre_el_pcb(t_pcb* pcb, int pid);
+t_pcb* buscar_pcb_en_bloqueados(int pid);
+t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb);
+void liberar_recursos(t_pcb* pcb);
+void liberar_estructuras_en_memoria(op_code code_op ,int pid);
 #endif
