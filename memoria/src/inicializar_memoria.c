@@ -73,6 +73,7 @@ void _inicializar_estructuras(){
             liberar_marco(i);
     }
 
+    /*
     ocupar_marco(0);
     ocupar_marco(1);
     ocupar_marco(2);
@@ -80,11 +81,12 @@ void _inicializar_estructuras(){
     ocupar_marco(4);
     ocupar_marco(6);
     ocupar_marco(7);
+    */
 
-    /*TEST!*/
+    /*TEST!
     for(int ii = 0; ii<size_de_tabla_marcos;ii++){
             log_info(memoria_log_debug, "valor del %d bit: %d",ii, bitarray_test_bit(tabla_de_marcos, ii));
-    }
+    }*/
     /**/
     log_info(memoria_log_debug, "Cantidad de marcos: %d", cantidad_de_marcos);
     log_info(memoria_log_debug, "Cantidad de marcos/8: %d", cantidad_de_marcos/8);

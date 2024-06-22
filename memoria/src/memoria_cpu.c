@@ -51,24 +51,67 @@ void recibir_pedido_marco_y_enviar(){
     log_info(memoria_logger,"Marco enviado. PID: %d PAGINA: %d MARCO: %d",pid,numero_de_pagina,marco_pedido); //BORRAR
 };
 
+void recibir_modificacion_de_tamanio(){
+    t_paquete* paquete = recibir_paquete(fd_cpu);
+    t_buffer* buffer = paquete->buffer;
+    int pid = leer_int_del_buffer(buffer);
+    int tamanio_nuevo = calcular_paginas_necesarias(leer_int_del_buffer(buffer));
+    int paginas_necesarias = calcular_paginas_necesarias(tamanio_nuevo);
+    t_proceso* proceso = buscar_proceso_en_memoria(pid);
+
+    printf("Encontre el proceso %d\n",proceso->pid);
+
+    int resultado_ajuste = ajustar_tamanio_proceso(proceso,tamanio_nuevo);
+
+    printf("Resultado del ajuste %d\n",resultado_ajuste);
+
+    free(buffer);
+    free(paquete);
+
+    t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_MODIFICAR_TAMANIO);
+    if(resultado_ajuste == 0){
+        //mandar ok
+        agregar_int_a_paquete(paquete_a_enviar,proceso->long_tabla_pags);
+    }
+    else
+    {
+        //mandar out of memory
+        printf("out of memory\n");
+        agregar_int_a_paquete(paquete_a_enviar,resultado_ajuste);// -1
+    }
+    enviar_paquete(paquete_a_enviar, fd_cpu);
+    eliminar_paquete(paquete_a_enviar);
+}
+
 void atender_cpu(){
     
     enviar_info_inicial();
     while(1){
+        sleep(10);
         op_code code_op = recibir_operacion(fd_cpu);
-        sleep(2);
-        printf("OP Code recibido %d\n",code_op);
+        //printf("OP Code recibido %d\n",code_op);
             if(code_op == PEDIDO_PSEUDOCODIGO) 
             { 
+                //printf("PEDIDO DE INSTRUCCION\n"); //BORRAR
                 recibir_pedido_instruccion_y_enviar();
             }
             else if (code_op == SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA)
             {
+                //printf("PEDIDO DE MARCO\n"); //BORRAR
                 recibir_pedido_marco_y_enviar();
             }
             else if (code_op == SOLICITUD_MODIFICAR_TAMANIO)
             {
-                printf("PEDIDO DE RESIZE\n"); //BORRAR
+                //printf("PEDIDO DE RESIZE\n"); //BORRAR
+                recibir_modificacion_de_tamanio();  
+            }
+            else if (code_op == SOLICITUD_LEER_VALOR_EN_MEMORIA)
+            {
+                printf("PEDIDO DE LECTURA\n"); //BORRAR 
+            }
+            else if (code_op == SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA)
+            {
+                printf("PEDIDO DE ESCRITURA\n"); //BORRAR
             }
             else
             {

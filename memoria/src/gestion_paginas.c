@@ -22,40 +22,59 @@ int traer_numero_marco(t_proceso* proceso,int pagina_consultada){
 
 int buscar_marco_libre(){
     int marco_encontrado = -1;
+    log_info(memoria_log_debug, "Busco marco libre...");
     for(int i = 0; i<size_de_tabla_marcos;i++){ 
-        log_info(memoria_log_debug, "Buscando en el marco %d... bit: %d",i, (bitarray_test_bit(tabla_de_marcos, i)));
         if(!bitarray_test_bit(tabla_de_marcos, i))
         {
             marco_encontrado = i;
             i = size_de_tabla_marcos + 1;
-        } else {
+        } else 
+        {
         }
     }
+    log_info(memoria_log_debug, "Encontrado el marco %d... bit: %d",marco_encontrado, (bitarray_test_bit(tabla_de_marcos, marco_encontrado)));
     return marco_encontrado;
 }
 
 void cambiar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
-    proceso->long_tabla_pags = tamanio_nuevo;
-    proceso->tabla_de_paginas = (int *)realloc(proceso->tabla_de_paginas, proceso->long_tabla_pags * sizeof(int));    
-}
-
-void asignar_marcos_memoria(t_proceso* proceso){
-    int marco;
-    for(int i = 0;i < proceso->long_tabla_pags;i++){
-        marco = buscar_marco_libre();
-        if(marco != -1){
-        ocupar_marco(marco);
-        proceso->tabla_de_paginas = marco;
+    if(proceso->long_tabla_pags == 0){
+        proceso->tabla_de_paginas = (int *)malloc(tamanio_nuevo * sizeof(int));   
+        if (proceso->tabla_de_paginas == NULL) {
+        printf("Error al asignar memoria\n");
         }
-        else
-        {
-            printf("OUT OF MEMORY"); //MANDAR A CPU OUT OF MEMORY.
+    }
+    else
+    {
+        proceso->tabla_de_paginas = (int *)realloc(proceso->tabla_de_paginas, tamanio_nuevo * sizeof(int));    
+
+        if (proceso->tabla_de_paginas == NULL) {
+        printf("Error al reasignar memoria\n");
         }
     }
 }
 
-void liberar_marcos_memoria(){
+void cambiar_variable_long_tabla_pags(t_proceso* proceso,int tamanio_nuevo){
+    proceso->long_tabla_pags = tamanio_nuevo;
+}
 
+void asignar_marcos_memoria(t_proceso* proceso,int tamanio_nuevo){
+    int marco;
+    for(int i = proceso->long_tabla_pags;i < tamanio_nuevo;i++){
+        marco = buscar_marco_libre();
+        ocupar_marco(marco);
+        proceso->tabla_de_paginas[i] = marco;
+    }
+    cambiar_variable_long_tabla_pags(proceso,tamanio_nuevo);
+}
+
+void liberar_marcos_memoria(t_proceso* proceso,int tamanio_nuevo){
+    int numero_marco;
+    for(int i = (tamanio_nuevo); i < proceso->long_tabla_pags; i++){
+        numero_marco = traer_numero_marco(proceso,i);
+        log_info(memoria_log_debug, "El marco: %d de la pagina: %d va a ser liberado", numero_marco,i);
+        liberar_marco(numero_marco);
+    }
+    cambiar_variable_long_tabla_pags(proceso,tamanio_nuevo);
 }
 
 int calcular_paginas_necesarias(int tamanio_nuevo){
@@ -67,25 +86,59 @@ int calcular_paginas_necesarias(int tamanio_nuevo){
     return paginas_necesarias;
 }
 
-void ajustar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
+int calcular_marcos_libres(){
+    int i = 0;
+    int marcos_libres = 0;
+    for(int i = 0;i<size_de_tabla_marcos;i++){
+        if(!bitarray_test_bit(tabla_de_marcos, i)){
+            marcos_libres++;
+        }
+    }
+    printf("Marcos libres calculados: %d\n",marcos_libres);
+    return marcos_libres;
+}
+
+int ajustar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
     //Al llegar una solicitud de ajuste de tamaño de proceso (resize) se deberá cambiar el tamaño del proceso de acuerdo al nuevo tamaño.
+    
+    // Imprimir el array original //prueba
+    printf("Array original: ");
+    for (int i = 0; i < proceso->long_tabla_pags; i++) {
+        printf("%d ", proceso->tabla_de_paginas[i]);
+    }
+    printf("\n");
 
     if (tamanio_nuevo > proceso->long_tabla_pags){
-        cambiar_tamanio_proceso(proceso,tamanio_nuevo);
-        
-        //ocupar los marcos a partir del tamanio nuevo y asignarlos en el array.
-        asignar_marcos_memoria(proceso);
-
-        //Se deberá ampliar el tamaño del proceso al final del mismo, pudiendo solicitarse múltiples páginas.
-        //Es posible que en un punto no se puedan solicitar más marcos ya que la memoria se encuentra llena, 
-        //por lo que en ese caso se deberá contestar con un error de Out Of Memory.
+        if((tamanio_nuevo-(proceso->long_tabla_pags)) > calcular_marcos_libres())//Lo que yo quiero pedir es mayor a lo libre
+        { 
+            return (-1);//OUT_OF_MEMORY
+        }
+        else
+        {
+            cambiar_tamanio_proceso(proceso,tamanio_nuevo);
+            asignar_marcos_memoria(proceso,tamanio_nuevo);
+            //prueba
+            printf("Array NUEVO: ");
+            for (int i = 0; i < proceso->long_tabla_pags; i++) {
+                printf("%d ", proceso->tabla_de_paginas[i]);
+            }
+            printf("\n");
+            //prueba
+        return 0;
+        }
     }
     else
     {
-        //liberar los marcos a partir del tamanio nuevo.
-        //recortar el array
-        //Se reducirá el mismo desde el final, liberando, en caso de ser necesario, las páginas que ya no sean utilizadas (desde la última hacia la primera).
-        
+        liberar_marcos_memoria(proceso,tamanio_nuevo);
         cambiar_tamanio_proceso(proceso,tamanio_nuevo);
+            //prueba
+            printf("Array NUEVO: ");
+            for (int i = 0; i < proceso->long_tabla_pags; i++) {
+                printf("%d ", proceso->tabla_de_paginas[i]);
+            }
+            printf("\n");
+            //prueba
+        return 0;
     }
+   
 }

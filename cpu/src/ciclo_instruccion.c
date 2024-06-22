@@ -97,8 +97,11 @@ void ciclo_instruccion(){
 		{
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			int tamanio = atoi(strtok_r(saveptr, " ", &saveptr));
+			log_info(cpu_logger, "atoi");
 			int nuevoTamanioDelProceso = pedir_ajustar_tamanio_del_proceso(pcb_global->pid, tamanio);
+			log_info(cpu_logger, "pedir_ajustar_tamanio_del_proceso");
 			bool outOfMemory = nuevoTamanioDelProceso == -1;
+			log_info(cpu_logger, "RESPUESTA DE REZISE: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, nuevoTamanioDelProceso);
 			if(outOfMemory){
 				log_info(cpu_logger, "Out of Memory: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, tamanio);
 				dejar_de_ejecutar = true;

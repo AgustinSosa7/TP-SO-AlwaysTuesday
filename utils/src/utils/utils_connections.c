@@ -359,9 +359,7 @@ char* recibir_mensaje_string(int socket_cliente)
 op_code recibir_operacion(int socket_cliente) 
 {
 	op_code cod_op;
-
 	int bytesRecibidos = recv(socket_cliente, &cod_op, sizeof(op_code), MSG_WAITALL);
-
 	if(bytesRecibidos > 0) {
 	    if(bytesRecibidos != sizeof(int)) {
 	        printf("Recibidos %d bytes, esperaba %zu bytes\n", bytesRecibidos, sizeof(int));
