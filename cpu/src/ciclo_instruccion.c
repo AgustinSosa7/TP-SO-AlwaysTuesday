@@ -150,6 +150,25 @@ void ciclo_instruccion(){
 			}
 			
 		}
+	else if (strcmp(nombre_instruccion, "IO_STDOUT_WRITE") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
+			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
+
+			int direccion_logica = leer_valor_de_registro(registro_direccion);
+			int direccion_fisica = mmu(direccion_logica);
+			int tamanio = leer_valor_de_registro(registro_tamanio);
+
+			if (direccion_fisica != -1) // Si la traduccion de la direccion logica arroja un Page Fault, se devuelve el contexto por page fault y no se ejecuta el resto!.
+			{
+				pcb_global->registros_cpu->PC++;
+				dejar_de_ejecutar = true;
+				devolver_contexto_por_stdout_write(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
+			}
+			
+		}
 	else if (strcmp(nombre_instruccion, "IO_FS_CREATE") == 0)
 		{
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
@@ -269,6 +288,18 @@ void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz
 }
 
 void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_int_a_paquete(paquete, direccion_fisica);
+	agregar_int_a_paquete(paquete, tamanio);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_stdout_write(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio)
 {
 	t_paquete* paquete = crear_paquete(PEDIDO_IO);
 	agregar_pcb_a_paquete(pcb_global, paquete);
