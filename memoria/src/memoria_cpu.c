@@ -105,6 +105,14 @@ void atender_cpu(){
                 //printf("PEDIDO DE RESIZE\n"); //BORRAR
                 recibir_modificacion_de_tamanio();  
             }
+            else if (code_op == SOLICITUD_LEER_VALOR_EN_MEMORIA)
+            {
+                printf("PEDIDO DE LECTURA\n"); //BORRAR 
+            }
+            else if (code_op == SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA)
+            {
+                printf("PEDIDO DE ESCRITURA\n"); //BORRAR
+            }
             else
             {
                 log_error(memoria_logger,"NO ENTIENDO QUE ME PIDE EL CPU"); //BORRAR
