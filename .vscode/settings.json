@@ -29,7 +29,10 @@
         "log.h": "c",
         "fetch.h": "c",
         "execute.h": "c",
-        "memoria_cpu.h": "c"
+        "memoria_cpu.h": "c",
+        "memoria_procesos.h": "c",
+        "memoria_kernel.h": "c",
+        "memoria_cpu_entrada_salida.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

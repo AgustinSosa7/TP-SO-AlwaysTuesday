@@ -5,8 +5,7 @@
 #include "inicializar_memoria.h"
 #include "memoria_procesos.h"
 #include "gestion_paginas.h"
-#include "memoria_entradasalida.h"
-#include "memoria_cpu.h"
+#include "memoria_cpu_entrada_salida.h"
 #include "memoria_kernel.h"
 
 

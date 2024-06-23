@@ -308,6 +308,15 @@ void agregar_string_a_paquete(t_paquete* paquete, char* string)
 	paquete->buffer->offset += sizeof(char) * tamanio_string; 
 }
 
+void agregar_void_a_paquete(t_paquete* paquete, void* bytes_agregar, int cant_bytes){
+
+	paquete->buffer->size += cant_bytes;
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size);
+	memcpy(paquete->buffer->stream + paquete->buffer->offset, bytes_agregar, cant_bytes);
+	paquete->buffer->offset += cant_bytes;
+	
+}
+
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_cpu){
 agregar_int_a_paquete(paquete,registros_cpu->PC);
 agregar_uint8_a_paquete(paquete,registros_cpu->AX);
@@ -433,6 +442,16 @@ char* leer_string_del_buffer(t_buffer* buffer)
 	buffer->offset += (strlen(string)+1);//tamanio_string;
 
 	return string;
+}
+
+void* leer_void_del_buffer(t_buffer* buffer,int tamanio) 
+{
+	void* bytes_leidos = malloc(tamanio);
+	
+	memcpy(bytes_leidos, buffer->stream + buffer->offset, tamanio); 
+	buffer->offset += (tamanio); //tamanio_void;
+
+	return bytes_leidos;
 }
 
 void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU){
