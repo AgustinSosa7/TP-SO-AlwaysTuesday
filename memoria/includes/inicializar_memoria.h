@@ -2,6 +2,8 @@
 #define INICIALIZAR_MEMORIA_H_
 
 #include "m_gestor.h"
+#include "gestion_paginas.h"
+
 
 void inicializar_memoria(char* path);
 void _iniciar_log();

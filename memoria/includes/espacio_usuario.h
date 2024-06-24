@@ -3,5 +3,7 @@
 
 #include "m_gestor.h"
 
+void* leer_espacio_usuario(int ,int );
+bool escribir_espacio_usuario(int ,int ,void* );
 
 #endif

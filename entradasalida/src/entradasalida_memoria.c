@@ -26,7 +26,7 @@ char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
     t_buffer* buffer = paquete_respuesta->buffer;
     
     //Recibir unstring del mismo tamanio quel que pedi. Pasarlo a string.
-    void* leido = leer_void_del_buffer(buffer,registroTamanio); 
+    char* leido = leer_void_del_buffer(buffer,registroTamanio); //es un void. evaluar de castear.
 
     return leido;
     }

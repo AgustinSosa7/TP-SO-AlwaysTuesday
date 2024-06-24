@@ -40,7 +40,7 @@ void recibir_pedido_marco_y_enviar(){
     t_buffer* buffer = paquete->buffer;
     int pid = leer_int_del_buffer(buffer);
     int numero_de_pagina = leer_int_del_buffer(buffer);
-    int marco_pedido = traer_numero_marco(buscar_proceso_en_memoria(pid)->pid,numero_de_pagina);
+    int marco_pedido = traer_numero_marco(buscar_proceso_en_memoria(pid),numero_de_pagina);
     free(buffer);
     free(paquete);
 
@@ -56,7 +56,7 @@ void recibir_modificacion_de_tamanio(){
     t_buffer* buffer = paquete->buffer;
     int pid = leer_int_del_buffer(buffer);
     int tamanio_nuevo = calcular_paginas_necesarias(leer_int_del_buffer(buffer));
-    int paginas_necesarias = calcular_paginas_necesarias(tamanio_nuevo);
+    //int paginas_necesarias = calcular_paginas_necesarias(tamanio_nuevo);
     t_proceso* proceso = buscar_proceso_en_memoria(pid);
 
     printf("Encontre el proceso %d\n",proceso->pid);
@@ -120,28 +120,23 @@ void atender_cpu(){
     enviar_info_inicial();
     while(control_key){
         sleep(10);
-        op_code code_op = recibir_operacion(fd_cpu);
+        int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
         log_info(memoria_logger, "Se recibio algo de CPU: %d", code_op);
         switch (code_op)
         {
         case PEDIDO_PSEUDOCODIGO:
-            //printf("PEDIDO DE INSTRUCCION\n"); //BORRAR
            recibir_pedido_instruccion_y_enviar();
             break;
         case SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA:
-            //printf("PEDIDO DE MARCO\n"); //BORRAR
             recibir_pedido_marco_y_enviar();
             break;
         case SOLICITUD_MODIFICAR_TAMANIO:
-            //printf("PEDIDO DE RESIZE\n"); //BORRAR
             recibir_modificacion_de_tamanio();  
             break;
         case SOLICITUD_LEER_VALOR_EN_MEMORIA:
-            //printf("PEDIDO DE LECTURA\n"); //BORRAR 
             recibir_solicitud_de_lectura(fd_cpu);
             break;
         case SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA:
-            //printf("PEDIDO DE ESCRITURA\n"); //BORRAR
             recibir_solicitud_de_escritura(fd_cpu);
             break;
         case -1:
@@ -161,7 +156,7 @@ void atender_entradasalida()
 {     int control_key = 1;
       log_info(memoria_logger, "Atendiendo Entradasalida...");
       while (control_key){
-      op_code code_op = recibir_operacion(fd_entradasalida);
+      int16_t code_op = recibir_operacion(fd_entradasalida);
       log_info(memoria_logger, "Se recibio algo de EntradaSalida: %d", code_op);
       switch (code_op)
       {
@@ -169,12 +164,10 @@ void atender_entradasalida()
             //printf("PEDIDO DE LECTURA\n"); //BORRAR 
             recibir_solicitud_de_lectura(fd_entradasalida);
             break;
-      case GUARDAR_REGISTRO:
+      case  GUARDAR_REGISTRO:
             recibir_solicitud_de_escritura(fd_entradasalida);
             break;
-    //  case :          
-    //    
-    //        break;
+
       case -1:
             log_error(memoria_logger, "Desconexion de ENTRADASALIDA");      
             control_key = 0;
@@ -185,12 +178,3 @@ void atender_entradasalida()
         }   
       }
 }
-
-/*
-bool guardar_leido_en_registro(char* leido, int registroDireccion){ 
-      return NULL;
-}
-
-char* devolver_registro(char* registro_Direccion, int registroTamanio){
-    return NULL;
-}*/
