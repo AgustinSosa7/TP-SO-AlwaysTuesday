@@ -19,7 +19,7 @@ typedef struct{
     char* archivo;
     int registroDireccion;
     int registroTamanio;
-    char* registroPunteroArchivo; 
+    char* registroPunteroArchivo;
 } t_peticion_param;
 
 typedef struct{
@@ -27,13 +27,6 @@ typedef struct{
     t_peticion_param* parametros;
 } t_peticion;
 
-
-typedef struct{
-    char* nombre;
-	int tamanio;
-	int bloque_inicial;
-    t_config* archivo_fcb;
-}t_fcb;
 
 //Variables GLOBALES 
 extern t_log* entradasalida_logger;
@@ -45,11 +38,10 @@ extern int fd_archivoBloques;
 extern int fd_archivoBitmap;
 extern int fd_memoria;
 extern int fd_kernel;
-extern t_list * lista_struct_fcbs;
 
-extern char* bitmap_swap;
-extern t_bitarray* bitmapSWAP; 
-extern void* bloquesEnMemoria;   
+extern char* pre_bitmap;
+extern t_bitarray* bitmap; 
+extern char* bloquesEnMemoria;   
       
 
 extern char* NOMBRE_INTERFAZ;
