@@ -71,7 +71,7 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     //Ver Orden de esto :D 
             peticion->parametros->archivo = leer_string_del_buffer(buffer); 
-            peticion->parametros->registroDireccion = leer_string_del_buffer(buffer);
+            peticion->parametros->registroDireccion = leer_int_del_buffer(buffer);
             peticion->parametros->registroTamanio = leer_int_del_buffer(buffer);
       }else //DEFALUT IO_FS_READ
       {
@@ -93,13 +93,15 @@ void procesar_peticion(t_peticion* peticion) {
       {
             char* leido = iniciar_la_consola(peticion->parametros->registroTamanio);
             guardar_en_memoria(leido, peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
+            log_info(entradasalida_logger,"registroDireccion:%d. \n", peticion->parametros->registroDireccion);
+            log_info(entradasalida_logger,"registroTamanio:%d. \n", peticion->parametros->registroTamanio);
             log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente.\n", leido);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
             log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
             char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
-            log_info(entradasalida_logger,"%s", escrito);
+            log_info(entradasalida_logger,"¨%s¨", escrito);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
@@ -154,7 +156,7 @@ char* iniciar_la_consola(int registroTamanio){
 }
 
 bool validar_tamanio_leido(char* leido, int registroTamanio){
-      return (registroTamanio = strlen(leido));
+      return (registroTamanio == strlen(leido));
 }
 
 void finalizar_peticion(t_peticion* peticion){
@@ -187,7 +189,7 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {     free(parametros->archivo);
-            free(&(parametros->registroTamanio));
+            //free(&(parametros->registroTamanio)); //Ojo ruka que es un int, no hace falta el free
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     free(parametros->archivo);

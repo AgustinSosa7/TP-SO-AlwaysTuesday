@@ -31,8 +31,8 @@ char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
     //Recibir unstring del mismo tamanio quel que pedi. Pasarlo a string.
     log_info(entradasalida_logger, "Recibi de memoria lo que le pedi..");
     char* leido = (char*) leer_void_del_buffer(buffer,registroTamanio); //es un void. evaluar de castear.
-
-
+    leido[registroTamanio] = '\0'; // Asegurar la terminación nula
+ 
     return leido;
     }
     else

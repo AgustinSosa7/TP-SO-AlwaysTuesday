@@ -95,10 +95,6 @@ void recibir_solicitud_de_lectura(int socket){
 
     void* leido = leer_espacio_usuario(direccion_fisica,tamanio);
 
-    char* leido2 = (char*) leido;
-
-    log_info(memoria_logger, "Encontre lo que me pidIO IO: %s", leido2);
-
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_LEER_VALOR_EN_MEMORIA);
     agregar_void_a_paquete(paquete_a_enviar,leido,tamanio);
     enviar_paquete(paquete_a_enviar, socket);
@@ -118,8 +114,6 @@ void recibir_solicitud_de_escritura(int socket){
     void* a_escribir = leer_void_del_buffer(buffer,tamanio);
 
     char* leido2 = (char*) a_escribir;
-
-    log_info(memoria_logger, "IO me envIO: %s", leido2);
 
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 
