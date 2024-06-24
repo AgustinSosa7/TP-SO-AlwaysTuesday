@@ -8,13 +8,12 @@ t_config* entradasalida_config;
 
 int fd_entradasalida;  
 int fd_archivoBloques;
-int fd_archivoBitmap; // debería ser INT?
+int fd_archivoBitmap; 
 int fd_memoria;
 int fd_kernel;
-t_list* lista_struct_fcbs;
-char* bitmap_swap;
-t_bitarray* bitmapSWAP; 
-void* bloquesEnMemoria;
+char* pre_bitmap;
+t_bitarray* bitmap; 
+char* bloquesEnMemoria;
 
 char* NOMBRE_INTERFAZ;
 char* PUERTO_ESCUCHA;    

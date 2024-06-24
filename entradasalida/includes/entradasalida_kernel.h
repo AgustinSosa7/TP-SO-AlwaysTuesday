@@ -21,6 +21,12 @@ void eliminar_peticion(t_peticion* peticion);
 void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros);
 
 //FS
-void crear_fcb();
+void crear_config(char* nombre_archivo);
+void delete_archivo(char* nombre_archivo);
+bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo);
+void escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito);
+int obtener_bloques_libres(int tamanio);
+bool puede_crecer(int bloque_inicial, int tamanio_viejo,int tamanio_nuevo);
+void setear_bitmap(int comienzo, int final);
 
 #endif 

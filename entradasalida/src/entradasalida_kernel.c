@@ -58,17 +58,21 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
            peticion->parametros->registroDireccion= leer_int_del_buffer(buffer);
            peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
-      {
-            /* code */
+      {     
+            peticion->parametros->archivo = leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
-            /* code */
+            peticion->parametros->archivo = leer_string_del_buffer(buffer);
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
-      {
-            /* code */
+      {     
+            peticion->parametros->archivo = leer_string_del_buffer(buffer);
+            peticion->parametros->registroTamanio = leer_int_del_buffer(buffer); // No es el tamanio del registro, si no del archivo.
+
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
-      {
-            /* code */
+      {     //Ver Orden de esto :D 
+            peticion->parametros->archivo = leer_string_del_buffer(buffer); 
+            peticion->parametros->registroDireccion = leer_string_del_buffer(buffer);
+            peticion->parametros->registroTamanio = leer_int_del_buffer(buffer);
       }else //DEFALUT IO_FS_READ
       {
             /* code */
@@ -100,17 +104,35 @@ void procesar_peticion(t_peticion* peticion) {
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             char* nombre_archivo = peticion->parametros->archivo;
-            crear_fcb(nombre_archivo); // archivo viene ewewe.txt???
+            crear_config(nombre_archivo); // archivo viene ewewe.txt
+  		log_info(entradasalida_logger, "Crear Archivo: %s", nombre_archivo);
             
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
-            /* code */
+            char* nombre_archivo = peticion->parametros->archivo;
+            delete_archivo(nombre_archivo);
+            log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
+
+
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      {     
+            //CONSIGO DATOS DEL CONFIG CON EL NOMBRE 
+            char* nombre_archivo = peticion->parametros->archivo;
+            int tamanio_nuevo = peticion->parametros->registroTamanio;
+      
+            if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  // Falta la parte de Compactación
+                  log_info(entradasalida_logger, "Se pudo truncar el archivo: %s", nombre_archivo);
+            }else{ log_info(entradasalida_logger, "No se pudo truncar el archivo: %s", nombre_archivo);}
+            
+
+      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0) // Recibo tamanio del mensaje, el mensaje, archivo.
       {
-            /* code */
-      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
-      {
-            /* code */
+            /*  Ver que hace Pipe XD
+       char* nombre_archivo = peticion->parametros->archivo;
+       int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo); // Ver como va a llegar :D.
+       char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
+       escribir_archivo(nombre_archivo,registro_archivo,escrito);
+       */
       }else //DEFALUT IO_FS_READ
       {
             /* code */
@@ -157,6 +179,7 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       {     
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+
       {     free(parametros->archivo);
 
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
@@ -164,6 +187,7 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {     free(parametros->archivo);
+            free(&(parametros->registroTamanio));
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     free(parametros->archivo);
@@ -176,3 +200,4 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       
       free(parametros);
 }
+
