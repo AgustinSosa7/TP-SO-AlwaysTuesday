@@ -80,8 +80,9 @@ u_int32_t leer_valor_de_memoria(int pid, int direccion_fisica)
 {
 	// Enviar
 	t_paquete* paquete = crear_paquete(SOLICITUD_LEER_VALOR_EN_MEMORIA);
-    agregar_int_a_paquete(paquete, pid);
+    //agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, sizeof(uint32_t));//tamanio de lo que quiero leer.
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
     
@@ -98,34 +99,33 @@ u_int32_t leer_valor_de_memoria(int pid, int direccion_fisica)
     else
     {   
         log_error(cpu_log_debug, "No se recibio una lectura de valor de memoria.");
-        free(paquete);
         exit(EXIT_FAILURE);
     }
+    
 }
 
 void escribir_valor_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_escribir){
     // Enviar
     t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
-    agregar_int_a_paquete(paquete, pid);
+    //agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, sizeof(uint32_t)); //tamanio de lo que quiero leer.
     agregar_uint32_a_paquete(paquete, valor_a_escribir);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
     
     // Recibir
-    op_code code_op = recibir_operacion(fd_memoria);
-    t_paquete* paquete2 = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete->buffer;
-    if(code_op == RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA)
+    bool respuesta = recibir_bool_mensaje(fd_memoria);
+    if(respuesta)
     {
         log_info(cpu_log_debug, "Se escribio el valor en memoria correctamente!");
     }
     else
     {   
         log_error(cpu_log_debug, "No se recibio una respuesta sobre la solicitud de escribir un valor en memoria.");
-        free(paquete);
         exit(EXIT_FAILURE);
     }
+    
 }
 
 int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
@@ -147,8 +147,6 @@ int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
     }
     else
     {   
-        printf("NO RESPUESTA_MODIFICAR_TAMANIO\n");
-
         log_error(cpu_log_debug, "No se recibio una respuesta sobre la modificacion del tamanio del proceso en memoria.");
         free(paquete2);
         exit(EXIT_FAILURE);

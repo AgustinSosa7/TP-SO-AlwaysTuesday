@@ -105,7 +105,6 @@ void recibir_solicitud_de_escritura(int socket){
 
     int direccion_fisica = leer_int_del_buffer(buffer);
     int tamanio = leer_int_del_buffer(buffer);
-
     void* a_escribir = leer_void_del_buffer(buffer,tamanio);
 
     enviar_bool_mensaje(escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir), socket); 
@@ -166,11 +165,11 @@ void atender_entradasalida()
       log_info(memoria_logger, "Se recibio algo de EntradaSalida: %d", code_op);
       switch (code_op)
       {
-      case GUARDAR_REGISTRO:
+      case PEDIR_REGISTRO:
             //printf("PEDIDO DE LECTURA\n"); //BORRAR 
             recibir_solicitud_de_lectura(fd_entradasalida);
             break;
-      case PEDIR_REGISTRO:
+      case GUARDAR_REGISTRO:
             recibir_solicitud_de_escritura(fd_entradasalida);
             break;
     //  case :          

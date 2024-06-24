@@ -87,7 +87,6 @@ int calcular_paginas_necesarias(int tamanio_nuevo){
 }
 
 int calcular_marcos_libres(){
-    int i = 0;
     int marcos_libres = 0;
     for(int i = 0;i<size_de_tabla_marcos;i++){
         if(!bitarray_test_bit(tabla_de_marcos, i)){
