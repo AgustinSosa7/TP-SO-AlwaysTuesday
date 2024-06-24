@@ -88,16 +88,15 @@ void procesar_peticion(t_peticion* peticion) {
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
             char* leido = iniciar_la_consola(peticion->parametros->registroTamanio);
-            if(guardar_en_memoria(leido, peticion->parametros->registroDireccion)){
-                  log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente en %d.", leido, peticion->parametros->registroDireccion);
-            } else{
-                  log_info(entradasalida_logger,"¨%s¨ no se gurardo correctamente en el registro direccion: %d. (debido a problemas de memoria)", leido, peticion->parametros->registroDireccion);
-            }
+            guardar_en_memoria(leido, peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
+            log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente.\n", leido);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
+            log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
             char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
-            log_info(entradasalida_logger,"En la posicion de memoria %d con tamanio %d se encuentra: %s", peticion->parametros->registroDireccion, peticion->parametros->registroTamanio, escrito);
+            log_info(entradasalida_logger,"%s", escrito);
+
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
             char* nombre_archivo = peticion->parametros->archivo;
@@ -123,18 +122,17 @@ char* iniciar_la_consola(int registroTamanio){
 	leido = readline("> ");
 	while(strcmp(leido,"\0") != 0){
 		if(validar_tamanio_leido(leido, registroTamanio)){
-			log_info(entradasalida_logger, "Valor ingresado correctamente.\n");
                   break;
 		}
 		free(leido);
-		log_info(entradasalida_logger, "El valor ingresado no debe superar el tamanio del registro: %d. Por favor reingrese un nuevo valor...\n", registroTamanio);
+		log_info(entradasalida_logger, "El valor ingresado debe tener %d caracteres. Por favor reingrese un nuevo valor...\n", registroTamanio);
 		leido = readline("> ");
 	}
       return leido;
 }
 
 bool validar_tamanio_leido(char* leido, int registroTamanio){
-      return ( registroTamanio > strlen(leido));
+      return (registroTamanio = strlen(leido));
 }
 
 void finalizar_peticion(t_peticion* peticion){

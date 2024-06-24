@@ -46,26 +46,6 @@ pthread_t hilo_generador_de_io;
 pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
 pthread_join(hilo_generador_de_io, NULL);
 
-/////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
-/*sleep(40);
-t_proceso* proceso1 = buscar_proceso_en_memoria(1);
-printf("longitud: %d\n",(proceso1->long_tabla_pags));
-
-int numero_marco = traer_numero_marco(proceso1,1);
-printf("numero_marco: %d\n",numero_marco);
-
-printf("marco libre encontrado: %d\n",buscar_marco_libre());*/
-
-/*
-t_proceso* proceso1 = buscar_proceso_en_memoria(3);
-
-longitud_tabla_paginas()
-*/
-
-
-
-
-// Finalizar MEMORIA
 
 return EXIT_SUCCESS;
 }
@@ -75,10 +55,18 @@ return EXIT_SUCCESS;
 void gestionar_entrada_salida(){
   while(1){
     log_info(memoria_logger, "Esperando a EntradaSalida...");
-    fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
+    int fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
     gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");
     pthread_t hilo_atender_io;
-    pthread_create(&hilo_atender_io, NULL, (void*)atender_entradasalida, NULL);
+    pthread_create(&hilo_atender_io, NULL, (void*)atender_entradasalida, fd_entradasalida);
     pthread_detach(hilo_atender_io);
   }
 }
+
+// Memoria no administra bien a las IO y no puede distinguir que IO le envía cada cosa.
+// Posible solucion:  
+// pthread_create(&hilo_atender_io, NULL, (void*)atender_entradasalida, fd_entradasalida);
+
+// MALO: fd_entradasalida deja de ser global
+
+

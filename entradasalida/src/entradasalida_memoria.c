@@ -1,14 +1,14 @@
 #include "../includes/entradasalida_memoria.h"
 
-bool guardar_en_memoria(char* leido, int registroDireccion){ //escribir
-    //Enviar al MEMORIA: [GUARDAR_REGISTRO][Leido][RegistroDireccion]
+void guardar_en_memoria(char* leido, int registroDireccion, int registroTamanio){ //escribir
+    //Enviar al MEMORIA: [GUARDAR_REGISTRO][Leido][RegistroDireccion][RegistroTamanio]
     t_paquete* paquete = crear_paquete(GUARDAR_REGISTRO);
-    agregar_string_a_paquete(paquete, leido);
     agregar_int_a_paquete(paquete, registroDireccion);
+    agregar_int_a_paquete(paquete, registroTamanio);
+    agregar_void_a_paquete(paquete, leido, registroTamanio);  
+
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
-    bool fin_guardado = recibir_bool_mensaje(fd_memoria);
-    return fin_guardado;
 }
 
 char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
@@ -18,6 +18,9 @@ char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
     agregar_int_a_paquete(paquete, registroTamanio);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
+
+    log_info(entradasalida_logger, "Envie a pedir algo a memoria..");
+
     //Respuesta:
     op_code code_op = recibir_operacion(fd_memoria);
     
@@ -26,7 +29,9 @@ char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
     t_buffer* buffer = paquete_respuesta->buffer;
     
     //Recibir unstring del mismo tamanio quel que pedi. Pasarlo a string.
-    char* leido = leer_void_del_buffer(buffer,registroTamanio); //es un void. evaluar de castear.
+    log_info(entradasalida_logger, "Recibi de memoria lo que le pedi..");
+    char* leido = (char*) leer_void_del_buffer(buffer,registroTamanio); //es un void. evaluar de castear.
+
 
     return leido;
     }

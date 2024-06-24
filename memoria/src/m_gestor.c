@@ -9,7 +9,7 @@ t_config* memoria_config;
 t_list* procesos_memoria;
 
 int fd_memoria;
-int fd_entradasalida;  // Estos cuatro falta pasarlos tambien al m_gestor.h poniendoles el extern al prinicipio.
+//int fd_entradasalida;  // Estos cuatro falta pasarlos tambien al m_gestor.h poniendoles el extern al prinicipio.
 int fd_cpu;            // Soy Ruka, uds dejaron esto acá? Estoy modularizando la Mem. PD: lo agregué
 int fd_kernel;
 
