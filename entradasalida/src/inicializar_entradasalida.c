@@ -116,7 +116,6 @@ void crear_paths(){
 	log_info(entradasalida_logger, "Creando paths");
 	crear_path(PATH_BLOQUES,"/Bloques.dat");
 	crear_path(PATH_BITMAP,"/Bitmap.dat");
-	//Metadata se abre/crea cada vez que lo habro
 	log_info(entradasalida_logger, "Paths creados correctamente");
 }
 
@@ -126,8 +125,7 @@ void crear_path(char* path, char* nombre_archivo){ 	// Nombra el directorio y lo
 	string_append(&path,nombre_archivo); 
 }
 
-void inicializar_archivos(){  //Cambiar nombre
-	// fd archivoBloques es bloques.dat imagino
+void inicializar_archivos(){ 
 
 	fd_archivoBloques = open(PATH_BLOQUES, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);  // ???
 
@@ -150,9 +148,7 @@ void inicializar_archivos(){  //Cambiar nombre
 		log_error(entradasalida_logger, "Error al mapear los bitmap SWAP");
 		exit(1);
 	}
-	//bitmap_swap = calloc(BLOCK_COUNT, sizeof(char)); // Ver bien el size of 
-	//bitmap_swap = (char*)fd_archivoBitmap;
-	//fd_archivoBitmap = malloc(tamanio_bitmap);
+
 	pre_bitmap = malloc(tamanio_bitmap);
 
 	// USO bitmapSWAP para el tema del bitmap
