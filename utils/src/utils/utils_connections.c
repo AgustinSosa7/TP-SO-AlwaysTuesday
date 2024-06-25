@@ -385,25 +385,53 @@ op_code recibir_operacion(int socket_cliente)
 	}
 }
 
-t_buffer* recibir_buffer(int unSocket)
-{ 
-	t_buffer* buffer = malloc(sizeof(t_buffer));
-	recv(unSocket, &(buffer->size), sizeof(int), MSG_WAITALL);
-	buffer->stream = malloc(buffer->size);
-	recv(unSocket, buffer->stream, buffer->size, MSG_WAITALL);
-	
-	return buffer;	
+t_buffer* recibir_buffer(int unSocket) {
+    t_buffer* buffer = malloc(sizeof(t_buffer));
+    if (buffer == NULL) {
+        perror("Error al asignar memoria para t_buffer");
+        return NULL;
+    }
+
+    if (recv(unSocket, &(buffer->size), sizeof(int), MSG_WAITALL) <= 0) {
+        perror("Error al recibir el tamaño del buffer");
+        free(buffer);
+        return NULL;
+    }
+
+    buffer->stream = malloc(buffer->size);
+    if (buffer->stream == NULL) {
+        perror("Error al asignar memoria para el stream del buffer");
+        free(buffer);
+        return NULL;
+    }
+
+    if (recv(unSocket, buffer->stream, buffer->size, MSG_WAITALL) <= 0) {
+        perror("Error al recibir el stream del buffer");
+        free(buffer->stream);
+        free(buffer);
+        return NULL;
+    }
+
+    return buffer;
 }
 
+t_paquete* recibir_paquete(int unSocket) {
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    if (paquete == NULL) {
+        perror("Error al asignar memoria para t_paquete");
+        return NULL;
+    }
 
-t_paquete* recibir_paquete(int unSocket)
-{ 
-	t_paquete* paquete = malloc(sizeof(t_paquete));
-	paquete->buffer = malloc(sizeof(t_buffer));
-	paquete->buffer = recibir_buffer(unSocket);
-	paquete->buffer->offset = 0;
-	return paquete;
+    paquete->buffer = recibir_buffer(unSocket);
+    if (paquete->buffer == NULL) {
+        free(paquete);
+        return NULL;
+    }
+
+    paquete->buffer->offset = 0;
+    return paquete;
 }
+
 
 
 int leer_int_del_buffer(t_buffer* buffer) 
@@ -553,11 +581,9 @@ char* enum_a_string_fin_de_proceso(motivo_fin_de_proceso motivo){
       case OUT_OF_MEMORY:
         return "OUT_OF_MEMORY";
         break;
-      case INTERRUPTED_BY_USER:
+      default: //INTERRUPTED_BY_USER:
         return "INTERRUPTED_BY_USER";
         break;
-	  default:
-		break;
 	}
 }
     
