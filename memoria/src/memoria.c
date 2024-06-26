@@ -44,7 +44,12 @@ gestionar_handshake_como_server(fd_kernel, memoria_logger, "KERNEL");
    
 pthread_t hilo_generador_de_io;
 pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
-pthread_join(hilo_generador_de_io, NULL);
+pthread_detach(hilo_generador_de_io, NULL);
+
+
+pthread_t hilo_tiempo_retardo;
+pthread_create(&hilo_tiempo_retardo, NULL, (void*)hilo_retardo(), NULL);
+pthread_join(hilo_tiempo_retardo, NULL);
 
 /////////////////////// Lectura del Pseudocodigo/////////////////////////////////////
 /*sleep(40);

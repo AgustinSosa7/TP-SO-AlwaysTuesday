@@ -5,6 +5,7 @@
 #include "memoria_procesos.h"
 #include "gestion_paginas.h"
 #include "espacio_usuario.h"
+#include "inicializar_memoria.h"
 
 
 void enviar_info_inicial();
