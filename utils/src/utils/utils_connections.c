@@ -119,9 +119,14 @@ int iniciar_servidor(char* puerto, t_log* logger, char* ip)
 		int activado = 1;
 		setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &activado, sizeof(activado));
 
-		if(server_socket == -1 || bind(server_socket, server_info->ai_addr, server_info->ai_addrlen) == -1){
+		if(server_socket == -1){
 			freeaddrinfo(server_info);
-			log_error(logger,"fallo el bindeo");
+			log_error(logger,"el socket fue -1\n");
+			return -1;
+		}
+		if(bind(server_socket, server_info->ai_addr, server_info->ai_addrlen) == -1){
+			freeaddrinfo(server_info);
+			log_error(logger,"fallo el bindeo \n");
 			return -1;
 		}
 		freeaddrinfo(server_info);
