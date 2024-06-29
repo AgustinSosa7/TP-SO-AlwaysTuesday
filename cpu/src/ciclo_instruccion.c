@@ -18,7 +18,7 @@ void ciclo_instruccion(){
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
 	char *instruccion_con_parametros = recibir_instruccion_pseudocodigo();
-
+	
 	//DECODE & EXECUTE
 	char *saveptr = instruccion_con_parametros;
 	char *nombre_instruccion = strtok_r(saveptr, " ", &saveptr);
