@@ -11,7 +11,7 @@ void planif_largo_plazo(){
       sem_wait(&sem_new_a_ready);
  	   sem_wait(&sem_grado_multiprogram);
       printf("Pase los semaforos del plani LARGO plazo.\n");
-      if(!list_is_empty(lista_new)){
+      if(!list_is_empty(struct_new->lista)){
       cambiar_de_estado_y_de_lista(NEW, READY);
       printf("Cambio de lista.\n");
       printf("SIGNAL del plani CORTO plazo.\n");

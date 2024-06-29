@@ -59,13 +59,18 @@ extern t_list* INSTRUCCIONES_STDIN;
 extern t_list* INSTRUCCIONES_STDOUT;
 extern t_list* INSTRUCCIONES_FS;
 extern t_list* IOS_CONECTADOS;
+///////////////////// LISTAS /////////////
+typedef struct {
+    estado_pcb estado;
+    t_list* lista;
+    pthread_mutex_t mutex;
+} t_listas_estados;
 
-
-extern t_list* lista_new;
-extern t_list* lista_ready;
-extern t_list* lista_ready_plus;
-extern t_list* lista_exec;
-extern t_list* lista_exit;
+extern t_listas_estados* struct_exec;
+extern t_listas_estados* struct_new;
+extern t_listas_estados* struct_ready;
+extern t_listas_estados* struct_ready_plus;
+extern t_listas_estados* struct_exit;
 
 extern t_list* lista_recursos;
 //////////////////////SEMAFOROS/////////////////////////////////////////
@@ -89,7 +94,7 @@ typedef struct{
     int instancias;
     t_list* lista_procesos_bloqueados;
     t_list* lista_procesos_asignados;
-    //sem_t* sem_tipo_recurso; ver después
+    pthread_mutex_t mutex_recurso;
 } t_recursos;
 ///////////////////////////////////////////////////////////////
 extern t_log* kernel_logger;
