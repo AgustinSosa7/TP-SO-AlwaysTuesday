@@ -99,6 +99,7 @@ void atender_instruccion_validada(char* leido){
 		t_pcb* nuevo_pcb = crearPcb();
 		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
 		//verificar si memoria creo el proceso recibir_bool_mensaje
+		sleep(2);
 		pthread_mutex_lock(&(struct_new->mutex));
 		list_add(struct_new->lista, nuevo_pcb);
 		pthread_mutex_unlock(&(struct_new->mutex));	
