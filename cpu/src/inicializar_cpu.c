@@ -79,8 +79,15 @@ void inicializar_estructuras(){
     string_array_push(&opcode_cpu, "IO_FS_READ");
 	string_array_push(&opcode_cpu, "EXIT");
 
+<<<<<<< HEAD
     //tamanio_pagina = -1;
     //tamanio_memoria = -1;
+=======
+
+    //tamanio_pagina = -1;
+    //tamanio_memoria = -1;
+
+>>>>>>> 316f053db4225f3f079719195f62e5ba67fc9eb8
 
     dejar_de_ejecutar = false;
     ocurrio_interrupcion = false;
