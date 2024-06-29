@@ -24,6 +24,7 @@ void recibir_pcb_con_motivo()
       case DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION:
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
+            
             break;
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  
