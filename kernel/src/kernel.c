@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     
     conexion_kernel_cpu_interrupt();
     
-    conexion_kernel_entradaSalida();
+   // conexion_kernel_entradaSalida();
 
     // PRUEBA
     
