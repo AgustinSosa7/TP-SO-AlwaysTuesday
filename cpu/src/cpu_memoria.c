@@ -10,8 +10,8 @@ void pedir_info_inicial_a_memoria(){
     t_buffer* buffer = paquete2->buffer;
     if(code_op == RESPUESTA_INFO_INICIAL_A_CPU)
     {
-        int tamanio_pagina = leer_int_del_buffer(buffer);
-        int tamanio_memoria = leer_int_del_buffer(buffer);
+        tamanio_pagina = leer_int_del_buffer(buffer);
+        tamanio_memoria = leer_int_del_buffer(buffer);
         log_info(cpu_log_debug, "Tamanio de las Paginas de memoria = %d", tamanio_pagina);
         log_info(cpu_log_debug, "Tamanio de la Memoria = %d", tamanio_memoria);
     }
