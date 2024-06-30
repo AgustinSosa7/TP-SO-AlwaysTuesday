@@ -80,11 +80,12 @@ void inicializar_estructuras(){
 	string_array_push(&opcode_cpu, "EXIT");
 
 
-    //tamanio_pagina = -1;
-    //tamanio_memoria = -1;
+    tamanio_pagina = -1;
+    tamanio_memoria = -1
 
     dejar_de_ejecutar = false;
     ocurrio_interrupcion = false;
+    
     motivo_interrupcion = -1;
 }
 
