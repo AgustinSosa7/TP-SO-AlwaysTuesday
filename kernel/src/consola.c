@@ -187,15 +187,20 @@ void atender_instruccion_validada(char* leido){
 		pthread_mutex_lock(&(struct_ready_plus->mutex));
 		imprimir_lista(struct_ready_plus);
 		pthread_mutex_unlock(&(struct_ready_plus->mutex));
-		//imprimir_lista(lista_, BLOCKED); ver blocked 
+
 		pthread_mutex_lock(&(struct_exec->mutex));
 		imprimir_lista(struct_exec);
 		pthread_mutex_unlock(&(struct_exec->mutex));
 
+		imprimir_lista_blocked_recursos();
+
+		imprimir_lista_blocked_interfaz();
+
 		pthread_mutex_lock(&(struct_exit->mutex));
 		imprimir_lista(struct_exit);
 		pthread_mutex_unlock(&(struct_exit->mutex));
-		imprimir_lista_blocked_recursos();
+
+
 
 		break;
 	default:
@@ -211,7 +216,7 @@ bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
 // /// EJECUTAR_SCRIPT [path]
 t_list* leer_archivo(char* archivo){
 	char* PATH = string_new();
-	string_append(&PATH,"/home/utnso/script-consola/");
+	string_append(&PATH,"/home/utnso/scripts-kernel/");
 	string_append(&PATH, archivo);
     FILE * archivo_comandos = fopen(PATH, "r");
 	if (archivo_comandos == NULL){
@@ -262,12 +267,12 @@ void imprimir_lista(t_listas_estados* lista_a_mostrar){
 	t_pcb* un_pcb;
 	while(list_iterator_has_next(lista)){
 		un_pcb = list_iterator_next(lista);
-		printf("PID: %d \n", un_pcb->pid);
+		printf("%18s PID: %d \n"," ", un_pcb->pid);
 	}
 }
 
 void imprimir_lista_blocked_recursos(){
-	printf("************LISTA <BLOCKED>************\n");
+	printf("************LISTA <BLOCKED> RECURSOS************\n");
 	t_list_iterator* lista_general = list_iterator_create(lista_recursos);
 	t_recursos* recurso;
 	t_pcb* un_pcb;
@@ -276,25 +281,32 @@ void imprimir_lista_blocked_recursos(){
 		t_list_iterator* lista_blocked_recurso = list_iterator_create(recurso->lista_procesos_bloqueados);
 		while(list_iterator_has_next(lista_blocked_recurso)){
 			un_pcb = list_iterator_next(lista_blocked_recurso);
-			printf("PID: %d \n", un_pcb->pid);
+			printf("%18s PID: %d \n"," ", un_pcb->pid);
 		}			
 	}
 }
-// void imprimir_lista_blocked_interfaz(){
-// 	printf("************LISTA <BLOCKED>************\n");
-// 	t_list_iterator* lista_general = list_iterator_create(IOS_CONECTADOS);
-// 	t_interfaz* interfaz;
-// 	while(list_iterator_has_next(lista_general)){
-// 		interfaz = list_iterator_next(lista_general);
-// 		t_list* blocked = list_create();
-// 		while(!queue_is_empty(interfaz->cola_procesos_blocked)){
-// 			t_pcb* un_pcb = queue_pop(interfaz->cola_procesos_blocked);
+void imprimir_lista_blocked_interfaz(){
+	printf("************LISTA <BLOCKED> IO************\n");
+	pthread_mutex_lock(&mutex_io);
+	t_list_iterator* lista_general = list_iterator_create(IOS_CONECTADOS);
+	t_interfaz* interfaz;
+	t_proceso_blocked* proceso_blocked;
+	t_queue* auxiliar = queue_create();
+	while(list_iterator_has_next(lista_general)){
+		interfaz = list_iterator_next(lista_general);
+		pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
+		while(!queue_is_empty(interfaz->cola_procesos_blocked)){
+			proceso_blocked = queue_pop(interfaz->cola_procesos_blocked);
+			printf("%18s PID: %d \n"," ", proceso_blocked->un_pcb->pid);
+			queue_push(auxiliar,proceso_blocked);
+		}
+		int size = queue_size(auxiliar);
+		for (int i = 0; i < size; i++){
+			proceso_blocked = queue_pop(auxiliar);
+			queue_push(interfaz->cola_procesos_blocked,proceso_blocked);
+		}
+		pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
+	}
+	pthread_mutex_unlock(&mutex_io);
+}		
 
-// 		}
-// 		t_list_iterator* lista_blocked_interfaz = list_iterator_create(recurso->lista_procesos_bloqueados);
-// 		while(list_iterator_has_next(lista_blocked_interfaz)){
-// 			un_pcb = list_iterator_next(lista_del_recurso);
-// 			printf("PID: %d \n", un_pcb->pid);
-// 		}			
-// 	}
-// }

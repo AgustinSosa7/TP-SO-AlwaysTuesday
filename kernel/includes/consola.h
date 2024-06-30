@@ -37,4 +37,6 @@ t_list* leer_archivo(char* path);
 void enviar_path_a_memoria(char* path,int pid,int socket);
 void imprimir_lista(t_listas_estados* lista_a_mostrar);
 void imprimir_lista_blocked_recursos();
+void imprimir_lista_blocked_interfaz();
+
 #endif
