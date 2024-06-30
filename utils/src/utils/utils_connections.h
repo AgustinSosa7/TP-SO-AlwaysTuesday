@@ -114,6 +114,7 @@ typedef struct{
     int quantum;
     t_registros_cpu* registros_cpu;
     estado_pcb estado_pcb;
+    int contador;
 } t_pcb;
 
 typedef enum{

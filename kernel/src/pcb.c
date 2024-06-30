@@ -8,6 +8,7 @@ t_pcb* crearPcb(){
     pcb->registros_cpu = malloc(sizeof(t_registros_cpu));
 	inicializar_registros(pcb);
     pcb->estado_pcb = NEW;
+    pcb->contador = 0;
 	return pcb;
 }
 //deberia poner una variable global PID=0

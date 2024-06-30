@@ -18,7 +18,7 @@ void ciclo_instruccion(){
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
 	char *instruccion_con_parametros = recibir_instruccion_pseudocodigo();
-	
+
 	//DECODE & EXECUTE
 	char *saveptr = instruccion_con_parametros;
 	char *nombre_instruccion = strtok_r(saveptr, " ", &saveptr);
@@ -30,6 +30,7 @@ void ciclo_instruccion(){
 			int valor = atoi(strtok_r(saveptr, " ", &saveptr));
 			escribir_valor_a_registro(nombre_registro, valor);
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "MOV_IN") == 0)
 		{
@@ -46,6 +47,7 @@ void ciclo_instruccion(){
 				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_leido_en_memoria);
 				pcb_global->registros_cpu->PC++;
 			}
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "MOV_OUT") == 0)
 		{
@@ -62,6 +64,7 @@ void ciclo_instruccion(){
 				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_a_escribir);
 				pcb_global->registros_cpu->PC++;
 			}
+			pcb_global->contador++;
 		}	
 	else if (strcmp(nombre_instruccion, "SUM") == 0)
 		{
@@ -70,6 +73,7 @@ void ciclo_instruccion(){
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) + leer_valor_de_registro(nombre_registro_origen));
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "SUB") == 0)
 		{
@@ -78,6 +82,7 @@ void ciclo_instruccion(){
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) - leer_valor_de_registro(nombre_registro_origen));
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "JNZ") == 0)
 		{
@@ -92,6 +97,7 @@ void ciclo_instruccion(){
 			{
 				pcb_global->registros_cpu->PC++;
 			}
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "RESIZE") == 0)
 		{
@@ -103,9 +109,11 @@ void ciclo_instruccion(){
 			if(outOfMemory){
 				log_info(cpu_logger, "Out of Memory: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, tamanio);
 				dejar_de_ejecutar = true;
+				pcb_global->contador++;
 				devolver_contexto_por_out_of_memory();
 			}
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "WAIT") == 0)
 		{
@@ -113,6 +121,7 @@ void ciclo_instruccion(){
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_wait(nombre_recurso);
 		}
 	else if (strcmp(nombre_instruccion, "SIGNAL") == 0)
@@ -121,6 +130,7 @@ void ciclo_instruccion(){
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_signal(nombre_recurso);
 		}
 	else if (strcmp(nombre_instruccion, "IO_GEN_SLEEP") == 0)
@@ -130,6 +140,7 @@ void ciclo_instruccion(){
 			int tiempo_sleep = atoi(strtok_r(saveptr, " ", &saveptr));
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_sleep(nombre_instruccion, nombre_interfaz, tiempo_sleep);
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDIN_READ") == 0)
@@ -147,9 +158,10 @@ void ciclo_instruccion(){
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
+				pcb_global->contador++;
 				devolver_contexto_por_stdin_read(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
 			}
-			
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDOUT_WRITE") == 0)
 		{
@@ -166,9 +178,10 @@ void ciclo_instruccion(){
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
+				pcb_global->contador++;
 				devolver_contexto_por_stdout_write(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
 			}
-			
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_CREATE") == 0)
 		{
@@ -177,6 +190,7 @@ void ciclo_instruccion(){
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_fs_create(nombre_instruccion, nombre_interfaz, nombre_archivo);
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_DELETE") == 0)
@@ -186,12 +200,14 @@ void ciclo_instruccion(){
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_fs_delete(nombre_instruccion, nombre_interfaz, nombre_archivo);
 		}
 	else if (strcmp(nombre_instruccion, "EXIT") == 0)
 		{
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s \"", pcb_global->pid, nombre_instruccion);
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_correcta_finalizacion();
 		}
 

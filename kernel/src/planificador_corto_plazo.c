@@ -50,8 +50,10 @@ void planif_fifo_RR()
     } else{printf("La cola de READY estaba vacia :(\n");}
 }
 void gestionar_quantum(t_pcb* un_pcb){
+    int contador_inicial = un_pcb->contador;
     usleep(un_pcb->quantum*1000);
-        if(contains_algo(struct_exec->lista, &(un_pcb->pid))){ 
+    t_pcb* otro_pcb =list_get(struct_exec->lista,0);
+        if(contains_algo(struct_exec->lista, &(un_pcb->pid))&& (otro_pcb->contador==contador_inicial) ){ 
         enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_DESALOJO); 
         un_pcb->quantum = QUANTUM;
 
