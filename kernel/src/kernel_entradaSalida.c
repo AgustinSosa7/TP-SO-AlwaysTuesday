@@ -182,6 +182,7 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
             agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      //Ver ACá que onda :D
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
 
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)

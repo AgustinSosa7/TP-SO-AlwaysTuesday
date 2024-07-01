@@ -113,7 +113,7 @@ void recibir_solicitud_de_escritura(int socket){
     int tamanio = leer_int_del_buffer(buffer);
     void* a_escribir = leer_void_del_buffer(buffer,tamanio);
 
-    char* leido2 = (char*) a_escribir;
+    //char* leido2 = (char*) a_escribir;
 
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 

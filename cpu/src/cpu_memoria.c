@@ -88,7 +88,7 @@ u_int32_t leer_valor_de_memoria(int pid, int direccion_fisica)
     
     // Recibir
     op_code code_op = recibir_operacion(fd_memoria);
-    t_paquete* paquete2 = recibir_paquete(fd_memoria);
+    //t_paquete* paquete2 = recibir_paquete(fd_memoria);
     t_buffer* buffer = paquete->buffer;
     if(code_op == RESPUESTA_LEER_VALOR_EN_MEMORIA)
     {

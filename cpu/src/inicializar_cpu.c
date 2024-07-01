@@ -81,7 +81,7 @@ void inicializar_estructuras(){
 
 
     tamanio_pagina = -1;
-    tamanio_memoria = -1
+    tamanio_memoria = -1;
 
     dejar_de_ejecutar = false;
     ocurrio_interrupcion = false;
