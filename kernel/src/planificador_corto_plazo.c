@@ -31,11 +31,11 @@ void planif_corto_plazo()
 
 void planif_fifo_RR()
 {
-    printf("Entro a FIFO.\n");
-    if(!list_is_empty(lista_ready)){
-        if(list_is_empty(lista_exec)){
+    printf("Entro a FIFO/RR.\n");
+    if(!list_is_empty(struct_ready->lista)){
+        if(list_is_empty(struct_exec->lista)){
             cambiar_de_estado_y_de_lista(READY,EXEC);
-            t_pcb* un_pcb = list_get(lista_exec,0);
+            t_pcb* un_pcb = list_get(struct_exec->lista,0);
             enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
             printf("Envie el pcb a DISPATCH. \n");
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
@@ -50,8 +50,10 @@ void planif_fifo_RR()
     } else{printf("La cola de READY estaba vacia :(\n");}
 }
 void gestionar_quantum(t_pcb* un_pcb){
+    int contador_inicial = un_pcb->contador;
     usleep(un_pcb->quantum*1000);
-        if(contains_algo(lista_exec, &(un_pcb->pid))){ 
+    t_pcb* otro_pcb =list_get(struct_exec->lista,0);
+        if(contains_algo(struct_exec->lista, &(un_pcb->pid))&& (otro_pcb->contador==contador_inicial) ){ 
         enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_DESALOJO); 
         un_pcb->quantum = QUANTUM;
 
@@ -59,19 +61,32 @@ void gestionar_quantum(t_pcb* un_pcb){
 }   
 
 // VRR
-  void planif_VRR(){
+void planif_VRR(){
     t_pcb* un_pcb;
-    if(!list_is_empty(lista_ready_plus)){
-        cambiar_de_estado_y_de_lista(READYPLUS,EXEC); 
-    } else if(!list_is_empty(lista_ready)){
-        cambiar_de_estado_y_de_lista(READY,EXEC); 
+    if(!list_is_empty(struct_ready_plus->lista)){
+        if(list_is_empty(struct_exec->lista)){
+        cambiar_de_estado_y_de_lista(READYPLUS,EXEC);
+        pthread_mutex_lock(&(struct_exec->mutex));
+        un_pcb = list_get(struct_exec->lista,0);
+        pthread_mutex_unlock(&(struct_exec->mutex));
+        enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
+        pthread_t hilo_quantum_VRR;
+        pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);
+        pthread_join(hilo_quantum_VRR,NULL);
+        }
+    } else if(!list_is_empty(struct_ready->lista)){
+        if(list_is_empty(struct_exec->lista)){
+        cambiar_de_estado_y_de_lista(READY,EXEC);
+        pthread_mutex_lock(&(struct_exec->mutex));
+        un_pcb = list_get(struct_exec->lista,0);
+        pthread_mutex_unlock(&(struct_exec->mutex));
+        enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
+        pthread_t hilo_quantum_VRR;
+        pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);
+        pthread_join(hilo_quantum_VRR, NULL);
+        }
     }
-    un_pcb = list_get(lista_exec,0);
-    enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
-    pthread_t hilo_quantum_VRR;
-    pthread_create(&hilo_quantum_VRR, NULL, (void*)gestionar_quantum_VRR, un_pcb);
-    pthread_detach(hilo_quantum_VRR);
- } 
+}
 
 
  void gestionar_quantum_VRR(t_pcb* un_pcb){

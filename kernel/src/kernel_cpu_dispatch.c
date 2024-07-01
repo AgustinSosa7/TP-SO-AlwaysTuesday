@@ -14,6 +14,9 @@ void recibir_pcb_con_motivo()
       {
       case DESALOJO_QUANTUM:
             log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum.\n",pcb_recibido->pid);
+            t_pcb* un_pcb = list_remove(struct_exec->lista,0);
+            free(un_pcb);
+            list_add(struct_exec->lista,pcb_recibido);
             cambiar_de_estado_y_de_lista(EXEC,READY);
             sem_post(&sem_planificador_corto_plazo);
             
@@ -21,6 +24,7 @@ void recibir_pcb_con_motivo()
       case DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION:
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
+            
             break;
       case PEDIDO_IO:          
             t_peticion* peticion = recibir_peticion(paquete);  
@@ -40,16 +44,18 @@ void recibir_pcb_con_motivo()
             
             if(list_any_satisfy(lista_recursos, esta_o_no_el_recurso)){
                   t_recursos* recurso = list_find(lista_recursos, esta_o_no_el_recurso);
+                  //pthread_mutex_lock(&(recurso->mutex_recurso));
                   recurso->instancias = recurso->instancias -1;
                   if(recurso->instancias <0){
-                       pthread_mutex_lock(&mutex_exec);
-                       t_pcb* pcb = list_remove(lista_exec,0);
-                       pthread_mutex_unlock(&mutex_exec);
+                       pthread_mutex_lock(&(struct_exec->mutex));
+                       t_pcb* pcb = list_remove(struct_exec->lista,0);
+                       pthread_mutex_unlock(&(struct_exec->mutex));
                        pcb_recibido->estado_pcb = BLOCKED;
                        list_add(recurso->lista_procesos_bloqueados,pcb_recibido);
                        log_warning(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb_recibido->pid, enum_a_string(EXEC),enum_a_string(pcb_recibido->estado_pcb));
                        log_warning(kernel_logger,"PID: <%d> - Bloqueado por: <%s>\n",pcb_recibido->pid,recurso_solicitado);
                        sem_post(&sem_planificador_corto_plazo);
+                  
                   } else{ 
                         list_add(recurso->lista_procesos_asignados,pcb_recibido);  
                         //t_pcb* pcb = list_get(recurso->lista_procesos_asignados,0);  

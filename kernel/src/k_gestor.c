@@ -7,14 +7,13 @@ t_list* INSTRUCCIONES_FS;
 t_list* IOS_CONECTADOS;
 
 t_list* lista_instrucciones;
-
-t_list* lista_new;
-t_list* lista_ready;
-t_list* lista_ready_plus;
-t_list* lista_exec;
-t_list* lista_exit;
-
 t_list* lista_recursos;
+
+t_listas_estados* struct_exec;
+t_listas_estados* struct_new;
+t_listas_estados* struct_ready;
+t_listas_estados* struct_ready_plus;
+t_listas_estados* struct_exit;
 
 ////////////////SEMAFOROS/////////////////////////////////////////
 pthread_mutex_t mutex_pid;
@@ -42,9 +41,10 @@ void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
     printf("liberando recursos.\n");
     liberar_recursos(pcb);
     printf("liberando estructuras en memoria.\n");
-    liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA,pcb->pid);
+    liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA, pcb->pid);
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
-
+    //free(pcb);
+   // sem_post(&sem_planificador_corto_plazo);
     sem_post(&sem_grado_multiprogram);
 
 }
@@ -59,7 +59,7 @@ void detener_planificacion(){
 }
 
 void liberar_recursos(t_pcb* un_pcb){
-    t_list*lista_de_recursos_encontrada = buscar_lista_de_recursos_pcb(un_pcb);
+    t_list* lista_de_recursos_encontrada = buscar_lista_de_recursos_pcb(un_pcb);
     if(lista_de_recursos_encontrada !=NULL){
         bool a = list_remove_element(lista_de_recursos_encontrada,un_pcb);
     } else {
@@ -72,33 +72,33 @@ t_pcb* buscar_pcb(int pid){
 	bool esta_el_pcb(void* pcb){
 		return encontre_el_pcb(pcb, pid);
 	}
-    pthread_mutex_lock(&mutex_new);
-	pcb_encontrado = list_find(lista_new, esta_el_pcb);
-    pthread_mutex_unlock(&mutex_new);
+    pthread_mutex_lock(&(struct_new->mutex));
+	pcb_encontrado = list_find(&(struct_new->lista), esta_el_pcb);
+    pthread_mutex_unlock(&(struct_new->mutex));
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }
-    pthread_mutex_lock(&mutex_ready);
-    pcb_encontrado = list_find(lista_ready, esta_el_pcb);
-    pthread_mutex_unlock(&mutex_ready);
+    pthread_mutex_lock(&(struct_ready->mutex));
+    pcb_encontrado = list_find(struct_ready->lista, esta_el_pcb);
+    pthread_mutex_unlock(&(struct_ready->mutex));
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }
-    pthread_mutex_lock(&mutex_ready_plus);
-    pcb_encontrado = list_find(lista_ready_plus, esta_el_pcb);
-    pthread_mutex_unlock(&mutex_ready_plus);
+    pthread_mutex_lock(&(struct_ready_plus->mutex));
+    pcb_encontrado = list_find(struct_ready_plus->lista, esta_el_pcb);
+    pthread_mutex_unlock(&(struct_ready_plus->mutex));
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }
-    pthread_mutex_lock(&mutex_exec);
-    pcb_encontrado = list_find(lista_exec, esta_el_pcb);
-    pthread_mutex_unlock(&mutex_exec);
+    pthread_mutex_lock(&(struct_exec->mutex));
+    pcb_encontrado = list_find(struct_exec->lista, esta_el_pcb);
+    pthread_mutex_unlock(&(struct_exec->mutex));
     if(pcb_encontrado != NULL){
        return pcb_encontrado;   
     }
-    pthread_mutex_lock(&mutex_exit);
-    pcb_encontrado = list_find(lista_exit, esta_el_pcb);
-    pthread_mutex_unlock(&mutex_exit);
+    pthread_mutex_lock(&(struct_exit->mutex));
+    pcb_encontrado = list_find(struct_exit->lista, esta_el_pcb);
+    pthread_mutex_unlock(&(struct_exit->mutex));
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
     }

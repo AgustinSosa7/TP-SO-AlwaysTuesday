@@ -41,14 +41,16 @@ void recibir_pedido_marco_y_enviar(){
     int pid = leer_int_del_buffer(buffer);
     int numero_de_pagina = leer_int_del_buffer(buffer);
     int marco_pedido = traer_numero_marco(buscar_proceso_en_memoria(pid),numero_de_pagina);
-    free(buffer);
-    free(paquete);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_NUMERO_DE_MARCO_A_CPU);
     agregar_int_a_paquete(paquete_a_enviar, marco_pedido);
     enviar_paquete(paquete_a_enviar, fd_cpu);
+
+    eliminar_paquete(paquete);
     eliminar_paquete(paquete_a_enviar);
+    
     log_info(memoria_logger,"Marco enviado. PID: %d PAGINA: %d MARCO: %d",pid,numero_de_pagina,marco_pedido); //BORRAR
+
 };
 
 void recibir_modificacion_de_tamanio(){
@@ -89,11 +91,15 @@ void recibir_solicitud_de_lectura(int socket){
     int direccion_fisica = leer_int_del_buffer(buffer);
     int tamanio = leer_int_del_buffer(buffer);
 
+    log_info(memoria_logger, "Voy a  buscar lo que me pidIO IO..");
+
     void* leido = leer_espacio_usuario(direccion_fisica,tamanio);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_LEER_VALOR_EN_MEMORIA);
     agregar_void_a_paquete(paquete_a_enviar,leido,tamanio);
     enviar_paquete(paquete_a_enviar, socket);
+
+    log_info(memoria_logger, "Enviando a IO lo que pidIO");
     
     eliminar_paquete(paquete_a_enviar);
     eliminar_paquete(paquete);
@@ -107,7 +113,9 @@ void recibir_solicitud_de_escritura(int socket){
     int tamanio = leer_int_del_buffer(buffer);
     void* a_escribir = leer_void_del_buffer(buffer,tamanio);
 
-    enviar_bool_mensaje(escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir), socket); 
+    char* leido2 = (char*) a_escribir;
+
+    escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 
     free(a_escribir);
     eliminar_paquete(paquete);
@@ -155,16 +163,17 @@ void atender_cpu(){
 }
 
 
-void atender_entradasalida()
+void atender_entradasalida(int fd_entradasalida)
 {     int control_key = 1;
       log_info(memoria_logger, "Atendiendo Entradasalida...");
       while (control_key){
-        int16_t code_op = recibir_operacion(fd_entradasalida);
-        log_info(memoria_logger, "Se recibio algo de EntradaSalida: %d", code_op);
-        sem_wait(&ejecucion);
-        switch (code_op)
-        {
-        case PEDIR_REGISTRO:
+      int code_op = recibir_operacion(fd_entradasalida);
+      log_info(memoria_logger, "Se recibio algo de EntradaSalida: %d. \n", code_op);
+      sem_wait(&ejecucion);
+      switch (code_op)
+      {
+      case PEDIR_REGISTRO:
+
             //printf("PEDIDO DE LECTURA\n"); //BORRAR 
             recibir_solicitud_de_lectura(fd_entradasalida);
             break;

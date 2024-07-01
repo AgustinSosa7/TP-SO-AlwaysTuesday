@@ -13,7 +13,7 @@ void recibir_pedido_instruccion_y_enviar();
 void recibir_pedido_marco_y_enviar();
 void recibir_solicitud_de_lectura(int); //necesita el socket
 void atender_cpu();
-void atender_entradasalida();
+void atender_entradasalida(int fd_entradasalida);
 
 
 

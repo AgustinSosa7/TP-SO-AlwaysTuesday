@@ -10,8 +10,8 @@ void pedir_info_inicial_a_memoria(){
     t_buffer* buffer = paquete2->buffer;
     if(code_op == RESPUESTA_INFO_INICIAL_A_CPU)
     {
-        int tamanio_pagina = leer_int_del_buffer(buffer);
-        int tamanio_memoria = leer_int_del_buffer(buffer);
+        tamanio_pagina = leer_int_del_buffer(buffer);
+        tamanio_memoria = leer_int_del_buffer(buffer);
         log_info(cpu_log_debug, "Tamanio de las Paginas de memoria = %d", tamanio_pagina);
         log_info(cpu_log_debug, "Tamanio de la Memoria = %d", tamanio_memoria);
     }
@@ -92,7 +92,7 @@ u_int32_t leer_valor_de_memoria(int pid, int direccion_fisica)
     t_buffer* buffer = paquete->buffer;
     if(code_op == RESPUESTA_LEER_VALOR_EN_MEMORIA)
     {
-        uint32_t valor_leido = leer_uint_32_del_buffer(buffer);
+        uint32_t valor_leido = leer_uint_32_del_buffer(buffer); // Hacer lo mismo para uint_8
         log_info(cpu_log_debug, "Lectura de valor obtenida = %d", valor_leido);
         return valor_leido;
     }
@@ -107,25 +107,11 @@ u_int32_t leer_valor_de_memoria(int pid, int direccion_fisica)
 void escribir_valor_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_escribir){
     // Enviar
     t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
-    //agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, direccion_fisica);
     agregar_int_a_paquete(paquete, sizeof(uint32_t)); //tamanio de lo que quiero leer.
     agregar_uint32_a_paquete(paquete, valor_a_escribir);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
-    
-    // Recibir
-    bool respuesta = recibir_bool_mensaje(fd_memoria);
-    if(respuesta)
-    {
-        log_info(cpu_log_debug, "Se escribio el valor en memoria correctamente!");
-    }
-    else
-    {   
-        log_error(cpu_log_debug, "No se recibio una respuesta sobre la solicitud de escribir un valor en memoria.");
-        exit(EXIT_FAILURE);
-    }
-    
 }
 
 int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){

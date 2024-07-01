@@ -111,7 +111,7 @@ bool validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion
 
 void enviar_proceso_execute_a_exit(){ 
 
-      t_pcb* pcb = list_get(lista_exec, 0); //Revisar LOGICA (mili)
+      t_pcb* pcb = list_get(struct_exec->lista, 0); //Revisar LOGICA (mili)
 
       cambiar_de_estado_y_de_lista(EXEC, EXIT);    // LIBERAR ESTRUCTURAS EN MEMORIA
 
@@ -120,6 +120,11 @@ void enviar_proceso_execute_a_exit(){
 
 void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* interfaz)
 {    
+    printf("Enviando el proceso a blocked...\n");  
+    t_pcb* un_pcb = list_remove(struct_exec->lista,0);
+    free(un_pcb);
+    // eliminar_pcb(un_pcb);
+
     estado_pcb estado_anterior = pcb->estado_pcb;
     pcb->estado_pcb = BLOCKED;
 
@@ -127,10 +132,6 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
  
     proceso_blocked->peticion = peticion;
     proceso_blocked->un_pcb = pcb;
-
-    //SACAR PCB DE EXECUTE (revisar mili) 
-    //Uso el que me viene por parametro.
-    t_pcb* un_pcb = list_remove(lista_exec,0); 
     
     pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
     queue_push(interfaz->cola_procesos_blocked, proceso_blocked);
@@ -139,7 +140,7 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
     sem_post(&(interfaz->semaforo_cola_procesos_blocked));
 
     log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->pid, enum_a_string(estado_anterior), enum_a_string(pcb->estado_pcb));
-    log_info(kernel_logger, "Motivo de Bloqueo: PID: <%d> - Bloqueado por: <%s>", un_pcb->pid, interfaz->nombre);
+    log_info(kernel_logger, "Motivo de Bloqueo: PID: <%d> - Bloqueado por: <%s>", pcb->pid, interfaz->nombre); 
 }
 
 
@@ -226,15 +227,13 @@ void enviar_proceso_blocked_io_a_exit(t_proceso_blocked* proceso_blocked){
 
       estado_pcb estado_anterior = pcb->estado_pcb;
 
-      pcb->estado_pcb = EXIT; //Hay que avisarle al semaforo de largo plazo?
-
-      //sem_post(&sem_new_a_ready); preguntar a MILI :)
+      pcb->estado_pcb = EXIT;  
 
       eliminar_proceso(pcb, INVALID_INTERFACE);
 
       log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
 
-      list_add(lista_exit, pcb);
+      list_add(struct_exit->lista, pcb);
 }
 
 bool recibir_fin_peticion(t_interfaz* interfaz){
@@ -261,7 +260,7 @@ void desbloquear_proceso(t_interfaz* interfaz){
      
       log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(proceso_blocked->un_pcb->estado_pcb));
 
-      sem_post(&sem_planificador_corto_plazo);
+      sem_post(&sem_planificador_corto_plazo); 
 }
 
 void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
@@ -277,18 +276,18 @@ void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
 void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
       un_pcb->estado_pcb = READY;
 
-      pthread_mutex_lock(&mutex_ready);
-      list_add(lista_ready,un_pcb); 
-      pthread_mutex_unlock(&mutex_ready);
+      pthread_mutex_lock(&(struct_ready->mutex));
+      list_add(struct_ready->lista,un_pcb); 
+      pthread_mutex_unlock(&(struct_ready->mutex));
 }
 
 void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
       un_pcb->quantum = un_pcb->quantum - tiempo_transcurrido;
       un_pcb->estado_pcb = READYPLUS;
 
-      pthread_mutex_lock(&mutex_ready_plus);
-      list_add(lista_ready_plus,un_pcb); 
-      pthread_mutex_unlock(&mutex_ready_plus);
+      pthread_mutex_lock(&(struct_ready_plus->mutex));
+      list_add(struct_ready_plus->lista,un_pcb); 
+      pthread_mutex_unlock(&(struct_ready_plus->mutex));
 }
 
 void eliminar_peticion(t_peticion* peticion){

@@ -97,12 +97,15 @@ void atender_instruccion_validada(char* leido){
 	case INICIAR_PROCESO:
 		printf("Entre a iniciar proceso. \n");
 		t_pcb* nuevo_pcb = crearPcb();
-		pthread_mutex_lock(&mutex_new);
-		list_add(lista_new, nuevo_pcb);
-		pthread_mutex_unlock(&mutex_new);	
+		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
+		//verificar si memoria creo el proceso recibir_bool_mensaje
+		sleep(2);
+		pthread_mutex_lock(&(struct_new->mutex));
+		list_add(struct_new->lista, nuevo_pcb);
+		pthread_mutex_unlock(&(struct_new->mutex));	
 		log_warning(kernel_logger,"Se crea el proceso < %d > en NEW. \n",nuevo_pcb->pid);
 		sem_post(&sem_new_a_ready);
-		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
+		
     
 		break;
 	case FINALIZAR_PROCESO: 
@@ -110,15 +113,16 @@ void atender_instruccion_validada(char* leido){
 	 	t_pcb* pcb = buscar_pcb(pid);
 		if(pcb != NULL){
 			estado_pcb estado_anterior = pcb->estado_pcb;
-			pthread_mutex_lock(&mutex_exec);
-			t_pcb* pcb_ejecutando = list_get(lista_exec,0);
-			pthread_mutex_unlock(&mutex_exec);
+			pthread_mutex_lock(&(struct_exec->mutex));
+			t_pcb* pcb_ejecutando = list_get(struct_exec->lista,0);
+			pthread_mutex_unlock(&(struct_exec->mutex));
 			if(pcb_ejecutando->pid == pid){
 				enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_KILL);		
 			} else if(pcb->estado_pcb == EXIT){
 				eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 				} else if(pcb->estado_pcb != BLOCKED){
-					list_remove_element(buscar_lista(estado_anterior),pcb);
+					t_listas_estados* lista_encontrada = buscar_lista(estado_anterior);
+					list_remove_element(lista_encontrada->lista,pcb);
 					pcb->estado_pcb = EXIT;
 					eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 					log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
@@ -172,25 +176,31 @@ void atender_instruccion_validada(char* leido){
 		}	
 		break;
 	case PROCESO_ESTADO:
-		pthread_mutex_lock(&mutex_new);
-		imprimir_lista(lista_new, NEW);
-		pthread_mutex_unlock(&mutex_new);
+		pthread_mutex_lock(&(struct_new->mutex));
+		imprimir_lista(struct_new);
+		pthread_mutex_unlock(&(struct_new->mutex));
 
-		pthread_mutex_lock(&mutex_ready);
-		imprimir_lista(lista_ready, READY);
-		pthread_mutex_unlock(&mutex_ready);
+		pthread_mutex_lock(&(struct_ready->mutex));
+		imprimir_lista(struct_ready);
+		pthread_mutex_unlock(&(struct_ready->mutex));
 
-		pthread_mutex_lock(&mutex_ready_plus);
-		imprimir_lista(lista_ready_plus, READYPLUS);
-		pthread_mutex_unlock(&mutex_ready_plus);
-		//imprimir_lista(lista_, BLOCKED); ver blocked 
-		pthread_mutex_lock(&mutex_exec);
-		imprimir_lista(lista_exec, EXEC);
-		pthread_mutex_unlock(&mutex_exec);
+		pthread_mutex_lock(&(struct_ready_plus->mutex));
+		imprimir_lista(struct_ready_plus);
+		pthread_mutex_unlock(&(struct_ready_plus->mutex));
 
-		pthread_mutex_lock(&mutex_exit);
-		imprimir_lista(lista_exit, EXIT);
-		pthread_mutex_unlock(&mutex_exit);
+		pthread_mutex_lock(&(struct_exec->mutex));
+		imprimir_lista(struct_exec);
+		pthread_mutex_unlock(&(struct_exec->mutex));
+
+		imprimir_lista_blocked_recursos();
+
+		imprimir_lista_blocked_interfaz();
+
+		pthread_mutex_lock(&(struct_exit->mutex));
+		imprimir_lista(struct_exit);
+		pthread_mutex_unlock(&(struct_exit->mutex));
+
+
 
 		break;
 	default:
@@ -204,25 +214,36 @@ bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
 }
 
 // /// EJECUTAR_SCRIPT [path]
-t_list* leer_archivo(char* path){
-   FILE * archivo_comandos = fopen(path, "r");
+t_list* leer_archivo(char* archivo){
+	char* PATH = string_new();
+	string_append(&PATH,"/home/utnso/scripts-kernel/");
+	string_append(&PATH, archivo);
+    FILE * archivo_comandos = fopen(PATH, "r");
 	if (archivo_comandos == NULL){
        perror("Error al intentar cargar el archivo de comandos \n");
        exit(EXIT_FAILURE);
-   }
+    }
 	t_list* lista_comandos = list_create();
 	int longitud= 0;
 	char* comando_leido = malloc(100 *sizeof(char));
 
 	while (fgets(comando_leido,100,archivo_comandos)){
 		longitud = strlen(comando_leido);
-		if(comando_leido[longitud] == '\n'){
+		if(comando_leido[longitud -1] == '\n'){
 			char* nuevo_comando = string_new();
 			string_n_append(&nuevo_comando,comando_leido,longitud-1);
 			free(comando_leido);
+			comando_leido = malloc(100 *sizeof(char));
+			list_add(lista_comandos, nuevo_comando);
+		}else{
+			char* nuevo_comando = string_new();
+			string_n_append(&nuevo_comando,comando_leido,longitud);
+			free(comando_leido);
+			comando_leido = malloc(100 *sizeof(char));
 			list_add(lista_comandos, nuevo_comando);
 		}
 	}
+	fclose(archivo_comandos);
 	return lista_comandos;
 	
 } 
@@ -240,12 +261,52 @@ void enviar_path_a_memoria(char* path,int pid,int socket){
 	eliminar_paquete(un_paquete);
 }
 ///////////PROCESO_ESTADO////////////
-void imprimir_lista(t_list* lista_a_mostrar,estado_pcb estado){
-	printf("************LISTA <%s>************\n", enum_a_string(estado));
-	t_list_iterator* lista = list_iterator_create(lista_a_mostrar);
+void imprimir_lista(t_listas_estados* lista_a_mostrar){
+	printf("************LISTA <%s>************\n", enum_a_string(lista_a_mostrar->estado));
+	t_list_iterator* lista = list_iterator_create(lista_a_mostrar->lista);
 	t_pcb* un_pcb;
 	while(list_iterator_has_next(lista)){
 		un_pcb = list_iterator_next(lista);
-		printf("PID: %d \n", un_pcb->pid);
+		printf("%18s PID: %d \n"," ", un_pcb->pid);
 	}
 }
+
+void imprimir_lista_blocked_recursos(){
+	printf("************LISTA <BLOCKED> RECURSOS************\n");
+	t_list_iterator* lista_general = list_iterator_create(lista_recursos);
+	t_recursos* recurso;
+	t_pcb* un_pcb;
+	while(list_iterator_has_next(lista_general)){
+		recurso = list_iterator_next(lista_general);
+		t_list_iterator* lista_blocked_recurso = list_iterator_create(recurso->lista_procesos_bloqueados);
+		while(list_iterator_has_next(lista_blocked_recurso)){
+			un_pcb = list_iterator_next(lista_blocked_recurso);
+			printf("%18s PID: %d \n"," ", un_pcb->pid);
+		}			
+	}
+}
+void imprimir_lista_blocked_interfaz(){
+	printf("************LISTA <BLOCKED> IO************\n");
+	pthread_mutex_lock(&mutex_io);
+	t_list_iterator* lista_general = list_iterator_create(IOS_CONECTADOS);
+	t_interfaz* interfaz;
+	t_proceso_blocked* proceso_blocked;
+	t_queue* auxiliar = queue_create();
+	while(list_iterator_has_next(lista_general)){
+		interfaz = list_iterator_next(lista_general);
+		pthread_mutex_lock(&(interfaz->mutex_cola_blocked));
+		while(!queue_is_empty(interfaz->cola_procesos_blocked)){
+			proceso_blocked = queue_pop(interfaz->cola_procesos_blocked);
+			printf("%18s PID: %d \n"," ", proceso_blocked->un_pcb->pid);
+			queue_push(auxiliar,proceso_blocked);
+		}
+		int size = queue_size(auxiliar);
+		for (int i = 0; i < size; i++){
+			proceso_blocked = queue_pop(auxiliar);
+			queue_push(interfaz->cola_procesos_blocked,proceso_blocked);
+		}
+		pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
+	}
+	pthread_mutex_unlock(&mutex_io);
+}		
+

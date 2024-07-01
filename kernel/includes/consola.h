@@ -35,5 +35,8 @@ bool esta_la_instruccion(void* instruccion) ;
 bool esta_o_noo(char* nombre_instruccion, int cant_parametros, t_instruccion* instruccion);
 t_list* leer_archivo(char* path);
 void enviar_path_a_memoria(char* path,int pid,int socket);
-void imprimir_lista(t_list* lista_a_mostrar, estado_pcb estado);
+void imprimir_lista(t_listas_estados* lista_a_mostrar);
+void imprimir_lista_blocked_recursos();
+void imprimir_lista_blocked_interfaz();
+
 #endif

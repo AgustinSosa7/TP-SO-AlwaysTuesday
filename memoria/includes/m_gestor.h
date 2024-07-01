@@ -42,7 +42,7 @@ extern int RETARDO_RESPUESTA;
 extern char* ALGORITMO_REEMPLAZO;
 
 extern int fd_memoria;
-extern int fd_entradasalida;
+//extern int fd_entradasalida;
 extern int fd_cpu;             
 extern int fd_kernel;
 

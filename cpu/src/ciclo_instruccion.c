@@ -4,9 +4,9 @@
 void ciclo_instruccion(){                         
     
     while(1){
-	log_warning(cpu_log_debug, "Esperando una nueva instruccion... \n");
+	log_warning(cpu_logger, "Esperando una nueva instruccion... \n");
     sem_wait(&sem_ciclo_de_instruccion);
-	log_info(cpu_log_debug, "Tome el semaforo del ciclo de instruccion.\n");
+	log_info(cpu_logger, "Tome el semaforo del ciclo de instruccion.\n");
 
 	dejar_de_ejecutar = false;
 	pthread_mutex_lock(&mutex_ocurrio_interrupcion);
@@ -30,6 +30,7 @@ void ciclo_instruccion(){
 			int valor = atoi(strtok_r(saveptr, " ", &saveptr));
 			escribir_valor_a_registro(nombre_registro, valor);
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "MOV_IN") == 0)
 		{
@@ -46,6 +47,7 @@ void ciclo_instruccion(){
 				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_leido_en_memoria);
 				pcb_global->registros_cpu->PC++;
 			}
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "MOV_OUT") == 0)
 		{
@@ -62,6 +64,7 @@ void ciclo_instruccion(){
 				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_a_escribir);
 				pcb_global->registros_cpu->PC++;
 			}
+			pcb_global->contador++;
 		}	
 	else if (strcmp(nombre_instruccion, "SUM") == 0)
 		{
@@ -70,6 +73,7 @@ void ciclo_instruccion(){
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) + leer_valor_de_registro(nombre_registro_origen));
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "SUB") == 0)
 		{
@@ -78,6 +82,7 @@ void ciclo_instruccion(){
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) - leer_valor_de_registro(nombre_registro_origen));
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "JNZ") == 0)
 		{
@@ -92,22 +97,23 @@ void ciclo_instruccion(){
 			{
 				pcb_global->registros_cpu->PC++;
 			}
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "RESIZE") == 0)
 		{
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			int tamanio = atoi(strtok_r(saveptr, " ", &saveptr));
-			log_info(cpu_logger, "atoi");
 			int nuevoTamanioDelProceso = pedir_ajustar_tamanio_del_proceso(pcb_global->pid, tamanio);
-			log_info(cpu_logger, "pedir_ajustar_tamanio_del_proceso");
 			bool outOfMemory = nuevoTamanioDelProceso == -1;
 			log_info(cpu_logger, "RESPUESTA DE REZISE: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, nuevoTamanioDelProceso);
 			if(outOfMemory){
 				log_info(cpu_logger, "Out of Memory: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, tamanio);
 				dejar_de_ejecutar = true;
+				pcb_global->contador++;
 				devolver_contexto_por_out_of_memory();
 			}
 			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "WAIT") == 0)
 		{
@@ -115,6 +121,7 @@ void ciclo_instruccion(){
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_wait(nombre_recurso);
 		}
 	else if (strcmp(nombre_instruccion, "SIGNAL") == 0)
@@ -123,6 +130,7 @@ void ciclo_instruccion(){
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_signal(nombre_recurso);
 		}
 	else if (strcmp(nombre_instruccion, "IO_GEN_SLEEP") == 0)
@@ -132,6 +140,7 @@ void ciclo_instruccion(){
 			int tiempo_sleep = atoi(strtok_r(saveptr, " ", &saveptr));
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_sleep(nombre_instruccion, nombre_interfaz, tiempo_sleep);
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDIN_READ") == 0)
@@ -149,9 +158,10 @@ void ciclo_instruccion(){
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
+				pcb_global->contador++;
 				devolver_contexto_por_stdin_read(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
 			}
-			
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDOUT_WRITE") == 0)
 		{
@@ -168,9 +178,10 @@ void ciclo_instruccion(){
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
+				pcb_global->contador++;
 				devolver_contexto_por_stdout_write(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
 			}
-			
+			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_CREATE") == 0)
 		{
@@ -179,6 +190,7 @@ void ciclo_instruccion(){
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_fs_create(nombre_instruccion, nombre_interfaz, nombre_archivo);
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_DELETE") == 0)
@@ -188,12 +200,14 @@ void ciclo_instruccion(){
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_fs_delete(nombre_instruccion, nombre_interfaz, nombre_archivo);
 		}
 	else if (strcmp(nombre_instruccion, "EXIT") == 0)
 		{
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s \"", pcb_global->pid, nombre_instruccion);
 			dejar_de_ejecutar = true;
+			pcb_global->contador++;
 			devolver_contexto_por_correcta_finalizacion();
 		}
 
@@ -204,7 +218,7 @@ void ciclo_instruccion(){
 	if (ocurrio_interrupcion && !dejar_de_ejecutar)
 	{
 		pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
-		log_debug(cpu_log_debug, "DEVUELVO INTERRUPT");
+		log_info(cpu_logger, "DEVUELVO INTERRUPT");
 		dejar_de_ejecutar = true;
 		devolver_contexto_por_ser_interrumpido();
 	}
@@ -221,7 +235,7 @@ void ciclo_instruccion(){
 	else
 	{	
 		// Queda bloqueado esperando que vuelvan a ejecutar un proceso en la CPU.
-		log_debug(cpu_log_debug, "FRENO");
+		log_info(cpu_logger, "FRENO");
 	}
 
 	}
@@ -350,61 +364,61 @@ void escribir_valor_a_registro(char* nombre_registro, u_int32_t valor)
 	if (strcmp(nombre_registro, "AX") == 0)
 	{
 		pcb_global->registros_cpu->AX = (u_int8_t)valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "BX") == 0)
 	{
 		pcb_global->registros_cpu->BX = (u_int8_t)valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "CX") == 0)
 	{
 		pcb_global->registros_cpu->CX = (u_int8_t)valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "DX") == 0)
 	{
 		pcb_global->registros_cpu->DX = (u_int8_t)valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
-	if (strcmp(nombre_registro, "EAX") == 0)
+	else if (strcmp(nombre_registro, "EAX") == 0)
 	{
 		pcb_global->registros_cpu->EAX = valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "EBX") == 0)
 	{
 		pcb_global->registros_cpu->EBX = valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "ECX") == 0)
 	{
 		pcb_global->registros_cpu->ECX = valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "EDX") == 0)
 	{
 		pcb_global->registros_cpu->EDX = valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "PC") == 0)
 	{
 		pcb_global->registros_cpu->PC = valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "SI") == 0)
 	{
 		pcb_global->registros_cpu->SI = valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "DI") == 0)
 	{
 		pcb_global->registros_cpu->DI = valor;
-		log_debug(cpu_log_debug, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
 	}
 	else
 	{
-		log_error(cpu_log_debug, "No se asigno el valor %d al registro '%s' porque es un registro no conocido.", valor, nombre_registro);
+		log_error(cpu_logger, "No se asigno el valor %d al registro '%s' porque es un registro no conocido.", valor, nombre_registro);
 	}
 }
 
@@ -412,61 +426,61 @@ uint32_t leer_valor_de_registro(char* nombre_registro)
 {
 	if (strcmp(nombre_registro, "AX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->AX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->AX);
 		return (uint32_t)pcb_global->registros_cpu->AX;
 	}
 	else if (strcmp(nombre_registro, "BX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->BX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->BX);
 		return (uint32_t)pcb_global->registros_cpu->BX;
 	}
 	else if (strcmp(nombre_registro, "CX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->CX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->CX);
 		return (uint32_t)pcb_global->registros_cpu->CX;
 	}
 	else if (strcmp(nombre_registro, "DX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->DX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->DX);
 		return (uint32_t)pcb_global->registros_cpu->DX;
 	}
 	else if (strcmp(nombre_registro, "EAX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->EAX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->EAX);
 		return pcb_global->registros_cpu->EAX;
 	}
 	else if (strcmp(nombre_registro, "EBX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->EBX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->EBX);
 		return pcb_global->registros_cpu->EBX;
 	}
 	else if (strcmp(nombre_registro, "ECX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->ECX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->ECX);
 		return pcb_global->registros_cpu->ECX;
 	}
 	else if (strcmp(nombre_registro, "EDX") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->EDX);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->EDX);
 		return pcb_global->registros_cpu->EDX;
 	}
 	else if (strcmp(nombre_registro, "PC") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->PC);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->PC);
 		return pcb_global->registros_cpu->PC;
 	}
 	else if (strcmp(nombre_registro, "SI") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->SI);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->SI);
 		return pcb_global->registros_cpu->SI;
 	}
 	else if (strcmp(nombre_registro, "DI") == 0)
 	{
-		log_trace(cpu_log_debug, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->DI);
+		log_trace(cpu_logger, "Se leyo desde el registro '%s' el valor %d.", nombre_registro, pcb_global->registros_cpu->DI);
 		return pcb_global->registros_cpu->DI;
 	}
 
-	log_error(cpu_log_debug, "No se leyo nada del registro '%s' porque es un registro no conocido.", nombre_registro);
+	log_error(cpu_logger, "No se leyo nada del registro '%s' porque es un registro no conocido.", nombre_registro);
 	return -1;
 }
 

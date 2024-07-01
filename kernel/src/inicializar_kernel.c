@@ -44,7 +44,7 @@ void inicializar_configs(char* path) {
 
 PUERTO_ESCUCHA = config_get_string_value(kernel_config,"PUERTO_ESCUCHA");
 IP_MEMORIA = config_get_string_value(kernel_config,"IP_MEMORIA");
-IP_KERNEL = config_get_string_value(kernel_config,"IP_MEMORIA");
+IP_KERNEL = config_get_string_value(kernel_config,"IP_KERNEL");
 PUERTO_MEMORIA = config_get_string_value(kernel_config,"PUERTO_MEMORIA");
 IP_CPU = config_get_string_value(kernel_config,"IP_CPU");
 PUERTO_CPU_DISPATCH= config_get_string_value(kernel_config,"PUERTO_CPU_DISPATCH");
@@ -74,11 +74,7 @@ log_info(kernel_log_debug, "Se inicializaron las configs"); //Sacar eventualment
 }
 
 void inicializar_listas(void){
-	lista_new = list_create();
-	lista_ready = list_create();
-	lista_ready_plus = list_create();
-	lista_exec = list_create();
-	lista_exit = list_create();
+	inicializar_structs_listas();
 	inicializar_listas_instrucciones();
 }
 
@@ -131,6 +127,9 @@ void inicializar_recursos(){
 
 	while(RECURSOS[i]!= NULL){
 		t_recursos* recurso = malloc(sizeof(t_recursos));
+		pthread_mutex_t mutex;
+		pthread_mutex_init(&mutex, NULL);
+		recurso->mutex_recurso = mutex;
 		recurso->nombre_recurso = RECURSOS[i];
 		recurso->instancias = atoi(INSTANCIAS_RECURSOS[i]);
 		recurso->lista_procesos_bloqueados = list_create();
@@ -153,4 +152,28 @@ void imprimir_lista_recursos(t_list* lista_a_mostrar){
 		recurso = list_iterator_next(lista);
 		printf("recurso: %s \n", recurso->nombre_recurso);
 	}
+}
+
+void inicializar_structs_listas(){
+	struct_new = malloc(sizeof(t_listas_estados));
+	struct_new->estado = NEW;
+	struct_new->mutex = mutex_new;
+	struct_new->lista = list_create();
+	struct_ready = malloc(sizeof(t_listas_estados));
+	struct_ready->estado = READY;
+	struct_ready->mutex = mutex_ready;
+	struct_ready->lista = list_create();
+	struct_ready_plus = malloc(sizeof(t_listas_estados));
+	struct_ready_plus->estado = READYPLUS;
+	struct_ready_plus->mutex = mutex_ready_plus;
+	struct_ready_plus->lista = list_create();
+	struct_exec = malloc(sizeof(t_listas_estados));
+	struct_exec->estado = EXEC;
+	struct_exec->mutex = mutex_exec;
+	struct_exec->lista= list_create();
+	struct_exit = malloc(sizeof(t_listas_estados));
+	struct_exit->estado = EXIT;
+	struct_exit->mutex = mutex_exit;
+	struct_exit->lista = list_create();
+	printf("inicializadas las listas de estados de procesos:\n");
 }
