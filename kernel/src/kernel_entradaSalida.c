@@ -32,11 +32,11 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
            return parametros;
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {

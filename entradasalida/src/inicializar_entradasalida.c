@@ -115,20 +115,22 @@ void iniciar_file_system(){
 void crear_paths(){
 	log_info(entradasalida_logger, "Creando paths");
 	PATH_BLOQUES= string_new();
-	//crear_path(PATH_BLOQUES,"/Bloques.dat");
-	string_append(&PATH_BLOQUES,PATH_BASE_DIALFS);
-	string_append(&PATH_BLOQUES,"/Bloques.dat"); 
-	//crear_path(PATH_BITMAP,"/Bitmap.dat");
+	PATH_BLOQUES=crear_path("/Bloques.dat");
+	//string_append(&PATH_BLOQUES,PATH_BASE_DIALFS);
+	//string_append(&PATH_BLOQUES,"/Bloques.dat"); 
+	
 	PATH_BITMAP= string_new();
-	string_append(&PATH_BITMAP,PATH_BASE_DIALFS);
-	string_append(&PATH_BITMAP,"/Bitmap.dat"); 
+	PATH_BITMAP = crear_path("/Bitmap.dat");
+	//string_append(&PATH_BITMAP,PATH_BASE_DIALFS);
+	//string_append(&PATH_BITMAP,"/Bitmap.dat"); 
 	log_info(entradasalida_logger, "Paths creados correctamente");
 }
 
-void crear_path(char* path, char* nombre_archivo){ 	// Nombra el directorio y lo guarda en el PATH
-	path = string_new();
+char* crear_path(char* nombre_archivo){ 	// Nombra el directorio y lo guarda en el PATH
+	char* path = string_new();
 	string_append(&path,PATH_BASE_DIALFS);
 	string_append(&path,nombre_archivo); 
+	return path;
 }
 
 void inicializar_archivos(){ 
