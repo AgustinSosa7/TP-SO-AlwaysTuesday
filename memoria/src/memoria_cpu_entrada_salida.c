@@ -125,36 +125,39 @@ void recibir_solicitud_de_escritura(int socket){
 void atender_cpu(){
     int control_key = 1;
     log_info(memoria_logger, "Atendiendo CPU...");
+    sem_wait(&ejecucion);//ESTO SOLO SE HACE 1 VEZ PARA EL CPU
     enviar_info_inicial();
+    sem_post(&retardo);
     while(control_key){
-        sleep(1); 
         int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
         log_info(memoria_logger, "Se recibio algo de CPU: %d", code_op);
+        sem_wait(&ejecucion);
         switch (code_op)
-        {
-        case PEDIDO_PSEUDOCODIGO:
-           recibir_pedido_instruccion_y_enviar();
-            break;
-        case SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA:
-            recibir_pedido_marco_y_enviar();
-            break;
-        case SOLICITUD_MODIFICAR_TAMANIO:
-            recibir_modificacion_de_tamanio();  
-            break;
-        case SOLICITUD_LEER_VALOR_EN_MEMORIA:
-            recibir_solicitud_de_lectura(fd_cpu);
-            break;
-        case SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA:
-            recibir_solicitud_de_escritura(fd_cpu);
-            break;
-        case -1:
-            log_error(memoria_logger, "Desconexion de CPU");      
-            control_key = 0;
-            break;
-        default:
-            log_warning(memoria_logger, "Operacion desconocida de CPU");
-            break;
-        }   
+            {
+            case PEDIDO_PSEUDOCODIGO:
+                recibir_pedido_instruccion_y_enviar();
+                break;
+            case SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA:
+                recibir_pedido_marco_y_enviar();
+                break;
+            case SOLICITUD_MODIFICAR_TAMANIO:
+                recibir_modificacion_de_tamanio();  
+                break;
+            case SOLICITUD_LEER_VALOR_EN_MEMORIA:
+                recibir_solicitud_de_lectura(fd_cpu);
+                break;
+            case SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA:
+                recibir_solicitud_de_escritura(fd_cpu);
+                break;
+            case -1:
+                log_error(memoria_logger, "Desconexion de CPU");      
+                control_key = 0;
+                break;
+            default:
+                log_warning(memoria_logger, "Operacion desconocida de CPU");
+                break;
+            }
+        sem_post(&retardo);   
     }
     printf("FIN ATENDER CPU");
 }
@@ -166,23 +169,26 @@ void atender_entradasalida(int fd_entradasalida)
       while (control_key){
       int code_op = recibir_operacion(fd_entradasalida);
       log_info(memoria_logger, "Se recibio algo de EntradaSalida: %d. \n", code_op);
+      sem_wait(&ejecucion);
       switch (code_op)
       {
       case PEDIR_REGISTRO:
+
             //printf("PEDIDO DE LECTURA\n"); //BORRAR 
             recibir_solicitud_de_lectura(fd_entradasalida);
             break;
-      case  GUARDAR_REGISTRO:
+        case  GUARDAR_REGISTRO:
             recibir_solicitud_de_escritura(fd_entradasalida);
             break;
 
-      case -1:
+        case -1:
             log_error(memoria_logger, "Desconexion de ENTRADASALIDA");      
             control_key = 0;
             break;
-      default:
+        default:
             log_warning(memoria_logger, "Operacion desconocida de ENTRADASALIDA");
             break;
-        }   
+        }
+        sem_post(&retardo);   
       }
 }

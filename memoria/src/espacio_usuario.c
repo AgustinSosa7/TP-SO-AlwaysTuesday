@@ -10,6 +10,9 @@ void* leer_espacio_usuario(int direccion_fisica,int cuanto_leer){
     return espacio_leido;
 }
 
+
 void escribir_espacio_usuario(int direccion_fisica,int cuanto_escribir,void* a_escribir){
+    pthread_mutex_lock(&mutex_espacio_memoria);
     memcpy(espacio_memoria + direccion_fisica, a_escribir, cuanto_escribir);
+    pthread_mutex_unlock(&mutex_espacio_memoria);
 }

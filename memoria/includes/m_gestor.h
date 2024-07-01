@@ -48,6 +48,13 @@ extern int fd_kernel;
 
 extern char* server_name;
 
+extern pthread_mutex_t mutex_tabla_marcos;
+extern pthread_mutex_t mutex_tabla_paginas;
+extern pthread_mutex_t mutex_espacio_memoria;
+
+extern sem_t retardo;
+extern sem_t ejecucion;
+
 extern void* bitmap_memoria_usuario;
 extern t_bitarray* tabla_de_marcos;
 extern size_t size_de_tabla_marcos;
