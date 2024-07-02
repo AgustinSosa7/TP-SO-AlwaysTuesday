@@ -16,7 +16,7 @@
 
 
 int pid_global;
-int tiempo_transcurrido;
+//int tiempo_transcurrido;
 
 t_log* kernel_logger;
 t_log* kernel_log_debug;

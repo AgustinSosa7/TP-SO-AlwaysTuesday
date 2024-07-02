@@ -98,7 +98,7 @@ void atender_instruccion_validada(char* leido){
 		printf("Entre a iniciar proceso. \n");
 		t_pcb* nuevo_pcb = crearPcb();
 		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
-		//verificar si memoria creo el proceso recibir_bool_mensaje
+		//verificar si memoria creo el proceso 
 		sleep(2);
 		pthread_mutex_lock(&(struct_new->mutex));
 		list_add(struct_new->lista, nuevo_pcb);
@@ -113,11 +113,9 @@ void atender_instruccion_validada(char* leido){
 	 	t_pcb* pcb = buscar_pcb(pid);
 		if(pcb != NULL){
 			estado_pcb estado_anterior = pcb->estado_pcb;
-			pthread_mutex_lock(&(struct_exec->mutex));
-			t_pcb* pcb_ejecutando = list_get(struct_exec->lista,0);
-			pthread_mutex_unlock(&(struct_exec->mutex));
-			if(pcb_ejecutando->pid == pid){
-				enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_KILL);		
+			if(contains_algo(struct_exec->lista, &(pcb->pid))){
+				enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_KILL);
+				printf("Envie interrupcion para finalizar proceso\n");	
 			} else if(pcb->estado_pcb == EXIT){
 				eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 				} else if(pcb->estado_pcb != BLOCKED){
@@ -129,6 +127,7 @@ void atender_instruccion_validada(char* leido){
 					
 				
 			} else{
+				pcb->estado_pcb = EXIT;
 				eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 				log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
 			}

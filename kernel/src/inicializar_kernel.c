@@ -7,6 +7,7 @@ void inicializar_kernel(char* path){
 	inicializar_semaforos();
 	inicializar_pid();
 	inicializar_recursos();
+	iniciar_tiempo_VRR = false;
 }
 
 void inicializar_logs(void){
@@ -111,8 +112,8 @@ void inicializar_semaforos(){
 	pthread_mutex_init(&mutex_exec, NULL);
 	pthread_mutex_init(&mutex_ready_plus, NULL);
 	pthread_mutex_init(&mutex_exit, NULL);
-//	pthread_mutex_init(&mutex_flag_interrupcion,NULL);
 	pthread_mutex_init(&mutex_detener_planificacion,NULL);
+	pthread_mutex_init(&mutex_VRR,NULL);
 	printf("listo las mutex_exit\n");
 }
 

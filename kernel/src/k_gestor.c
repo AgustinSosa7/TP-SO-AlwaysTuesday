@@ -1,5 +1,7 @@
 #include "../includes/k_gestor.h"
 
+bool iniciar_tiempo_VRR;
+
 t_list* INSTRUCCIONES_GEN;
 t_list* INSTRUCCIONES_STDIN;
 t_list* INSTRUCCIONES_STDOUT;
@@ -24,6 +26,7 @@ pthread_mutex_t mutex_ready_plus;
 pthread_mutex_t mutex_exit;
 pthread_mutex_t mutex_io;
 pthread_mutex_t mutex_detener_planificacion;
+pthread_mutex_t mutex_VRR;
 
 sem_t sem_grado_multiprogram;
 sem_t sem_new_a_ready;
@@ -43,7 +46,7 @@ void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
     printf("liberando estructuras en memoria.\n");
     liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA, pcb->pid);
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
-    //free(pcb);
+    free(pcb);
    // sem_post(&sem_planificador_corto_plazo);
     sem_post(&sem_grado_multiprogram);
 
@@ -73,7 +76,7 @@ t_pcb* buscar_pcb(int pid){
 		return encontre_el_pcb(pcb, pid);
 	}
     pthread_mutex_lock(&(struct_new->mutex));
-	pcb_encontrado = list_find(&(struct_new->lista), esta_el_pcb);
+	pcb_encontrado = list_find(struct_new->lista, esta_el_pcb);
     pthread_mutex_unlock(&(struct_new->mutex));
     if(pcb_encontrado != NULL){
        return pcb_encontrado;
@@ -107,22 +110,24 @@ t_pcb* buscar_pcb(int pid){
 
 }
 bool encontre_el_pcb(t_pcb* pcb, int pid){
-	return (pcb->pid == pid);
+    int pid_buscado= pcb->pid;
+	return (pid_buscado == pid);
 }
 
 t_pcb* buscar_pcb_en_bloqueados(int pid){
-    t_pcb* pcb_encontrado = NULL;
+    t_pcb* pcb_encontrado;
 	bool esta_el_pcb(void* pcb){
 		return encontre_el_pcb(pcb, pid);
 	}
     t_list_iterator* lista = list_iterator_create(lista_recursos);
+    t_recursos* recurso;
     while(list_iterator_has_next(lista)){
-        t_recursos* recurso = list_iterator_next(lista); 
+        recurso = list_iterator_next(lista); 
         if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
             pcb_encontrado = list_find(recurso->lista_procesos_bloqueados, esta_el_pcb);
-            
+            return pcb_encontrado;
         }
-        return pcb_encontrado;
+        
     }
 
 }

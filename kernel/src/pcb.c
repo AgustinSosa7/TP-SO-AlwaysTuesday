@@ -9,6 +9,7 @@ t_pcb* crearPcb(){
 	inicializar_registros(pcb);
     pcb->estado_pcb = NEW;
     pcb->contador = 0;
+    pcb->tiempo_transcurrido = 0;
 	return pcb;
 }
 //deberia poner una variable global PID=0

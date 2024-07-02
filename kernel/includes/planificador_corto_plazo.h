@@ -16,7 +16,7 @@ void planif_VRR();
 void gestionar_quantum_VRR();
 void gestionar_quantum(t_pcb* un_pcb);
 algoritmos_enum algoritmo_string_a_enum(char* algoritmo_de_plani);
-
+bool mismo_contador(t_pcb* otro_pcb,int contador);
 
 
 #endif 
