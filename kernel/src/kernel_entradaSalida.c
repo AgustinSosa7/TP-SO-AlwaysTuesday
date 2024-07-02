@@ -266,12 +266,13 @@ void desbloquear_proceso(t_interfaz* interfaz){
 
 void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
       if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
-            if(tiempo_transcurrido < un_pcb->quantum){
+            if(un_pcb->tiempo_transcurrido < un_pcb->quantum){
                   enviar_proceso_blocked_a_ready_plus(un_pcb);
             } 
-      } else{
+      } else{ 
+            un_pcb->tiempo_transcurrido = 0;
             enviar_proceso_blocked_a_ready(un_pcb);
-            tiempo_transcurrido = 0;
+            
             }
 }
 void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
@@ -283,7 +284,7 @@ void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
 }
 
 void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
-      un_pcb->quantum = un_pcb->quantum - tiempo_transcurrido;
+      un_pcb->quantum = un_pcb->quantum - un_pcb->tiempo_transcurrido;
       un_pcb->estado_pcb = READYPLUS;
 
       pthread_mutex_lock(&(struct_ready_plus->mutex));

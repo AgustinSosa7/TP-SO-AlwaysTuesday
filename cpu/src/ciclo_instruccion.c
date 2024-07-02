@@ -328,10 +328,11 @@ PROCESO_EXIT
 
 void devolver_contexto_por_ser_interrumpido()
 {
-	t_paquete* paquete = crear_paquete(DESALOJO_QUANTUM);
+	t_paquete* paquete = crear_paquete(DESALOJO);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_int_a_paquete(paquete, motivo_interrupcion);
 	enviar_paquete(paquete, fd_kernel_dispatch);
+	log_warning(cpu_logger,"devuelvo pcb por desalojo %d \n",motivo_interrupcion);
     eliminar_paquete(paquete);
 }
 
@@ -467,7 +468,7 @@ void devolver_contexto_por_fs_read(char* nombre_instruccion, char* nombre_interf
 
 void devolver_contexto_por_correcta_finalizacion()
 {
-	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION);
+	t_paquete* paquete = crear_paquete(PROCESO_EXIT);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	enviar_paquete(paquete, fd_kernel_dispatch);
 	printf("paquete enviado al kernel por EXIT\n");

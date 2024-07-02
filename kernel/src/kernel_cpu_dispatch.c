@@ -1,27 +1,56 @@
 #include "../includes/kernel_cpu_dispatch.h"
 
-void recibir_pcb_con_motivo()
-{     
+void recibir_pcb_con_motivo(){   
+
       detener_planificacion();
       printf("Esperando un PCB con MOTIVO.\n");
-      int code_op = recibir_operacion(fd_cpu_dispatch);
-      t_paquete* paquete = recibir_paquete(fd_cpu_dispatch);
-      t_pcb* pcb_recibido = recibir_pcb(paquete); 
-      log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
-      detener_planificacion();
+      int code_op;
+      t_paquete* paquete;
+      t_pcb* pcb_recibido;
 
+      if(iniciar_tiempo_VRR){
+            t_temporal* quantum_vrr = temporal_create();
+            code_op = recibir_operacion(fd_cpu_dispatch);
+            paquete = recibir_paquete(fd_cpu_dispatch);
+            pcb_recibido = recibir_pcb(paquete); 
+            log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
+            temporal_stop(quantum_vrr);
+            pcb_recibido->tiempo_transcurrido = temporal_gettime(quantum_vrr);
+            temporal_destroy(quantum_vrr);
+      }else{    
+ 
+            code_op = recibir_operacion(fd_cpu_dispatch);
+            paquete = recibir_paquete(fd_cpu_dispatch);
+            pcb_recibido = recibir_pcb(paquete); 
+            log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
+      }
+
+      detener_planificacion();
       switch (code_op)
       {
-      case DESALOJO_QUANTUM:
-            log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum.\n",pcb_recibido->pid);
-            t_pcb* un_pcb = list_remove(struct_exec->lista,0);
-            free(un_pcb);
-            list_add(struct_exec->lista,pcb_recibido);
-            cambiar_de_estado_y_de_lista(EXEC,READY);
-            sem_post(&sem_planificador_corto_plazo);
-            
+      case DESALOJO:
+            int motivo = leer_int_del_buffer(paquete->buffer);
+            switch (motivo)
+            {
+            case INTERRUPCION_POR_DESALOJO:
+                  log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum.\n",pcb_recibido->pid);
+                  t_pcb* un_pcb = list_remove(struct_exec->lista,0);
+                  free(un_pcb);
+                  pcb_recibido->tiempo_transcurrido=0;
+                  pcb_recibido->quantum = QUANTUM;
+                  list_add(struct_exec->lista,pcb_recibido);
+                  cambiar_de_estado_y_de_lista(EXEC,READY);
+                  sem_post(&sem_planificador_corto_plazo);
+                  break;
+            case INTERRUPCION_POR_KILL:
+                  cambiar_de_estado_y_de_lista(EXEC,EXIT);
+                  eliminar_proceso(pcb_recibido,INTERRUPTED_BY_USER);
+            default:
+                  break;
+            }  
             break;
-      case DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION:
+
+      case PROCESO_EXIT:
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
             
@@ -51,6 +80,9 @@ void recibir_pcb_con_motivo()
                        t_pcb* pcb = list_remove(struct_exec->lista,0);
                        pthread_mutex_unlock(&(struct_exec->mutex));
                        pcb_recibido->estado_pcb = BLOCKED;
+                       if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
+                        pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
+                       }
                        list_add(recurso->lista_procesos_bloqueados,pcb_recibido);
                        log_warning(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb_recibido->pid, enum_a_string(EXEC),enum_a_string(pcb_recibido->estado_pcb));
                        log_warning(kernel_logger,"PID: <%d> - Bloqueado por: <%s>\n",pcb_recibido->pid,recurso_solicitado);
@@ -63,6 +95,9 @@ void recibir_pcb_con_motivo()
                         log_warning(kernel_logger,"Se agrega a la lista de recursos: <%s>.\n",recurso_solicitado);
                         //t_pcb* pcb = list_get(lista_exec,0);
                         printf("Vuelvo a mandar el proceso <%d> a ejecutar\n",pcb_recibido->pid);
+                        if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
+                        pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
+                        }
                         enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
                         recibir_pcb_con_motivo();
                         //log_warning(kernel_logger,"Lista de exec, pid:%d \n", pcb->pid);
@@ -88,6 +123,9 @@ void recibir_pcb_con_motivo()
                         sem_post(&sem_planificador_corto_plazo);
                         
                   } 
+                  if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
+                        pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
+                       }
                   enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
                   recibir_pcb_con_motivo();
                   }else{

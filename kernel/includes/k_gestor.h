@@ -5,7 +5,7 @@
 
 #include <../src/utils/utils_connections.h>
 
-
+extern bool iniciar_tiempo_VRR;
 ///////////////////////ESTRUCTURAS PCB////////////////////////////
 
 typedef struct 
@@ -83,6 +83,7 @@ extern pthread_mutex_t mutex_ready_plus;
 extern pthread_mutex_t mutex_exit;
 extern pthread_mutex_t mutex_io;
 extern pthread_mutex_t mutex_detener_planificacion;
+extern pthread_mutex_t mutex_VRR;
 
 extern sem_t sem_grado_multiprogram;
 extern sem_t sem_new_a_ready;

@@ -44,8 +44,7 @@ typedef enum
 	//---- KERNEL - MEMORIA
 	CREAR_PROCESO,
     FINALIZAR_PROCESO_MEMORIA,
-  DESALOJO_QUANTUM,
-  PROCESO_EXIT,
+  DESALOJO,
   PEDIDO_IO,
   WAIT,
   SIGNAL,
@@ -67,7 +66,7 @@ typedef enum
   RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA,
   DEVOLVER_PROCESO_POR_PAGEFAULT,
   DEVOLVER_PROCESO_POR_OUT_OF_MEMORY,
-  DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION
+  PROCESO_EXIT //DEVOLVER_PROCESO_POR_CORRECTA_FINALIZACION
 }op_code;
 
 typedef struct
@@ -115,6 +114,7 @@ typedef struct{
     t_registros_cpu* registros_cpu;
     estado_pcb estado_pcb;
     int contador;
+    int64_t tiempo_transcurrido;
 } t_pcb;
 
 typedef enum{

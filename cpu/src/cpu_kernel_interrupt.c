@@ -11,12 +11,12 @@ void atender_interrupt(){
         
 		switch (cod_op) {
             case SOLICITUD_INTERRUMPIR_PROCESO:
-                log_debug(cpu_log_debug, "Recibi una interrupción desde Kernel!");
+                log_warning(cpu_logger, "Recibi una interrupción desde Kernel!");
                 motivo_interrupcion = leer_int_del_buffer(buffer);
                 if(motivo_interrupcion == 0) {
-                    log_debug(cpu_log_debug, "Motivo de la interrupción = Fin de Quantum (Desalojo)");}
+                    log_warning(cpu_logger, "Motivo de la interrupción = Fin de Quantum (Desalojo)");}
                 else if(motivo_interrupcion == 1) {
-                    log_debug(cpu_log_debug, "Motivo de la interrupción = Terminar proceso (Kill)");}
+                    log_warning(cpu_logger, "Motivo de la interrupción = Terminar proceso (Kill)");}
 
 
                 pthread_mutex_lock(&mutex_ocurrio_interrupcion);
