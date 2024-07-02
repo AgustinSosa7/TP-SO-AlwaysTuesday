@@ -108,7 +108,7 @@ u_int32_t leer_valor_de_memoria(int pid, int direccion_fisica)
     
 }
 
-void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, u_int32_t valor_a_escribir){
+void escribir_valor_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_escribir){
     // Enviar
     t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
     //agregar_int_a_paquete(paquete, pid);
