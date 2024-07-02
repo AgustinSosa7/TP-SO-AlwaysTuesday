@@ -7,10 +7,10 @@
 void crear_config(char * nombre_archivo){
 	//Todo es un config y se guarda y crea con el nombre del archivo
 
-	//char* path_archivo = string_new();
+	char* path_archivo = string_new();
 	//path_archivo = generar_path_config(nombre_archivo);
-	//path_archivo = crear_path(path_archivo);
-	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
+	path_archivo = generar_path_config(nombre_archivo);
+	t_config* config_archivo = config_create(path_archivo);
 
 	if(config_archivo == NULL){     //Verifica si existe un archivo con ese path y si no lo crea :D //Hace falta, no lo debería solo crear osea antes no puede existir?? jaja
 		FILE* file_fd = fopen(path_archivo, "a+"); 
@@ -20,7 +20,7 @@ void crear_config(char * nombre_archivo){
 	
 	config_set_value(config_archivo, "BLOQUE_INICIAL", "NULL");
 	//config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0");
-	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "10"); // SOLO ES PRUEBA
+	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0"); // SOLO ES PRUEBA
 	
 	
 	config_save(config_archivo);
@@ -37,10 +37,13 @@ void delete_archivo(char* nombre_archivo){
 	path_archivo=crear_path(path_archivo);
 	t_config* config_archivo = config_create(path_archivo);
 	*/
-	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
+	char* path_archivo = string_new();
+	path_archivo = generar_path_config(nombre_archivo);
+	t_config* config_archivo = config_create(path_archivo);
+
 	int bloque_inicial = atoi(config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
 	int tamanio = atoi(config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
-	int cant_bloques = tamanio / BLOCK_SIZE/8;
+	int cant_bloques = ceil(tamanio / BLOCK_SIZE/8);
 	for (int i = bloque_inicial ; i <= cant_bloques; i++)
 	{
 		bitarray_clean_bit(bitmap,i);
@@ -56,29 +59,45 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo){
 	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int tamanio_viejo= config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
+	log_info(entradasalida_logger, config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
+				log_info(entradasalida_logger,config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
 	int nuevo_bloque_inicial;
 	int cant_bloques = tamanio_nuevo/BLOCK_SIZE/8;
-
+	if(cant_bloques == 0){cant_bloques = 1;}
 	if (tamanio_nuevo>tamanio_viejo)
 	{
 		if (tamanio_viejo ==0)
 		{
 			nuevo_bloque_inicial= obtener_bloques_libres(tamanio_nuevo);
 			
-			if (nuevo_bloque_inicial==-1){
+			if (nuevo_bloque_inicial==-1){ // Entra si no hay bloques libres
 				return false;
 			}
-				char *bloque_text=0; 
+				char *bloque_text=malloc(10); 
 				sprintf(bloque_text,"%d",nuevo_bloque_inicial);
 				config_set_value(config_archivo, "BLOQUE_INICIAL", bloque_text);
-				char *tamanio_nuevo_text=0;
+				char *tamanio_nuevo_text=malloc(10);
 				sprintf(tamanio_nuevo_text,"%d",tamanio_nuevo);
 				config_set_value(config_archivo, "TAMANIO_ARCHIVO", tamanio_nuevo_text);
+				config_save(config_archivo);
 				
-				for (int i = nuevo_bloque_inicial ; i <= cant_bloques; i++)
+				int bitmap_index=nuevo_bloque_inicial;
+				for (int i = 0 ; i < cant_bloques; i++)
 				{
-					bitarray_set_bit(bitmap,i);
+					bitarray_set_bit(bitmap,bitmap_index);
+					bitmap_index++;
 				}
+				//////////////////////////////      PRUEBA     /////////////////////////////
+				log_info(entradasalida_logger, config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
+				log_info(entradasalida_logger,config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
+				char* rta;
+				for (int i = nuevo_bloque_inicial ; i <= cant_bloques; i++)
+				{	
+					rta = bitarray_test_bit(bitmap,i) ? "1" : "0";
+					log_info(entradasalida_logger,rta);
+				}
+				free(bloque_text);
+				free(tamanio_nuevo_text);
 
 		} else if(tamanio_nuevo!=tamanio_viejo){
 			if(puede_crecer(bloque_inicial,tamanio_nuevo,tamanio_viejo)){
@@ -109,7 +128,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo){
 		}
 		
 	}else // o el tam nuevo es igual o menor así que sirve si o si :D
-	{	char* tamanio_text=0; //Se guarda bien?
+	{	char* tamanio_text=malloc(10); //Se guarda bien?
 		sprintf(tamanio_text,"%d",tamanio_nuevo);
 		config_set_value(config_archivo, "TAMANIO_ARCHIVO", tamanio_text);
 		int cantidad_bloques_viejo = tamanio_viejo/BLOCK_COUNT/8;
@@ -117,7 +136,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo){
 			{
 				bitarray_clean_bit(bitmap,i);
 			}
-			
+		free(tamanio_text);
 	}
 	return true;
 }
@@ -154,11 +173,15 @@ bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito){
 
 
 int obtener_bloques_libres(int tamanio){
-      int i,j,bloques_libres=0;
+      int i = 0;
+	  int j= 0 ;
+	  int bloques_libres= 0;
       int tamanio_bits = tamanio/BLOCK_SIZE/8;
       bool suficiente = false;
       int rta=-1;
-      while (bitarray_get_max_bit(bitmap)>i)
+	  int tamanio_bitmap = bitarray_get_max_bit(bitmap);
+	  if(tamanio_bits==0){ tamanio_bits=1;} //preguntarse en el create
+      while (tamanio_bitmap>i)
       {
             if (!bitarray_test_bit(bitmap,i)) //Ta vacio el int i??
             {     bloques_libres=1;
@@ -180,7 +203,7 @@ int obtener_bloques_libres(int tamanio){
                               suficiente = true;
                         }
                   }
-                  if(suficiente){
+                  if(suficiente || bloques_libres == tamanio_bits){
                         rta= i;
                         break;
                   }

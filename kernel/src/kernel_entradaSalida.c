@@ -40,15 +40,22 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
+            parametros->registroTamanio = leer_int_del_buffer(buffer);
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
+            parametros->registroDireccion = leer_int_del_buffer(buffer);
+            parametros->registroTamanio = leer_int_del_buffer(buffer);
+            parametros->registroPunteroArchivo= leer_string_del_buffer(buffer);
             return parametros;
       }else //DEFALUT IO_FS_READ
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
+            parametros->registroDireccion = leer_int_del_buffer(buffer);
+            parametros->registroTamanio = leer_int_del_buffer(buffer);
+            parametros->registroPunteroArchivo= leer_string_del_buffer(buffer);
             return parametros;
       }
 }           
