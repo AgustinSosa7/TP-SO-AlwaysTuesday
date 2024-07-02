@@ -23,6 +23,9 @@ void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_int
 void devolver_contexto_por_stdout_write(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio);
 void devolver_contexto_por_fs_create(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo);
 void devolver_contexto_por_fs_delete(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo);
+void devolver_contexto_por_fs_truncate(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int tamanio);
+void devolver_contexto_por_fs_write(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int direccion_fisica, int tamanio, int puntero);
+void devolver_contexto_por_fs_read(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int direccion_fisica, int tamanio, int puntero);
 
 void devolver_contexto_por_correcta_finalizacion();
 
