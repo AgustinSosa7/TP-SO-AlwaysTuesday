@@ -107,15 +107,15 @@ void procesar_peticion(t_peticion* peticion) {
             log_info(entradasalida_logger,"¨%s¨", escrito);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
-      {
-            sleep(1000*TIEMPO_UNIDAD_TRABAJO);
+      {     
+            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             crear_config(nombre_archivo); // archivo viene ewewe.txt
-  		log_info(entradasalida_logger, "Crear Archivo: %s", nombre_archivo);
+  		log_info(entradasalida_logger, "Se creo el archivo: %s", nombre_archivo);
             
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {     
-            sleep(1000*TIEMPO_UNIDAD_TRABAJO);
+            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             delete_archivo(nombre_archivo);
             log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
@@ -124,7 +124,7 @@ void procesar_peticion(t_peticion* peticion) {
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {     
             //CONSIGO DATOS DEL CONFIG CON EL NOMBRE 
-            sleep(1000*TIEMPO_UNIDAD_TRABAJO);
+            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int tamanio_nuevo = peticion->parametros->registroTamanio;
       
@@ -135,7 +135,7 @@ void procesar_peticion(t_peticion* peticion) {
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0) // Recibo tamanio del mensaje, el mensaje, archivo.
       {
-            sleep(1000*TIEMPO_UNIDAD_TRABAJO);
+            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo); // Ver como va a llegar :D.
             log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
@@ -148,7 +148,7 @@ void procesar_peticion(t_peticion* peticion) {
        
       }else //DEFALUT IO_FS_READ
       {     
-            sleep(1000*TIEMPO_UNIDAD_TRABAJO);
+            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo);
             int registro_direccion = peticion->parametros->registroDireccion;

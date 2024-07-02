@@ -42,6 +42,7 @@ void finalizar_proceso(){
 void atender_kernel(){
     while(1){
         op_code code_op_recibido = recibir_operacion(fd_kernel);
+        sem_wait(&ejecucion);
         if(code_op_recibido == CREAR_PROCESO){
             list_add(procesos_memoria, crear_proceso_nuevo());
         }
@@ -53,5 +54,6 @@ void atender_kernel(){
             log_error(memoria_logger, "No se recibio un pedido correcto de kernel.");
             exit(EXIT_FAILURE);
         }
+        sem_post(&retardo);
     }    
 }

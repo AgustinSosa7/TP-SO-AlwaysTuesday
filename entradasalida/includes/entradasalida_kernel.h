@@ -34,5 +34,6 @@ int compactacion(int bloque_inicial,int tamanio_viejo, int tamanio_nuevo);
 int mover_archivos();
 int tamanio_bloque_escrito(int primer_bloque_libre, int tamanio_archivo);
 int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultimo_bloque_ocupado);
+char* generar_path_config(char* nombre_archivo);
 
 #endif 

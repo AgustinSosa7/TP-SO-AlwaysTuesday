@@ -114,15 +114,23 @@ void iniciar_file_system(){
 
 void crear_paths(){
 	log_info(entradasalida_logger, "Creando paths");
-	crear_path(PATH_BLOQUES,"/Bloques.dat");
-	crear_path(PATH_BITMAP,"/Bitmap.dat");
+	PATH_BLOQUES= string_new();
+	PATH_BLOQUES=crear_path("/Bloques.dat");
+	//string_append(&PATH_BLOQUES,PATH_BASE_DIALFS);
+	//string_append(&PATH_BLOQUES,"/Bloques.dat"); 
+	
+	PATH_BITMAP= string_new();
+	PATH_BITMAP = crear_path("/Bitmap.dat");
+	//string_append(&PATH_BITMAP,PATH_BASE_DIALFS);
+	//string_append(&PATH_BITMAP,"/Bitmap.dat"); 
 	log_info(entradasalida_logger, "Paths creados correctamente");
 }
 
-void crear_path(char* path, char* nombre_archivo){ 	// Nombra el directorio y lo guarda en el PATH
-	path = string_new();
+char* crear_path(char* nombre_archivo){ 	// Nombra el directorio y lo guarda en el PATH
+	char* path = string_new();
 	string_append(&path,PATH_BASE_DIALFS);
 	string_append(&path,nombre_archivo); 
+	return path;
 }
 
 void inicializar_archivos(){ 
@@ -136,7 +144,7 @@ void inicializar_archivos(){
 	
 	bloquesEnMemoria = mmap(NULL, tamanio_archivo_bloques, PROT_READ | PROT_WRITE, MAP_SHARED, fd_archivoBloques, 0); // Verificar 2 parametro
 	if (bloquesEnMemoria == MAP_FAILED) {
-		log_error(entradasalida_logger, "Error al mapear los bloques SWAP");
+		log_error(entradasalida_logger, "Error al mapear los Bloques.dat");
 		exit(1);
 	}
 	// Hace falta acá un Sync??? 
@@ -145,7 +153,7 @@ void inicializar_archivos(){
 	ftruncate(fd_archivoBitmap, tamanio_bitmap);
 	pre_bitmap = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_archivoBitmap, 0); 
 	if (pre_bitmap == MAP_FAILED) {
-		log_error(entradasalida_logger, "Error al mapear los bitmap SWAP");
+		log_error(entradasalida_logger, "Error al mapear los Bitmap.dat");
 		exit(1);
 	}
 

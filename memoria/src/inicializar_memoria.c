@@ -6,6 +6,7 @@ void inicializar_memoria(char* path){
     _imprimir_config();
     _inicializar_listas();
     _inicializar_estructuras();
+    _inicializar_semaforos();
 }
 
 void _iniciar_log(){  
@@ -15,7 +16,7 @@ void _iniciar_log(){
         exit(EXIT_FAILURE);
     }
     
-    memoria_log_debug = log_create("cliente.log", "CL_LOG", 1, LOG_LEVEL_TRACE);
+    memoria_log_debug = log_create("cliente_debug.log", "CL_LOG", 1, LOG_LEVEL_TRACE);
     if (memoria_log_debug == NULL){
         perror("Algo raro paso con el log. No se pudo crear o encontrar el archivo.");
         exit(EXIT_FAILURE);
@@ -73,16 +74,6 @@ void _inicializar_estructuras(){
             liberar_marco(i);
     }
 
-    /*
-    ocupar_marco(0);
-    ocupar_marco(1);
-    ocupar_marco(2);
-    ocupar_marco(3);
-    ocupar_marco(4);
-    ocupar_marco(6);
-    ocupar_marco(7);
-    */
-
     /*TEST!
     for(int ii = 0; ii<size_de_tabla_marcos;ii++){
             log_info(memoria_log_debug, "valor del %d bit: %d",ii, bitarray_test_bit(tabla_de_marcos, ii));
@@ -91,4 +82,22 @@ void _inicializar_estructuras(){
     log_info(memoria_log_debug, "Cantidad de marcos: %d", cantidad_de_marcos);
     log_info(memoria_log_debug, "Cantidad de marcos/8: %d", cantidad_de_marcos/8);
     log_info(memoria_log_debug, "long de bitarray: %ld", size_de_tabla_marcos);
+}
+
+void _inicializar_semaforos(){	
+    pthread_mutex_init(&mutex_tabla_marcos, NULL);
+    pthread_mutex_init(&mutex_tabla_paginas, NULL);
+    pthread_mutex_init(&mutex_espacio_memoria, NULL);
+
+	sem_init(&retardo,0,0); //inicializado en 0
+	sem_init(&ejecucion,0,1); //inicializado en 1
+}
+
+void hilo_retardo(){
+    float tiempo_retardo = RETARDO_RESPUESTA;
+    while(1){
+        sem_wait(&retardo);
+        sleep(tiempo_retardo/1000); // El programa se suspende durante RETARDO_RESPUESTA milisegundos (RETARDO_RESPUESTA/1000 segundos)
+        sem_post(&ejecucion);
+    }
 }

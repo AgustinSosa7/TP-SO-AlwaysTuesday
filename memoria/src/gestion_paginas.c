@@ -1,11 +1,16 @@
 #include "../includes/gestion_paginas.h"
 
 void ocupar_marco(int index){
+    pthread_mutex_lock(&mutex_tabla_marcos);
     bitarray_set_bit(tabla_de_marcos, index);
+    pthread_mutex_unlock(&mutex_tabla_marcos);
+    
 }
 
 void liberar_marco(int index){
+    pthread_mutex_lock(&mutex_tabla_marcos);
     bitarray_clean_bit(tabla_de_marcos, index);
+    pthread_mutex_unlock(&mutex_tabla_marcos);
 }
 
 int traer_numero_marco(t_proceso* proceso,int pagina_consultada){

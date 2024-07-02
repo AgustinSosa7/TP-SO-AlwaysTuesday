@@ -12,7 +12,7 @@ void truncateString(char *str, int n);
 void inicializar_listas();
 
 void iniciar_file_system();
-void crear_path(char* path, char* nombre_archivo);
+char* crear_path(char* nombre_archivo);
 void crear_paths();
 void inicializar_archivos();
 

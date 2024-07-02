@@ -64,7 +64,7 @@ void detener_planificacion(){
 void liberar_recursos(t_pcb* un_pcb){
     t_list* lista_de_recursos_encontrada = buscar_lista_de_recursos_pcb(un_pcb);
     if(lista_de_recursos_encontrada !=NULL){
-        bool a = list_remove_element(lista_de_recursos_encontrada,un_pcb);
+        bool a = list_remove_element(lista_de_recursos_encontrada,un_pcb); //WARNING??
     } else {
         printf("No hay recursos para liberar.\n");
     }

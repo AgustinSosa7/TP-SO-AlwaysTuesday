@@ -105,14 +105,36 @@ void ciclo_instruccion(){
 			int tamanio = atoi(strtok_r(saveptr, " ", &saveptr));
 			int nuevoTamanioDelProceso = pedir_ajustar_tamanio_del_proceso(pcb_global->pid, tamanio);
 			bool outOfMemory = nuevoTamanioDelProceso == -1;
-			log_info(cpu_logger, "RESPUESTA DE REZISE: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, nuevoTamanioDelProceso);
+			pcb_global->contador++;
 			if(outOfMemory){
 				log_info(cpu_logger, "Out of Memory: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, tamanio);
 				dejar_de_ejecutar = true;
-				pcb_global->contador++;
 				devolver_contexto_por_out_of_memory();
 			}
+			log_info(cpu_logger, "Resize: PID: %d - Nuevo tamaño del proceso en Memoria: %d", pcb_global->pid, nuevoTamanioDelProceso);
 			pcb_global->registros_cpu->PC++;
+		}
+	else if (strcmp(nombre_instruccion, "COPY_STRING") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			int tamanio = atoi(strtok_r(saveptr, " ", &saveptr));
+			
+			int direccion_logica_origen = leer_valor_de_registro("SI");
+			int direccion_fisica_origen = mmu(direccion_logica_origen);
+			
+			int direccion_logica_destino = leer_valor_de_registro("DI");
+			int direccion_fisica_destino = mmu(direccion_logica_destino);
+			
+			if (direccion_fisica_origen != -1 && direccion_fisica_destino != 1)
+			{
+				u_int32_t valor = leer_valor_de_memoria(pcb_global->pid, direccion_fisica_origen);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_origen, valor);
+
+				escribir_valor_en_memoria(pcb_global->pid, direccion_fisica_destino, valor);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_destino, valor);
+
+				pcb_global->registros_cpu->PC++;
+			}
 			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "WAIT") == 0)
@@ -120,8 +142,8 @@ void ciclo_instruccion(){
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
-			dejar_de_ejecutar = true;
 			pcb_global->contador++;
+			dejar_de_ejecutar = true;
 			devolver_contexto_por_wait(nombre_recurso);
 		}
 	else if (strcmp(nombre_instruccion, "SIGNAL") == 0)
@@ -129,8 +151,8 @@ void ciclo_instruccion(){
 			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
-			dejar_de_ejecutar = true;
 			pcb_global->contador++;
+			dejar_de_ejecutar = true;
 			devolver_contexto_por_signal(nombre_recurso);
 		}
 	else if (strcmp(nombre_instruccion, "IO_GEN_SLEEP") == 0)
@@ -139,8 +161,8 @@ void ciclo_instruccion(){
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			int tiempo_sleep = atoi(strtok_r(saveptr, " ", &saveptr));
 			pcb_global->registros_cpu->PC++;
-			dejar_de_ejecutar = true;
 			pcb_global->contador++;
+			dejar_de_ejecutar = true;
 			devolver_contexto_por_sleep(nombre_instruccion, nombre_interfaz, tiempo_sleep);
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDIN_READ") == 0)
@@ -153,15 +175,14 @@ void ciclo_instruccion(){
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
 			int direccion_fisica = mmu(direccion_logica);
 			int tamanio = leer_valor_de_registro(registro_tamanio);
+			pcb_global->contador++;
 
 			if (direccion_fisica != -1) // Si la traduccion de la direccion logica arroja un Page Fault, se devuelve el contexto por page fault y no se ejecuta el resto!.
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
-				pcb_global->contador++;
 				devolver_contexto_por_stdin_read(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
 			}
-			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDOUT_WRITE") == 0)
 		{
@@ -173,15 +194,14 @@ void ciclo_instruccion(){
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
 			int direccion_fisica = mmu(direccion_logica);
 			int tamanio = leer_valor_de_registro(registro_tamanio);
+			pcb_global->contador++;
 
 			if (direccion_fisica != -1) // Si la traduccion de la direccion logica arroja un Page Fault, se devuelve el contexto por page fault y no se ejecuta el resto!.
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
-				pcb_global->contador++;
 				devolver_contexto_por_stdout_write(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
 			}
-			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_CREATE") == 0)
 		{
@@ -189,8 +209,8 @@ void ciclo_instruccion(){
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
-			dejar_de_ejecutar = true;
 			pcb_global->contador++;
+			dejar_de_ejecutar = true;
 			devolver_contexto_por_fs_create(nombre_instruccion, nombre_interfaz, nombre_archivo);
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_DELETE") == 0)
@@ -199,9 +219,66 @@ void ciclo_instruccion(){
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
-			dejar_de_ejecutar = true;
 			pcb_global->contador++;
+			dejar_de_ejecutar = true;
 			devolver_contexto_por_fs_delete(nombre_instruccion, nombre_interfaz, nombre_archivo);
+		}
+	else if (strcmp(nombre_instruccion, "IO_FS_TRUNCATE") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
+			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
+			
+			int tamanio = leer_valor_de_registro(registro_tamanio);
+			pcb_global->registros_cpu->PC++;
+			pcb_global->contador++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_fs_truncate(nombre_instruccion, nombre_interfaz, nombre_archivo, tamanio);
+		}
+	else if (strcmp(nombre_instruccion, "IO_FS_WRITE") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
+			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
+			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
+			char *registro_puntero = strtok_r(saveptr, " ", &saveptr);
+			
+			int direccion_logica = leer_valor_de_registro(registro_direccion);
+			int direccion_fisica = mmu(direccion_logica);
+			int tamanio = leer_valor_de_registro(registro_tamanio);
+			int puntero = leer_valor_de_registro(registro_puntero); // Consultar a los chicos si el puntero es un int o qué tipo de dato sería... Yo entiendo que hay que escribir a partir de ese byte dentro del archivo (por eso lo paso como int).
+			pcb_global->contador++;
+
+			if (direccion_fisica != -1)
+			{
+				pcb_global->registros_cpu->PC++;
+				dejar_de_ejecutar = true;
+				devolver_contexto_por_fs_write(nombre_instruccion, nombre_interfaz, nombre_archivo, direccion_fisica, tamanio, puntero);
+			}
+		}
+	else if (strcmp(nombre_instruccion, "IO_FS_READ") == 0)
+		{
+			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
+			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
+			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
+			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
+			char *registro_puntero = strtok_r(saveptr, " ", &saveptr);
+			
+			int direccion_logica = leer_valor_de_registro(registro_direccion);
+			int direccion_fisica = mmu(direccion_logica);
+			int tamanio = leer_valor_de_registro(registro_tamanio);
+			int puntero = leer_valor_de_registro(registro_puntero); // Consultar a los chicos si el puntero es un int o qué tipo de dato sería... Yo entiendo que hay que escribir a partir de ese byte dentro del archivo (por eso lo paso como int).
+			pcb_global->contador++;
+
+			if (direccion_fisica != -1)
+			{
+				pcb_global->registros_cpu->PC++;
+				dejar_de_ejecutar = true;
+				devolver_contexto_por_fs_read(nombre_instruccion, nombre_interfaz, nombre_archivo, direccion_fisica, tamanio, puntero);
+			}
 		}
 	else if (strcmp(nombre_instruccion, "EXIT") == 0)
 		{
@@ -347,6 +424,44 @@ void devolver_contexto_por_fs_delete(char* nombre_instruccion, char* nombre_inte
 	agregar_string_a_paquete(paquete, nombre_instruccion);
 	agregar_string_a_paquete(paquete, nombre_interfaz);
 	agregar_string_a_paquete(paquete, nombre_archivo);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_fs_truncate(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int tamanio)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_string_a_paquete(paquete, nombre_archivo);
+	agregar_int_a_paquete(paquete, tamanio);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_fs_write(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int direccion_fisica, int tamanio, int puntero)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_string_a_paquete(paquete, nombre_archivo);
+	agregar_int_a_paquete(paquete, tamanio);
+	agregar_int_a_paquete(paquete, puntero);
+	enviar_paquete(paquete, fd_kernel_dispatch);
+    eliminar_paquete(paquete);
+}
+
+void devolver_contexto_por_fs_read(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int direccion_fisica, int tamanio, int puntero)
+{
+	t_paquete* paquete = crear_paquete(PEDIDO_IO);
+	agregar_pcb_a_paquete(pcb_global, paquete);
+	agregar_string_a_paquete(paquete, nombre_instruccion);
+	agregar_string_a_paquete(paquete, nombre_interfaz);
+	agregar_string_a_paquete(paquete, nombre_archivo);
+	agregar_int_a_paquete(paquete, tamanio);
+	agregar_int_a_paquete(paquete, puntero);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }

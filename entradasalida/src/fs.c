@@ -7,9 +7,10 @@
 void crear_config(char * nombre_archivo){
 	//Todo es un config y se guarda y crea con el nombre del archivo
 
-	char* path_archivo = malloc(strlen(PATH_BASE_DIALFS) + strlen(nombre_archivo) + 1);
-	 crear_path(path_archivo,strcat("/",nombre_archivo));
-	t_config* config_archivo = config_create(path_archivo);
+	//char* path_archivo = string_new();
+	//path_archivo = generar_path_config(nombre_archivo);
+	//path_archivo = crear_path(path_archivo);
+	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
 
 	if(config_archivo == NULL){     //Verifica si existe un archivo con ese path y si no lo crea :D //Hace falta, no lo debería solo crear osea antes no puede existir?? jaja
 		FILE* file_fd = fopen(path_archivo, "a+"); 
@@ -18,35 +19,41 @@ void crear_config(char * nombre_archivo){
 	}
 	
 	config_set_value(config_archivo, "BLOQUE_INICIAL", "NULL");
-	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0");
+	//config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0");
+	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "10"); // SOLO ES PRUEBA
+	
 	
 	config_save(config_archivo);
-
+	log_info(entradasalida_logger, config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
+	log_info(entradasalida_logger,config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
+	log_info(entradasalida_logger,"Bitmap en posicion 0,%d",bitarray_test_bit(bitmap,2));
 }
 
 
 void delete_archivo(char* nombre_archivo){
-	char* path_archivo = malloc(strlen(PATH_BASE_DIALFS) + strlen(nombre_archivo) + 1);  
-	crear_path(path_archivo ,strcat("/",nombre_archivo));
+	/*char* path_archivo = string_new();
+	strcat(path_archivo,"/");
+	strcat(path_archivo,nombre_archivo);
+	path_archivo=crear_path(path_archivo);
 	t_config* config_archivo = config_create(path_archivo);
-	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
-	int tamanio = config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
+	*/
+	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
+	int bloque_inicial = atoi(config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
+	int tamanio = atoi(config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
 	int cant_bloques = tamanio / BLOCK_SIZE/8;
 	for (int i = bloque_inicial ; i <= cant_bloques; i++)
 	{
 		bitarray_clean_bit(bitmap,i);
 	}
-	
-	config_destroy(config_archivo);
+	remove(path_archivo);
+	config_destroy(config_archivo); //Elimina solo el config que usaba
 	
 
 }
 
 bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo){
 
-	char* path_archivo = malloc(strlen(PATH_BASE_DIALFS) + strlen(nombre_archivo) + 1); 
-	crear_path(path_archivo,strcat("/",nombre_archivo));
-	t_config* config_archivo = config_create(path_archivo);
+	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int tamanio_viejo= config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
 	int nuevo_bloque_inicial;
@@ -117,9 +124,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo){
 
 bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito){
 	//Camino feliz entra todo :D
-	char* path_archivo = malloc(strlen(PATH_BASE_DIALFS) + strlen(nombre_archivo) + 1);  
-	crear_path(path_archivo,strcat("/",nombre_archivo));
-	t_config* config_archivo = config_create(path_archivo);
+	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int tamanio = config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
 	int donde_escribir = (bloque_inicial * BLOCK_SIZE + registro_archivo); 
@@ -132,9 +137,7 @@ bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito){
 
  char* leer_archivo(char* nombre_archivo,int registro_archivo,int tamanio){
 	char* leido = malloc (tamanio); //llega en bytes?
-	char* path_archivo = malloc(strlen(PATH_BASE_DIALFS) + strlen(nombre_archivo) + 1);  
-	crear_path(path_archivo,strcat("/",nombre_archivo));
-	t_config* config_archivo = config_create(path_archivo);
+	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int tamanio_archivo = config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
 	if (registro_archivo+tamanio-1>tamanio_archivo) //Se fija que este dentro del archivo menos uno xq escribe uno en el puntero
@@ -293,4 +296,13 @@ int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultim
 	strcat(bloquesEnMemoria+primer_bloque_libre*BLOCK_SIZE,archivo_aux); //copio todo
 	free(archivo_aux);
 	return primer_bloque_libre + tamanio;
+}
+
+char* generar_path_config(char* nombre_archivo){
+	char* path_archivo = string_new();
+	strcat(path_archivo,"/");
+	strcat(path_archivo,nombre_archivo);
+	path_archivo = crear_path(path_archivo);
+	return path_archivo;
+
 }
