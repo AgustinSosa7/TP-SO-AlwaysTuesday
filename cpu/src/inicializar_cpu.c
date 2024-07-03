@@ -88,6 +88,10 @@ void inicializar_estructuras(){
     motivo_interrupcion = -1;
 }
 
+void inicializar_listas(){
+    lista_direcciones_operables = list_create();
+}
+
 void inicializar_semaforos(){
     sem_init(&sem_ciclo_de_instruccion,false,0);
     pthread_mutex_init(&mutex_ocurrio_interrupcion, NULL);

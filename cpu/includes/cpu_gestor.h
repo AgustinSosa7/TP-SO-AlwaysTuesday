@@ -48,6 +48,15 @@ extern bool dejar_de_ejecutar;
 extern bool ocurrio_interrupcion;
 extern int motivo_interrupcion;
 
+// Estructuras
+typedef struct {
+    int direccion_fisica;
+    int cantidad_bytes;
+} t_direccion_a_operar;
+
+// Listas
+extern t_list* lista_direcciones_operables;
+
 // Semaforos
 extern sem_t sem_ciclo_de_instruccion;
 extern pthread_mutex_t mutex_ocurrio_interrupcion;

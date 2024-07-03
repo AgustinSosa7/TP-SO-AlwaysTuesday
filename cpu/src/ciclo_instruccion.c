@@ -38,15 +38,29 @@ void ciclo_instruccion(){
 			char *registro_datos = strtok_r(saveptr, " ", &saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
-			
+			mmu2(direccion_logica, tamanio_del_registro(registro_datos));
+
+			/*
 			if (direccion_fisica != -1)
 			{
-				u_int32_t valor_leido_en_memoria = leer_valor_de_memoria(pcb_global->pid, direccion_fisica);
+				u_int32_t valor_leido_en_memoria = leer_valor_de_memoria(pcb_global->pid, direccion_fisica, tamanio_del_registro(registro_datos));
 				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
 				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_leido_en_memoria);
 				pcb_global->registros_cpu->PC++;
 			}
+			pcb_global->contador++;*/
+
+			if(tamanio_del_registro(registro_datos) = 1){
+				u_int8_t valor_leido_en_memoria = leer_1byte_de_memoria(pcb_global->pid, direccion_fisica);
+				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_leido_en_memoria);
+			}
+			else if(tamanio_del_registro(registro_datos) = 4){
+				u_int32_t valor_leido_en_memoria = leer_4byte_de_memoria(pcb_global->pid, direccion_fisica);
+				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_leido_en_memoria);
+			}
+			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "MOV_OUT") == 0)
@@ -318,12 +332,17 @@ void ciclo_instruccion(){
 	}
 }
 
-// Formato del Paquete: OP_CODE, BUFFER [PCB, INSTRUCCION, PARAMETROS]
-/*
+/* 
+Formato del Paquete: OP_CODE, BUFFER(PCB, INSTRUCCION, PARAMETROS)
+
 OP_CODE's que envía CPU a Kernel:
-DESALOJO_QUANTUM
-PEDIDO_IO
-PROCESO_EXIT
+	DESALOJO
+	DEVOLVER_PROCESO_POR_PAGEFAULT
+	DEVOLVER_PROCESO_POR_OUT_OF_MEMORY
+	WAIT
+	SIGNAL
+	PEDIDO_IO
+	PROCESO_EXIT
 */
 
 void devolver_contexto_por_ser_interrumpido()
@@ -332,7 +351,7 @@ void devolver_contexto_por_ser_interrumpido()
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_int_a_paquete(paquete, motivo_interrupcion);
 	enviar_paquete(paquete, fd_kernel_dispatch);
-	log_warning(cpu_logger,"devuelvo pcb por desalojo %d \n",motivo_interrupcion);
+	log_warning(cpu_logger,"Devuelvo el PCB por desalojo (Motivo = %d)\n",motivo_interrupcion); // Sacar este log más adelante.
     eliminar_paquete(paquete);
 }
 
@@ -600,6 +619,34 @@ uint32_t leer_valor_de_registro(char* nombre_registro)
 	return -1;
 }
 
+bool es_registro_de_un_byte(char* nombre_registro)
+{
+	if (strcmp(nombre_registro, "AX") == 0 || strcmp(nombre_registro, "BX") == 0 || strcmp(nombre_registro, "CX") == 0 || strcmp(nombre_registro, "DX") == 0)
+	{
+		return 1;
+	}
+	else if(strcmp(nombre_registro, "EAX") == 0 || strcmp(nombre_registro, "EBX") == 0 || strcmp(nombre_registro, "ECX") == 0 || strcmp(nombre_registro, "EDX") == 0 || strcmp(nombre_registro, "PC") == 0 || strcmp(nombre_registro, "SI") == 0 || strcmp(nombre_registro, "DI") == 0)
+	{
+		return 0;
+	}
+	log_error(cpu_logger, "El registro ingresado no existe! Registro: %s.", nombre_registro);
+	return -1;
+}
+
+int tamanio_del_registro(char* nombre_registro)
+{
+	if (strcmp(nombre_registro, "AX") == 0 || strcmp(nombre_registro, "BX") == 0 || strcmp(nombre_registro, "CX") == 0 || strcmp(nombre_registro, "DX") == 0)
+	{
+		return 1;
+	}
+	else if(strcmp(nombre_registro, "EAX") == 0 || strcmp(nombre_registro, "EBX") == 0 || strcmp(nombre_registro, "ECX") == 0 || strcmp(nombre_registro, "EDX") == 0 || strcmp(nombre_registro, "PC") == 0 || strcmp(nombre_registro, "SI") == 0 || strcmp(nombre_registro, "DI") == 0)
+	{
+		return 4;
+	}
+	log_error(cpu_logger, "El registro ingresado no existe! Registro: %s.", nombre_registro);
+	return -1;
+}
+
 int mmu(int direccion_logica)
 {
 	int numero_de_pagina = floor(direccion_logica / tamanio_pagina);
@@ -620,41 +667,67 @@ int mmu(int direccion_logica)
 
 	return direccion_fisica;
 }
-	
-	
-	
-	
-	
-	
-	
-	/////////////////////////////////////////////     FETCH    ////////////////////////////////////////
 
-/*
-char ** ciclo_instruccion_fetch(){ //
-	//sacar
-	printf("Cree fetch\n");
-	char* pseudo;
-	char** instruccion_spliteada;
-	//fin sacar
-		printf("pid del pcb_global: %d\n", pcb_global->pid);
-
-		pedir_instruccion_pseudocodigo(pcb_global->pid,pcb_global->registros_cpu->PC);
-		
-		//sacar
-		pseudo = recibir_instruccion_pseudocodigo(); 
-		printf("Recibi el pseudo: %s\n",pseudo);
-
-		instruccion_spliteada = string_split(pseudo, " ");
-		printf("Spliteado param0fetch: %s\n",instruccion_spliteada[0]);
-		printf("Spliteado param1fetch: %s\n",instruccion_spliteada[1]);
-		printf("Spliteado param2fetch: %s\n",instruccion_spliteada[2]);
-		
-		pcb_global->registros_cpu->PC++;
-
-		return instruccion_spliteada;
-		//fin sacar
+void mmu2(int direccion_logica, int cantidad_de_bytes)
+{
+	int numero_de_pagina_inicial = floor(direccion_logica / tamanio_pagina);
+	int numero_de_pagina_final = floor((direccion_logica + cantidad_de_bytes) / tamanio_pagina);
+	
+	if (numero_de_pagina_inicial != numero_de_pagina_final) 
+	{
+		for(int numero_pagina = numero_de_pagina_inicial; numero_pagina <= numero_de_pagina_final; numero_pagina++)
+		{
+			int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_pagina);
+			log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_pagina, numero_de_marco);
+			
+			int desplazamiento = direccion_logica - numero_pagina * tamanio_pagina;
+			int bytes_a_operar = tamanio_pagina - desplazamiento;
+			int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
+			agregar_direccion_a_operar(direccion_fisica, bytes_a_operar);
+			log_info(cpu_logger, "Se agrego la Operación en memoria: Página = <%d> - Bytes = <%d>", numero_pagina, bytes_a_operar);
+			
+			// Actualizo estos datos para la próxima iteración:
+			cantidad_de_bytes -= bytes_a_operar;
+			direccion_logica += bytes_a_operar;
+		}
 	}
+	else
+	{
+		int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina_inicial);
+		log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_de_pagina_inicial, numero_de_marco);
+		int desplazamiento = direccion_logica - numero_de_pagina_inicial * tamanio_pagina;
+		int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
+		agregar_direccion_a_operar(direccion_fisica, cantidad_de_bytes);
+	}
+}
+
+void agregar_direccion_a_operar(int direccion, int bytes)
+{
+	t_direccion_a_operar* direccion_operable = malloc(sizeof(t_direccion_a_operar));
+	direccion_operable->direccion_fisica = direccion;
+	direccion_operable->cantidad_bytes = bytes;
+	list_add(lista_direcciones_operables, direccion_operable);
+}
+	
+/* EJEMPLO DE INSTANCIACION DE UN STRUCT:
+	
+	typedef struct {
+    estado_pcb estado;
+    t_list* lista;
+    pthread_mutex_t mutex;
+	} t_listas_estados;
+	
+	struct_new = malloc(sizeof(t_listas_estados));
+	struct_new->estado = NEW;
+	struct_new->mutex = mutex_new;
+	struct_new->lista = list_create();
+
+	struct_new es de tipo t_listas_estados
 */
+	
+	
+	
+	
     /////////////////////////////////////////////     DECODE    ////////////////////////////////////////
 
 /*
