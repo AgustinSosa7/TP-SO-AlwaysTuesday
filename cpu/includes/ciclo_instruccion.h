@@ -31,6 +31,9 @@ void devolver_contexto_por_correcta_finalizacion();
 
 void escribir_valor_a_registro(char* nombre_registro, u_int32_t valor);
 uint32_t leer_valor_de_registro(char* nombre_registro);
-int mmu(int direccion_logica);
+//int mmu(int direccion_logica);
+t_direccion_a_operar* mmu(int direccion_logica);
+void calcular_accesos_a_memoria(int direccion_logica,int cantidad_bytes);
+int calcular_cantidad_de_accesos(int direccion_logica_inicial,int bytes_a_operar);
 
 #endif
