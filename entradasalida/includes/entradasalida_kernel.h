@@ -21,7 +21,7 @@ void eliminar_peticion(t_peticion* peticion);
 void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros);
 
 //FS
-void crear_config(char* nombre_archivo);
+bool crear_config(char* nombre_archivo);
 void delete_archivo(char* nombre_archivo);
 bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo);
 bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito);
@@ -35,5 +35,6 @@ int mover_archivos();
 int tamanio_bloque_escrito(int primer_bloque_libre, int tamanio_archivo);
 int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultimo_bloque_ocupado);
 char* generar_path_config(char* nombre_archivo);
+void mostrar_estado_archivo(t_config* config_archivo);
 
 #endif 
