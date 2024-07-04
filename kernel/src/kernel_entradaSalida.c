@@ -110,18 +110,20 @@ bool validar_interfaz_admite_instruccion(t_interfaz* interfaz, char* instruccion
 
 
 void enviar_proceso_execute_a_exit(){ 
-
+      pthread_mutex_lock(&(struct_exec->mutex));
       t_pcb* pcb = list_get(struct_exec->lista, 0); //Revisar LOGICA (mili)
-
-      cambiar_de_estado_y_de_lista(EXEC, EXIT);    // LIBERAR ESTRUCTURAS EN MEMORIA
+      pthread_mutex_unlock(&(struct_exec->mutex));
+      cambiar_de_estado_y_de_lista(EXEC, EXIT);    
 
       eliminar_proceso(pcb, INVALID_INTERFACE);
 }
 
 void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* interfaz)
 {    
-    printf("Enviando el proceso a blocked...\n");  
+    printf("Enviando el proceso a blocked...\n"); 
+    pthread_mutex_lock(&(struct_exec->mutex));
     t_pcb* un_pcb = list_remove(struct_exec->lista,0);
+    pthread_mutex_unlock(&(struct_exec->mutex));
     free(un_pcb);
     // eliminar_pcb(un_pcb);
 
@@ -233,8 +235,9 @@ void enviar_proceso_blocked_io_a_exit(t_proceso_blocked* proceso_blocked){
       eliminar_proceso(pcb, INVALID_INTERFACE);
 
       log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
-
+      pthread_mutex_lock(&(struct_exit->mutex));
       list_add(struct_exit->lista, pcb);
+      pthread_mutex_unlock(&(struct_exit->mutex));
 }
 
 bool recibir_fin_peticion(t_interfaz* interfaz){
@@ -268,19 +271,15 @@ void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
       if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
             if(un_pcb->tiempo_transcurrido < un_pcb->quantum){
                   enviar_proceso_blocked_a_ready_plus(un_pcb);
-            } 
+            }else {
+                  un_pcb->tiempo_transcurrido = 0;
+                  enviar_proceso_blocked_a_ready(un_pcb);
+                  }
       } else{ 
             un_pcb->tiempo_transcurrido = 0;
             enviar_proceso_blocked_a_ready(un_pcb);
             
             }
-}
-void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
-      un_pcb->estado_pcb = READY;
-
-      pthread_mutex_lock(&(struct_ready->mutex));
-      list_add(struct_ready->lista,un_pcb); 
-      pthread_mutex_unlock(&(struct_ready->mutex));
 }
 
 void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){

@@ -41,15 +41,12 @@ void enviar_interrupción_a_cpu(op_code tipo_interrupción, int motivo){
     eliminar_paquete(un_paquete);
 } 
 void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
-    printf("liberando recursos.\n");
-    liberar_recursos(pcb);
     printf("liberando estructuras en memoria.\n");
     liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA, pcb->pid);
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
-    free(pcb);
-   // sem_post(&sem_planificador_corto_plazo);
     sem_post(&sem_grado_multiprogram);
-
+    printf("liberando recursos.\n");
+    liberar_recursos(pcb);
 }
 
 
@@ -61,15 +58,8 @@ void detener_planificacion(){
     pthread_mutex_unlock(&mutex_detener_planificacion);
 }
 
-void liberar_recursos(t_pcb* un_pcb){
-    t_list* lista_de_recursos_encontrada = buscar_lista_de_recursos_pcb(un_pcb);
-    if(lista_de_recursos_encontrada !=NULL){
-        bool a = list_remove_element(lista_de_recursos_encontrada,un_pcb); //WARNING??
-    } else {
-        printf("No hay recursos para liberar.\n");
-    }
-}
 
+/////////////FINALIZAR_PROCESO//////////////
 t_pcb* buscar_pcb(int pid){
 	t_pcb* pcb_encontrado;
 	bool esta_el_pcb(void* pcb){
@@ -120,29 +110,58 @@ t_pcb* buscar_pcb_en_bloqueados(int pid){
 		return encontre_el_pcb(pcb, pid);
 	}
     t_list_iterator* lista = list_iterator_create(lista_recursos);
-    t_recursos* recurso;
     while(list_iterator_has_next(lista)){
-        recurso = list_iterator_next(lista); 
+        t_recursos* recurso = list_iterator_next(lista); 
         if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
             pcb_encontrado = list_find(recurso->lista_procesos_bloqueados, esta_el_pcb);
             return pcb_encontrado;
-        }
-        
+        }   
     }
-
 }
-t_list* buscar_lista_de_recursos_pcb(t_pcb* pcb){
-	bool esta_el_pcb(void* un_pcb){
-		return encontre_el_pcb(un_pcb, pcb->pid);
-	}
+
+/////liberación de recursos
+void liberar_recursos(t_pcb* un_pcb){
+    remover_pcb_de_recursos_bloqueados(un_pcb);
+    remover_pcb_de_recursos_asignados(un_pcb);
+}
+void remover_pcb_de_recursos_bloqueados(t_pcb* pcb){
     t_list_iterator* lista = list_iterator_create(lista_recursos);
+    bool remover(void* un_pcb){
+        return remover_pcb(un_pcb, pcb);
+    }
     while(list_iterator_has_next(lista)){
         t_recursos* recurso =list_iterator_next(lista); 
-        if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
-           return recurso->lista_procesos_bloqueados;
-        } else {
-            return NULL;
+        pthread_mutex_lock(&(recurso->mutex_recurso));
+        list_remove_by_condition(recurso->lista_procesos_bloqueados,remover); 
+        pthread_mutex_unlock(&(recurso->mutex_recurso));
+    }
+}
+
+bool remover_pcb(t_pcb* un_pcb, t_pcb* otro_pcb){
+    return (un_pcb->pid==otro_pcb->pid);
+}
+void remover_pcb_de_recursos_asignados(t_pcb* pcb){
+    t_list_iterator* lista = list_iterator_create(lista_recursos);
+        bool removerr(void* un_pcb){
+        return remover_pcb(un_pcb, pcb);
+    }
+    while(list_iterator_has_next(lista)){
+        t_recursos* recurso = list_iterator_next(lista); 
+        pthread_mutex_lock(&(recurso->mutex_recurso));
+        if(list_any_satisfy(recurso->lista_procesos_asignados,removerr)){
+        list_remove_by_condition(recurso->lista_procesos_asignados,removerr); 
+        log_warning(kernel_logger,"Se liberó el proceso <%d> de la lista de recursos %s\n",pcb->pid,recurso->nombre_recurso);
+            recurso->instancias = recurso->instancias +1;
+            if(!list_is_empty(recurso->lista_procesos_bloqueados)){
+                t_pcb* un_pcb = list_remove(recurso->lista_procesos_bloqueados,0);
+                list_add(recurso->lista_procesos_asignados,un_pcb);
+                enviar_proceso_blocked_a_ready(un_pcb);
+                sem_post(&sem_planificador_corto_plazo);
+            }
         }
+        pthread_mutex_unlock(&(recurso->mutex_recurso));
+
+    
     }
 }
 
@@ -151,4 +170,12 @@ void liberar_estructuras_en_memoria(op_code code_op ,int pid){
     agregar_int_a_paquete(paquete,pid);
     enviar_paquete(paquete,fd_memoria);
     eliminar_paquete(paquete);
+}
+
+void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
+      un_pcb->estado_pcb = READY;
+
+      pthread_mutex_lock(&(struct_ready->mutex));
+      list_add(struct_ready->lista,un_pcb); 
+      pthread_mutex_unlock(&(struct_ready->mutex));
 }

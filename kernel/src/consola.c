@@ -128,6 +128,9 @@ void atender_instruccion_validada(char* leido){
 				
 			} else{
 				pcb->estado_pcb = EXIT;
+				pthread_mutex_lock(&(struct_exit->mutex));
+				list_add(struct_exit->lista,pcb);
+				pthread_mutex_unlock(&(struct_exit->mutex));
 				eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 				log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
 			}

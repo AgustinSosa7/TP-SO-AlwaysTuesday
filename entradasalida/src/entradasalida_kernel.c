@@ -106,31 +106,31 @@ void procesar_peticion(t_peticion* peticion) {
             char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
             log_info(entradasalida_logger,"¨%s¨", escrito);
 
-      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
-      {     
-            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
-            char* nombre_archivo = peticion->parametros->archivo;
-            crear_config(nombre_archivo); // archivo viene ewewe.txt
-  		log_info(entradasalida_logger, "Se creo el archivo: %s", nombre_archivo);
+      // }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      // {     
+      //       usleep(1000*TIEMPO_UNIDAD_TRABAJO);
+      //       char* nombre_archivo = peticion->parametros->archivo;
+      //       crear_config(nombre_archivo); // archivo viene ewewe.txt
+  	// 	log_info(entradasalida_logger, "Se creo el archivo: %s", nombre_archivo);
             
-      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
-      {     
-            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
-            char* nombre_archivo = peticion->parametros->archivo;
-            delete_archivo(nombre_archivo);
-            log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
+      // }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      // {     
+      //       usleep(1000*TIEMPO_UNIDAD_TRABAJO);
+      //       char* nombre_archivo = peticion->parametros->archivo;
+      //       delete_archivo(nombre_archivo);
+      //       log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
 
 
-      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
-      {     
-            //CONSIGO DATOS DEL CONFIG CON EL NOMBRE 
-            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
-            char* nombre_archivo = peticion->parametros->archivo;
-            int tamanio_nuevo = peticion->parametros->registroTamanio;
+      // }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      // {     
+      //       //CONSIGO DATOS DEL CONFIG CON EL NOMBRE 
+      //       usleep(1000*TIEMPO_UNIDAD_TRABAJO);
+      //       char* nombre_archivo = peticion->parametros->archivo;
+      //       int tamanio_nuevo = peticion->parametros->registroTamanio;
       
-            if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  // Falta la parte de Compactación
-                  log_info(entradasalida_logger, "Se pudo truncar el archivo: %s", nombre_archivo);
-            }else{ log_info(entradasalida_logger, "No se pudo truncar el archivo: %s", nombre_archivo);}
+      //       if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  // Falta la parte de Compactación
+      //             log_info(entradasalida_logger, "Se pudo truncar el archivo: %s", nombre_archivo);
+      //       }else{ log_info(entradasalida_logger, "No se pudo truncar el archivo: %s", nombre_archivo);}
             
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0) // Recibo tamanio del mensaje, el mensaje, archivo.

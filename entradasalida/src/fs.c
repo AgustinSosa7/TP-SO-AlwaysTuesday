@@ -4,30 +4,30 @@
 //Fijarse los SPRITNF y que hago si le poongo 0 o malloc
 
 
-void crear_config(char * nombre_archivo){
-	//Todo es un config y se guarda y crea con el nombre del archivo
+// void crear_config(char * nombre_archivo){
+// 	//Todo es un config y se guarda y crea con el nombre del archivo
 
-	//char* path_archivo = string_new();
-	//path_archivo = generar_path_config(nombre_archivo);
-	//path_archivo = crear_path(path_archivo);
-	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
+// 	//char* path_archivo = string_new();
+// 	//path_archivo = generar_path_config(nombre_archivo);
+// 	//path_archivo = crear_path(path_archivo);
+// 	t_config* config_archivo = config_create(generar_path_config(nombre_archivo));
 
-	if(config_archivo == NULL){     //Verifica si existe un archivo con ese path y si no lo crea :D //Hace falta, no lo debería solo crear osea antes no puede existir?? jaja
-		FILE* file_fd = fopen(path_archivo, "a+"); 
-		fclose(file_fd);
-		config_archivo = config_create(path_archivo);
-	}
+// 	if(config_archivo == NULL){     //Verifica si existe un archivo con ese path y si no lo crea :D //Hace falta, no lo debería solo crear osea antes no puede existir?? jaja
+// 		FILE* file_fd = fopen(path_archivo, "a+"); 
+// 		fclose(file_fd);
+// 		config_archivo = config_create(path_archivo);
+// 	}
 	
-	config_set_value(config_archivo, "BLOQUE_INICIAL", "NULL");
-	//config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0");
-	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "10"); // SOLO ES PRUEBA
+// 	config_set_value(config_archivo, "BLOQUE_INICIAL", "NULL");
+// 	//config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0");
+// 	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "10"); // SOLO ES PRUEBA
 	
 	
-	config_save(config_archivo);
-	log_info(entradasalida_logger, config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
-	log_info(entradasalida_logger,config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
-	log_info(entradasalida_logger,"Bitmap en posicion 0,%d",bitarray_test_bit(bitmap,2));
-}
+// 	config_save(config_archivo);
+// 	log_info(entradasalida_logger, config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
+// 	log_info(entradasalida_logger,config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
+// 	log_info(entradasalida_logger,"Bitmap en posicion 0,%d",bitarray_test_bit(bitmap,2));
+// }
 
 
 void delete_archivo(char* nombre_archivo){
@@ -45,7 +45,7 @@ void delete_archivo(char* nombre_archivo){
 	{
 		bitarray_clean_bit(bitmap,i);
 	}
-	remove(path_archivo);
+//	remove(path_archivo);
 	config_destroy(config_archivo); //Elimina solo el config que usaba
 	
 
