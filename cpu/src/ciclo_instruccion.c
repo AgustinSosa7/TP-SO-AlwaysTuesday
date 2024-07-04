@@ -38,40 +38,19 @@ void ciclo_instruccion(){
 			char *registro_datos = strtok_r(saveptr, " ", &saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			
 			int cant_bytes_a_operar = tamanio_del_registro(registro_datos);
 			
-			int cantidad_accesos = calcular_cantidad_de_accesos(direccion_logica, cant_bytes_a_operar);
-			void* leido = malloc(cant_bytes_a_operar);
-			int corrimiento = 0;
-			for(int i = 0; i< cantidad_accesos; i++){
-				t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
-				void* leido_memoria;
+			void* leido = gestionar_lectura_memoria(direccion_logica,cant_bytes_a_operar);
 
-				if(direc->cantidad_bytes_podemos_escribir > cant_bytes_a_operar){//Caso de 1 pagina
-					leido_memoria = leer_valor_de_memoria(pcb_global->pid,direc->direccion_fisica,cant_bytes_a_operar);
-					memcpy(leido + corrimiento, leido_memoria , direc->cantidad_bytes_podemos_escribir);
-				}
-				else
-				{	//Caso mas de 1 pagina
-					leido_memoria = leer_valor_de_memoria(pcb_global->pid,direc->direccion_fisica,direc->cantidad_bytes_podemos_escribir);
-					memcpy(leido + corrimiento, leido_memoria , direc->cantidad_bytes_podemos_escribir);
-					cant_bytes_a_operar -= direc->cantidad_bytes_podemos_escribir;
-					corrimiento + direc->cantidad_bytes_podemos_escribir;
-					
-				}
-				free(leido_memoria);
-			}
-
-			if(tamanio_del_registro(registro_datos) = 1){
+			if(tamanio_del_registro(registro_datos) == 1){
 				u_int8_t valor_leido_en_memoria =  (u_int8_t) leido;
 				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Valor: %d\"", pcb_global->pid, , valor_leido_en_memoria);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Valor: %d\"", pcb_global->pid, valor_leido_en_memoria);
 			}
-			else if(tamanio_del_registro(registro_datos) = 4){
+			else if(tamanio_del_registro(registro_datos) == 4){
 				u_int32_t valor_leido_en_memoria = (u_int32_t) leido;
 				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Valor: %d\"", pcb_global->pid, , valor_leido_en_memoria);
+				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Valor: %d\"", pcb_global->pid, valor_leido_en_memoria);
 			}
 
 			pcb_global->registros_cpu->PC++;
@@ -83,15 +62,29 @@ void ciclo_instruccion(){
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
 			char *registro_datos = strtok_r(saveptr, " ", &saveptr);
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
+			int cant_bytes_a_operar = tamanio_del_registro(registro_datos);
 			
+			if(cant_bytes_a_operar = 1){
+				u_int8_t valor_a_escribir = leer_valor_de_registro(registro_datos);
+				gestionar_escritura_memoria(direccion_logica,cant_bytes_a_operar,valor_a_escribir);
+			}
+			else if(cant_bytes_a_operar = 4){
+				u_int32_t valor_a_escribir = leer_valor_de_registro(registro_datos);
+				gestionar_escritura_memoria(direccion_logica,cant_bytes_a_operar,valor_a_escribir);
+			}else{
+				log_info(cpu_logger, "Error al acceder al registro para escribir en memoria");
+			}
+			/*
 			if (direccion_fisica != -1)
 			{
 				uint32_t valor_a_escribir = leer_valor_de_registro(registro_datos);
 				escribir_valor_en_memoria(pcb_global->pid, direccion_fisica, valor_a_escribir);
 				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_a_escribir);
 				pcb_global->registros_cpu->PC++;
-			}
+			}*/
+			log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Logica: %d \"", pcb_global->pid, direccion_logica);
+
+			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
 		}	
 	else if (strcmp(nombre_instruccion, "SUM") == 0)
@@ -155,11 +148,12 @@ void ciclo_instruccion(){
 			
 			if (direccion_fisica_origen != -1 && direccion_fisica_destino != 1)
 			{
-				u_int32_t valor = leer_valor_de_memoria(pcb_global->pid, direccion_fisica_origen);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_origen, valor);
+				//Comentado para que compile
+				//u_int32_t valor = leer_valor_de_memoria(pcb_global->pid, direccion_fisica_origen);
+				//log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_origen, valor);
 
-				escribir_valor_en_memoria(pcb_global->pid, direccion_fisica_destino, valor);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_destino, valor);
+				//escribir_valor_en_memoria(pcb_global->pid, direccion_fisica_destino, valor);
+				//log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_destino, valor);
 
 				pcb_global->registros_cpu->PC++;
 			}
@@ -692,11 +686,11 @@ t_direccion_a_operar* mmu(int direccion_logica)
 
 	t_direccion_a_operar* direccion_operable = malloc(sizeof(t_direccion_a_operar));
 	direccion_operable->direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento; //direccion fisica
-	direccion_operable->cantidad_bytes_podemos_escribir = tamanio_pagina - desplazamiento; // cantidad de bytes posibles a escribir en la pagina
+	direccion_operable->cantidad_bytes_podemos_operar = tamanio_pagina - desplazamiento; // cantidad de bytes posibles a escribir en la pagina
 
 	return direccion_operable;
 }
-
+/*
 void calcular_accesos_a_memoria(int direccion_logica, int cantidad_de_bytes)
 {
 	int numero_de_pagina_inicial = floor(direccion_logica / tamanio_pagina);
@@ -729,13 +723,13 @@ void calcular_accesos_a_memoria(int direccion_logica, int cantidad_de_bytes)
 		int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
 		agregar_direccion_a_operar(direccion_fisica, cantidad_de_bytes);
 	}
-}
+}*/
 
 void agregar_direccion_a_operar(int direccion, int bytes)
 {
 	t_direccion_a_operar* direccion_operable = malloc(sizeof(t_direccion_a_operar));
 	direccion_operable->direccion_fisica = direccion;
-	direccion_operable->cantidad_bytes = bytes;
+	direccion_operable->cantidad_bytes_podemos_operar = bytes;
 	list_add(lista_direcciones_operables, direccion_operable);
 }
 	
@@ -744,6 +738,56 @@ int calcular_cantidad_de_accesos(int direccion_logica_inicial,int bytes_a_operar
     int numero_pagina_final = floor((direccion_logica_inicial + bytes_a_operar) / tamanio_pagina);
 
     return (numero_pagina_final - numero_pagina_inicial) + 1;
+}
+
+void* gestionar_lectura_memoria(int direccion_logica,int cant_bytes_a_operar){
+			int cantidad_accesos = calcular_cantidad_de_accesos(direccion_logica, cant_bytes_a_operar);
+			void* leido = malloc(cant_bytes_a_operar);
+			int corrimiento = 0;
+
+			for(int i = 0; i< cantidad_accesos; i++){
+				t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
+				void* leido_memoria;
+
+				if(direc->cantidad_bytes_podemos_operar > cant_bytes_a_operar){//Caso de 1 pagina
+					leido_memoria = leer_valor_de_memoria(pcb_global->pid,direc->direccion_fisica,cant_bytes_a_operar);
+					memcpy(leido + corrimiento, leido_memoria , direc->cantidad_bytes_podemos_operar);
+				}
+				else
+				{	//Caso mas de 1 pagina
+					leido_memoria = leer_valor_de_memoria(pcb_global->pid,direc->direccion_fisica,direc->cantidad_bytes_podemos_operar);
+					memcpy(leido + corrimiento, leido_memoria , direc->cantidad_bytes_podemos_operar);
+					cant_bytes_a_operar -= direc->cantidad_bytes_podemos_operar;
+					corrimiento + direc->cantidad_bytes_podemos_operar;
+				}
+				free(leido_memoria);
+			}
+			return leido;
+}
+
+void gestionar_escritura_memoria(int direccion_logica,int cant_bytes_a_operar,void* a_escribir){
+			int cantidad_accesos = calcular_cantidad_de_accesos(direccion_logica, cant_bytes_a_operar);
+			int corrimiento = 0;
+
+			for(int i = 0; i< cantidad_accesos; i++){
+				t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
+				
+				if(direc->cantidad_bytes_podemos_operar > cant_bytes_a_operar){//Caso de 1 pagina
+					void* escritura = malloc(cant_bytes_a_operar);
+					memcpy(escritura, a_escribir + corrimiento , cant_bytes_a_operar);
+					escribir_valor_en_memoria(pcb_global->pid,direc->direccion_fisica,cant_bytes_a_operar,escritura);
+					free(escritura);
+				}
+				else
+				{	//Caso mas de 1 pagina
+					void* escritura = malloc(direc->cantidad_bytes_podemos_operar);
+					memcpy(escritura, a_escribir + corrimiento , direc->cantidad_bytes_podemos_operar);
+					escribir_valor_en_memoria(pcb_global->pid,direc->direccion_fisica,direc->cantidad_bytes_podemos_operar,escritura);
+					cant_bytes_a_operar -= direc->cantidad_bytes_podemos_operar;
+					corrimiento + direc->cantidad_bytes_podemos_operar;
+					free(escritura);
+				}
+			}
 }
 
 /*

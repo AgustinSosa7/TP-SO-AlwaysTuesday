@@ -45,15 +45,17 @@ void atender_kernel(){
         sem_wait(&ejecucion);
         if(code_op_recibido == CREAR_PROCESO){
             list_add(procesos_memoria, crear_proceso_nuevo());
+            //DEVOLVER OK A MILI. CREAR_PROCESO
         }
         else if(code_op_recibido == FINALIZAR_PROCESO_MEMORIA){
-            finalizar_proceso();// ESto debe abuscar un proceso en memoria. Marcar libres todos los marcos del proceso, y luego de esto hacerle free.
+            finalizar_proceso(); // ESto debe abuscar un proceso en memoria. Marcar libres todos los marcos del proceso, y luego de esto hacerle free.
             log_info(memoria_logger, "Se pidio finalizar un proceso");
+            //DEVOLVER OK A MILI. FINALIZAR_PROCESO_MEMORIA
         }
         else{
             log_error(memoria_logger, "No se recibio un pedido correcto de kernel.");
             exit(EXIT_FAILURE);
         }
         sem_post(&retardo);
-    }    
+    }
 }

@@ -51,7 +51,7 @@ extern int motivo_interrupcion;
 // Estructuras
 typedef struct {
     int direccion_fisica;
-    int cantidad_bytes_podemos_escribir;
+    int cantidad_bytes_podemos_operar;
 } t_direccion_a_operar;
 
 // Listas

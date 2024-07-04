@@ -21,6 +21,6 @@ void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio);
 
 void escribir_1byte_en_memoria(int pid, int direccion_fisica, u_int8_t valor_a_escribir);
 void escribir_4byte_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_escribir);
-void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, u_int32_t valor_a_escribir);
+void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void* valor_a_escribir);
 
 #endif 
