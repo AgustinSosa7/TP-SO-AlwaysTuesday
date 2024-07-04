@@ -16,9 +16,6 @@ bool dejar_de_ejecutar;
 bool ocurrio_interrupcion;
 int motivo_interrupcion;
 
-// Listas
-t_list* lista_direcciones_operables;
-
 // Semaforos
 sem_t sem_ciclo_de_instruccion;
 pthread_mutex_t mutex_ocurrio_interrupcion;

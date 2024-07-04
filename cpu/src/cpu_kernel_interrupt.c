@@ -18,7 +18,6 @@ void atender_interrupt(){
                 else if(motivo_interrupcion == 1) {
                     log_warning(cpu_logger, "Motivo de la interrupción = Terminar proceso (Kill)");}
 
-
                 pthread_mutex_lock(&mutex_ocurrio_interrupcion);
 			    ocurrio_interrupcion = true;
 			    pthread_mutex_unlock(&mutex_ocurrio_interrupcion); 

@@ -13,7 +13,7 @@ void pedir_info_inicial_a_memoria(){
     {
         tamanio_pagina = leer_int_del_buffer(buffer);
         tamanio_memoria = leer_int_del_buffer(buffer);
-        log_info(cpu_log_debug, "Tamanio de las Paginas de memoria = %d", tamanio_pagina);
+        log_info(cpu_log_debug, "Tamanio de las Paginas de Memoria = %d", tamanio_pagina);
         log_info(cpu_log_debug, "Tamanio de la Memoria = %d", tamanio_memoria);
         eliminar_paquete(paquete_recibido);
     }
@@ -79,7 +79,7 @@ int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
     }
 }
 
-// Marco
+// Marcos de Memoria
 int pedir_numero_de_marco_a_memoria(int numero_de_pagina){
     // Enviar
 	t_paquete* paquete = crear_paquete(SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA);
@@ -225,5 +225,4 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void*
     agregar_void_a_paquete(paquete, valor_a_escribir, tamanio);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
-    free(valor_a_escribir);
 }
