@@ -43,14 +43,16 @@ void ciclo_instruccion(){
 			void* leido = gestionar_lectura_memoria(direccion_logica, cant_bytes_a_leer);
 
 			if(tamanio_del_registro(registro_datos) == 1){
-				u_int8_t valor_leido_en_memoria = (u_int8_t) leido;
-				// Alternativa: memcpy(&valor_leido_en_memoria, leido, cant_bytes_a_leer);
+				u_int8_t valor_leido_en_memoria;
+				memcpy(&valor_leido_en_memoria, leido, cant_bytes_a_leer);
 				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
+				log_info(cpu_logger, "Se guardo el valor %d en el registro %s!!!", valor_leido_en_memoria, registro_datos);
 			}
 			else if(tamanio_del_registro(registro_datos) == 4){
-				u_int32_t valor_leido_en_memoria = (u_int32_t) leido;
-				// Alternativa: memcpy(&valor_leido_en_memoria, leido, cant_bytes_a_leer);
+				u_int32_t valor_leido_en_memoria;
+				memcpy(&valor_leido_en_memoria, leido, cant_bytes_a_leer);
 				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
+				log_info(cpu_logger, "Se guardo el valor %d en el registro %s!!!", valor_leido_en_memoria, registro_datos);
 			}
 			free(leido);
 			pcb_global->registros_cpu->PC++;
@@ -67,11 +69,12 @@ void ciclo_instruccion(){
 			if(tamanio_del_registro(registro_datos) == 1){
 				u_int8_t valor_a_escribir = leer_valor_de_registro(registro_datos);
 				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir); // Chequear si va o no el & antes de "valor_a_escribir"
-
+				log_info(cpu_logger, "Se guardo el valor %d en Memoria!!!", valor_a_escribir);
 			}
 			else if(tamanio_del_registro(registro_datos) == 4){
 				u_int32_t valor_a_escribir = leer_valor_de_registro(registro_datos);
 				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir); // Chequear si va o no el & antes de "valor_a_escribir"
+				log_info(cpu_logger, "Se guardo el valor %d en Memoria!!!", valor_a_escribir);
 			}
 			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
@@ -655,7 +658,7 @@ void* gestionar_lectura_memoria(int direccion_logica, int cant_bytes_a_leer){
 			cant_bytes_a_leer -= direc->bytes_disponibles;
 			corrimiento += direc->bytes_disponibles;
 		}
-		log_info(cpu_logger, "PID: %d - Acción: LEER - Dirección Física: %c - Valor: %p", pcb_global->pid, direc->direccion_fisica, lectura_parcial);
+		log_info(cpu_logger, "PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d", pcb_global->pid, direc->direccion_fisica, lectura_parcial);
 		free(lectura_parcial);
 		free(direc); // Chequear si hace falta.
 	}
@@ -684,7 +687,7 @@ void gestionar_escritura_memoria(int direccion_logica,int cant_bytes_a_escribir,
 			cant_bytes_a_escribir -= direc->bytes_disponibles;
 			corrimiento += direc->bytes_disponibles;
 		}
-		log_info(cpu_logger, "PID: %d - Acción: ESCRIBIR - Dirección Física: %c - Valor: %p\"", pcb_global->pid, direc->direccion_fisica, escritura);
+		log_info(cpu_logger, "PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d", pcb_global->pid, direc->direccion_fisica, escritura);
 		free(escritura);
 		free(direc); // Chequear si hace falta.
 	}
