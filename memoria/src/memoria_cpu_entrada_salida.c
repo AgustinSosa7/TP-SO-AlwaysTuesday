@@ -117,6 +117,8 @@ void recibir_solicitud_de_escritura(int socket){
 
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 
+    //printf("PEDIDO DE LECTURA\n"); //BORRAR
+
     free(a_escribir);
     eliminar_paquete(paquete);
 }

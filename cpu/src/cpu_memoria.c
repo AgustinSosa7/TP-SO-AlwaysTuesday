@@ -1,5 +1,6 @@
 #include "../includes/cpu_memoria.h"
 
+// Tamaño pagina y tamaño memoria
 void pedir_info_inicial_a_memoria(){
     // Enviar
     enviar_opcode(SOLICITUD_INFO_INICIAL_A_MEMORIA,fd_memoria);
@@ -12,7 +13,7 @@ void pedir_info_inicial_a_memoria(){
     {
         tamanio_pagina = leer_int_del_buffer(buffer);
         tamanio_memoria = leer_int_del_buffer(buffer);
-        log_info(cpu_log_debug, "Tamanio de las Paginas de memoria = %d", tamanio_pagina);
+        log_info(cpu_log_debug, "Tamanio de las Paginas de Memoria = %d", tamanio_pagina);
         log_info(cpu_log_debug, "Tamanio de la Memoria = %d", tamanio_memoria);
         eliminar_paquete(paquete_recibido);
     }
@@ -24,6 +25,7 @@ void pedir_info_inicial_a_memoria(){
     }
 }
 
+// Instrucciones
 void pedir_instruccion_pseudocodigo(int pid,int pc){
     t_paquete* paquete = crear_paquete(PEDIDO_PSEUDOCODIGO);
     agregar_int_a_paquete(paquete,pid);
@@ -51,6 +53,33 @@ char* recibir_instruccion_pseudocodigo(){
     }
 };
 
+int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
+    // Enviar
+    t_paquete* paquete = crear_paquete(SOLICITUD_MODIFICAR_TAMANIO);
+    agregar_int_a_paquete(paquete,pid);
+    agregar_int_a_paquete(paquete,tamanioNuevo);
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+    // Recibir
+    op_code code_op_recibido = recibir_operacion(fd_memoria);
+    t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
+    t_buffer* buffer = paquete_recibido->buffer;
+    if(code_op_recibido == RESPUESTA_MODIFICAR_TAMANIO)
+    {
+        int nuevo_tamanio = leer_int_del_buffer(buffer);
+        log_info(cpu_log_debug, "El nuevo tamanio del proceso en Memoria es de = %d", nuevo_tamanio);
+        eliminar_paquete(paquete_recibido);
+        return nuevo_tamanio;
+    }
+    else
+    {   
+        log_error(cpu_log_debug, "No se recibio una respuesta sobre la modificacion del tamanio del proceso en memoria.");
+        eliminar_paquete(paquete_recibido);
+        exit(EXIT_FAILURE);
+    }
+}
+
+// Marcos de Memoria
 int pedir_numero_de_marco_a_memoria(int numero_de_pagina){
     // Enviar
 	t_paquete* paquete = crear_paquete(SOLICITUD_NUMERO_DE_MARCO_A_MEMORIA);
@@ -78,69 +107,122 @@ int pedir_numero_de_marco_a_memoria(int numero_de_pagina){
     }
 }
 
-u_int32_t leer_valor_de_memoria(int pid, int direccion_fisica)
+// Lectura y Escritura
+u_int8_t leer_1byte_de_memoria(int pid, int direccion_fisica)
 {
 	// Enviar
 	t_paquete* paquete = crear_paquete(SOLICITUD_LEER_VALOR_EN_MEMORIA);
     //agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, direccion_fisica);
-    agregar_int_a_paquete(paquete, sizeof(uint32_t));//tamanio de lo que quiero leer.
+    agregar_int_a_paquete(paquete, sizeof(u_int8_t));
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
     
     // Recibir
     op_code code_op = recibir_operacion(fd_memoria);
-    //t_paquete* paquete_recibido2 = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete->buffer; // Cambiar "paquete" por "paquete_recibido"
+    t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
+    t_buffer* buffer = paquete_recibido->buffer;
+    if(code_op == RESPUESTA_LEER_VALOR_EN_MEMORIA) {
+        u_int8_t valor_leido = leer_uint_8_del_buffer(buffer);
+        log_info(cpu_logger, "Lectura obtenida del valor '%d' de tamanio '%d'", valor_leido, sizeof(u_int8_t));
+        eliminar_paquete(paquete_recibido);
+        return valor_leido;
+    }
+    else {   
+        log_error(cpu_log_debug, "No se recibio una lectura de valor de memoria.");
+        eliminar_paquete(paquete_recibido);
+        exit(EXIT_FAILURE);
+    }
+}
+
+u_int32_t leer_4byte_de_memoria(int pid, int direccion_fisica)
+{
+	// Enviar
+	t_paquete* paquete = crear_paquete(SOLICITUD_LEER_VALOR_EN_MEMORIA);
+    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, sizeof(u_int32_t));
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+    
+    // Recibir
+    op_code code_op = recibir_operacion(fd_memoria);
+    t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
+    t_buffer* buffer = paquete_recibido->buffer;
+    if(code_op == RESPUESTA_LEER_VALOR_EN_MEMORIA) {
+        u_int32_t valor_leido = leer_uint_32_del_buffer(buffer);
+        log_info(cpu_logger, "Lectura obtenida del valor '%d' de tamanio '%d'", valor_leido, sizeof(u_int32_t));
+        eliminar_paquete(paquete_recibido);
+        return valor_leido;
+    }
+    else {   
+        log_error(cpu_log_debug, "No se recibio una lectura de valor de memoria.");
+        eliminar_paquete(paquete_recibido);
+        exit(EXIT_FAILURE);
+    }
+}
+
+void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio)
+{
+	// Enviar
+	t_paquete* paquete = crear_paquete(SOLICITUD_LEER_VALOR_EN_MEMORIA);
+    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, tamanio);
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+    
+    // Recibir
+    op_code code_op = recibir_operacion(fd_memoria);
+    t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
+    t_buffer* buffer = paquete_recibido->buffer;
     if(code_op == RESPUESTA_LEER_VALOR_EN_MEMORIA)
     {
-        uint32_t valor_leido = leer_uint_32_del_buffer(buffer); // Hacer lo mismo para uint_8
-        log_info(cpu_log_debug, "Lectura de valor obtenida = %d", valor_leido);
-        //eliminar_paquete(paquete_recibido);
-        return valor_leido;
+        void* valor = malloc(tamanio); // Podría reemplazar esta línea y la de abajo por: leer_void_del_buffer(buffer, tamanio)
+        memcpy(valor, buffer->stream + buffer->offset, tamanio); 
+        log_info(cpu_logger, "Lectura obtenida del valor '%d' de tamanio '%d'", valor, tamanio);
+        eliminar_paquete(paquete_recibido);
+	    return valor; // Este valor tiene que ser liberado en donde sea llamada esta función.
     }
     else
     {   
         log_error(cpu_log_debug, "No se recibio una lectura de valor de memoria.");
-        //eliminar_paquete(paquete_recibido);
+        eliminar_paquete(paquete_recibido);
         exit(EXIT_FAILURE);
     }
-    
 }
 
-void escribir_valor_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_escribir){
+void escribir_1byte_en_memoria(int pid, int direccion_fisica, u_int8_t valor_a_escribir){
     // Enviar
     t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
     //agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, direccion_fisica);
-    agregar_int_a_paquete(paquete, sizeof(uint32_t)); //tamanio de lo que quiero leer.
+    agregar_int_a_paquete(paquete, sizeof(uint8_t));
+    agregar_uint8_a_paquete(paquete, valor_a_escribir);
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+    free(valor_a_escribir);
+}
+
+void escribir_4byte_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_escribir){
+    // Enviar
+    t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
+    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, sizeof(uint32_t));
     agregar_uint32_a_paquete(paquete, valor_a_escribir);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
+    free(valor_a_escribir);
 }
 
-int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
+void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void* valor_a_escribir){
     // Enviar
-    t_paquete* paquete = crear_paquete(SOLICITUD_MODIFICAR_TAMANIO);
-    agregar_int_a_paquete(paquete,pid);
-    agregar_int_a_paquete(paquete,tamanioNuevo);
+    t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
+    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, tamanio);
+    agregar_void_a_paquete(paquete, valor_a_escribir, tamanio);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
-    // Recibir
-    op_code code_op_recibido = recibir_operacion(fd_memoria);
-    t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete_recibido->buffer;
-    if(code_op_recibido == RESPUESTA_MODIFICAR_TAMANIO)
-    {
-        int nuevo_tamanio = leer_int_del_buffer(buffer);
-        log_info(cpu_log_debug, "El nuevo tamanio del proceso en Memoria es de = %d", nuevo_tamanio);
-        eliminar_paquete(paquete_recibido);
-        return nuevo_tamanio;
-    }
-    else
-    {   
-        log_error(cpu_log_debug, "No se recibio una respuesta sobre la modificacion del tamanio del proceso en memoria.");
-        eliminar_paquete(paquete_recibido);
-        exit(EXIT_FAILURE);
-    }
 }

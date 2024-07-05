@@ -14,7 +14,7 @@ void ciclo_instruccion(){
 	pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
     
 	//FETCH 
-	log_info(cpu_logger, "PID: <%d> - FETCH - PC: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
+	log_info(cpu_logger, "PID: <%d> - FETCH - Program Counter: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
 	char *instruccion_con_parametros = recibir_instruccion_pseudocodigo();
@@ -25,7 +25,7 @@ void ciclo_instruccion(){
     
 	if (strcmp(nombre_instruccion, "SET") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro = strtok_r(saveptr, " ", &saveptr);
 			int valor = atoi(strtok_r(saveptr, " ", &saveptr));
 			escribir_valor_a_registro(nombre_registro, valor);
@@ -34,41 +34,54 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "MOV_IN") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *registro_datos = strtok_r(saveptr, " ", &saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
+			int cant_bytes_a_leer = tamanio_del_registro(registro_datos);
 			
-			if (direccion_fisica != -1)
-			{
-				u_int32_t valor_leido_en_memoria = leer_valor_de_memoria(pcb_global->pid, direccion_fisica);
+			void* leido = gestionar_lectura_memoria(direccion_logica, cant_bytes_a_leer);
+
+			if(tamanio_del_registro(registro_datos) == 1){
+				u_int8_t valor_leido_en_memoria;
+				memcpy(&valor_leido_en_memoria, leido, cant_bytes_a_leer);
 				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_leido_en_memoria);
-				pcb_global->registros_cpu->PC++;
+				log_info(cpu_logger, "Se guardo el valor %d en el registro %s!!!", valor_leido_en_memoria, registro_datos);
 			}
+			else if(tamanio_del_registro(registro_datos) == 4){
+				u_int32_t valor_leido_en_memoria;
+				memcpy(&valor_leido_en_memoria, leido, cant_bytes_a_leer);
+				escribir_valor_a_registro(registro_datos, valor_leido_en_memoria);
+				log_info(cpu_logger, "Se guardo el valor %d en el registro %s!!!", valor_leido_en_memoria, registro_datos);
+			}
+			free(leido);
+			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "MOV_OUT") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
 			char *registro_datos = strtok_r(saveptr, " ", &saveptr);
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
+			int cant_bytes_a_escribir = tamanio_del_registro(registro_datos);
 			
-			if (direccion_fisica != -1)
-			{
-				uint32_t valor_a_escribir = leer_valor_de_registro(registro_datos);
-				escribir_valor_en_memoria(pcb_global->pid, direccion_fisica, valor_a_escribir);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica, valor_a_escribir);
-				pcb_global->registros_cpu->PC++;
+			if(tamanio_del_registro(registro_datos) == 1){
+				u_int8_t valor_a_escribir = leer_valor_de_registro(registro_datos);
+				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir); // Chequear si va o no el & antes de "valor_a_escribir"
+				log_info(cpu_logger, "Se guardo el valor %d en Memoria!!!", valor_a_escribir);
 			}
+			else if(tamanio_del_registro(registro_datos) == 4){
+				u_int32_t valor_a_escribir = leer_valor_de_registro(registro_datos);
+				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir); // Chequear si va o no el & antes de "valor_a_escribir"
+				log_info(cpu_logger, "Se guardo el valor %d en Memoria!!!", valor_a_escribir);
+			}
+			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
 		}	
 	else if (strcmp(nombre_instruccion, "SUM") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro_destino = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) + leer_valor_de_registro(nombre_registro_origen));
@@ -77,7 +90,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "SUB") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro_destino = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_registro_origen = strtok_r(saveptr, " ", &saveptr);
 			escribir_valor_a_registro(nombre_registro_destino, leer_valor_de_registro(nombre_registro_destino) - leer_valor_de_registro(nombre_registro_origen));
@@ -86,7 +99,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "JNZ") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_registro = strtok_r(saveptr, " ", &saveptr);
 			u_int32_t nuevo_program_counter = atoi(strtok_r(saveptr, " ", &saveptr));
 			if (leer_valor_de_registro(nombre_registro) != 0)
@@ -101,13 +114,13 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "RESIZE") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			int tamanio = atoi(strtok_r(saveptr, " ", &saveptr));
 			int nuevoTamanioDelProceso = pedir_ajustar_tamanio_del_proceso(pcb_global->pid, tamanio);
 			bool outOfMemory = nuevoTamanioDelProceso == -1;
 			pcb_global->contador++;
 			if(outOfMemory){
-				log_info(cpu_logger, "Out of Memory: PID: %d - Nuevo tamaño intentado: %d", pcb_global->pid, tamanio);
+				log_info(cpu_logger, "Out of Memory: PID: <%d> - Nuevo tamaño intentado: <%d>", pcb_global->pid, tamanio);
 				dejar_de_ejecutar = true;
 				devolver_contexto_por_out_of_memory();
 			}
@@ -116,30 +129,24 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "COPY_STRING") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			int tamanio = atoi(strtok_r(saveptr, " ", &saveptr));
 			
+			// LEEMOS DE MEMORIA
 			int direccion_logica_origen = leer_valor_de_registro("SI");
-			int direccion_fisica_origen = mmu(direccion_logica_origen);
-			
+			void* leido = gestionar_lectura_memoria(direccion_logica_origen, tamanio);
+
+			// ESCRITURA DE MEMORIA
 			int direccion_logica_destino = leer_valor_de_registro("DI");
-			int direccion_fisica_destino = mmu(direccion_logica_destino);
-			
-			if (direccion_fisica_origen != -1 && direccion_fisica_destino != 1)
-			{
-				u_int32_t valor = leer_valor_de_memoria(pcb_global->pid, direccion_fisica_origen);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_origen, valor);
+			gestionar_escritura_memoria(direccion_logica_destino, tamanio, leido);
 
-				escribir_valor_en_memoria(pcb_global->pid, direccion_fisica_destino, valor);
-				log_info(cpu_logger, "Lectura/Escritura Memoria: \"PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d\"", pcb_global->pid, direccion_fisica_destino, valor);
-
-				pcb_global->registros_cpu->PC++;
-			}
+			free(leido);
+			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
 		}
 	else if (strcmp(nombre_instruccion, "WAIT") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
@@ -148,7 +155,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "SIGNAL") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_recurso = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
 			pcb_global->contador++;
@@ -157,7 +164,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "IO_GEN_SLEEP") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			int tiempo_sleep = atoi(strtok_r(saveptr, " ", &saveptr));
 			pcb_global->registros_cpu->PC++;
@@ -167,45 +174,42 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDIN_READ") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
 			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
 
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
 			int tamanio = leer_valor_de_registro(registro_tamanio);
-			pcb_global->contador++;
+			
+			t_list* lista_de_accesos = gestionar_accesos_para_io(direccion_logica, tamanio);
 
-			if (direccion_fisica != -1) // Si la traduccion de la direccion logica arroja un Page Fault, se devuelve el contexto por page fault y no se ejecuta el resto!.
-			{
-				pcb_global->registros_cpu->PC++;
-				dejar_de_ejecutar = true;
-				devolver_contexto_por_stdin_read(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
-			}
+			pcb_global->contador++;
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_stdin_read(nombre_instruccion, nombre_interfaz, lista_de_accesos);
+			
 		}
 	else if (strcmp(nombre_instruccion, "IO_STDOUT_WRITE") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
 			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
 
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
 			int tamanio = leer_valor_de_registro(registro_tamanio);
-			pcb_global->contador++;
 
-			if (direccion_fisica != -1) // Si la traduccion de la direccion logica arroja un Page Fault, se devuelve el contexto por page fault y no se ejecuta el resto!.
-			{
-				pcb_global->registros_cpu->PC++;
-				dejar_de_ejecutar = true;
-				devolver_contexto_por_stdout_write(nombre_instruccion, nombre_interfaz, direccion_fisica, tamanio);
-			}
+			t_list* lista_de_accesos = gestionar_accesos_para_io(direccion_logica, tamanio);
+
+			pcb_global->contador++;
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_stdout_write(nombre_instruccion, nombre_interfaz, lista_de_accesos);
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_CREATE") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
@@ -215,7 +219,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_DELETE") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			pcb_global->registros_cpu->PC++;
@@ -225,7 +229,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_TRUNCATE") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			char *registro_tamanio = strtok_r(saveptr, " ", &saveptr);
@@ -238,7 +242,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_WRITE") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
@@ -260,7 +264,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_READ") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s - %s \"", pcb_global->pid, nombre_instruccion, saveptr);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s> - <%s> \"", pcb_global->pid, nombre_instruccion, saveptr);
 			char *nombre_interfaz = strtok_r(saveptr, " ", &saveptr);
 			char *nombre_archivo = strtok_r(saveptr, " ", &saveptr);
 			char *registro_direccion = strtok_r(saveptr, " ", &saveptr);
@@ -282,7 +286,7 @@ void ciclo_instruccion(){
 		}
 	else if (strcmp(nombre_instruccion, "EXIT") == 0)
 		{
-			log_info(cpu_logger, "Instruccion Ejecutada: \"PID: %d - Ejecutando: %s \"", pcb_global->pid, nombre_instruccion);
+			log_info(cpu_logger, "PID: <%d> - Ejecutando: <%s>", pcb_global->pid, nombre_instruccion);
 			dejar_de_ejecutar = true;
 			pcb_global->contador++;
 			devolver_contexto_por_correcta_finalizacion();
@@ -299,8 +303,7 @@ void ciclo_instruccion(){
 		dejar_de_ejecutar = true;
 		devolver_contexto_por_ser_interrumpido();
 	}
-	else
-	{
+	else {
 		pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
 	}
 
@@ -309,8 +312,7 @@ void ciclo_instruccion(){
 		// Reinicio el ciclo de instruccion, ejecutando la próxima.
 		sem_post(&sem_ciclo_de_instruccion);
 	}
-	else
-	{	
+	else {	
 		// Queda bloqueado esperando que vuelvan a ejecutar un proceso en la CPU.
 		log_info(cpu_logger, "FRENO");
 	}
@@ -318,21 +320,13 @@ void ciclo_instruccion(){
 	}
 }
 
-// Formato del Paquete: OP_CODE, BUFFER [PCB, INSTRUCCION, PARAMETROS]
-/*
-OP_CODE's que envía CPU a Kernel:
-DESALOJO_QUANTUM
-PEDIDO_IO
-PROCESO_EXIT
-*/
-
 void devolver_contexto_por_ser_interrumpido()
 {
 	t_paquete* paquete = crear_paquete(DESALOJO);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_int_a_paquete(paquete, motivo_interrupcion);
 	enviar_paquete(paquete, fd_kernel_dispatch);
-	log_warning(cpu_logger,"devuelvo pcb por desalojo %d \n",motivo_interrupcion);
+	log_warning(cpu_logger,"Devuelvo el PCB por ser interrumpido! (Motivo = %d)\n",motivo_interrupcion); // Sacar este log más adelante.
     eliminar_paquete(paquete);
 }
 
@@ -382,26 +376,24 @@ void devolver_contexto_por_sleep(char* nombre_instruccion, char* nombre_interfaz
     eliminar_paquete(paquete);
 }
 
-void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio)
+void devolver_contexto_por_stdin_read(char* nombre_instruccion, char* nombre_interfaz, t_list* lista_de_accesos)
 {
 	t_paquete* paquete = crear_paquete(PEDIDO_IO);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_string_a_paquete(paquete, nombre_instruccion);
 	agregar_string_a_paquete(paquete, nombre_interfaz);
-	agregar_int_a_paquete(paquete, direccion_fisica);
-	agregar_int_a_paquete(paquete, tamanio);
+	agregar_lista_de_accesos_a_paquete(paquete, lista_de_accesos);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
 
-void devolver_contexto_por_stdout_write(char* nombre_instruccion, char* nombre_interfaz, int direccion_fisica, int tamanio)
+void devolver_contexto_por_stdout_write(char* nombre_instruccion, char* nombre_interfaz, t_list* lista_de_accesos)
 {
 	t_paquete* paquete = crear_paquete(PEDIDO_IO);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_string_a_paquete(paquete, nombre_instruccion);
 	agregar_string_a_paquete(paquete, nombre_interfaz);
-	agregar_int_a_paquete(paquete, direccion_fisica);
-	agregar_int_a_paquete(paquete, tamanio);
+	agregar_lista_de_accesos_a_paquete(paquete, lista_de_accesos);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
@@ -475,6 +467,7 @@ void devolver_contexto_por_correcta_finalizacion()
     eliminar_paquete(paquete);
 }
 
+// OPERACIONES CON REGISTROS
 void escribir_valor_a_registro(char* nombre_registro, u_int32_t valor)
 {
 	if (strcmp(nombre_registro, "AX") == 0)
@@ -600,7 +593,157 @@ uint32_t leer_valor_de_registro(char* nombre_registro)
 	return -1;
 }
 
-int mmu(int direccion_logica)
+int tamanio_del_registro(char* nombre_registro)
+{
+	if (strcmp(nombre_registro, "AX") == 0 || strcmp(nombre_registro, "BX") == 0 || strcmp(nombre_registro, "CX") == 0 || strcmp(nombre_registro, "DX") == 0)
+	{
+		return 1;
+	}
+	else if(strcmp(nombre_registro, "EAX") == 0 || strcmp(nombre_registro, "EBX") == 0 || strcmp(nombre_registro, "ECX") == 0 || strcmp(nombre_registro, "EDX") == 0 || strcmp(nombre_registro, "PC") == 0 || strcmp(nombre_registro, "SI") == 0 || strcmp(nombre_registro, "DI") == 0)
+	{
+		return 4;
+	}
+	log_error(cpu_logger, "El registro ingresado no existe! Registro: %s.", nombre_registro);
+	return -1;
+}
+
+// MMU
+t_direccion_a_operar* mmu(int direccion_logica)
+{
+	int numero_de_pagina = floor(direccion_logica / tamanio_pagina);
+	int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina);
+	log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_de_pagina, numero_de_marco);
+	
+	if (numero_de_marco == -1)
+	{
+		log_info(cpu_logger, "Page Fault: Page Fault PID: %d - Pagina: %d", pcb_global->pid, numero_de_pagina);
+		dejar_de_ejecutar = true;
+		devolver_contexto_por_page_fault(numero_de_pagina);
+		return NULL;
+	}
+
+	int desplazamiento = direccion_logica - numero_de_pagina * tamanio_pagina;
+
+	t_direccion_a_operar* direccion_operable = malloc(sizeof(t_direccion_a_operar));
+	direccion_operable->direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento; // Dirección Física
+	direccion_operable->bytes_disponibles = tamanio_pagina - desplazamiento; // Cantidad de bytes posibles a escribir/leer en la pagina.
+
+	return direccion_operable;
+}
+	
+int calcular_cantidad_de_accesos(int direccion_logica_inicial, int bytes_a_operar){
+	int numero_pagina_inicial = floor(direccion_logica_inicial / tamanio_pagina);
+    int numero_pagina_final = floor((direccion_logica_inicial + bytes_a_operar) / tamanio_pagina);
+
+    return (numero_pagina_final - numero_pagina_inicial) + 1;
+}
+
+void* gestionar_lectura_memoria(int direccion_logica, int cant_bytes_a_leer){
+	int cantidad_accesos = calcular_cantidad_de_accesos(direccion_logica, cant_bytes_a_leer);
+	int corrimiento = 0;
+	void* lectura_total = malloc(cant_bytes_a_leer);
+
+	for(int i = 1; i <= cantidad_accesos; i++){
+		t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
+		void* lectura_parcial;
+		if(cant_bytes_a_leer <= direc->bytes_disponibles)	// Acá ingresamos cuando solamente hay que leer de una sola página, ó cuando tenemos que leer la última página de un conjunto de páginas!
+		{
+			lectura_parcial = leer_valor_de_memoria(pcb_global->pid, direc->direccion_fisica, cant_bytes_a_leer);
+			memcpy(lectura_total + corrimiento, lectura_parcial , cant_bytes_a_leer);
+		}
+		else	// Cuando hay que leer varias páginas, ingresamos acá siempre, salvo en la última página de ese conjunto de pags
+		{
+			lectura_parcial = leer_valor_de_memoria(pcb_global->pid, direc->direccion_fisica, direc->bytes_disponibles);
+			memcpy(lectura_total + corrimiento, lectura_parcial , direc->bytes_disponibles);
+			cant_bytes_a_leer -= direc->bytes_disponibles;
+			corrimiento += direc->bytes_disponibles;
+		}
+		log_info(cpu_logger, "PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d", pcb_global->pid, direc->direccion_fisica, lectura_parcial);
+		free(lectura_parcial);
+		free(direc); // Chequear si hace falta.
+	}
+	return lectura_total;
+}
+
+void gestionar_escritura_memoria(int direccion_logica,int cant_bytes_a_escribir, void* a_escribir){
+	int cantidad_accesos = calcular_cantidad_de_accesos(direccion_logica, cant_bytes_a_escribir);
+	int corrimiento = 0;
+
+	for(int i = 1; i <= cantidad_accesos; i++){
+		t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
+		void* escritura;
+
+		if(cant_bytes_a_escribir <= direc->bytes_disponibles)
+		{
+			escritura = malloc(cant_bytes_a_escribir);
+			memcpy(escritura, a_escribir + corrimiento , cant_bytes_a_escribir);
+			escribir_valor_en_memoria(pcb_global->pid,direc->direccion_fisica, cant_bytes_a_escribir, escritura);
+		}
+		else
+		{
+			escritura = malloc(direc->bytes_disponibles);
+			memcpy(escritura, a_escribir + corrimiento, direc->bytes_disponibles);
+			escribir_valor_en_memoria(pcb_global->pid, direc->direccion_fisica, direc->bytes_disponibles, escritura);
+			cant_bytes_a_escribir -= direc->bytes_disponibles;
+			corrimiento += direc->bytes_disponibles;
+		}
+		log_info(cpu_logger, "PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d", pcb_global->pid, direc->direccion_fisica, escritura);
+		free(escritura);
+		free(direc); // Chequear si hace falta.
+	}
+}
+
+t_list* gestionar_accesos_para_io(int direccion_logica, int bytes_a_operar){
+	int cantidad_accesos = calcular_cantidad_de_accesos(direccion_logica, bytes_a_operar);
+	int corrimiento = 0;
+	t_list* lista_de_accesos = list_create();
+
+	for(int i = 1; i <= cantidad_accesos; i++){
+		t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
+
+		if(bytes_a_operar <= direc->bytes_disponibles)
+		{
+			agregar_acceso_a_lista(lista_de_accesos, direc->direccion_fisica, bytes_a_operar);
+		}
+		else
+		{
+			agregar_acceso_a_lista(lista_de_accesos, direc->direccion_fisica, direc->bytes_disponibles);
+			bytes_a_operar -= direc->bytes_disponibles;
+			corrimiento += direc->bytes_disponibles;
+		}
+		free(direc); // Chequear si hace falta.
+	}
+	return lista_de_accesos;
+}
+
+void agregar_acceso_a_lista(t_list* listado_accesos, int direccion, int bytes){
+	t_direccion_a_operar* direc = malloc(sizeof(t_direccion_a_operar));
+	direc->direccion_fisica = direccion;
+	direc->bytes_disponibles = bytes;
+	list_add(listado_accesos, direc);
+}
+
+// FUNCIONES PARA SERIALIZACION DE LOS ACCESOS
+void agregar_acceso_a_paquete(t_paquete* paquete, t_direccion_a_operar* acceso)
+{
+	agregar_int_a_paquete(paquete, acceso->direccion_fisica);
+	agregar_int_a_paquete(paquete, acceso->bytes_disponibles);
+	free(acceso);
+}
+
+void agregar_lista_de_accesos_a_paquete(t_paquete* paquete, t_list* lista_de_accesos){
+	int cantidad_de_acessos = list_size(lista_de_accesos);
+	agregar_int_a_paquete(paquete, cantidad_de_acessos);
+
+	for(int i = 0; i < cantidad_de_acessos; i++){
+		agregar_acceso_a_paquete(paquete, list_get(lista_de_accesos,i));
+	}
+	list_destroy(lista_de_accesos);
+}
+
+
+// FUNCIONES VIEJAS
+/* int mmu(int direccion_logica) // Esta es la MMU vieja!
 {
 	int numero_de_pagina = floor(direccion_logica / tamanio_pagina);
 	int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina);
@@ -619,42 +762,118 @@ int mmu(int direccion_logica)
 	int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
 
 	return direccion_fisica;
-}
-	
-	
-	
-	
-	
-	
-	
-	/////////////////////////////////////////////     FETCH    ////////////////////////////////////////
+}*/
 
-/*
-char ** ciclo_instruccion_fetch(){ //
-	//sacar
-	printf("Cree fetch\n");
-	char* pseudo;
-	char** instruccion_spliteada;
-	//fin sacar
-		printf("pid del pcb_global: %d\n", pcb_global->pid);
+/* void calcular_accesos_a_memoria(int direccion_logica, int cantidad_de_bytes)
+{
+	int numero_de_pagina_inicial = floor(direccion_logica / tamanio_pagina);
+	int numero_de_pagina_final = floor((direccion_logica + cantidad_de_bytes) / tamanio_pagina);
+	
 
-		pedir_instruccion_pseudocodigo(pcb_global->pid,pcb_global->registros_cpu->PC);
-		
-		//sacar
-		pseudo = recibir_instruccion_pseudocodigo(); 
-		printf("Recibi el pseudo: %s\n",pseudo);
-
-		instruccion_spliteada = string_split(pseudo, " ");
-		printf("Spliteado param0fetch: %s\n",instruccion_spliteada[0]);
-		printf("Spliteado param1fetch: %s\n",instruccion_spliteada[1]);
-		printf("Spliteado param2fetch: %s\n",instruccion_spliteada[2]);
-		
-		pcb_global->registros_cpu->PC++;
-
-		return instruccion_spliteada;
-		//fin sacar
+	if (numero_de_pagina_inicial != numero_de_pagina_final) 
+	{
+		for(int numero_pagina = numero_de_pagina_inicial; numero_pagina <= numero_de_pagina_final; numero_pagina++)
+		{
+			int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_pagina);
+			log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_pagina, numero_de_marco);
+			
+			int desplazamiento = direccion_logica - numero_pagina * tamanio_pagina;
+			int bytes_a_operar = tamanio_pagina - desplazamiento;
+			int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
+			agregar_direccion_a_operar(direccion_fisica, bytes_a_operar);
+			log_info(cpu_logger, "Se agrego la Operación en memoria: Página = <%d> - Bytes = <%d>", numero_pagina, bytes_a_operar);
+			
+			// Actualizo estos datos para la próxima iteración:
+			cantidad_de_bytes -= bytes_a_operar;
+			direccion_logica += bytes_a_operar;
+		}
 	}
+	else
+	{
+		int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina_inicial);
+		log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_de_pagina_inicial, numero_de_marco);
+		int desplazamiento = direccion_logica - numero_de_pagina_inicial * tamanio_pagina;
+		int direccion_fisica = numero_de_marco * tamanio_pagina + desplazamiento;
+		agregar_direccion_a_operar(direccion_fisica, cantidad_de_bytes);
+	}
+}*/
+
+/* void agregar_direccion_a_operar(int direccion, int bytes)
+{
+	t_direccion_a_operar* direccion_operable = malloc(sizeof(t_direccion_a_operar));
+	direccion_operable->direccion_fisica = direccion;
+	direccion_operable->bytes_disponibles = bytes;
+	list_add(lista_direcciones_operables, direccion_operable);
+}*/
+
+/* MMU CUENTO:
+
+				40
+						Direccion | cuanto podes escribir
+				40 -> 	500 		 10 
+
+				memoria(500,10);
+
+				DL 40
+				TP 32
+				OFF 8
+				TLB = PID 1 ; 1 ; 700
+
+				TLB(PID 1; 1) -> 700
+
+				MMU = 708 -> 24
+
+				memoria(700+8,cuanto);
+
+				1 (40) -> TLB 700
+
+
+
+				--------IO
+				calcular_cuantos_accesos
+				agregar_paquete(cuantos_acceso)
+
+				40 -> 500 , 10 
+				
+				Agrego_paquete(500,10);
+
+				(40+10) -> 700, 32
+
+				Agrego_paquete(700,32);
 */
+
+/* EJEMPLO DE INSTANCIACION DE UN STRUCT:
+	typedef struct {
+    estado_pcb estado;
+    t_list* lista;
+    pthread_mutex_t mutex;
+	} t_listas_estados;
+	
+	struct_new = malloc(sizeof(t_listas_estados));
+	struct_new->estado = NEW;
+	struct_new->mutex = mutex_new;
+	struct_new->lista = list_create();
+
+	struct_new es de tipo t_listas_estados
+*/
+	
+/* Formato del Paquete: OP_CODE, BUFFER(PCB, INSTRUCCION, PARAMETROS)
+
+OP_CODE's que envía CPU a Kernel:
+	DESALOJO
+	DEVOLVER_PROCESO_POR_PAGEFAULT
+	DEVOLVER_PROCESO_POR_OUT_OF_MEMORY
+	WAIT
+	SIGNAL
+	PEDIDO_IO
+	PROCESO_EXIT
+*/
+	
+	
+
+
+
+
     /////////////////////////////////////////////     DECODE    ////////////////////////////////////////
 
 /*
