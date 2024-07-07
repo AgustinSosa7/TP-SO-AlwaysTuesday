@@ -250,17 +250,22 @@ void ciclo_instruccion(){
 			char *registro_puntero = strtok_r(saveptr, " ", &saveptr);
 			
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
 			int tamanio = leer_valor_de_registro(registro_tamanio);
+			t_list* lista_de_accesos = gestionar_accesos_para_io(direccion_logica, tamanio);
+
 			int puntero = leer_valor_de_registro(registro_puntero); // Consultar a los chicos si el puntero es un int o qué tipo de dato sería... Yo entiendo que hay que escribir a partir de ese byte dentro del archivo (por eso lo paso como int).
 			pcb_global->contador++;
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_fs_write(nombre_instruccion, nombre_interfaz, nombre_archivo, lista_de_accesos, tamanio, puntero);
 
+			/*
 			if (direccion_fisica != -1)
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
 				devolver_contexto_por_fs_write(nombre_instruccion, nombre_interfaz, nombre_archivo, direccion_fisica, tamanio, puntero);
-			}
+			}*/
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_READ") == 0)
 		{
@@ -272,17 +277,22 @@ void ciclo_instruccion(){
 			char *registro_puntero = strtok_r(saveptr, " ", &saveptr);
 			
 			int direccion_logica = leer_valor_de_registro(registro_direccion);
-			int direccion_fisica = mmu(direccion_logica);
 			int tamanio = leer_valor_de_registro(registro_tamanio);
+			t_list* lista_de_accesos = gestionar_accesos_para_io(direccion_logica, tamanio);
+			
 			int puntero = leer_valor_de_registro(registro_puntero); // Consultar a los chicos si el puntero es un int o qué tipo de dato sería... Yo entiendo que hay que escribir a partir de ese byte dentro del archivo (por eso lo paso como int).
 			pcb_global->contador++;
+			pcb_global->registros_cpu->PC++;
+			dejar_de_ejecutar = true;
+			devolver_contexto_por_fs_read(nombre_instruccion, nombre_interfaz, nombre_archivo, lista_de_accesos, tamanio, puntero);
 
+			/*
 			if (direccion_fisica != -1)
 			{
 				pcb_global->registros_cpu->PC++;
 				dejar_de_ejecutar = true;
-				devolver_contexto_por_fs_read(nombre_instruccion, nombre_interfaz, nombre_archivo, direccion_fisica, tamanio, puntero);
-			}
+				devolver_contexto_por_fs_read(nombre_instruccion, nombre_interfaz, nombre_archivo, lista_de_accesos, tamanio, puntero);
+			}*/
 		}
 	else if (strcmp(nombre_instruccion, "EXIT") == 0)
 		{
@@ -432,26 +442,28 @@ void devolver_contexto_por_fs_truncate(char* nombre_instruccion, char* nombre_in
     eliminar_paquete(paquete);
 }
 
-void devolver_contexto_por_fs_write(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int direccion_fisica, int tamanio, int puntero)
+void devolver_contexto_por_fs_write(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, t_list* listado_de_accesos, int tamanio, int puntero)
 {
 	t_paquete* paquete = crear_paquete(PEDIDO_IO);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_string_a_paquete(paquete, nombre_instruccion);
 	agregar_string_a_paquete(paquete, nombre_interfaz);
 	agregar_string_a_paquete(paquete, nombre_archivo);
+	agregar_lista_de_accesos_a_paquete(paquete, listado_de_accesos);
 	agregar_int_a_paquete(paquete, tamanio);
 	agregar_int_a_paquete(paquete, puntero);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
 }
 
-void devolver_contexto_por_fs_read(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, int direccion_fisica, int tamanio, int puntero)
+void devolver_contexto_por_fs_read(char* nombre_instruccion, char* nombre_interfaz, char* nombre_archivo, t_list* listado_de_accesos, int tamanio, int puntero)
 {
 	t_paquete* paquete = crear_paquete(PEDIDO_IO);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_string_a_paquete(paquete, nombre_instruccion);
 	agregar_string_a_paquete(paquete, nombre_interfaz);
 	agregar_string_a_paquete(paquete, nombre_archivo);
+	agregar_lista_de_accesos_a_paquete(paquete, listado_de_accesos);
 	agregar_int_a_paquete(paquete, tamanio);
 	agregar_int_a_paquete(paquete, puntero);
 	enviar_paquete(paquete, fd_kernel_dispatch);
@@ -855,10 +867,8 @@ OP_CODE's que envía CPU a Kernel:
 
 
 
+/*  /////////////////////////////////////////////     DECODE    ////////////////////////////////////////
 
-    /////////////////////////////////////////////     DECODE    ////////////////////////////////////////
-
-/*
 void decodificacion_instruccion(char *instruccion){
 	if(codigo_inexistente(instruccion)){ 
 		log_error(cpu_logger, "Hubo un error leyendo %s",instruccion);
@@ -881,16 +891,11 @@ bool codigo_inexistente(char* instruccion){
 	i++;
 	}
 	return respuesta;
-}*/
-
-
-
-
+}
 
 
     /////////////////////////////////////////////     EXECUTE    ////////////////////////////////////////
 
-/*
 void ejecucion_proceso(char** instruccion){
 switch (identificador_instruccion(instruccion[0]))
 {
@@ -998,9 +1003,8 @@ cod_instruccion identificador_instruccion(char* codigo){
     instruccion_a_ejecutar = IO_FS_READ;
 
     }else if(strcmp(codigo, "EXIT") == 0){         
-    instruccion_a_ejecutar = EXIT;
-
-}  
-    return instruccion_a_ejecutar;
+    instruccion_a_ejecutar = EXIT;}  
+    
+	return instruccion_a_ejecutar;
 } 
 */
