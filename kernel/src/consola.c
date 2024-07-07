@@ -215,7 +215,7 @@ bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
 // /// EJECUTAR_SCRIPT [path]
 t_list* leer_archivo(char* archivo){
 	char* PATH = string_new();
-	string_append(&PATH,"/home/utnso/scripts-kernel/");
+	string_append(&PATH,"/home/utnso/scripts_kernel/");
 	string_append(&PATH, archivo);
     FILE * archivo_comandos = fopen(PATH, "r");
 	if (archivo_comandos == NULL){
