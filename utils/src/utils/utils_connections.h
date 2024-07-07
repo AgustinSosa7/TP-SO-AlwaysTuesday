@@ -98,7 +98,18 @@ typedef struct //Verificar tipo de datos
     u_int32_t DI;
 }t_registros_cpu;
 
+typedef struct {
+    int direccion_fisica;
+    int bytes_disponibles;
+} t_direccion_a_operar;
 
+typedef struct{
+    int tiempo_espera;
+    char* archivo;
+    int registroTamanio; //solo para truncar
+    t_list* lista_de_accesos;
+    char* registroPunteroArchivo;
+} t_peticion_param;
 
 typedef enum{
     NEW,
@@ -180,6 +191,9 @@ void agregar_uint32_a_paquete(t_paquete* paquete, uint32_t valor);
 void agregar_string_a_paquete(t_paquete* paquete, char* valor);
 void agregar_void_a_paquete(t_paquete* paquete, void* bytes_agregar,int cant_bytes);
 void agregar_registro_a_paquete(t_paquete* paquete, t_registros_cpu* registros_CPU);
+void agregar_acceso_a_paquete(t_paquete* paquete, t_direccion_a_operar* acceso);
+void agregar_lista_de_accesos_a_paquete(t_paquete* paquete, t_list* lista_de_accesos);
+
 
 //PCB
 void agregar_pcb_a_paquete(t_pcb* un_pcb, t_paquete* un_paquete);
@@ -202,6 +216,10 @@ uint32_t leer_uint_32_del_buffer(t_buffer* buffer);
 char* leer_string_del_buffer(t_buffer* buffer);
 void* leer_void_del_buffer(t_buffer* buffer,int tamanio);
 void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU);
+
+void leer_parametros_lista_de_accesos(t_peticion_param* parametros, t_buffer* buffer);
+void agregar_acceso_a_la_lista(t_list* lista_de_accesos, t_buffer* buffer);
+
 
 //Funciones Superpaquete
 //t_paquete* crear_super_paquete(op_code code_op);

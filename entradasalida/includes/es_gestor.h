@@ -15,14 +15,6 @@
 #include <sys/mman.h>
 
 typedef struct{
-    int tiempo_espera;
-    char* archivo;
-    int registroDireccion;
-    int registroTamanio;
-    char* registroPunteroArchivo;
-} t_peticion_param;
-
-typedef struct{
     char* instruccion;
     t_peticion_param* parametros;
 } t_peticion;

@@ -48,11 +48,6 @@ extern bool dejar_de_ejecutar;
 extern bool ocurrio_interrupcion;
 extern int motivo_interrupcion;
 
-// Estructuras
-typedef struct {
-    int direccion_fisica;
-    int bytes_disponibles;
-} t_direccion_a_operar;
 
 // Semaforos
 extern sem_t sem_ciclo_de_instruccion;

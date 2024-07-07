@@ -43,7 +43,4 @@ void gestionar_escritura_memoria(int direccion_logica,int cant_bytes_a_operar,vo
 t_list* gestionar_accesos_para_io(int direccion_logica, int bytes_a_operar);
 void agregar_acceso_a_lista(t_list* listado_accesos, int direccion, int bytes);
 
-void agregar_acceso_a_paquete(t_paquete* paquete, t_direccion_a_operar* acceso);
-void agregar_lista_de_accesos_a_paquete(t_paquete* paquete, t_list* lista_de_accesos);
-
 #endif

@@ -6,7 +6,7 @@
 #include <../src/utils/utils_connections.h>
 
 extern bool iniciar_tiempo_VRR;
-///////////////////////ESTRUCTURAS PCB////////////////////////////
+///////////////////////ESTRUCTURAS PROCESO BLOCKED IO ////////////////////////////
 
 typedef struct 
 {
@@ -19,14 +19,6 @@ typedef struct
     sem_t semaforo_cola_procesos_blocked;
     pthread_mutex_t mutex_cola_blocked;
 } t_interfaz;
-
-typedef struct{
-    int tiempo_espera;
-    char* archivo;
-    int registroDireccion;
-    int registroTamanio;
-    char* registroPunteroArchivo;
-} t_peticion_param;
 
 typedef struct{
     char* instruccion;

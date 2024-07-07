@@ -711,7 +711,7 @@ t_list* gestionar_accesos_para_io(int direccion_logica, int bytes_a_operar){
 			bytes_a_operar -= direc->bytes_disponibles;
 			corrimiento += direc->bytes_disponibles;
 		}
-		free(direc); // Chequear si hace falta.
+		free(direc); // Chequear si hace falta. 
 	}
 	return lista_de_accesos;
 }
@@ -721,24 +721,6 @@ void agregar_acceso_a_lista(t_list* listado_accesos, int direccion, int bytes){
 	direc->direccion_fisica = direccion;
 	direc->bytes_disponibles = bytes;
 	list_add(listado_accesos, direc);
-}
-
-// FUNCIONES PARA SERIALIZACION DE LOS ACCESOS
-void agregar_acceso_a_paquete(t_paquete* paquete, t_direccion_a_operar* acceso)
-{
-	agregar_int_a_paquete(paquete, acceso->direccion_fisica);
-	agregar_int_a_paquete(paquete, acceso->bytes_disponibles);
-	free(acceso);
-}
-
-void agregar_lista_de_accesos_a_paquete(t_paquete* paquete, t_list* lista_de_accesos){
-	int cantidad_de_acessos = list_size(lista_de_accesos);
-	agregar_int_a_paquete(paquete, cantidad_de_acessos);
-
-	for(int i = 0; i < cantidad_de_acessos; i++){
-		agregar_acceso_a_paquete(paquete, list_get(lista_de_accesos,i));
-	}
-	list_destroy(lista_de_accesos);
 }
 
 

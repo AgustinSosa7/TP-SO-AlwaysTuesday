@@ -24,6 +24,7 @@ void enviar_proceso_blocked_io_a_exit(t_proceso_blocked* proceso_blocked);
 
 bool enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz);
 void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion);
+
 bool recibir_fin_peticion(t_interfaz* interfaz);
 void desbloquear_proceso(t_interfaz* interfaz);
 void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb);

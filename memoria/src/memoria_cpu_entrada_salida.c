@@ -181,6 +181,7 @@ void atender_entradasalida(int fd_entradasalida)
             break;
         case  GUARDAR_REGISTRO:
             recibir_solicitud_de_escritura(fd_entradasalida);
+            enviar_bool_mensaje(true, fd_entradasalida);
             break;
 
         case -1:
