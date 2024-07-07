@@ -27,7 +27,7 @@ void inicializar_logs(){
 void iniciar_config(char* path){
 	char* PATH = string_new();
 
-    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/cpu/configs/");
+    string_append(&PATH, "/home/utnso/tp-2024-1c-AlwaysTuesday/cpu/configs/");
 	string_append(&PATH, path);
 	string_append(&PATH, ".config");
 

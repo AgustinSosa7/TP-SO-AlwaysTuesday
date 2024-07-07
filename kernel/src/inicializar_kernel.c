@@ -32,7 +32,7 @@ if (kernel_log_debug == NULL) {
 void inicializar_configs(char* path) {
     char* PATH = string_new();
     
-    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/configs/");
+    string_append(&PATH, "/home/utnso/tp-2024-1c-AlwaysTuesday/kernel/configs/");
 	string_append(&PATH, path);
 	string_append(&PATH, ".config");
 
