@@ -138,8 +138,11 @@ void procesar_peticion(t_peticion* peticion) {
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo); // Ver como va a llegar :D.
+            
             log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
+            
             char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos);
+            
             if(escribir_archivo(nombre_archivo,registro_archivo,escrito)){
             log_info(entradasalida_logger,"Se ha escrito %s en el archivo %s",escrito,nombre_archivo);
             }else{
@@ -151,16 +154,16 @@ void procesar_peticion(t_peticion* peticion) {
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo);
-      //      int registro_direccion = peticion->parametros->registroDireccion; 
-      //      int tamanio = peticion->parametros->registroTamanio;
-      //      char* leido = leer_archivo(nombre_archivo,registro_archivo,tamanio); escuchar audio pipe 07/07 01:50 hs
-      //      if (strcmp(leido,"")==0)
-      //      {
-      //            log_info(entradasalida_logger,"No se pudo guardar correctamente.\n");
-      //      }else{
-      //      guardar_en_memoria(leido, registro_direccion, tamanio);
-      //      log_info(entradasalida_logger,"¨%s¨ se guardo correctamente.\n", leido);
-      //      }     
+            int tamanio = tamanio_total_del_leido(peticion->parametros->lista_de_accesos);
+            
+            char* leido = leer_archivo(nombre_archivo,registro_archivo,tamanio); 
+            
+            if (strcmp(leido,"")==0){ 
+                  log_info(entradasalida_logger,"No se pudo guardar correctamente.\n");
+            }else{
+                  partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos);
+                  log_info(entradasalida_logger,"¨%s¨ se guardo correctamente.\n", leido);
+            }     
       }
 }      
 
