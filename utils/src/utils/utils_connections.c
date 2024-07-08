@@ -264,13 +264,19 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 			close(socket_cliente);
 	   		printf("El cliente cerró la conexión.\n");
 	} 
+	free(a_enviar);
 }
 
-void eliminar_paquete(t_paquete* paquete)
-{
-	//free(paquete->buffer->stream);
-	//free(paquete->buffer);	
-	free(paquete);
+void eliminar_paquete(t_paquete* paquete) {
+    if (paquete != NULL) {
+        if (paquete->buffer != NULL) {
+            if (paquete->buffer->stream != NULL) {
+                free(paquete->buffer->stream);
+            }
+            free(paquete->buffer);
+        }
+        free(paquete);
+    }
 }
 
 
