@@ -80,11 +80,11 @@ void inicializar_listas(void){
 }
 
 void inicializar_listas_instrucciones(){
-	INSTRUCCIONES_GEN = list_create();
+	INSTRUCCIONES_GENERICA = list_create();
 	INSTRUCCIONES_STDIN = list_create();
 	INSTRUCCIONES_STDOUT = list_create();
 	INSTRUCCIONES_FS = list_create();
-	list_add(INSTRUCCIONES_GEN, "IO_GEN_SLEEP");
+	list_add(INSTRUCCIONES_GENERICA, "IO_GEN_SLEEP");
 	list_add(INSTRUCCIONES_STDIN, "IO_STDIN_READ");
 	list_add(INSTRUCCIONES_STDOUT, "IO_STDOUT_WRITE");
 	list_add(INSTRUCCIONES_FS, "IO_FS_CREATE");

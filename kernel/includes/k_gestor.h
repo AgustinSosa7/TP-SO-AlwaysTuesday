@@ -46,7 +46,7 @@ extern int tiempo_transcurrido;
 extern t_list* lista_instrucciones;
 
 
-extern t_list* INSTRUCCIONES_GEN;
+extern t_list* INSTRUCCIONES_GENERICA;
 extern t_list* INSTRUCCIONES_STDIN;
 extern t_list* INSTRUCCIONES_STDOUT;
 extern t_list* INSTRUCCIONES_FS;
