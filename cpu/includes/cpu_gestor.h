@@ -55,6 +55,8 @@ typedef struct {
     int pid;
     int nro_pagina;
     int nro_marco;
+    t_temporal* tiempo_carga;
+    t_temporal* tiempo_ultima_ref;
 }t_entrada_tlb;
 
 // Semaforos
