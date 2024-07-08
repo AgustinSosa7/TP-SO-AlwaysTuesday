@@ -33,6 +33,8 @@ void iniciar_config(char* path){
 
 	cpu_config = config_create(PATH);
 
+    free(PATH);
+
     if (cpu_config == NULL) {
         perror("Error al intentar cargar el config.");
         exit(EXIT_FAILURE);

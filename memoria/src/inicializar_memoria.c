@@ -34,6 +34,8 @@ void _iniciar_config(char* path){
 
 	memoria_config = config_create(PATH);
 
+    free(PATH);
+
     if (memoria_config == NULL){
         perror("Error al intentar cargar el config.");
         exit(EXIT_FAILURE);

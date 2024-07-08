@@ -38,6 +38,8 @@ void inicializar_configs(char* path) {
 
 	kernel_config = config_create(PATH);
 
+	free(PATH);
+
 	if (kernel_config == NULL) {
 		perror("Error al intentar cargar el config.");
 		exit(EXIT_FAILURE);
