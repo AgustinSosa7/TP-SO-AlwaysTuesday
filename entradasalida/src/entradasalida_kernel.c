@@ -33,7 +33,6 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
     t_buffer* buffer = paquete->buffer;
 
-    peticion->instruccion = malloc(sizeof(char));
     peticion->instruccion = leer_string_del_buffer(buffer);
 
     asignar_parametros_segun_tipo(peticion, buffer); 
@@ -97,6 +96,8 @@ void procesar_peticion(t_peticion* peticion) {
             partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos);
 
             log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente.\n", leido);
+
+            free(leido);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {     
@@ -169,18 +170,27 @@ void procesar_peticion(t_peticion* peticion) {
       }
 }      
 
-char* iniciar_la_consola(int registroTamanio){
-      char* leido;
-	leido = readline("> ");
-	while(strcmp(leido,"\0") != 0){
-		if(validar_tamanio_leido(leido, registroTamanio)){
-                  break;
-		}
-		free(leido);
-		log_info(entradasalida_logger, "El valor ingresado debe tener %d caracteres. Por favor reingrese un nuevo valor...\n", registroTamanio);
-		leido = readline("> ");
-	}
-      return leido;
+char* iniciar_la_consola(int registroTamanio) {
+    char* leido = NULL;
+
+    while (1) {
+        if (leido != NULL) {
+            free(leido);
+        }
+        leido = readline("> ");
+        if (leido == NULL || strcmp(leido, "\0") == 0) {
+            // Entrada vacía o error en readline
+            if (leido != NULL) {
+                free(leido);
+            }
+            return NULL;
+        }
+        if (validar_tamanio_leido(leido, registroTamanio)) {
+            break;
+        }
+        log_info(entradasalida_logger, "El valor ingresado debe tener %d caracteres. Por favor reingrese un nuevo valor...\n", registroTamanio);
+    }
+    return leido;
 }
 
 bool validar_tamanio_leido(char* leido, int registroTamanio){

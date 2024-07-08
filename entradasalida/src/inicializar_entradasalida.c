@@ -41,6 +41,8 @@ if (entradasalida_config == NULL) {
 
 	TIPO_INTERFAZ = config_get_string_value(entradasalida_config,"TIPO_INTERFAZ");
 	recibir_configs(TIPO_INTERFAZ);
+
+	free(PATH);
 }
 
 

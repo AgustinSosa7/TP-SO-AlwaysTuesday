@@ -62,7 +62,7 @@ char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
     leidoFinal[registroTamanio] = '\0'; // Asegurar la terminación nula
 
     free(leido);
- 
+    eliminar_paquete(paquete_respuesta);
     return leidoFinal;
     }
     else
