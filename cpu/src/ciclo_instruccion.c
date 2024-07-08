@@ -620,10 +620,87 @@ int tamanio_del_registro(char* nombre_registro)
 }
 
 // MMU
+
+bool coincide_pid_y_pagina(t_entrada_tlb* entrada, int process_id, int numero_de_pagina)
+{
+	if(entrada->pid == process_id && entrada->nro_pagina == numero_de_pagina)
+		return true;
+	else
+		return false;
+}
+
+bool existe_en_la_tlb(int process_id, int numero_de_pagina)
+{
+	bool es_la_entrada_buscada(void* entrada){
+			return coincide_pid_y_pagina(entrada, process_id, numero_de_pagina);
+	}
+
+	return list_any_satisfy(tlb, es_la_entrada_buscada);
+}
+
+int buscar_marco_en_la_tlb(int process_id, int numero_de_pagina)
+{	
+	bool es_la_entrada_buscada(void* entrada){
+		return coincide_pid_y_pagina(entrada, process_id, numero_de_pagina);
+	}
+
+	t_entrada_tlb* entrada_obtenida = list_find(tlb, es_la_entrada_buscada);
+
+	int marco_obtenido = entrada_obtenida->nro_marco;
+
+	return marco_obtenido;
+}
+
+void agregar_traduccion_a_tlb(int process_id, int numero_de_pagina, int numero_de_marco)
+{
+	if(list_size(tlb) < CANTIDAD_ENTRADAS_TLB){
+		t_entrada_tlb* entrada = malloc(sizeof(t_entrada_tlb));
+		entrada->pid = process_id;
+		entrada->nro_pagina = numero_de_pagina;
+		entrada->nro_marco = numero_de_marco;
+		list_add(tlb, entrada);
+	}
+	/*
+	else{
+		if(ALGORITMO_TLB == "FIFO")
+		{
+			
+		}
+		else if (ALGORITMO_TLB == "LRU")
+		{
+
+		}
+	}*/
+}
+
+int obtener_marco(int numero_de_pagina)
+{
+	if(CANTIDAD_ENTRADAS_TLB != 0) // Con esto chequeamos que la TLB esté habilitada!
+	{
+		int numero_de_marco;
+
+		if(existe_en_la_tlb(pcb_global->pid, numero_de_pagina))
+		{
+			log_info(cpu_logger, "PID: <%d> - TLB HIT - Pagina: <%d>", pcb_global->pid, numero_de_pagina);
+			numero_de_marco = buscar_marco_en_la_tlb(pcb_global->pid, numero_de_pagina);
+		}
+		else
+		{
+			log_info(cpu_logger, "PID: <%d> - TLB MISS - Pagina: <%d>", pcb_global->pid, numero_de_pagina);
+			numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina);
+
+			agregar_traduccion_a_tlb(pcb_global->pid, numero_de_pagina, numero_de_marco);
+		}
+		return numero_de_marco;
+	}
+	
+	return pedir_numero_de_marco_a_memoria(numero_de_pagina); // Si la TLB no está habilitada, directamente pedimos el marco a Memoria.
+}
+
 t_direccion_a_operar* mmu(int direccion_logica)
 {
 	int numero_de_pagina = floor(direccion_logica / tamanio_pagina);
-	int numero_de_marco = pedir_numero_de_marco_a_memoria(numero_de_pagina);
+	int numero_de_marco = obtener_marco(numero_de_pagina);
 	log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_de_pagina, numero_de_marco);
 	
 	if (numero_de_marco == -1)
@@ -670,7 +747,6 @@ void* gestionar_lectura_memoria(int direccion_logica, int cant_bytes_a_leer){
 			cant_bytes_a_leer -= direc->bytes_disponibles;
 			corrimiento += direc->bytes_disponibles;
 		}
-		log_info(cpu_logger, "PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d", pcb_global->pid, direc->direccion_fisica, lectura_parcial);
 		free(lectura_parcial);
 		free(direc); // Chequear si hace falta.
 	}
@@ -699,7 +775,6 @@ void gestionar_escritura_memoria(int direccion_logica,int cant_bytes_a_escribir,
 			cant_bytes_a_escribir -= direc->bytes_disponibles;
 			corrimiento += direc->bytes_disponibles;
 		}
-		log_info(cpu_logger, "PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d", pcb_global->pid, direc->direccion_fisica, escritura);
 		free(escritura);
 		free(direc); // Chequear si hace falta.
 	}
