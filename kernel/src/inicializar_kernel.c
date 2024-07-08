@@ -148,11 +148,12 @@ void imprimir_recursos(t_recursos* recurso){
 void imprimir_lista_recursos(t_list* lista_a_mostrar){
 	printf("************LISTA <RECURSOS>************\n");
 	t_list_iterator* lista = list_iterator_create(lista_a_mostrar);
-	t_recursos* recurso;
+	
 	while(list_iterator_has_next(lista)){
-		recurso = list_iterator_next(lista);
+		t_recursos* recurso = list_iterator_next(lista);
 		printf("recurso: %s \n", recurso->nombre_recurso);
 	}
+	list_iterator_destroy(lista);
 }
 
 void inicializar_structs_listas(){

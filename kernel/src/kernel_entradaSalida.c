@@ -124,8 +124,6 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
     pthread_mutex_lock(&(struct_exec->mutex));
     t_pcb* un_pcb = list_remove(struct_exec->lista,0);
     pthread_mutex_unlock(&(struct_exec->mutex));
-    free(un_pcb);
-    // eliminar_pcb(un_pcb);
 
     estado_pcb estado_anterior = pcb->estado_pcb;
     pcb->estado_pcb = BLOCKED;

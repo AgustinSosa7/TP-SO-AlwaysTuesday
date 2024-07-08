@@ -26,6 +26,8 @@ void leer_consola(){
     pthread_t hilo_consola;
     pthread_create(&hilo_consola, NULL, (void*) leer_comandos, NULL);
 	pthread_join(hilo_consola,NULL);
+	printf("finalizo la consola\n");
+	finalizar_consola();
 
 };
 
@@ -93,6 +95,7 @@ void atender_instruccion_validada(char* leido){
 			char* comando = list_remove(lista_comandos,0);
 			atender_instruccion_validada(comando);
 		}
+		list_destroy(lista_comandos);
 		break;
 	case INICIAR_PROCESO:
 		printf("Entre a iniciar proceso. \n");
@@ -124,7 +127,7 @@ void atender_instruccion_validada(char* leido){
 					pcb->estado_pcb = EXIT;
 					eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 					log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
-					
+
 				
 			} else{
 				pcb->estado_pcb = EXIT;
@@ -209,6 +212,7 @@ void atender_instruccion_validada(char* leido){
 		break;
 	
 	}
+	string_array_destroy(array_leido);
 }
 
 bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
@@ -245,6 +249,7 @@ t_list* leer_archivo(char* archivo){
 			list_add(lista_comandos, nuevo_comando);
 		}
 	}
+	free(PATH);
 	fclose(archivo_comandos);
 	return lista_comandos;
 	
@@ -271,6 +276,7 @@ void imprimir_lista(t_listas_estados* lista_a_mostrar){
 		un_pcb = list_iterator_next(lista);
 		printf("%18s PID: %d \n"," ", un_pcb->pid);
 	}
+	list_iterator_destroy(lista);
 }
 
 void imprimir_lista_blocked_recursos(){
@@ -284,8 +290,10 @@ void imprimir_lista_blocked_recursos(){
 		while(list_iterator_has_next(lista_blocked_recurso)){
 			un_pcb = list_iterator_next(lista_blocked_recurso);
 			printf("%18s PID: %d \n"," ", un_pcb->pid);
-		}			
+		}
+		list_iterator_destroy(lista_blocked_recurso);			
 	}
+	list_iterator_destroy(lista_general);
 }
 void imprimir_lista_blocked_interfaz(){
 	printf("************LISTA <BLOCKED> IO************\n");
@@ -310,5 +318,16 @@ void imprimir_lista_blocked_interfaz(){
 		pthread_mutex_unlock(&(interfaz->mutex_cola_blocked));
 	}
 	pthread_mutex_unlock(&mutex_io);
+	list_iterator_destroy(lista_general);
+	queue_destroy(auxiliar);
 }		
 
+void finalizar_consola(){
+	list_destroy_and_destroy_elements(lista_instrucciones,(void*)eliminar_intrucciones);
+	
+}
+
+void eliminar_intrucciones(t_instruccion* instruccion){
+	free(instruccion->nombre);
+	free(instruccion);
+}

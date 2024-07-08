@@ -117,6 +117,7 @@ t_pcb* buscar_pcb_en_bloqueados(int pid){
             return pcb_encontrado;
         }   
     }
+    list_iterator_destroy(lista);
 }
 
 /////liberación de recursos
@@ -135,6 +136,7 @@ void remover_pcb_de_recursos_bloqueados(t_pcb* pcb){
         list_remove_by_condition(recurso->lista_procesos_bloqueados,remover); 
         pthread_mutex_unlock(&(recurso->mutex_recurso));
     }
+    list_iterator_destroy(lista);
 }
 
 bool remover_pcb(t_pcb* un_pcb, t_pcb* otro_pcb){
@@ -160,9 +162,8 @@ void remover_pcb_de_recursos_asignados(t_pcb* pcb){
             }
         }
         pthread_mutex_unlock(&(recurso->mutex_recurso));
-
-    
     }
+    list_iterator_destroy(lista);
 }
 
 void liberar_estructuras_en_memoria(op_code code_op ,int pid){

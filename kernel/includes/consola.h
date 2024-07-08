@@ -39,4 +39,8 @@ void imprimir_lista(t_listas_estados* lista_a_mostrar);
 void imprimir_lista_blocked_recursos();
 void imprimir_lista_blocked_interfaz();
 
+
+//// FINALIZAR CONSOLA
+void finalizar_consola();
+void eliminar_intrucciones(t_instruccion* instruccion);
 #endif

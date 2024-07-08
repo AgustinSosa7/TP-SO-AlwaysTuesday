@@ -109,3 +109,7 @@ t_listas_estados* buscar_lista(estado_pcb estado_anterior){
     
 }
 
+void eliminar_pcb(t_pcb* un_pcb){
+    free(un_pcb->registros_cpu);
+    free(un_pcb);
+}
