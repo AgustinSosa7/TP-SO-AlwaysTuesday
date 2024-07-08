@@ -22,17 +22,17 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
 //FS
 bool crear_config(char* nombre_archivo);
-void delete_archivo(char* nombre_archivo);
+bool delete_archivo(char* nombre_archivo);
 bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo);
 bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito);
 char* leer_archivo(char* nombre_archivo,int registro_archivo,int tamanio);
 int obtener_bloques_libres(int tamanio);
-bool puede_crecer(int bloque_inicial, int tamanio_viejo,int tamanio_nuevo);
+bool puede_crecer(int final_bloques_nuevo,int final_bloques_viejo);
 void setear_bitmap(int comienzo, int final,bool asigna);
-bool hay_espacios(int bloque_inicial, int bloques_faltantes);
-int compactacion(int bloque_inicial,int tamanio_viejo, int tamanio_nuevo);
+bool hay_espacios(int bloques_faltantes);
+int compactacion(int bloque_inicial,int final_bloques_viejo, int final_bloques_nuevo);
 int mover_archivos();
-int tamanio_bloque_escrito(int primer_bloque_libre, int tamanio_archivo);
+int tamanio_bloque_escrito(int tamanio_archivo);
 int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultimo_bloque_ocupado);
 char* generar_path_config(char* nombre_archivo);
 void mostrar_estado_archivo(t_config* config_archivo);
