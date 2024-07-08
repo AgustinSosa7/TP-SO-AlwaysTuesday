@@ -28,7 +28,7 @@ void inicializar_configs(char** argv){
 	char* PATH = string_new();
     NOMBRE_INTERFAZ = path;
 
-    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/entradasalida/configs/");
+    string_append(&PATH, "/home/utnso/tp-2024-1c-AlwaysTuesday/entradasalida/configs/");
 	string_append(&PATH, path);
 	string_append(&PATH, ".config");
 
@@ -41,12 +41,14 @@ if (entradasalida_config == NULL) {
 
 	TIPO_INTERFAZ = config_get_string_value(entradasalida_config,"TIPO_INTERFAZ");
 	recibir_configs(TIPO_INTERFAZ);
+
+	free(PATH);
 }
 
 
 void recibir_configs(char* TIPO_INTERFAZ){
 
-	 if (strcmp(TIPO_INTERFAZ, "GEN") == 0) {
+	 if (strcmp(TIPO_INTERFAZ, "GENERICA") == 0) {
             TIEMPO_UNIDAD_TRABAJO = config_get_int_value(entradasalida_config,"TIEMPO_UNIDAD_TRABAJO");
 			IP_KERNEL = config_get_string_value(entradasalida_config,"IP_KERNEL");
 			PUERTO_KERNEL = config_get_string_value(entradasalida_config,"PUERTO_KERNEL");

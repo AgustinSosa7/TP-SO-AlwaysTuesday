@@ -48,6 +48,7 @@ extern bool dejar_de_ejecutar;
 extern bool ocurrio_interrupcion;
 extern int motivo_interrupcion;
 
+
 // Semaforos
 extern sem_t sem_ciclo_de_instruccion;
 extern pthread_mutex_t mutex_ocurrio_interrupcion;

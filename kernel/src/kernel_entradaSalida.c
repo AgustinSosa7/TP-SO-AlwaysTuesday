@@ -22,13 +22,11 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       }
       else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           parametros->registroDireccion= leer_int_del_buffer(buffer);
-           parametros->registroTamanio= leer_int_del_buffer(buffer);
+           leer_parametros_lista_de_accesos(parametros, buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           parametros->registroDireccion= leer_int_del_buffer(buffer);
-           parametros->registroTamanio= leer_int_del_buffer(buffer);
+           leer_parametros_lista_de_accesos(parametros, buffer);
            return parametros;
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {
@@ -40,15 +38,20 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
+            parametros->registroTamanio = leer_int_del_buffer(buffer);
             return parametros;
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
+            leer_parametros_lista_de_accesos(parametros, buffer);
+            parametros->registroPunteroArchivo= leer_string_del_buffer(buffer);
             return parametros;
       }else //DEFALUT IO_FS_READ
       {
-            /* code */
+            parametros->archivo= leer_string_del_buffer(buffer);
+            leer_parametros_lista_de_accesos(parametros, buffer);
+            parametros->registroPunteroArchivo= leer_string_del_buffer(buffer);
             return parametros;
       }
 }           
@@ -60,14 +63,17 @@ t_interfaz* validar_peticion(t_peticion* peticion){
       t_interfaz* interfaz = existe_la_interfaz(nombre_io); 
       if (interfaz == NULL) {
             enviar_proceso_execute_a_exit();
+            eliminar_peticion(peticion);
             log_error(kernel_logger, "No se ha encontrado la interfaz: %s.\n", nombre_io);
             return NULL;
       } else if(!(interfaz->esta_conectada)){
             enviar_proceso_execute_a_exit();
+            eliminar_peticion(peticion);
             log_error(kernel_logger,"La interfaz %s no se encuentra conectada.\n", interfaz->nombre);
             return NULL;
       } else if(!(validar_interfaz_admite_instruccion(interfaz, instruccion))){
             enviar_proceso_execute_a_exit();
+            eliminar_peticion(peticion);
             log_info(kernel_logger, "La interfaz %s no admite la instruccion %s.", interfaz->nombre, instruccion);
             return NULL;
       } else{
@@ -116,6 +122,7 @@ void enviar_proceso_execute_a_exit(){
       cambiar_de_estado_y_de_lista(EXEC, EXIT);    
 
       eliminar_proceso(pcb, INVALID_INTERFACE);
+      
 }
 
 void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* interfaz)
@@ -147,7 +154,8 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
 bool enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion); 
-      agregar_parametros_a_paquete(paquete, proceso_blocked->peticion); 
+      agregar_parametros_a_paquete(paquete, proceso_blocked->peticion);
+      eliminar_peticion(proceso_blocked->peticion); 
 
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int); 
 	void* a_enviar = serializar_paquete(paquete, bytes);
@@ -174,35 +182,38 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
             agregar_int_a_paquete(paquete, peticion->parametros->tiempo_espera);
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
-      {     agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
+      {     agregar_lista_de_accesos_a_paquete(paquete, peticion->parametros->lista_de_accesos);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
-      {     agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
+      {     agregar_lista_de_accesos_a_paquete(paquete, peticion->parametros->lista_de_accesos);
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       //Ver ACá que onda :D
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
+            free(peticion->parametros->archivo);
 
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
+            free(peticion->parametros->archivo);
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
             agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio); 
+            free(peticion->parametros->archivo);
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
-            agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
+            agregar_lista_de_accesos_a_paquete(paquete, peticion->parametros->lista_de_accesos);
             agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);
+            free(peticion->parametros->archivo);
+            free(peticion->parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
-            agregar_int_a_paquete(paquete, peticion->parametros->registroDireccion);
-            agregar_int_a_paquete(paquete, peticion->parametros->registroTamanio);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);      
+            agregar_lista_de_accesos_a_paquete(paquete, peticion->parametros->lista_de_accesos);
+            agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);  
+            free(peticion->parametros->archivo);
+            free(peticion->parametros->registroPunteroArchivo);    
       }       
 }
 

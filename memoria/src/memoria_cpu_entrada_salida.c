@@ -117,6 +117,8 @@ void recibir_solicitud_de_escritura(int socket){
 
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 
+    //printf("PEDIDO DE LECTURA\n"); //BORRAR
+
     free(a_escribir);
     eliminar_paquete(paquete);
 }
@@ -179,6 +181,7 @@ void atender_entradasalida(int fd_entradasalida)
             break;
         case  GUARDAR_REGISTRO:
             recibir_solicitud_de_escritura(fd_entradasalida);
+            enviar_bool_mensaje(true, fd_entradasalida);
             break;
 
         case -1:

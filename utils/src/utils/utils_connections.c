@@ -264,13 +264,19 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 			close(socket_cliente);
 	   		printf("El cliente cerró la conexión.\n");
 	} 
+	free(a_enviar);
 }
 
-void eliminar_paquete(t_paquete* paquete)
-{
-	//free(paquete->buffer->stream);
-	//free(paquete->buffer);	
-	free(paquete);
+void eliminar_paquete(t_paquete* paquete) {
+    if (paquete != NULL) {
+        if (paquete->buffer != NULL) {
+            if (paquete->buffer->stream != NULL) {
+                free(paquete->buffer->stream);
+            }
+            free(paquete->buffer);
+        }
+        free(paquete);
+    }
 }
 
 
@@ -329,6 +335,24 @@ agregar_uint32_a_paquete(paquete,registros_cpu->ECX);
 agregar_uint32_a_paquete(paquete,registros_cpu->EDX);
 agregar_uint32_a_paquete(paquete,registros_cpu->SI);
 agregar_uint32_a_paquete(paquete,registros_cpu->DI);
+}
+
+// FUNCIONES PARA SERIALIZACION DE LOS ACCESOS
+void agregar_acceso_a_paquete(t_paquete* paquete, t_direccion_a_operar* acceso)
+{
+	agregar_int_a_paquete(paquete, acceso->direccion_fisica);
+	agregar_int_a_paquete(paquete, acceso->bytes_disponibles);
+	free(acceso);
+}
+
+void agregar_lista_de_accesos_a_paquete(t_paquete* paquete, t_list* lista_de_accesos){
+	int cantidad_de_acessos = list_size(lista_de_accesos);
+	agregar_int_a_paquete(paquete, cantidad_de_acessos);
+
+	for(int i = 0; i < cantidad_de_acessos; i++){
+		agregar_acceso_a_paquete(paquete, list_get(lista_de_accesos,i));
+	}
+	list_destroy(lista_de_accesos);
 }
 
 ////////////////////// DESERIALIZACION //////////////
@@ -496,7 +520,24 @@ void leer_registros_del_buffer(t_buffer* buffer, t_registros_cpu* registros_CPU)
 	registros_CPU->DI=leer_uint_32_del_buffer(buffer);
 }
 
+// Leer Direccion y tamanio en pedidos a memoria
 
+void leer_parametros_lista_de_accesos(t_peticion_param* parametros, t_buffer* buffer){
+      t_list* lista_de_accesos = list_create();
+      parametros->lista_de_accesos = lista_de_accesos;
+      int cantidad_de_accesos = leer_int_del_buffer(buffer);
+      
+      for(int i = 1; i <= cantidad_de_accesos; i++){
+            agregar_acceso_a_la_lista(lista_de_accesos, buffer);
+      }
+}
+
+void agregar_acceso_a_la_lista(t_list* lista_de_accesos, t_buffer* buffer){
+      t_direccion_a_operar* direc = malloc(sizeof(t_direccion_a_operar));
+	direc->direccion_fisica = leer_int_del_buffer(buffer);
+	direc->bytes_disponibles = leer_int_del_buffer(buffer);
+	list_add(lista_de_accesos, direc);
+}
 /////////////////////// PCB /////////////////////////
 
 void agregar_pcb_a_paquete(t_pcb* un_pcb, t_paquete* un_paquete) {

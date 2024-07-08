@@ -8,7 +8,6 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     char* PATH = string_new();
     //Busco el archivo y lo abro
     string_append(&PATH, PATH_INSTRUCCIONES);
-	string_append(&PATH, "/");
 	string_append(&PATH, nombre_Archivo);
     printf("%s\n",PATH);
     FILE *Pseudocodigo = fopen(PATH, "r");

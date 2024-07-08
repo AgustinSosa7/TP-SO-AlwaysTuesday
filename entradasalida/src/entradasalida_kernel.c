@@ -33,7 +33,6 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
     t_buffer* buffer = paquete->buffer;
 
-    peticion->instruccion = malloc(sizeof(char));
     peticion->instruccion = leer_string_del_buffer(buffer);
 
     asignar_parametros_segun_tipo(peticion, buffer); 
@@ -51,12 +50,10 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-           peticion->parametros->registroDireccion= leer_int_del_buffer(buffer);
-           peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
+           leer_parametros_lista_de_accesos(peticion->parametros, buffer);
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {
-           peticion->parametros->registroDireccion= leer_int_del_buffer(buffer);
-           peticion->parametros->registroTamanio= leer_int_del_buffer(buffer);
+           leer_parametros_lista_de_accesos(peticion->parametros, buffer);
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       {     
             peticion->parametros->archivo = leer_string_del_buffer(buffer);
@@ -71,16 +68,16 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     //Ver Orden de esto :D 
             peticion->parametros->archivo = leer_string_del_buffer(buffer); 
-            peticion->parametros->registroDireccion = leer_int_del_buffer(buffer);
-            peticion->parametros->registroTamanio = leer_int_del_buffer(buffer);
+            leer_parametros_lista_de_accesos(peticion->parametros, buffer);
+
       }else //DEFALUT IO_FS_READ
       {
             peticion->parametros->archivo = leer_string_del_buffer(buffer); 
+            leer_parametros_lista_de_accesos(peticion->parametros, buffer);
             peticion->parametros->registroPunteroArchivo=leer_string_del_buffer(buffer); // Ver si me pueden pasar int D1
-            peticion->parametros->registroDireccion = leer_int_del_buffer(buffer);
-            peticion->parametros->registroTamanio = leer_int_del_buffer(buffer);
       }
 }
+
 
 void procesar_peticion(t_peticion* peticion) {
 
@@ -88,23 +85,29 @@ void procesar_peticion(t_peticion* peticion) {
 
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
             int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera; 
-            printf("Estoy por dormir...ZZZ...\n");
+            printf("Estoy durmiendo...ZZZ...\n");
             usleep(tiempo_espera*1000); 
             printf("Ya dormi mi tiempo.\n");
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
-            char* leido = iniciar_la_consola(peticion->parametros->registroTamanio);
-            guardar_en_memoria(leido, peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
-            log_info(entradasalida_logger,"registroDireccion:%d. \n", peticion->parametros->registroDireccion);
-            log_info(entradasalida_logger,"registroTamanio:%d. \n", peticion->parametros->registroTamanio);
+            char* leido = iniciar_la_consola(tamanio_total_del_leido(peticion->parametros->lista_de_accesos));
+                       
+            partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos);
+
             log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente.\n", leido);
+
+            free(leido);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {     
             log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
-            char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
-            log_info(entradasalida_logger,"¨%s¨", escrito);
+
+            char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos);
+
+            log_warning(entradasalida_logger,"¨%s¨", escrito);
+
+            free(escrito);      
 
       // }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
       // {     
@@ -138,8 +141,11 @@ void procesar_peticion(t_peticion* peticion) {
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo); // Ver como va a llegar :D.
+            
             log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
-            char* escrito = pedir_a_memoria(peticion->parametros->registroDireccion, peticion->parametros->registroTamanio);
+            
+            char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos);
+            
             if(escribir_archivo(nombre_archivo,registro_archivo,escrito)){
             log_info(entradasalida_logger,"Se ha escrito %s en el archivo %s",escrito,nombre_archivo);
             }else{
@@ -151,36 +157,46 @@ void procesar_peticion(t_peticion* peticion) {
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo);
-            int registro_direccion = peticion->parametros->registroDireccion;
-            int tamanio = peticion->parametros->registroTamanio;
-            char* leido = leer_archivo(nombre_archivo,registro_archivo,tamanio);
-            if (strcmp(leido,"")==0)
-            {
+            int tamanio = tamanio_total_del_leido(peticion->parametros->lista_de_accesos);
+            
+            char* leido = leer_archivo(nombre_archivo,registro_archivo,tamanio); 
+            
+            if (strcmp(leido,"")==0){ 
                   log_info(entradasalida_logger,"No se pudo guardar correctamente.\n");
             }else{
-            guardar_en_memoria(leido, registro_direccion, tamanio);
-            log_info(entradasalida_logger,"¨%s¨ se guardo correctamente.\n", leido);
+                  partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos);
+                  log_info(entradasalida_logger,"¨%s¨ se guardo correctamente.\n", leido);
             }     
       }
 }      
 
-char* iniciar_la_consola(int registroTamanio){
-      char* leido;
-	leido = readline("> ");
-	while(strcmp(leido,"\0") != 0){
-		if(validar_tamanio_leido(leido, registroTamanio)){
-                  break;
-		}
-		free(leido);
-		log_info(entradasalida_logger, "El valor ingresado debe tener %d caracteres. Por favor reingrese un nuevo valor...\n", registroTamanio);
-		leido = readline("> ");
-	}
-      return leido;
+char* iniciar_la_consola(int registroTamanio) {
+    char* leido = NULL;
+
+    while (1) {
+        if (leido != NULL) {
+            free(leido);
+        }
+        leido = readline("> ");
+        if (leido == NULL || strcmp(leido, "\0") == 0) {
+            // Entrada vacía o error en readline
+            if (leido != NULL) {
+                free(leido);
+            }
+            return NULL;
+        }
+        if (validar_tamanio_leido(leido, registroTamanio)) {
+            break;
+        }
+        log_info(entradasalida_logger, "El valor ingresado debe tener %d caracteres. Por favor reingrese un nuevo valor...\n", registroTamanio);
+    }
+    return leido;
 }
 
 bool validar_tamanio_leido(char* leido, int registroTamanio){
       return (registroTamanio == strlen(leido));
 }
+
 
 void finalizar_peticion(t_peticion* peticion){
       enviar_bool_mensaje(true, fd_kernel);

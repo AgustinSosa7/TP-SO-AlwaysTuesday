@@ -84,9 +84,8 @@ t_interfaz* identificar_io(int socket){
 
 t_list* asignar_instrucciones_posibles(char* tipo){
     t_list* instrucciones_posibles;
-    instrucciones_posibles = list_create();
-    if (strcmp(tipo, "GEN") == 0) {
-      instrucciones_posibles = INSTRUCCIONES_GEN;      
+    if (strcmp(tipo, "GENERICA") == 0) {
+      instrucciones_posibles = INSTRUCCIONES_GENERICA;      
     } else if (strcmp(tipo, "STDIN") == 0) {
 	    instrucciones_posibles = INSTRUCCIONES_STDIN;
     } else if (strcmp(tipo, "STDOUT") == 0) {

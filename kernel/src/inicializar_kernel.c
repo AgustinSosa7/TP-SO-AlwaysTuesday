@@ -32,11 +32,13 @@ if (kernel_log_debug == NULL) {
 void inicializar_configs(char* path) {
     char* PATH = string_new();
     
-    string_append(&PATH, "/home/utnso/Desktop/tp-2024-1c-AlwaysTuesday/kernel/configs/");
+    string_append(&PATH, "/home/utnso/tp-2024-1c-AlwaysTuesday/kernel/configs/");
 	string_append(&PATH, path);
 	string_append(&PATH, ".config");
 
 	kernel_config = config_create(PATH);
+
+	free(PATH);
 
 	if (kernel_config == NULL) {
 		perror("Error al intentar cargar el config.");
@@ -80,11 +82,11 @@ void inicializar_listas(void){
 }
 
 void inicializar_listas_instrucciones(){
-	INSTRUCCIONES_GEN = list_create();
+	INSTRUCCIONES_GENERICA = list_create();
 	INSTRUCCIONES_STDIN = list_create();
 	INSTRUCCIONES_STDOUT = list_create();
 	INSTRUCCIONES_FS = list_create();
-	list_add(INSTRUCCIONES_GEN, "IO_GEN_SLEEP");
+	list_add(INSTRUCCIONES_GENERICA, "IO_GEN_SLEEP");
 	list_add(INSTRUCCIONES_STDIN, "IO_STDIN_READ");
 	list_add(INSTRUCCIONES_STDOUT, "IO_STDOUT_WRITE");
 	list_add(INSTRUCCIONES_FS, "IO_FS_CREATE");
