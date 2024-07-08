@@ -2,7 +2,7 @@
 
 bool iniciar_tiempo_VRR;
 
-t_list* INSTRUCCIONES_GEN;
+t_list* INSTRUCCIONES_GENERICA;
 t_list* INSTRUCCIONES_STDIN;
 t_list* INSTRUCCIONES_STDOUT;
 t_list* INSTRUCCIONES_FS;
