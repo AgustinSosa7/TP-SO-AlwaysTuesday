@@ -150,6 +150,12 @@ void inicializar_archivos(){
 		exit(1);
 	}
 	// Hace falta acá un Sync??? 
+	char* bitmap_inicializado = fopen (PATH_BITMAP,"r");
+	if (bitmap_inicializado!=NULL)
+	{	
+		log_info(entradasalida_logger, "El Archivo ya existía");
+		fclose(bitmap_inicializado);
+	}
 	
 	fd_archivoBitmap = open(PATH_BITMAP, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	ftruncate(fd_archivoBitmap, tamanio_bitmap);
@@ -159,11 +165,26 @@ void inicializar_archivos(){
 		exit(1);
 	}
 
-	pre_bitmap = malloc(tamanio_bitmap);
+	bitmap = malloc(tamanio_bitmap);
 
 	// USO bitmapSWAP para el tema del bitmap
 	bitmap = bitarray_create_with_mode(pre_bitmap, tamanio_bitmap, LSB_FIRST); 
 	msync(bitmap->bitarray,tamanio_bitmap,MS_SYNC);
+
+	if (bitmap_inicializado==NULL)
+	{
+		for (int i = 0 ; i < BLOCK_COUNT; i++)
+	{	
+		bitarray_clean_bit(bitmap,i);
+	}
+	}
+	int rta;
+	for (int i = 0 ; i < 32; i++)
+	{	
+		rta = bitarray_test_bit(bitmap,i) ? 1 : 0;
+		log_info(entradasalida_logger,"bitmap posicion %d : %d",i,rta);	
+	}
+	
 	//LSB_FIRST Completa los bits en un byte priorizando el bit menos significativo 00000001
 }
 

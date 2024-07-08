@@ -108,7 +108,7 @@ typedef struct{
     char* archivo;
     int registroTamanio; //solo para truncar
     t_list* lista_de_accesos;
-    char* registroPunteroArchivo;
+    int registroPunteroArchivo;
 } t_peticion_param;
 
 typedef enum{

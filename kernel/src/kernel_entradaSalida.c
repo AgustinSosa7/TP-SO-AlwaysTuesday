@@ -45,13 +45,15 @@ t_peticion_param* leer_parametros(t_paquete* paquete, char* instruccion){
       {
             parametros->archivo= leer_string_del_buffer(buffer);
             leer_parametros_lista_de_accesos(parametros, buffer);
-            parametros->registroPunteroArchivo= leer_string_del_buffer(buffer);
+            parametros->registroTamanio = leer_int_del_buffer(buffer);
+            parametros->registroPunteroArchivo= leer_int_del_buffer(buffer);
             return parametros;
       }else //DEFALUT IO_FS_READ
       {
             parametros->archivo= leer_string_del_buffer(buffer);
             leer_parametros_lista_de_accesos(parametros, buffer);
-            parametros->registroPunteroArchivo= leer_string_del_buffer(buffer);
+            parametros->registroTamanio = leer_int_del_buffer(buffer);
+            parametros->registroPunteroArchivo= leer_int_del_buffer(buffer);
             return parametros;
       }
 }           
@@ -320,21 +322,19 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
       {     
 
       }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
-      {     free(parametros->archivo);
+      {    
 
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
-      {     free(parametros->archivo);
+      {     
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
-      {     free(parametros->archivo);
+      {     
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
-      {     free(parametros->archivo);
-            free(parametros->registroPunteroArchivo);
+      {     
 
       }else //Es IO_FS_READ 
-      {     free(parametros->archivo);
-            free(parametros->registroPunteroArchivo);
+      {    
       }     
       
       free(parametros);

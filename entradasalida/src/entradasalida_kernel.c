@@ -69,12 +69,15 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
       {     //Ver Orden de esto :D 
             peticion->parametros->archivo = leer_string_del_buffer(buffer); 
             leer_parametros_lista_de_accesos(peticion->parametros, buffer);
+            peticion->parametros->registroTamanio = leer_int_del_buffer(buffer);
+            peticion->parametros->registroPunteroArchivo = leer_int_del_buffer(buffer);
 
       }else //DEFALUT IO_FS_READ
       {
-            peticion->parametros->archivo = leer_string_del_buffer(buffer); 
+             peticion->parametros->archivo = leer_string_del_buffer(buffer); 
             leer_parametros_lista_de_accesos(peticion->parametros, buffer);
-            peticion->parametros->registroPunteroArchivo=leer_string_del_buffer(buffer); // Ver si me pueden pasar int D1
+            peticion->parametros->registroTamanio = leer_int_del_buffer(buffer);
+            peticion->parametros->registroPunteroArchivo = leer_int_del_buffer(buffer);
       }
 }
 
@@ -140,23 +143,27 @@ void procesar_peticion(t_peticion* peticion) {
       {
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
-            int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo); // Ver como va a llegar :D.
-            
-            log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
+            int registro_archivo = peticion->parametros->registroPunteroArchivo; 
+            int tamanio_text = peticion->parametros->registroTamanio; // El nombre no corresponde pero si el tipo de dato XD
             
             char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos);
-            
-            if(escribir_archivo(nombre_archivo,registro_archivo,escrito)){
+
+            log_warning(entradasalida_logger,"¨%s¨", escrito);
+
+            if(escribir_archivo(nombre_archivo,registro_archivo,escrito,tamanio_text)){
             log_info(entradasalida_logger,"Se ha escrito %s en el archivo %s",escrito,nombre_archivo);
+
             }else{
                  log_info(entradasalida_logger,"No se ha podido escribir %s en el archivo %s",escrito,nombre_archivo);
             }
+
+            free(escrito);
        
       }else //DEFALUT IO_FS_READ
       {     
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
-            int registro_archivo = atoi(peticion->parametros->registroPunteroArchivo);
+            int registro_archivo = peticion->parametros->registroPunteroArchivo;
             int tamanio = tamanio_total_del_leido(peticion->parametros->lista_de_accesos);
             
             char* leido = leer_archivo(nombre_archivo,registro_archivo,tamanio); 
@@ -231,11 +238,11 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     free(parametros->archivo);
-            free(parametros->registroPunteroArchivo);
+            
 
       }else //Es IO_FS_READ 
       {     free(parametros->archivo);
-            free(parametros->registroPunteroArchivo);
+           
       }     
       
       free(parametros);
