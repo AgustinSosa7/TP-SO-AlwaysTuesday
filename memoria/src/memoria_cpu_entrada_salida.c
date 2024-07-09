@@ -32,7 +32,7 @@ void recibir_pedido_instruccion_y_enviar(){
     enviar_instruccion_pesudocodigo((proceso->instrucciones),pc);
     free(buffer);
     free(paquete);
-    log_info(memoria_logger,"Pseudocodigo enviado. PID: %d PROGRAM COUNTER: %d",pid,pc); //BORRAR
+    log_info(memoria_log_debug,"Pseudocodigo enviado. PID: %d PROGRAM COUNTER: %d",pid,pc); //BORRAR
 };
 
 void recibir_pedido_marco_y_enviar(){
@@ -49,7 +49,7 @@ void recibir_pedido_marco_y_enviar(){
     eliminar_paquete(paquete);
     eliminar_paquete(paquete_a_enviar);
     
-    log_info(memoria_logger,"Marco enviado. PID: %d PAGINA: %d MARCO: %d",pid,numero_de_pagina,marco_pedido); //BORRAR
+    log_info(memoria_log_debug,"Marco enviado. PID: %d PAGINA: %d MARCO: %d",pid,numero_de_pagina,marco_pedido); //BORRAR
 
 };
 
@@ -117,6 +117,12 @@ void recibir_solicitud_de_escritura(int socket){
     //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
     log_info(memoria_logger, "PID: <PID> - Accion: ESCRIBIR - Direccion fisica: %d - Tamaño %d",direccion_fisica,tamanio); //Ver como unificar los logs de escritura y lectura.
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
+
+    //mientras todo este ok se manda un ok.
+    t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA);
+    agregar_int_a_paquete(paquete_a_enviar,0); //agrego ok.
+    enviar_paquete(paquete_a_enviar, socket);
+    eliminar_paquete(paquete_a_enviar);
 
     free(a_escribir);
     eliminar_paquete(paquete);

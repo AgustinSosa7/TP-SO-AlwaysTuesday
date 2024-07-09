@@ -51,14 +51,21 @@ void atender_kernel(){
     while(1){
         op_code code_op_recibido = recibir_operacion(fd_kernel);
         sem_wait(&ejecucion);
-        if(code_op_recibido == CREAR_PROCESO){
+        if(code_op_recibido == CREAR_PROCESO_MEMORIA){
             list_add(procesos_memoria, crear_proceso_nuevo());
-            //DEVOLVER OK A MILI. CREAR_PROCESO
+
+            //Mandar un opcode a kernel de ok.
+            t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_CREAR_PROCESO_MEMORIA);
+            enviar_paquete(paquete_a_enviar, fd_kernel);
+            eliminar_paquete(paquete_a_enviar);
         }
         else if(code_op_recibido == FINALIZAR_PROCESO_MEMORIA){
             finalizar_proceso(); // ESto debe abuscar un proceso en memoria. Marcar libres todos los marcos del proceso, y luego de esto hacerle free.
-            log_info(memoria_logger, "Se pidio finalizar un proceso");
-            //DEVOLVER OK A MILI. FINALIZAR_PROCESO_MEMORIA
+            
+            //Mandar un opcode a kernel de ok.
+            t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_FINALIZAR_PROCESO_MEMORIA);
+            enviar_paquete(paquete_a_enviar, fd_kernel);
+            eliminar_paquete(paquete_a_enviar);
         }
         else{
             log_error(memoria_logger, "No se recibio un pedido correcto de kernel.");
