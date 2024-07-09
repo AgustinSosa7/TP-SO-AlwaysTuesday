@@ -89,12 +89,12 @@ void recibir_solicitud_de_lectura(int socket){
     t_paquete* paquete = recibir_paquete(socket);
     t_buffer* buffer = paquete->buffer;
 
-    //int pid = leer_int_del_buffer(buffer);
+    int pid = leer_int_del_buffer(buffer);
     int direccion_fisica = leer_int_del_buffer(buffer);
     int tamanio = leer_int_del_buffer(buffer);
 
     //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
-    log_info(memoria_logger, "PID: <PID> - Accion: LEER - Direccion fisica: %d - Tamaño %d",direccion_fisica,tamanio);//Ver como unificar los logs de escritura y lectura.
+    log_info(memoria_logger, "PID: <%d> - Accion: LEER - Direccion fisica: %d - Tamaño %d", pid, direccion_fisica,tamanio);//Ver como unificar los logs de escritura y lectura.
     void* leido = leer_espacio_usuario(direccion_fisica,tamanio);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_LEER_VALOR_EN_MEMORIA);
@@ -109,13 +109,13 @@ void recibir_solicitud_de_escritura(int socket){
     t_paquete* paquete = recibir_paquete(socket);
     t_buffer* buffer = paquete->buffer;
 
-    //int pid = leer_int_del_buffer(buffer);
+    int pid = leer_int_del_buffer(buffer);
     int direccion_fisica = leer_int_del_buffer(buffer);
     int tamanio = leer_int_del_buffer(buffer);
     void* a_escribir = leer_void_del_buffer(buffer,tamanio);
 
     //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
-    log_info(memoria_logger, "PID: <PID> - Accion: ESCRIBIR - Direccion fisica: %d - Tamaño %d",direccion_fisica,tamanio); //Ver como unificar los logs de escritura y lectura.
+    log_info(memoria_logger, "PID: <%d> - Accion: ESCRIBIR - Direccion fisica: %d - Tamaño %d", pid ,direccion_fisica,tamanio); //Ver como unificar los logs de escritura y lectura.
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 
     //mientras todo este ok se manda un ok.
