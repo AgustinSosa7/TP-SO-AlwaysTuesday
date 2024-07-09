@@ -154,7 +154,15 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void*
 
     int valor_a_loggear = -1;
     memcpy(&valor_a_loggear, valor_a_escribir, tamanio);
+
+    op_code code_op = recibir_operacion(fd_memoria);
+    if(code_op == RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA){
     log_info(cpu_logger, "PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d", pid, direccion_fisica, valor_a_loggear);
+    }
+    else
+    {
+    log_error(cpu_logger, "No se escribio correctamente en memoria");
+    }
 }
 
 

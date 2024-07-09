@@ -99,6 +99,8 @@ void atender_instruccion_validada(char* leido){
 		t_pcb* nuevo_pcb = crearPcb();
 		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
 		//verificar si memoria creo el proceso 
+		//op_code code_op_recibido = recibir_operacion(fd_memoria);
+		//code_op_recibido == RESPUESTA_CREAR_PROCESO_MEMORIA
 		sleep(2);
 		pthread_mutex_lock(&(struct_new->mutex));
 		list_add(struct_new->lista, nuevo_pcb);
@@ -123,8 +125,7 @@ void atender_instruccion_validada(char* leido){
 					list_remove_element(lista_encontrada->lista,pcb);
 					pcb->estado_pcb = EXIT;
 					eliminar_proceso(pcb,INTERRUPTED_BY_USER);
-					log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));
-					
+					log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));	
 				
 			} else{
 				pcb->estado_pcb = EXIT;
@@ -253,7 +254,7 @@ t_list* leer_archivo(char* archivo){
 
 // INICIAR_PROCESO
 void enviar_path_a_memoria(char* path,int pid,int socket){
-	t_paquete* un_paquete = crear_paquete(CREAR_PROCESO);
+	t_paquete* un_paquete = crear_paquete(CREAR_PROCESO_MEMORIA);
 	agregar_int_a_paquete(un_paquete,pid);
 	agregar_string_a_paquete(un_paquete,path);
 	enviar_paquete(un_paquete, socket);

@@ -120,7 +120,7 @@ void recibir_solicitud_de_escritura(int socket){
 
     //mientras todo este ok se manda un ok.
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA);
-    agregar_int_a_paquete(paquete_a_enviar,0); //agrego ok.
+    //agregar_int_a_paquete(paquete_a_enviar,0); //agrego ok.
     enviar_paquete(paquete_a_enviar, socket);
     eliminar_paquete(paquete_a_enviar);
 
