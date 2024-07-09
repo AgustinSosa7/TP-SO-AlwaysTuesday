@@ -25,7 +25,7 @@ void atender_kernel_memoria(){
 void enviar_direccion_pesudocodigo(char* pseudocogido,int pid){
       // Se comentó lo que era para probar :D
       //log_info(kernel_log_debug,"creo paquete...");
-      t_paquete* paquete = crear_paquete(CREAR_PROCESO);
+      t_paquete* paquete = crear_paquete(CREAR_PROCESO_MEMORIA);
       //log_info(kernel_log_debug,"agrego el string al paquete...");
       
       agregar_int_a_paquete(paquete,pid);

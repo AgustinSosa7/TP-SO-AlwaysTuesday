@@ -3,6 +3,7 @@
 void guardar_en_memoria(char* leido, int registroDireccion, int registroTamanio){ //escribir
     //Enviar al MEMORIA: [GUARDAR_REGISTRO][Leido][RegistroDireccion][RegistroTamanio]
     t_paquete* paquete = crear_paquete(GUARDAR_REGISTRO);
+    //agregar_int_a_paquete(paquete,pid);
     agregar_int_a_paquete(paquete, registroDireccion);
     agregar_int_a_paquete(paquete, registroTamanio);
     agregar_void_a_paquete(paquete, leido, registroTamanio);  
@@ -41,6 +42,7 @@ void partir_y_guardar_en_memoria(char* leido, t_list* lista_de_accesos){
 char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
     //Enviar al MEMORIA: [GUARDAR_REGISTRO][RegistroDireccion][RegistroTamanio]
     t_paquete* paquete = crear_paquete(PEDIR_REGISTRO);
+    //agregar_int_a_paquete(paquete,pid);
     agregar_int_a_paquete(paquete, registroDireccion);
     agregar_int_a_paquete(paquete, registroTamanio);
     enviar_paquete(paquete, fd_memoria);

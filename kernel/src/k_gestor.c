@@ -45,6 +45,9 @@ void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
     liberar_recursos(pcb);
     printf("liberando estructuras en memoria.\n");
     liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA, pcb->pid);
+    
+    //op_code code_op_recibido = recibir_operacion(fd_memoria); //recibir el OK
+
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
     free(pcb);
    // sem_post(&sem_planificador_corto_plazo);
