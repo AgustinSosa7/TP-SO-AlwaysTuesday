@@ -113,6 +113,10 @@ int ajustar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
     printf("\n");
 
     if (tamanio_nuevo > proceso->long_tabla_pags){
+        
+        //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
+        log_info(memoria_logger, "PID: %d - Tamaño Actual: %d - Tamaño a Ampliar: %d",proceso->pid,proceso->long_tabla_pags,tamanio_nuevo); 
+
         if((tamanio_nuevo-(proceso->long_tabla_pags)) > calcular_marcos_libres())//Lo que yo quiero pedir es mayor a lo libre
         { 
             return (-1);//OUT_OF_MEMORY
@@ -122,17 +126,22 @@ int ajustar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
             cambiar_tamanio_proceso(proceso,tamanio_nuevo);
             asignar_marcos_memoria(proceso,tamanio_nuevo);
             //prueba
+            /*
             printf("Array NUEVO: ");
             for (int i = 0; i < proceso->long_tabla_pags; i++) {
                 printf("%d ", proceso->tabla_de_paginas[i]);
             }
             printf("\n");
-            //prueba
+            */
+            //prueba  
         return 0;
         }
     }
     else
     {
+        //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
+        log_info(memoria_logger, "PID: %d - Tamaño Actual: %d - Tamaño a Reducir: %d",proceso->pid,proceso->long_tabla_pags,tamanio_nuevo); 
+
         liberar_marcos_memoria(proceso,tamanio_nuevo);
         cambiar_tamanio_proceso(proceso,tamanio_nuevo);
             //prueba

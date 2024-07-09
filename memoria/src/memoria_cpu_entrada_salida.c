@@ -88,18 +88,18 @@ void recibir_modificacion_de_tamanio(){
 void recibir_solicitud_de_lectura(int socket){
     t_paquete* paquete = recibir_paquete(socket);
     t_buffer* buffer = paquete->buffer;
+
+    //int pid = leer_int_del_buffer(buffer);
     int direccion_fisica = leer_int_del_buffer(buffer);
     int tamanio = leer_int_del_buffer(buffer);
 
-    log_info(memoria_logger, "Voy a  buscar lo que me pidIO IO..");
-
+    //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
+    log_info(memoria_logger, "PID: <PID> - Accion: LEER - Direccion fisica: %d - Tamaño %d",direccion_fisica,tamanio);//Ver como unificar los logs de escritura y lectura.
     void* leido = leer_espacio_usuario(direccion_fisica,tamanio);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_LEER_VALOR_EN_MEMORIA);
     agregar_void_a_paquete(paquete_a_enviar,leido,tamanio);
     enviar_paquete(paquete_a_enviar, socket);
-
-    log_info(memoria_logger, "Enviando a IO lo que pidIO");
     
     eliminar_paquete(paquete_a_enviar);
     eliminar_paquete(paquete);
@@ -109,15 +109,14 @@ void recibir_solicitud_de_escritura(int socket){
     t_paquete* paquete = recibir_paquete(socket);
     t_buffer* buffer = paquete->buffer;
 
+    //int pid = leer_int_del_buffer(buffer);
     int direccion_fisica = leer_int_del_buffer(buffer);
     int tamanio = leer_int_del_buffer(buffer);
     void* a_escribir = leer_void_del_buffer(buffer,tamanio);
 
-    //char* leido2 = (char*) a_escribir;
-
+    //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
+    log_info(memoria_logger, "PID: <PID> - Accion: ESCRIBIR - Direccion fisica: %d - Tamaño %d",direccion_fisica,tamanio); //Ver como unificar los logs de escritura y lectura.
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
-
-    //printf("PEDIDO DE LECTURA\n"); //BORRAR
 
     free(a_escribir);
     eliminar_paquete(paquete);
@@ -175,7 +174,6 @@ void atender_entradasalida(int fd_entradasalida)
       switch (code_op)
       {
       case PEDIR_REGISTRO:
-
             //printf("PEDIDO DE LECTURA\n"); //BORRAR 
             recibir_solicitud_de_lectura(fd_entradasalida);
             break;

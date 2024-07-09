@@ -1,8 +1,5 @@
 #include "../includes/memoria_procesos.h"
 
-
-
-
 t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     
     char* PATH = string_new();

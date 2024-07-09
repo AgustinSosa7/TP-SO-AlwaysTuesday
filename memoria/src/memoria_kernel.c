@@ -15,8 +15,12 @@ t_proceso* crear_proceso_nuevo(){
         procesoNuevo->long_tabla_pags = 0;
         procesoNuevo->tabla_de_paginas = NULL;
         //free(paquete);
-        log_info(memoria_logger, "Cree el proceso: %d",procesoNuevo->pid);
-        log_info(memoria_logger, "Direccion el proceso: %s",procesoNuevo->direccion_pseudocodigo);
+        log_info(memoria_log_debug, "Cree el proceso: %d",procesoNuevo->pid);
+        log_info(memoria_log_debug, "Direccion el proceso: %s",procesoNuevo->direccion_pseudocodigo);
+        
+        //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
+        log_info(memoria_logger, "PID: %d - Tamaño: %d ",procesoNuevo->pid,procesoNuevo->long_tabla_pags);
+
         return procesoNuevo;
 };
 
@@ -30,12 +34,16 @@ void finalizar_proceso(){
     liberar_marcos_memoria(proceso_eliminado,0); //el tamanio nuevo es 0 para que libere todos los marcos
     
     if(list_remove_element(procesos_memoria,proceso_eliminado)){
-        log_info(memoria_logger, "Finalizo el proceso: %d",proceso_eliminado->pid);
+        log_info(memoria_log_debug, "Finalizo el proceso: %d",proceso_eliminado->pid);
+        
+        //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
+        log_info(memoria_logger, "PID: %d - Tamaño: %d ",proceso_eliminado->pid,proceso_eliminado->long_tabla_pags);// Evaluar si setear la long a 0 o mostrar las que tenia el proceso antes.
+                                                                                                                        //OPCION A Y CREO CORRECTA: SETEAR A 0 LA LONG DE TABLA DE PAGINAS. POR Q YA LIBERE LOS MARCOS.
         free(proceso_eliminado);
     }
     else
     {
-        log_error(memoria_logger, "Error al finalizar el proceso: %d",pid);
+        log_error(memoria_log_debug, "Error al finalizar el proceso: %d",pid);
     }
 }
 
