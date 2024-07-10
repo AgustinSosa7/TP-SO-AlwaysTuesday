@@ -27,7 +27,7 @@ int traer_numero_marco(t_proceso* proceso,int pagina_consultada){
 
 int buscar_marco_libre(){
     int marco_encontrado = -1;
-    log_info(memoria_log_debug, "Busco marco libre...");
+    //log_info(memoria_log_debug, "Busco marco libre...");
     for(int i = 0; i<size_de_tabla_marcos;i++){ 
         if(!bitarray_test_bit(tabla_de_marcos, i))
         {
@@ -45,7 +45,7 @@ void cambiar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
     if(proceso->long_tabla_pags == 0){
         proceso->tabla_de_paginas = (int *)malloc(tamanio_nuevo * sizeof(int));   
         if (proceso->tabla_de_paginas == NULL) {
-        printf("Error al asignar memoria\n");
+        log_error(memoria_log_debug, "Error al asignar memoria\n");
         }
     }
     else
@@ -53,7 +53,7 @@ void cambiar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
         proceso->tabla_de_paginas = (int *)realloc(proceso->tabla_de_paginas, tamanio_nuevo * sizeof(int));    
 
         if (proceso->tabla_de_paginas == NULL) {
-        printf("Error al reasignar memoria\n");
+        log_error(memoria_log_debug, "Error al asignar memoria\n");
         }
     }
 }
@@ -98,7 +98,7 @@ int calcular_marcos_libres(){
             marcos_libres++;
         }
     }
-    printf("Marcos libres calculados: %d\n",marcos_libres);
+    log_info(memoria_log_debug, "Marcos libres calculados: %d\n",marcos_libres);
     return marcos_libres;
 }
 
@@ -106,11 +106,11 @@ int ajustar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
     //Al llegar una solicitud de ajuste de tamaño de proceso (resize) se deberá cambiar el tamaño del proceso de acuerdo al nuevo tamaño.
     
     // Imprimir el array original //prueba
-    printf("Array original: ");
-    for (int i = 0; i < proceso->long_tabla_pags; i++) {
-        printf("%d ", proceso->tabla_de_paginas[i]);
-    }
-    printf("\n");
+    //printf("Array original: ");
+    //for (int i = 0; i < proceso->long_tabla_pags; i++) {
+    //    printf("%d ", proceso->tabla_de_paginas[i]);
+    //}
+    //printf("\n");
 
     if (tamanio_nuevo > proceso->long_tabla_pags){
         
@@ -145,11 +145,11 @@ int ajustar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
         liberar_marcos_memoria(proceso,tamanio_nuevo);
         cambiar_tamanio_proceso(proceso,tamanio_nuevo);
             //prueba
-            printf("Array NUEVO: ");
-            for (int i = 0; i < proceso->long_tabla_pags; i++) {
-                printf("%d ", proceso->tabla_de_paginas[i]);
-            }
-            printf("\n");
+            //printf("Array NUEVO: ");
+            //for (int i = 0; i < proceso->long_tabla_pags; i++) {
+            //    printf("%d ", proceso->tabla_de_paginas[i]);
+            //}
+            //printf("\n");
             //prueba
         return 0;
     }

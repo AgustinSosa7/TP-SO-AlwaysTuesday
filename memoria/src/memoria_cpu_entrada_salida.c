@@ -25,10 +25,8 @@ void recibir_pedido_instruccion_y_enviar(){
     t_buffer* buffer = paquete->buffer;
     int pid = leer_int_del_buffer(buffer);
     int pc = leer_int_del_buffer(buffer);
-    printf("Busco el proceso...\n");
     //t_proceso* proceso = malloc(sizeof(proceso));
     t_proceso* proceso = buscar_proceso_en_memoria(pid);
-    printf("encontre el proceso %d",proceso->pid);
     enviar_instruccion_pesudocodigo((proceso->instrucciones),pc);
     free(buffer);
     free(paquete);
@@ -61,11 +59,7 @@ void recibir_modificacion_de_tamanio(){
     //int paginas_necesarias = calcular_paginas_necesarias(tamanio_nuevo);
     t_proceso* proceso = buscar_proceso_en_memoria(pid);
 
-    printf("Encontre el proceso %d\n",proceso->pid);
-
     int resultado_ajuste = ajustar_tamanio_proceso(proceso,tamanio_nuevo);
-
-    printf("Resultado del ajuste %d\n",resultado_ajuste);
 
     free(buffer);
     free(paquete);
@@ -78,7 +72,8 @@ void recibir_modificacion_de_tamanio(){
     else
     {
         //mandar out of memory
-        printf("out of memory\n");
+        log_info(memoria_logger, "PID: %d - Out of memory\n", pid);//Ver como unificar los logs de escritura y lectura.
+
         agregar_int_a_paquete(paquete_a_enviar,resultado_ajuste);// -1
     }
     enviar_paquete(paquete_a_enviar, fd_cpu);
@@ -119,10 +114,8 @@ void recibir_solicitud_de_escritura(int socket){
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 
     //mientras todo este ok se manda un ok.
-    t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA);
-    //agregar_int_a_paquete(paquete_a_enviar,0); //agrego ok.
-    enviar_paquete(paquete_a_enviar, socket);
-    eliminar_paquete(paquete_a_enviar);
+    enviar_opcode(RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA,socket);
+
 
     free(a_escribir);
     eliminar_paquete(paquete);
@@ -137,7 +130,7 @@ void atender_cpu(){
     sem_post(&retardo);
     while(control_key){
         int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
-        log_info(memoria_logger, "Se recibio algo de CPU: %d", code_op);
+        log_info(memoria_log_debug, "Se recibio algo de CPU: %d", code_op);
         sem_wait(&ejecucion);
         switch (code_op)
             {
@@ -166,7 +159,6 @@ void atender_cpu(){
             }
         sem_post(&retardo);   
     }
-    printf("FIN ATENDER CPU");
 }
 
 
@@ -175,7 +167,7 @@ void atender_entradasalida(int fd_entradasalida)
       log_info(memoria_logger, "Atendiendo Entradasalida...");
       while (control_key){
       int code_op = recibir_operacion(fd_entradasalida);
-      log_info(memoria_logger, "Se recibio algo de EntradaSalida: %d. \n", code_op);
+      log_info(memoria_log_debug, "Se recibio algo de EntradaSalida: %d. \n", code_op);
       sem_wait(&ejecucion);
       switch (code_op)
       {
@@ -185,9 +177,7 @@ void atender_entradasalida(int fd_entradasalida)
             break;
         case  GUARDAR_REGISTRO:
             recibir_solicitud_de_escritura(fd_entradasalida);
-            enviar_bool_mensaje(true, fd_entradasalida);
             break;
-
         case -1:
             log_error(memoria_logger, "Desconexion de ENTRADASALIDA");      
             control_key = 0;

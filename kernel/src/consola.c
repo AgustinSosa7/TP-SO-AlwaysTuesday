@@ -99,14 +99,18 @@ void atender_instruccion_validada(char* leido){
 		t_pcb* nuevo_pcb = crearPcb();
 		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
 		//verificar si memoria creo el proceso 
-		//op_code code_op_recibido = recibir_operacion(fd_memoria);
-		//code_op_recibido == RESPUESTA_CREAR_PROCESO_MEMORIA
-		sleep(2);
-		pthread_mutex_lock(&(struct_new->mutex));
-		list_add(struct_new->lista, nuevo_pcb);
-		pthread_mutex_unlock(&(struct_new->mutex));	
-		log_warning(kernel_logger,"Se crea el proceso < %d > en NEW. \n",nuevo_pcb->pid);
-		sem_post(&sem_new_a_ready);
+		op_code code_op_recibido = recibir_operacion(fd_memoria);
+		if(code_op_recibido == RESPUESTA_CREAR_PROCESO_MEMORIA){
+			sleep(2);
+			pthread_mutex_lock(&(struct_new->mutex));
+			list_add(struct_new->lista, nuevo_pcb);
+			pthread_mutex_unlock(&(struct_new->mutex));	
+			log_warning(kernel_logger,"Se crea el proceso < %d > en NEW. \n",nuevo_pcb->pid);
+			sem_post(&sem_new_a_ready);
+		}
+		else{
+			log_error(kernel_logger,"No se creo el proceso correctamente en memoria.\n");
+		}
 		
     
 		break;

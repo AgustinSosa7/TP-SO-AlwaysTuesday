@@ -11,7 +11,13 @@ void guardar_en_memoria(char* leido, int registroDireccion, int registroTamanio,
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
 
-    recibir_bool_mensaje(fd_memoria);
+    op_code code_op = recibir_operacion(fd_memoria);
+    if(code_op == RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA){
+        log_info(entradasalida_log_debug, "Se escribio correctamente en memoria");
+    }
+    else{
+        log_error(entradasalida_log_debug,"No se escribio correctamente en memoria");
+    }
 }
 
 

@@ -82,7 +82,7 @@ void _inicializar_estructuras(){
     /**/
     log_info(memoria_log_debug, "Cantidad de marcos: %d", cantidad_de_marcos);
     log_info(memoria_log_debug, "Cantidad de marcos/8: %d", cantidad_de_marcos/8);
-    log_info(memoria_log_debug, "long de bitarray: %ld", size_de_tabla_marcos);
+    log_info(memoria_log_debug, "Long de bitarray: %ld", size_de_tabla_marcos);
 }
 
 void _inicializar_semaforos(){	

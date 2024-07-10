@@ -112,7 +112,7 @@ void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio)
 {
 	// Enviar
 	t_paquete* paquete = crear_paquete(SOLICITUD_LEER_VALOR_EN_MEMORIA);
-    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, direccion_fisica);
     agregar_int_a_paquete(paquete, tamanio);
     enviar_paquete(paquete, fd_memoria);
@@ -145,7 +145,7 @@ void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio)
 void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void* valor_a_escribir){
     // Enviar
     t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
-    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, direccion_fisica);
     agregar_int_a_paquete(paquete, tamanio);
     agregar_void_a_paquete(paquete, valor_a_escribir, tamanio);
@@ -157,11 +157,11 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void*
 
     op_code code_op = recibir_operacion(fd_memoria);
     if(code_op == RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA){
-    log_info(cpu_logger, "PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d", pid, direccion_fisica, valor_a_loggear);
+    log_info(cpu_log_debug, "PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d", pid, direccion_fisica, valor_a_loggear);
     }
     else
     {
-    log_error(cpu_logger, "No se escribio correctamente en memoria");
+    log_error(cpu_log_debug, "No se escribio correctamente en memoria");
     }
 }
 
