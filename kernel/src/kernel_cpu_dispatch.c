@@ -18,7 +18,7 @@ void recibir_pcb_con_motivo(){
             pcb_recibido->tiempo_transcurrido = temporal_gettime(quantum_vrr);
             temporal_destroy(quantum_vrr);
       }else{    
- 
+            
             code_op = recibir_operacion(fd_cpu_dispatch);
             paquete = recibir_paquete(fd_cpu_dispatch);
             pcb_recibido = recibir_pcb(paquete); 
@@ -26,16 +26,15 @@ void recibir_pcb_con_motivo(){
       }
 
       detener_planificacion();
-      switch (code_op)
-      {
+      switch (code_op){
+
       case DESALOJO:
             int motivo = leer_int_del_buffer(paquete->buffer);
-            switch (motivo)
-            {
+            switch (motivo){
             case INTERRUPCION_POR_DESALOJO:
                   log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum.\n",pcb_recibido->pid);
                   t_pcb* un_pcb = list_remove(struct_exec->lista,0);
-                  free(un_pcb);
+                  eliminar_pcb(un_pcb);
                   pcb_recibido->tiempo_transcurrido=0;
                   pcb_recibido->quantum = QUANTUM;
                   list_add(struct_exec->lista,pcb_recibido);
@@ -43,14 +42,19 @@ void recibir_pcb_con_motivo(){
                   sem_post(&sem_planificador_corto_plazo);
                   break;
             case INTERRUPCION_POR_KILL:
+                  t_pcb* pcb_desactualizado = list_remove(struct_exec->lista,0);
+                  eliminar_pcb(pcb_desactualizado);
+                  list_add(struct_exec->lista,pcb_recibido);
                   cambiar_de_estado_y_de_lista(EXEC,EXIT);
                   eliminar_proceso(pcb_recibido,INTERRUPTED_BY_USER);
             default:
                   break;
             }  
-            break;
-
+      break;
       case PROCESO_EXIT:
+            t_pcb* pcb_desactualizadoo = list_remove(struct_exec->lista,0);
+                  eliminar_pcb(pcb_desactualizadoo);
+                  list_add(struct_exec->lista,pcb_recibido);
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
             
@@ -78,6 +82,7 @@ void recibir_pcb_con_motivo(){
                   if(recurso->instancias <0){
                        pthread_mutex_lock(&(struct_exec->mutex));
                        t_pcb* pcb = list_remove(struct_exec->lista,0);
+                       eliminar_pcb(pcb);
                        pthread_mutex_unlock(&(struct_exec->mutex));
                        pcb_recibido->estado_pcb = BLOCKED;
                        if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
@@ -131,7 +136,7 @@ void recibir_pcb_con_motivo(){
                   }else{
                         cambiar_de_estado_y_de_lista(EXEC,EXIT);
                         eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
-            }
+                  }
             break;
       case DEVOLVER_PROCESO_POR_PAGEFAULT:
             break;
@@ -144,8 +149,9 @@ void recibir_pcb_con_motivo(){
       default:
             log_warning(kernel_logger, "Operacion desconocida de CPU - DISPATCH");
             break;
-        }
-        eliminar_paquete(paquete);
+      }
+
+      eliminar_paquete(paquete);
 }
 
 bool esta_el_recurso(t_recursos* recurso, char* recurso_solicitado){

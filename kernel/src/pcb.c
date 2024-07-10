@@ -51,8 +51,9 @@ void cambiar_de_estado_y_de_lista(estado_pcb estado_anterior, estado_pcb nuevo_e
     case READY:
         pthread_mutex_lock(&(struct_ready->mutex));
         list_add(struct_ready->lista,un_pcb);
+        log_info(kernel_logger,"Cola Ready:\n");
+        imprimir_lista_ready(struct_ready);
         pthread_mutex_unlock(&(struct_ready->mutex));
-       // log_info("Cola Ready: [<LISTA DE PIDS>]")
         break;
     case EXEC:
         pthread_mutex_lock(&(struct_exec->mutex));
@@ -109,3 +110,17 @@ t_listas_estados* buscar_lista(estado_pcb estado_anterior){
     
 }
 
+void eliminar_pcb(t_pcb* un_pcb){
+    free(un_pcb->registros_cpu);
+    free(un_pcb);
+}
+
+void imprimir_lista_ready(t_listas_estados* lista_a_mostrar){
+	t_list_iterator* lista = list_iterator_create(lista_a_mostrar->lista);
+	t_pcb* un_pcb;
+	while(list_iterator_has_next(lista)){
+		un_pcb = list_iterator_next(lista);
+		printf("%18s PID: %d \n"," ", un_pcb->pid);
+	}
+	list_iterator_destroy(lista);
+}

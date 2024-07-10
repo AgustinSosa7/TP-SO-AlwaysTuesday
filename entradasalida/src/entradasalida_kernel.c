@@ -113,27 +113,27 @@ void procesar_peticion(t_peticion* peticion) {
 
             free(escrito);      
 
-      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
-      {     
-            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
-            char* nombre_archivo = peticion->parametros->archivo;
-            crear_config(nombre_archivo); // archivo viene ewewe.txt
-  		log_info(entradasalida_logger, "Se creo el archivo: %s", nombre_archivo);
+      // }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
+      // {     
+      //       usleep(1000*TIEMPO_UNIDAD_TRABAJO);
+      //       char* nombre_archivo = peticion->parametros->archivo;
+      //       crear_config(nombre_archivo); // archivo viene ewewe.txt
+  	// 	log_info(entradasalida_logger, "Se creo el archivo: %s", nombre_archivo);
             
-      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
-      {     
-            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
-            char* nombre_archivo = peticion->parametros->archivo;
-            delete_archivo(nombre_archivo);
-            log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
+      // }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
+      // {     
+      //       usleep(1000*TIEMPO_UNIDAD_TRABAJO);
+      //       char* nombre_archivo = peticion->parametros->archivo;
+      //       delete_archivo(nombre_archivo);
+      //       log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
 
 
-      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
-      {     
-            //CONSIGO DATOS DEL CONFIG CON EL NOMBRE 
-            usleep(1000*TIEMPO_UNIDAD_TRABAJO);
-            char* nombre_archivo = peticion->parametros->archivo;
-            int tamanio_nuevo = peticion->parametros->registroTamanio;
+      // }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
+      // {     
+      //       //CONSIGO DATOS DEL CONFIG CON EL NOMBRE 
+      //       usleep(1000*TIEMPO_UNIDAD_TRABAJO);
+      //       char* nombre_archivo = peticion->parametros->archivo;
+      //       int tamanio_nuevo = peticion->parametros->registroTamanio;
       
             if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  
                   log_info(entradasalida_logger, "Se pudo truncar el archivo: %s", nombre_archivo);
