@@ -24,7 +24,7 @@ void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* 
 bool crear_config(char* nombre_archivo);
 bool delete_archivo(char* nombre_archivo);
 bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo);
-bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito);
+bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito,int tamanio_text);
 char* leer_archivo(char* nombre_archivo,int registro_archivo,int tamanio);
 int obtener_bloques_libres(int tamanio);
 bool puede_crecer(int final_bloques_nuevo,int final_bloques_viejo);
