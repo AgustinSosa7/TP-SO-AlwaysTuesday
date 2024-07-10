@@ -287,4 +287,4 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void*
     agregar_void_a_paquete(paquete, valor_a_escribir, tamanio);
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
-}
+}*/
