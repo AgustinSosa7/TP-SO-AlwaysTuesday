@@ -89,7 +89,7 @@ void recibir_solicitud_de_lectura(int socket){
     int tamanio = leer_int_del_buffer(buffer);
 
     //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
-    log_info(memoria_logger, "PID: <%d> - Accion: LEER - Direccion fisica: %d - Tamaño %d", pid, direccion_fisica,tamanio);//Ver como unificar los logs de escritura y lectura.
+    log_info(memoria_logger, "PID: %d - Accion: LEER - Direccion fisica: %d - Tamaño %d", pid, direccion_fisica,tamanio);//Ver como unificar los logs de escritura y lectura.
     void* leido = leer_espacio_usuario(direccion_fisica,tamanio);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_LEER_VALOR_EN_MEMORIA);
@@ -110,7 +110,7 @@ void recibir_solicitud_de_escritura(int socket){
     void* a_escribir = leer_void_del_buffer(buffer,tamanio);
 
     //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
-    log_info(memoria_logger, "PID: <%d> - Accion: ESCRIBIR - Direccion fisica: %d - Tamaño %d", pid ,direccion_fisica,tamanio); //Ver como unificar los logs de escritura y lectura.
+    log_info(memoria_logger, "PID: %d - Accion: ESCRIBIR - Direccion fisica: %d - Tamaño %d", pid ,direccion_fisica,tamanio); //Ver como unificar los logs de escritura y lectura.
     escribir_espacio_usuario(direccion_fisica,tamanio,a_escribir); 
 
     //mientras todo este ok se manda un ok.
