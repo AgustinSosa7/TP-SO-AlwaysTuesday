@@ -1,8 +1,9 @@
 #include "../includes/entradasalida_memoria.h"
 
-void guardar_en_memoria(char* leido, int registroDireccion, int registroTamanio){ //escribir
+void guardar_en_memoria(char* leido, int registroDireccion, int registroTamanio, int pid){ //escribir
     //Enviar al MEMORIA: [GUARDAR_REGISTRO][Leido][RegistroDireccion][RegistroTamanio]
     t_paquete* paquete = crear_paquete(GUARDAR_REGISTRO);
+    agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, registroDireccion);
     agregar_int_a_paquete(paquete, registroTamanio);
     agregar_void_a_paquete(paquete, leido, registroTamanio);  
@@ -10,11 +11,17 @@ void guardar_en_memoria(char* leido, int registroDireccion, int registroTamanio)
     enviar_paquete(paquete, fd_memoria);
     eliminar_paquete(paquete);
 
-    recibir_bool_mensaje(fd_memoria);
+    op_code code_op = recibir_operacion(fd_memoria);
+    if(code_op == RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA){
+        log_info(entradasalida_log_debug, "Se escribio correctamente en memoria");
+    }
+    else{
+        log_error(entradasalida_log_debug,"No se escribio correctamente en memoria");
+    }
 }
 
 
-void partir_y_guardar_en_memoria(char* leido, t_list* lista_de_accesos){
+void partir_y_guardar_en_memoria(char* leido, t_list* lista_de_accesos, int pid){
 
     int cantidad_de_accesos = list_size(lista_de_accesos);
 
@@ -25,7 +32,7 @@ void partir_y_guardar_en_memoria(char* leido, t_list* lista_de_accesos){
       
       strncpy(leido_chico, leido, acceso->bytes_disponibles);
       
-      guardar_en_memoria(leido_chico, acceso->direccion_fisica, acceso->bytes_disponibles);
+      guardar_en_memoria(leido_chico, acceso->direccion_fisica, acceso->bytes_disponibles, pid);
       
       leido += acceso->bytes_disponibles; 
       
@@ -38,9 +45,10 @@ void partir_y_guardar_en_memoria(char* leido, t_list* lista_de_accesos){
 
 
 
-char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
+char* pedir_a_memoria(int registroDireccion, int registroTamanio, int pid){ //leer
     //Enviar al MEMORIA: [GUARDAR_REGISTRO][RegistroDireccion][RegistroTamanio]
     t_paquete* paquete = crear_paquete(PEDIR_REGISTRO);
+    agregar_int_a_paquete(paquete, pid);
     agregar_int_a_paquete(paquete, registroDireccion);
     agregar_int_a_paquete(paquete, registroTamanio);
     enviar_paquete(paquete, fd_memoria);
@@ -72,7 +80,7 @@ char* pedir_a_memoria(int registroDireccion, int registroTamanio){ //leer
     }
 }
 
-char* pedir_a_memoria_y_unir(t_list* lista_de_accesos){
+char* pedir_a_memoria_y_unir(t_list* lista_de_accesos, int pid){
     
     int cantidad_de_accesos = list_size(lista_de_accesos);
 
@@ -82,7 +90,7 @@ char* pedir_a_memoria_y_unir(t_list* lista_de_accesos){
     for(int i = 0; i < cantidad_de_accesos; i++){   
       t_direccion_a_operar* acceso = list_get(lista_de_accesos, i);
 
-      char* leido_parcial = pedir_a_memoria(acceso->direccion_fisica, acceso->bytes_disponibles);
+      char* leido_parcial = pedir_a_memoria(acceso->direccion_fisica, acceso->bytes_disponibles, pid);
 
       char* temp_string = concatenar_strings(escrito, leido_parcial);
       
