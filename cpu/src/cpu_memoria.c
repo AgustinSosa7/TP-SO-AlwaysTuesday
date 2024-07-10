@@ -108,60 +108,6 @@ int pedir_numero_de_marco_a_memoria(int numero_de_pagina){
 }
 
 // Lectura y Escritura
-void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio)
-{
-	// Enviar
-	t_paquete* paquete = crear_paquete(SOLICITUD_LEER_VALOR_EN_MEMORIA);
-    //agregar_int_a_paquete(paquete, pid);
-    agregar_int_a_paquete(paquete, direccion_fisica);
-    agregar_int_a_paquete(paquete, tamanio);
-    enviar_paquete(paquete, fd_memoria);
-    eliminar_paquete(paquete);
-    
-    // Recibir
-    op_code code_op = recibir_operacion(fd_memoria);
-    t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete_recibido->buffer;
-    if(code_op == RESPUESTA_LEER_VALOR_EN_MEMORIA)
-    {
-        void* valor = malloc(tamanio); // Podría reemplazar esta línea y la de abajo por: leer_void_del_buffer(buffer, tamanio)
-        memcpy(valor, buffer->stream + buffer->offset, tamanio); 
-        //log_info(cpu_logger, "Lectura obtenida del valor '%d' de tamanio '%d'", valor, tamanio);
-        eliminar_paquete(paquete_recibido);
-
-        int valor_a_loggear = -1;
-        memcpy(&valor_a_loggear, valor, tamanio);
-        log_info(cpu_logger, "PID: %d - Acción: LEER - Dirección Física: %d - Valor: %d", pid, direccion_fisica, valor_a_loggear);
-	    return valor; // Este valor tiene que ser liberado en donde sea llamada esta función.
-    }
-    else
-    {   
-        log_error(cpu_log_debug, "No se recibio una lectura de valor de memoria.");
-        eliminar_paquete(paquete_recibido);
-        exit(EXIT_FAILURE);
-    }
-}
-
-void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void* valor_a_escribir){
-    // Enviar
-    t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
-    //agregar_int_a_paquete(paquete, pid);
-    agregar_int_a_paquete(paquete, direccion_fisica);
-    agregar_int_a_paquete(paquete, tamanio);
-    agregar_void_a_paquete(paquete, valor_a_escribir, tamanio);
-    enviar_paquete(paquete, fd_memoria);
-    eliminar_paquete(paquete);
-
-    int valor_a_loggear = -1;
-    memcpy(&valor_a_loggear, valor_a_escribir, tamanio);
-    log_info(cpu_logger, "PID: %d - Acción: ESCRIBIR - Dirección Física: %d - Valor: %d", pid, direccion_fisica, valor_a_loggear);
-}
-
-
-
-
-/* Funciones viejas que no uso
-
 u_int8_t leer_1byte_de_memoria(int pid, int direccion_fisica)
 {
 	// Enviar
@@ -216,6 +162,36 @@ u_int32_t leer_4byte_de_memoria(int pid, int direccion_fisica)
     }
 }
 
+void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio)
+{
+	// Enviar
+	t_paquete* paquete = crear_paquete(SOLICITUD_LEER_VALOR_EN_MEMORIA);
+    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, tamanio);
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+    
+    // Recibir
+    op_code code_op = recibir_operacion(fd_memoria);
+    t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
+    t_buffer* buffer = paquete_recibido->buffer;
+    if(code_op == RESPUESTA_LEER_VALOR_EN_MEMORIA)
+    {
+        void* valor = malloc(tamanio); // Podría reemplazar esta línea y la de abajo por: leer_void_del_buffer(buffer, tamanio)
+        memcpy(valor, buffer->stream + buffer->offset, tamanio); 
+        log_info(cpu_logger, "Lectura obtenida del valor '%d' de tamanio '%d'", valor, tamanio);
+        eliminar_paquete(paquete_recibido);
+	    return valor; // Este valor tiene que ser liberado en donde sea llamada esta función.
+    }
+    else
+    {   
+        log_error(cpu_log_debug, "No se recibio una lectura de valor de memoria.");
+        eliminar_paquete(paquete_recibido);
+        exit(EXIT_FAILURE);
+    }
+}
+
 void escribir_1byte_en_memoria(int pid, int direccion_fisica, u_int8_t valor_a_escribir){
     // Enviar
     t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
@@ -239,4 +215,14 @@ void escribir_4byte_en_memoria(int pid, int direccion_fisica, u_int32_t valor_a_
     eliminar_paquete(paquete);
     free(valor_a_escribir);
 }
-*/
+
+void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void* valor_a_escribir){
+    // Enviar
+    t_paquete* paquete = crear_paquete(SOLICITUD_ESCRIBIR_VALOR_EN_MEMORIA);
+    //agregar_int_a_paquete(paquete, pid);
+    agregar_int_a_paquete(paquete, direccion_fisica);
+    agregar_int_a_paquete(paquete, tamanio);
+    agregar_void_a_paquete(paquete, valor_a_escribir, tamanio);
+    enviar_paquete(paquete, fd_memoria);
+    eliminar_paquete(paquete);
+}

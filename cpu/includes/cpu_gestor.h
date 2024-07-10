@@ -48,16 +48,6 @@ extern bool dejar_de_ejecutar;
 extern bool ocurrio_interrupcion;
 extern int motivo_interrupcion;
 
-// TLB
-extern t_list* tlb;
-
-typedef struct {
-    int pid;
-    int nro_pagina;
-    int nro_marco;
-    t_temporal* tiempo_carga;
-    t_temporal* tiempo_ultima_ref;
-}t_entrada_tlb;
 
 // Semaforos
 extern sem_t sem_ciclo_de_instruccion;

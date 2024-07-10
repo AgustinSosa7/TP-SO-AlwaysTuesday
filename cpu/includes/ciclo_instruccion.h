@@ -35,12 +35,6 @@ uint32_t leer_valor_de_registro(char* nombre_registro);
 int tamanio_del_registro(char* nombre_registro);
 
 // MMU:
-bool coincide_pid_y_pagina(t_entrada_tlb* entrada, int process_id, int numero_de_pagina);
-bool es_la_entrada_buscada(void* entrada);
-bool existe_en_la_tlb(int process_id, int numero_de_pagina);
-int buscar_marco_en_la_tlb(int process_id, int numero_de_pagina);
-void agregar_traduccion_a_tlb(int process_id, int numero_de_pagina, int numero_de_marco);
-int obtener_marco(int numero_de_pagina);
 t_direccion_a_operar* mmu(int direccion_logica);
 int calcular_cantidad_de_accesos(int direccion_logica_inicial,int bytes_a_operar);
 void* gestionar_lectura_memoria(int direccion_logica,int cant_bytes_a_operar);

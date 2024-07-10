@@ -88,8 +88,6 @@ void inicializar_estructuras(){
     ocurrio_interrupcion = false;
     
     motivo_interrupcion = -1;
-
-    tlb = list_create();
 }
 
 void inicializar_semaforos(){
