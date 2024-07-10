@@ -206,16 +206,16 @@ void agregar_parametros_a_paquete(t_paquete* paquete, t_peticion* peticion){
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
             agregar_lista_de_accesos_a_paquete(paquete, peticion->parametros->lista_de_accesos);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);
+            agregar_int_a_paquete(paquete,peticion->parametros->registroTamanio);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);
             free(peticion->parametros->archivo);
-            free(peticion->parametros->registroPunteroArchivo);
 
       }else //Es IO_FS_READ 
       {     agregar_string_a_paquete(paquete, peticion->parametros->archivo);
             agregar_lista_de_accesos_a_paquete(paquete, peticion->parametros->lista_de_accesos);
-            agregar_string_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);  
+            agregar_int_a_paquete(paquete,peticion->parametros->registroTamanio);
+            agregar_int_a_paquete(paquete, peticion->parametros->registroPunteroArchivo);  
             free(peticion->parametros->archivo);
-            free(peticion->parametros->registroPunteroArchivo);    
       }       
 }
 

@@ -140,7 +140,8 @@ void procesar_peticion(t_peticion* peticion) {
             
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0) // Recibo tamanio del mensaje, el mensaje, archivo.
-      {
+      {     
+            log_info(entradasalida_logger,"Ejecutando IO_FS_WRITE");
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = peticion->parametros->registroPunteroArchivo; 
@@ -160,7 +161,8 @@ void procesar_peticion(t_peticion* peticion) {
             free(escrito);
        
       }else //DEFALUT IO_FS_READ
-      {     
+      {                 
+            log_info(entradasalida_logger,"Ejecutando IO_FS_READ");
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = peticion->parametros->registroPunteroArchivo;
