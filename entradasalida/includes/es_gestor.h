@@ -34,6 +34,11 @@ extern int fd_kernel;
 extern char* pre_bitmap;
 extern t_bitarray* bitmap; 
 extern char* bloquesEnMemoria;   
+
+/////////////////SEMAFOROS/////////////
+extern pthread_mutex_t mutex_bitmap;
+extern pthread_mutex_t mutex_bloques;
+///////////////////////////////////////
       
 
 extern char* NOMBRE_INTERFAZ;

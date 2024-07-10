@@ -15,6 +15,11 @@ char* pre_bitmap;
 t_bitarray* bitmap; 
 char* bloquesEnMemoria;
 
+/////////////////SEMAFOROS/////////////
+pthread_mutex_t mutex_bitmap;
+pthread_mutex_t mutex_bloques;
+///////////////////////////////////////
+
 char* NOMBRE_INTERFAZ;
 char* PUERTO_ESCUCHA;    
 char* TIPO_INTERFAZ;

@@ -74,7 +74,7 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 
       }else //DEFALUT IO_FS_READ
       {
-             peticion->parametros->archivo = leer_string_del_buffer(buffer); 
+            peticion->parametros->archivo = leer_string_del_buffer(buffer); 
             leer_parametros_lista_de_accesos(peticion->parametros, buffer);
             peticion->parametros->registroTamanio = leer_int_del_buffer(buffer);
             peticion->parametros->registroPunteroArchivo = leer_int_del_buffer(buffer);
@@ -134,7 +134,7 @@ void procesar_peticion(t_peticion* peticion) {
             char* nombre_archivo = peticion->parametros->archivo;
             int tamanio_nuevo = peticion->parametros->registroTamanio;
       
-            if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  // Falta la parte de Compactación
+            if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  
                   log_info(entradasalida_logger, "Se pudo truncar el archivo: %s", nombre_archivo);
             }else{ log_info(entradasalida_logger, "No se pudo truncar el archivo: %s", nombre_archivo);}
             
@@ -176,6 +176,7 @@ void procesar_peticion(t_peticion* peticion) {
                   partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos);
                   log_info(entradasalida_logger,"¨%s¨ se guardo correctamente.\n", leido);
             }     
+            //free(leido);
       }
 }      
 

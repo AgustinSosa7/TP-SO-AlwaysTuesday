@@ -176,7 +176,7 @@ void atender_entradasalida(int fd_entradasalida)
       {
       case PEDIR_REGISTRO:
 
-            //printf("PEDIDO DE LECTURA\n"); //BORRAR 
+            printf("PEDIDO DE LECTURA\n"); //BORRAR 
             recibir_solicitud_de_lectura(fd_entradasalida);
             break;
         case  GUARDAR_REGISTRO:

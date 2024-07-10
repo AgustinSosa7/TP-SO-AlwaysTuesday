@@ -111,6 +111,8 @@ void iniciar_file_system(){
 	crear_paths();
 	inicializar_archivos(); // Inicia archivo Bloques y Bitmap
 	log_info(entradasalida_logger, "FileSystem inicializado");
+	pthread_mutex_init(&mutex_bitmap, NULL);
+	pthread_mutex_init(&mutex_bloques, NULL);
 
 }
 

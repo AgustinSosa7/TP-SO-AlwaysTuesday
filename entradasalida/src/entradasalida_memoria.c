@@ -81,7 +81,7 @@ char* pedir_a_memoria_y_unir(t_list* lista_de_accesos){
 
     for(int i = 0; i < cantidad_de_accesos; i++){   
       t_direccion_a_operar* acceso = list_get(lista_de_accesos, i);
-
+      
       char* leido_parcial = pedir_a_memoria(acceso->direccion_fisica, acceso->bytes_disponibles);
 
       char* temp_string = concatenar_strings(escrito, leido_parcial);

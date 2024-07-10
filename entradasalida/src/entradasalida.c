@@ -10,7 +10,7 @@ if(validar_parametros_incorrectos_main(argc, 2, argv)){
 
 inicializar_entradasalida(argv);
 
-if((strcmp(TIPO_INTERFAZ, "STDOUT") == 0) || (strcmp(TIPO_INTERFAZ, "STDIN") == 0)){
+if((strcmp(TIPO_INTERFAZ, "STDOUT") == 0) || (strcmp(TIPO_INTERFAZ, "STDIN") == 0)|| (strcmp(TIPO_INTERFAZ, "FS") == 0)){
 //Conectarme como cliente a Memoria
   fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA, entradasalida_logger);
   gestionar_handshake_como_cliente(fd_memoria, "MEMORIA", entradasalida_logger);
