@@ -53,7 +53,7 @@ void gestionar_entrada_salida(){
     int fd_entradasalida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
     gestionar_handshake_como_server(fd_entradasalida, memoria_logger, "ENTRADA SALIDA");
     pthread_t hilo_atender_io;
-    pthread_create(&hilo_atender_io, NULL, (void*)atender_entradasalida,&fd_entradasalida);
+    pthread_create(&hilo_atender_io, NULL, (void*)atender_entradasalida,fd_entradasalida);
     pthread_detach(hilo_atender_io);
   }
 }
