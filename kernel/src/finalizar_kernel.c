@@ -6,8 +6,10 @@ void finalizar_kernel(){
     eliminar_listas();
 }
 void eliminar_listas(){
-    eliminar_pcbs_y_listas();
+    list_destroy_and_destroy_elements(IOS_CONECTADOS,(void*)eliminar_ios_conectados);
     eliminar_lista_instrucciones_posibles();
+    eliminar_pcbs_y_listas();
+
 }
 void eliminar_pcbs_y_listas(){
     list_destroy_and_destroy_elements(struct_new->lista,(void*)eliminar_pcb);
@@ -34,8 +36,13 @@ void eliminar_recurso(t_recursos* recurso){
 }
 
 void eliminar_lista_instrucciones_posibles(){
-    list_destroy(INSTRUCCIONES_GEN);
+    list_destroy(INSTRUCCIONES_GENERICA);
     list_destroy(INSTRUCCIONES_STDIN);
     list_destroy(INSTRUCCIONES_STDOUT);
     list_destroy(INSTRUCCIONES_FS);
+}
+
+void eliminar_ios_conectados(t_interfaz* interfaz){
+    enviar_cola_de_procesos_blocked_io_a_exit(interfaz);
+    eliminar_interfaz(interfaz);
 }

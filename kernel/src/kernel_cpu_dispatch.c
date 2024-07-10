@@ -18,7 +18,7 @@ void recibir_pcb_con_motivo(){
             pcb_recibido->tiempo_transcurrido = temporal_gettime(quantum_vrr);
             temporal_destroy(quantum_vrr);
       }else{    
- 
+            
             code_op = recibir_operacion(fd_cpu_dispatch);
             paquete = recibir_paquete(fd_cpu_dispatch);
             pcb_recibido = recibir_pcb(paquete); 
@@ -42,6 +42,9 @@ void recibir_pcb_con_motivo(){
                   sem_post(&sem_planificador_corto_plazo);
                   break;
             case INTERRUPCION_POR_KILL:
+                  t_pcb* pcb_desactualizado = list_remove(struct_exec->lista,0);
+                  eliminar_pcb(pcb_desactualizado);
+                  list_add(struct_exec->lista,pcb_recibido);
                   cambiar_de_estado_y_de_lista(EXEC,EXIT);
                   eliminar_proceso(pcb_recibido,INTERRUPTED_BY_USER);
             default:
@@ -49,6 +52,9 @@ void recibir_pcb_con_motivo(){
             }  
       break;
       case PROCESO_EXIT:
+            t_pcb* pcb_desactualizadoo = list_remove(struct_exec->lista,0);
+                  eliminar_pcb(pcb_desactualizadoo);
+                  list_add(struct_exec->lista,pcb_recibido);
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
             
@@ -76,6 +82,7 @@ void recibir_pcb_con_motivo(){
                   if(recurso->instancias <0){
                        pthread_mutex_lock(&(struct_exec->mutex));
                        t_pcb* pcb = list_remove(struct_exec->lista,0);
+                       eliminar_pcb(pcb);
                        pthread_mutex_unlock(&(struct_exec->mutex));
                        pcb_recibido->estado_pcb = BLOCKED;
                        if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){

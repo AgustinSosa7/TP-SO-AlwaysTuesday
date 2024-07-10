@@ -131,7 +131,7 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
     pthread_mutex_lock(&(struct_exec->mutex));
     t_pcb* un_pcb = list_remove(struct_exec->lista,0);
     pthread_mutex_unlock(&(struct_exec->mutex));
-
+    eliminar_pcb(un_pcb);
     estado_pcb estado_anterior = pcb->estado_pcb;
     pcb->estado_pcb = BLOCKED;
 
@@ -247,6 +247,7 @@ void enviar_proceso_blocked_io_a_exit(t_proceso_blocked* proceso_blocked){
       pthread_mutex_lock(&(struct_exit->mutex));
       list_add(struct_exit->lista, pcb);
       pthread_mutex_unlock(&(struct_exit->mutex));
+      
 }
 
 bool recibir_fin_peticion(t_interfaz* interfaz){
@@ -272,8 +273,9 @@ void desbloquear_proceso(t_interfaz* interfaz){
       enviar_proceso_a_ready_o_ready_plus(proceso_blocked->un_pcb);
      
       log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",proceso_blocked->un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(proceso_blocked->un_pcb->estado_pcb));
-
+      free(proceso_blocked);
       sem_post(&sem_planificador_corto_plazo); 
+      
 }
 
 void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
