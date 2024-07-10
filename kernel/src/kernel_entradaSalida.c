@@ -155,6 +155,7 @@ void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* inte
 
 bool enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* interfaz){ 
       t_paquete* paquete = crear_paquete(ATENDER_PETICION_INTERFAZ_KERNEL);
+      agregar_int_a_paquete(paquete, proceso_blocked->un_pcb->pid);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion); 
       agregar_parametros_a_paquete(paquete, proceso_blocked->peticion);
       eliminar_peticion(proceso_blocked->peticion); 

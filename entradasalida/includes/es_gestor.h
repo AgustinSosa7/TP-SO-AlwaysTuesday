@@ -17,6 +17,7 @@
 typedef struct{
     char* instruccion;
     t_peticion_param* parametros;
+    int pid;
 } t_peticion;
 
 

@@ -75,9 +75,6 @@ void _inicializar_estructuras(){
     for(int i = 0; i<size_de_tabla_marcos;i++){ //SE INICIALIZAN ALGUNOS BITS EN 1 POR ESO LOS LIMPIO
             liberar_marco(i);
     }
-    ocupar_marco(1);
-    ocupar_marco(3);
-    ocupar_marco(5);
     /*TEST!
     for(int ii = 0; ii<size_de_tabla_marcos;ii++){
             log_info(memoria_log_debug, "valor del %d bit: %d",ii, bitarray_test_bit(tabla_de_marcos, ii));
@@ -85,7 +82,7 @@ void _inicializar_estructuras(){
     /**/
     log_info(memoria_log_debug, "Cantidad de marcos: %d", cantidad_de_marcos);
     log_info(memoria_log_debug, "Cantidad de marcos/8: %d", cantidad_de_marcos/8);
-    log_info(memoria_log_debug, "long de bitarray: %ld", size_de_tabla_marcos);
+    log_info(memoria_log_debug, "Long de bitarray: %ld", size_de_tabla_marcos);
 }
 
 void _inicializar_semaforos(){	

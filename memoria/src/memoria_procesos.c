@@ -1,8 +1,5 @@
 #include "../includes/memoria_procesos.h"
 
-
-
-
 t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     
     char* PATH = string_new();
@@ -14,7 +11,7 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
 
     //Una vez leido verifico que lo haya leido bien.
     if (Pseudocodigo == NULL){
-        perror("Error al intentar cargar el archivo de Pseudocodigo.");
+        log_error(memoria_log_debug, "Error al intentar cargar el archivo de Pseudocodigo.");
         exit(EXIT_FAILURE);
     }
     

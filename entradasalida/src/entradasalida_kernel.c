@@ -33,6 +33,7 @@ t_peticion* recibir_peticion(t_paquete* paquete){
     t_peticion* peticion = malloc(sizeof(t_peticion));
     t_buffer* buffer = paquete->buffer;
 
+    peticion->pid = leer_int_del_buffer(buffer);
     peticion->instruccion = leer_string_del_buffer(buffer);
 
     asignar_parametros_segun_tipo(peticion, buffer); 
@@ -96,7 +97,7 @@ void procesar_peticion(t_peticion* peticion) {
       {
             char* leido = iniciar_la_consola(tamanio_total_del_leido(peticion->parametros->lista_de_accesos));
                        
-            partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos);
+            partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos, peticion->pid);
 
             log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente.\n", leido);
 
@@ -106,7 +107,7 @@ void procesar_peticion(t_peticion* peticion) {
       {     
             log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
 
-            char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos);
+            char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos, peticion->pid);
 
             log_warning(entradasalida_logger,"¨%s¨", escrito);
 
@@ -147,7 +148,7 @@ void procesar_peticion(t_peticion* peticion) {
             int registro_archivo = peticion->parametros->registroPunteroArchivo; 
             int tamanio_text = peticion->parametros->registroTamanio; // El nombre no corresponde pero si el tipo de dato XD
             
-            char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos);
+            char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos, peticion->pid);
 
             log_warning(entradasalida_logger,"¨%s¨", escrito);
 
@@ -173,7 +174,7 @@ void procesar_peticion(t_peticion* peticion) {
             if (strcmp(leido,"")==0){ 
                   log_info(entradasalida_logger,"No se pudo guardar correctamente.\n");
             }else{
-                  partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos);
+                  partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos, peticion->pid);
                   log_info(entradasalida_logger,"¨%s¨ se guardo correctamente.\n", leido);
             }     
             //free(leido);
