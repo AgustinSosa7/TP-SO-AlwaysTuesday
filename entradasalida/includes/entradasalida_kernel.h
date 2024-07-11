@@ -36,5 +36,7 @@ int tamanio_bloque_escrito(int tamanio_archivo);
 int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultimo_bloque_ocupado);
 char* generar_path_config(char* nombre_archivo);
 void mostrar_estado_archivo(t_config* config_archivo);
-
+void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int primer_bloque_libre);
+int inicializar_lista_archivos();
+int ignorar(const char *nombre_archivo);
 #endif 
