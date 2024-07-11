@@ -10,13 +10,13 @@ void inicializar_memoria(char* path){
 }
 
 void _iniciar_log(){  
-    memoria_logger = log_create("cliente.log", "CL_LOG", 1, LOG_LEVEL_INFO);
+    memoria_logger = log_create("memoria.log", "CL_LOG", 1, LOG_LEVEL_INFO);
     if (memoria_logger == NULL){
         perror("Algo raro paso con el log. No se pudo crear o encontrar el archivo.");
         exit(EXIT_FAILURE);
     }
     
-    memoria_log_debug = log_create("cliente_debug.log", "CL_LOG", 1, LOG_LEVEL_TRACE);
+    memoria_log_debug = log_create("memoria_debug.log", "CL_LOG", 1, LOG_LEVEL_TRACE);
     if (memoria_log_debug == NULL){
         perror("Algo raro paso con el log. No se pudo crear o encontrar el archivo.");
         exit(EXIT_FAILURE);
@@ -98,7 +98,8 @@ void hilo_retardo(){
     float tiempo_retardo = RETARDO_RESPUESTA;
     while(1){
         sem_wait(&retardo);
-        sleep(tiempo_retardo/1000); // El programa se suspende durante RETARDO_RESPUESTA milisegundos (RETARDO_RESPUESTA/1000 segundos)
+        //sleep(tiempo_retardo/1000); // El programa se suspende durante RETARDO_RESPUESTA milisegundos (RETARDO_RESPUESTA/1000 segundos)
+        usleep(tiempo_retardo*1000);
         sem_post(&ejecucion);
     }
 }
