@@ -28,8 +28,8 @@ void recibir_pedido_instruccion_y_enviar(){
     //t_proceso* proceso = malloc(sizeof(proceso));
     t_proceso* proceso = buscar_proceso_en_memoria(pid);
     enviar_instruccion_pesudocodigo((proceso->instrucciones),pc);
-    free(buffer);
-    free(paquete);
+    //free(buffer);
+    eliminar_paquete(paquete);//valgrind
     log_info(memoria_log_debug,"Pseudocodigo enviado. PID: %d PROGRAM COUNTER: %d",pid,pc); //BORRAR
 };
 
@@ -61,8 +61,7 @@ void recibir_modificacion_de_tamanio(){
 
     int resultado_ajuste = ajustar_tamanio_proceso(proceso,tamanio_nuevo);
 
-    free(buffer);
-    free(paquete);
+    eliminar_paquete(paquete);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_MODIFICAR_TAMANIO);
     if(resultado_ajuste == 0){
@@ -98,6 +97,7 @@ void recibir_solicitud_de_lectura(int socket){
     
     eliminar_paquete(paquete_a_enviar);
     eliminar_paquete(paquete);
+    free(leido);
 }
 
 void recibir_solicitud_de_escritura(int socket){
