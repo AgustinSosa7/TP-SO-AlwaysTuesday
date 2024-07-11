@@ -20,7 +20,8 @@ t_proceso* crear_proceso_nuevo(){
         
         //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
         log_info(memoria_logger, "PID: %d - Tamaño: %d ",procesoNuevo->pid,procesoNuevo->long_tabla_pags);
-
+        
+        eliminar_paquete(paquete);
         return procesoNuevo;
 };
 
@@ -33,6 +34,9 @@ void finalizar_proceso(){
     t_proceso* proceso_eliminado = buscar_proceso_en_memoria(pid);
     liberar_marcos_memoria(proceso_eliminado,0); //el tamanio nuevo es 0 para que libere todos los marcos
     
+    free(proceso_eliminado->direccion_pseudocodigo);//valgrind
+    list_destroy(proceso_eliminado->instrucciones);//valgrind (Ver como funciona el destroy elements)
+
     if(list_remove_element(procesos_memoria,proceso_eliminado)){
         //log_info(memoria_log_debug, "Finalizo el proceso: %d",proceso_eliminado->pid);
         
@@ -45,6 +49,7 @@ void finalizar_proceso(){
     {
         log_error(memoria_log_debug, "Error al finalizar el proceso: %d",pid);
     }
+    eliminar_paquete(paquete);
 }
 
 void atender_kernel(){
