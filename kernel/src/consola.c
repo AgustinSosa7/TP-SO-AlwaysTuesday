@@ -50,9 +50,7 @@ void leer_comandos(){
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
 	int size_parametros = string_array_size(array_leido) - 1;
-	char* nombre_instruccion= array_leido[0];
-	string_array_destroy(array_leido);
-	return (validar_nombre_y_parametros(nombre_instruccion,size_parametros));
+	return (validar_nombre_y_parametros(array_leido[0],size_parametros));
 
 
 }
@@ -97,7 +95,7 @@ void atender_instruccion_validada(char* leido){
 			char* comando = list_remove(lista_comandos,0);
 			atender_instruccion_validada(comando);
 		}
-		list_destroy(lista_comandos);
+		//list_destroy(lista_comandos);
 		break;
 	case INICIAR_PROCESO:
 		printf("Entre a iniciar proceso. \n");
@@ -219,7 +217,7 @@ void atender_instruccion_validada(char* leido){
 		break;
 	
 	}
-	string_array_destroy(array_leido);
+	//string_array_destroy(array_leido);
 }
 
 bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
@@ -242,20 +240,21 @@ t_list* leer_archivo(char* archivo){
 
 	while (fgets(comando_leido,100,archivo_comandos)){
 		longitud = strlen(comando_leido);
-		char* nuevo_comando = string_new();
 		if(comando_leido[longitud -1] == '\n'){
+			char* nuevo_comando = string_new();
 			string_n_append(&nuevo_comando,comando_leido,longitud-1);
+			free(comando_leido);
+			comando_leido = malloc(100 *sizeof(char));
 			list_add(lista_comandos, nuevo_comando);
 		}else{
+			char* nuevo_comando = string_new();
 			string_n_append(&nuevo_comando,comando_leido,longitud);
+			free(comando_leido);
+			comando_leido = malloc(100 *sizeof(char));
 			list_add(lista_comandos, nuevo_comando);
 		}
-		free(comando_leido);
-		free(nuevo_comando);
-		comando_leido = malloc(100 *sizeof(char));
+		
 	}
-	free(comando_leido);
-	free(PATH);
 	fclose(archivo_comandos);
 	return lista_comandos;
 	
