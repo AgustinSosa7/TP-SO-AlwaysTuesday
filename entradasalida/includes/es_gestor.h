@@ -6,6 +6,7 @@
 #include <pthread.h> 
 #include <fcntl.h>
 #include<math.h>
+#include <dirent.h>
 
 
 #include <../src/utils/utils_connections.h>
@@ -60,6 +61,7 @@ extern int RETRASO_COMPACTACION;
 
 extern t_list* lista_registros_propisito_general;
 extern t_list* lista_registros_extendidos;
+extern t_list* lista_archivos_existentes;
 
 
 #endif /* ES_GESTOR_H_ */

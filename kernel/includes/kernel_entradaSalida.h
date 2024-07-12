@@ -30,6 +30,6 @@ void desbloquear_proceso(t_interfaz* interfaz);
 void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb);
 void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb);
 void eliminar_peticion(t_peticion* peticion);
-void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros);
+
 
 #endif 

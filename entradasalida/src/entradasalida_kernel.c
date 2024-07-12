@@ -18,7 +18,8 @@ void atender_entradasalida_kernel(){
             finalizar_peticion(peticion);
             break;
         case -1:
-          //  log_error(logger, "Desconexion de CPU - DISPATCH");      
+          //  log_error(logger, "Desconexion de CPU - DISPATCH");  
+            free(bitmap);    
             control_key = 0;
         default:
            // log_warning(logger, "Operacion desconocida de CPU - DISPATCH");
@@ -118,14 +119,15 @@ void procesar_peticion(t_peticion* peticion) {
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             crear_config(nombre_archivo); // archivo viene ewewe.txt
-  		log_info(entradasalida_logger, "Se creo el archivo: %s", nombre_archivo);
+            
+  		log_info(entradasalida_logger, "PID: <%d> - Crear Archivo: <%s>",peticion->pid,nombre_archivo);
             
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {     
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             delete_archivo(nombre_archivo);
-            log_info(entradasalida_logger, "Se eliminó: %s", nombre_archivo);
+            log_info(entradasalida_logger, "PID: <%d> - Eliminar Archivo: <%s>",peticion->pid, nombre_archivo);
 
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
@@ -135,9 +137,11 @@ void procesar_peticion(t_peticion* peticion) {
             char* nombre_archivo = peticion->parametros->archivo;
             int tamanio_nuevo = peticion->parametros->registroTamanio;
       
-            if(truncar_archivo(nombre_archivo,tamanio_nuevo)) {  
-                  log_info(entradasalida_logger, "Se pudo truncar el archivo: %s", nombre_archivo);
-            }else{ log_info(entradasalida_logger, "No se pudo truncar el archivo: %s", nombre_archivo);}
+            if(truncar_archivo(nombre_archivo,tamanio_nuevo,peticion->pid)) {  
+                  log_info(entradasalida_logger, "PID: <%d> - Truncar Archivo: <%s> - Tamaño: <%d>",
+                  peticion->pid,nombre_archivo,tamanio_nuevo);
+            }else{ log_info(entradasalida_logger, "PID: <%d> - No se pudo truncar Archivo: <%s> - Tamaño: <%d>",
+                  peticion->pid,tamanio_nuevo,nombre_archivo);}
             
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0) // Recibo tamanio del mensaje, el mensaje, archivo.
@@ -153,7 +157,8 @@ void procesar_peticion(t_peticion* peticion) {
             log_warning(entradasalida_logger,"¨%s¨", escrito);
 
             if(escribir_archivo(nombre_archivo,registro_archivo,escrito,tamanio_text)){
-            log_info(entradasalida_logger,"Se ha escrito %s en el archivo %s",escrito,nombre_archivo);
+            log_info(entradasalida_logger,"PID: <%d> - Escribir Archivo: <%s> - Tamaño a Escribir: <%d> - Puntero Archivo: <%d>", 
+                  peticion->pid,nombre_archivo,tamanio_text,registro_archivo);
 
             }else{
                  log_info(entradasalida_logger,"No se ha podido escribir %s en el archivo %s",escrito,nombre_archivo);
@@ -175,9 +180,11 @@ void procesar_peticion(t_peticion* peticion) {
                   log_info(entradasalida_logger,"No se pudo guardar correctamente.\n");
             }else{
                   partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos, peticion->pid);
-                  log_info(entradasalida_logger,"¨%s¨ se guardo correctamente.\n", leido);
+                  log_info(entradasalida_logger,"PID: <%d> - Leer Archivo: <%s> - Tamaño a Leer: <%d> - Puntero Archivo: <%d>",
+            peticion->pid,nombre_archivo,tamanio,registro_archivo);
+                  
             }     
-            //free(leido);
+            free(leido);
       }
 }      
 
