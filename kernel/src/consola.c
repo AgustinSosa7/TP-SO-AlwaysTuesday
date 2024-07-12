@@ -50,9 +50,9 @@ void leer_comandos(){
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
 	int size_parametros = string_array_size(array_leido) - 1;
-	char* nombre = array_leido[0];
+	bool validar = validar_nombre_y_parametros(array_leido[0],size_parametros);
 	string_array_destroy(array_leido);
-	return (validar_nombre_y_parametros(nombre,size_parametros));
+	return validar;
 
 
 }

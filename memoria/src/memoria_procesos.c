@@ -33,6 +33,7 @@ t_list* leer_archivo_pseudocodigo(char* nombre_Archivo){
     fgets(INSTRUCCION, 256, Pseudocodigo);
     list_add(lista_de_instrucciones, INSTRUCCION);//ES EL ESPACIO DE MEMORIA DE INSTRUCCION
     free(PATH);
+    fclose(Pseudocodigo);
     return lista_de_instrucciones;
 };
 
