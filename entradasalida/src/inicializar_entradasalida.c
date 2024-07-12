@@ -152,11 +152,11 @@ void inicializar_archivos(){
 		exit(1);
 	}
 	// Hace falta acá un Sync??? 
-	char* bitmap_inicializado = fopen (PATH_BITMAP,"r");
+	char* bitmap_inicializado = fopen (PATH_BITMAP,"r");  //???
 	if (bitmap_inicializado!=NULL)
 	{	
 		log_info(entradasalida_logger, "El Archivo ya existía");
-		fclose(bitmap_inicializado);
+		fclose(bitmap_inicializado);					 //???
 	}
 	
 	fd_archivoBitmap = open(PATH_BITMAP, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
@@ -186,7 +186,8 @@ void inicializar_archivos(){
 		rta = bitarray_test_bit(bitmap,i) ? 1 : 0;
 		log_info(entradasalida_logger,"bitmap posicion %d : %d",i,rta);	
 	}
-	
+	free(PATH_BLOQUES);
+	free(PATH_BITMAP);
 	//LSB_FIRST Completa los bits en un byte priorizando el bit menos significativo 00000001
 }
 
