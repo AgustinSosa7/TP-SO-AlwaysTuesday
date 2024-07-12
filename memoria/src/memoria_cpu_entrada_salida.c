@@ -47,7 +47,7 @@ void recibir_pedido_marco_y_enviar(){
     eliminar_paquete(paquete);
     eliminar_paquete(paquete_a_enviar);
     
-    log_info(memoria_log_debug,"Marco enviado. PID: %d PAGINA: %d MARCO: %d",pid,numero_de_pagina,marco_pedido); //BORRAR
+    log_info(memoria_logger,"PID: %d PAGINA: %d MARCO: %d",pid,numero_de_pagina,marco_pedido);
 
 };
 
