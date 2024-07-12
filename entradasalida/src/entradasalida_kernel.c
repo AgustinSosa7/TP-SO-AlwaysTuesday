@@ -19,7 +19,8 @@ void atender_entradasalida_kernel(){
             break;
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");  
-            free(bitmap);    
+         
+            bitarray_destroy(bitmap);    
             control_key = 0;
         default:
            // log_warning(logger, "Operacion desconocida de CPU - DISPATCH");

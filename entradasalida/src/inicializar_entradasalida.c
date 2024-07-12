@@ -118,12 +118,10 @@ void iniciar_file_system(){
 
 void crear_paths(){
 	log_info(entradasalida_log_debug, "Creando paths");
-	PATH_BLOQUES= string_new();
 	PATH_BLOQUES=crear_path("/Bloques.dat");
 	//string_append(&PATH_BLOQUES,PATH_BASE_DIALFS);
 	//string_append(&PATH_BLOQUES,"/Bloques.dat"); 
 	
-	PATH_BITMAP= string_new();
 	PATH_BITMAP = crear_path("/Bitmap.dat");
 	//string_append(&PATH_BITMAP,PATH_BASE_DIALFS);
 	//string_append(&PATH_BITMAP,"/Bitmap.dat"); 
@@ -186,8 +184,8 @@ void inicializar_archivos(){
 		rta = bitarray_test_bit(bitmap,i) ? 1 : 0;
 		log_info(entradasalida_log_debug,"bitmap posicion %d : %d",i,rta);	
 	}
-	free(PATH_BLOQUES);
-	free(PATH_BITMAP);
+	string_array_destroy(PATH_BLOQUES);
+	string_array_destroy(PATH_BITMAP);
 	//LSB_FIRST Completa los bits en un byte priorizando el bit menos significativo 00000001
 }
 

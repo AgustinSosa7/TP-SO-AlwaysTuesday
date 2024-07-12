@@ -42,7 +42,7 @@ bool crear_config(char * nombre_archivo){
 
 bool delete_archivo(char* nombre_archivo){
 	
-	char* path_archivo = string_new();
+	char* path_archivo;
 	path_archivo = generar_path_config(nombre_archivo);
 	t_config* config_archivo = config_create(path_archivo);
 	if( config_archivo == NULL){
@@ -75,7 +75,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo, int pid){
 	
 	char* path_archivo = generar_path_config(nombre_archivo);
 	t_config* config_archivo = config_create(path_archivo);
-	free(path_archivo);
+	string_array_destroy((char**)path_archivo);
 
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int tamanio_viejo= config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
@@ -365,11 +365,14 @@ int mover_archivos(){
 }
 
 void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int primer_bloque_libre){
-	char* nombre_archivo = malloc(30);
+	//char* nombre_archivo = malloc(30);
+	char* nombre_archivo;
+	//char* nombre_archivo_borrar = nombre_archivo;
 	char *bloque_text=malloc(10); 
 	int ultimo_bloque_copiado=primer_bloque_ocupado-1;
 	int bloque_inicial, tamanio_viejo;
-	char* path = string_new();
+	//char* path = string_new();
+	char* path;
 	
 	int cant_bloques;
 	t_config* config_archivo;
@@ -381,9 +384,9 @@ void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int 
 	{
 		nombre_archivo = list_get(lista_archivos_existentes,i);
 		path = generar_path_config(nombre_archivo);
-		//free(nombre_archivo);
+		free(nombre_archivo);
 		config_archivo = config_create(path);
-		free(path);
+		string_array_destroy((char**)path);
 		bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 		if(bloque_inicial==primer_bloque_ocupado){
 			tamanio_viejo= config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
@@ -404,7 +407,7 @@ void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int 
 		}
 	}
 
-	//free(nombre_archivo);	
+	//free(nombre_archivo_borrar);	
 	free(bloque_text);
 }
 
@@ -441,9 +444,11 @@ int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultim
 
 char* generar_path_config(char* nombre_archivo){
 	char* path_archivo = string_new();
+	char* string_borrar = path_archivo;
 	strcat(path_archivo,"/");
 	strcat(path_archivo,nombre_archivo);
 	path_archivo = crear_path(path_archivo);
+	string_array_destroy((char**)string_borrar);
 	return path_archivo;
 
 }
