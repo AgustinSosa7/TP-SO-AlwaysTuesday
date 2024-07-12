@@ -38,6 +38,7 @@ void finalizar_proceso(){
     t_proceso* proceso_eliminado = buscar_proceso_en_memoria(pid);
     liberar_marcos_memoria(proceso_eliminado,0); //el tamanio nuevo es 0 para que libere todos los marcos
 
+
     if(list_remove_element(procesos_memoria,proceso_eliminado)){
         //log_info(memoria_log_debug, "Finalizo el proceso: %d",proceso_eliminado->pid);
         
@@ -45,10 +46,8 @@ void finalizar_proceso(){
         log_info(memoria_logger, "PID: %d - Tamaño: %d ",proceso_eliminado->pid,proceso_eliminado->long_tabla_pags);// Evaluar si setear la long a 0 o mostrar las que tenia el proceso antes.
         
         free(proceso_eliminado->direccion_pseudocodigo);//valgrind
-        free(proceso_eliminado->long_tabla_pags);
         free(proceso_eliminado->tabla_de_paginas);//valgrind
         list_destroy_and_destroy_elements(proceso_eliminado->instrucciones,(void*)eliminar_instruccion);//valgrind (Ver como funciona el destroy elements)
-        
         free(proceso_eliminado);
     }
     else
