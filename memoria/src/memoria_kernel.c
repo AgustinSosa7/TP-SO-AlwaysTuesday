@@ -37,7 +37,7 @@ void finalizar_proceso(){
 
     t_proceso* proceso_eliminado = buscar_proceso_en_memoria(pid);
     liberar_marcos_memoria(proceso_eliminado,0); //el tamanio nuevo es 0 para que libere todos los marcos
-    
+
 
     if(list_remove_element(procesos_memoria,proceso_eliminado)){
         //log_info(memoria_log_debug, "Finalizo el proceso: %d",proceso_eliminado->pid);
