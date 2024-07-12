@@ -306,36 +306,9 @@ void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
 }
 
 void eliminar_peticion(t_peticion* peticion){
-      //eliminar_parametros_segun_instruccion(peticion->instruccion, peticion->parametros);
+      eliminar_parametros_segun_instruccion(peticion->instruccion, peticion->parametros);
       free(peticion->instruccion);
       free(peticion->interfaz);
+      free(peticion->parametros);
       free(peticion);
-}
-
-void eliminar_parametros_segun_instruccion(char* instruccion, t_peticion_param* parametros){
-      if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
-
-      }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
-      {    
-
-      }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
-      {     
-
-      }else if (strcmp(instruccion,"IO_FS_CREATE") == 0)
-      {    
-
-      }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
-      {     
-
-      }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
-      {     
-
-      }else if (strcmp(instruccion,"IO_FS_WRITE") == 0)
-      {     
-
-      }else //Es IO_FS_READ 
-      {    
-      }     
-      
-      free(parametros);
 }
