@@ -50,7 +50,9 @@ void leer_comandos(){
 bool validar_instruccion(char* leido){
    	char** array_leido = string_split(leido," ");
 	int size_parametros = string_array_size(array_leido) - 1;
-	return (validar_nombre_y_parametros(array_leido[0],size_parametros));
+	char* nombre = array_leido[0];
+	string_array_destroy(array_leido);
+	return (validar_nombre_y_parametros(nombre,size_parametros));
 
 
 }
@@ -94,8 +96,9 @@ void atender_instruccion_validada(char* leido){
 		while(!list_is_empty(lista_comandos)){
 			char* comando = list_remove(lista_comandos,0);
 			atender_instruccion_validada(comando);
+			free(comando);
 		}
-		//list_destroy(lista_comandos);
+		list_destroy(lista_comandos);
 		break;
 	case INICIAR_PROCESO:
 		printf("Entre a iniciar proceso. \n");
@@ -104,7 +107,6 @@ void atender_instruccion_validada(char* leido){
 		//verificar si memoria creo el proceso 
 		op_code code_op_recibido = recibir_operacion(fd_memoria);
 		if(code_op_recibido == RESPUESTA_CREAR_PROCESO_MEMORIA){
-			sleep(2);
 			pthread_mutex_lock(&(struct_new->mutex));
 			list_add(struct_new->lista, nuevo_pcb);
 			pthread_mutex_unlock(&(struct_new->mutex));	
@@ -217,7 +219,7 @@ void atender_instruccion_validada(char* leido){
 		break;
 	
 	}
-	//string_array_destroy(array_leido);
+	string_array_destroy(array_leido);
 }
 
 bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
@@ -246,6 +248,7 @@ t_list* leer_archivo(char* archivo){
 			free(comando_leido);
 			comando_leido = malloc(100 *sizeof(char));
 			list_add(lista_comandos, nuevo_comando);
+			
 		}else{
 			char* nuevo_comando = string_new();
 			string_n_append(&nuevo_comando,comando_leido,longitud);
@@ -254,7 +257,10 @@ t_list* leer_archivo(char* archivo){
 			list_add(lista_comandos, nuevo_comando);
 		}
 		
+		
 	}
+	free(PATH);
+	free(comando_leido);
 	fclose(archivo_comandos);
 	return lista_comandos;
 	
