@@ -107,17 +107,17 @@ void inicializar_listas(){
 }
 
 void iniciar_file_system(){
-	log_info(entradasalida_logger,"Busacando FileSystem existente");
+	log_info(entradasalida_log_debug,"Busacando FileSystem existente");
 	crear_paths();
 	inicializar_archivos(); // Inicia archivo Bloques y Bitmap
-	log_info(entradasalida_logger, "FileSystem inicializado");
+	log_info(entradasalida_log_debug, "FileSystem inicializado");
 	pthread_mutex_init(&mutex_bitmap, NULL);
 	pthread_mutex_init(&mutex_bloques, NULL);
 
 }
 
 void crear_paths(){
-	log_info(entradasalida_logger, "Creando paths");
+	log_info(entradasalida_log_debug, "Creando paths");
 	PATH_BLOQUES= string_new();
 	PATH_BLOQUES=crear_path("/Bloques.dat");
 	//string_append(&PATH_BLOQUES,PATH_BASE_DIALFS);
@@ -127,7 +127,7 @@ void crear_paths(){
 	PATH_BITMAP = crear_path("/Bitmap.dat");
 	//string_append(&PATH_BITMAP,PATH_BASE_DIALFS);
 	//string_append(&PATH_BITMAP,"/Bitmap.dat"); 
-	log_info(entradasalida_logger, "Paths creados correctamente");
+	log_info(entradasalida_log_debug, "Paths creados correctamente");
 }
 
 char* crear_path(char* nombre_archivo){ 	// Nombra el directorio y lo guarda en el PATH
@@ -151,12 +151,12 @@ void inicializar_archivos(){
 		log_error(entradasalida_logger, "Error al mapear los Bloques.dat");
 		exit(1);
 	}
-	// Hace falta acá un Sync??? 
-	char* bitmap_inicializado = fopen (PATH_BITMAP,"r");  //???
+	
+	char* bitmap_inicializado = fopen (PATH_BITMAP,"r");  
 	if (bitmap_inicializado!=NULL)
 	{	
-		log_info(entradasalida_logger, "El Archivo ya existía");
-		fclose(bitmap_inicializado);					 //???
+		log_info(entradasalida_log_debug, "El Archivo ya existía");
+		fclose(bitmap_inicializado);					 
 	}
 	
 	fd_archivoBitmap = open(PATH_BITMAP, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
@@ -184,7 +184,7 @@ void inicializar_archivos(){
 	for (int i = 0 ; i < 32; i++)
 	{	
 		rta = bitarray_test_bit(bitmap,i) ? 1 : 0;
-		log_info(entradasalida_logger,"bitmap posicion %d : %d",i,rta);	
+		log_info(entradasalida_log_debug,"bitmap posicion %d : %d",i,rta);	
 	}
 	free(PATH_BLOQUES);
 	free(PATH_BITMAP);

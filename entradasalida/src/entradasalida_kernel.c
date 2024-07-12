@@ -87,7 +87,7 @@ void asignar_parametros_segun_tipo(t_peticion* peticion, t_buffer* buffer){
 void procesar_peticion(t_peticion* peticion) {
 
       char* instruccion = peticion->instruccion;
-
+      log_info(entradasalida_logger,"PID: <%d> - Operacion: <%s>",peticion->pid,peticion->instruccion);
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
             int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera; 
             printf("Estoy durmiendo...ZZZ...\n");
@@ -118,16 +118,18 @@ void procesar_peticion(t_peticion* peticion) {
       {     
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
-            crear_config(nombre_archivo); // archivo viene ewewe.txt
+            log_info(entradasalida_logger, "PID: <%d> - Crear Archivo: <%s>",peticion->pid,nombre_archivo);
+            crear_config(nombre_archivo); 
             
-  		log_info(entradasalida_logger, "PID: <%d> - Crear Archivo: <%s>",peticion->pid,nombre_archivo);
+  		
             
       }else if (strcmp(instruccion,"IO_FS_DELETE") == 0)
       {     
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
-            delete_archivo(nombre_archivo);
             log_info(entradasalida_logger, "PID: <%d> - Eliminar Archivo: <%s>",peticion->pid, nombre_archivo);
+            delete_archivo(nombre_archivo);
+            
 
 
       }else if (strcmp(instruccion,"IO_FS_TRUNCATE") == 0)
@@ -136,52 +138,58 @@ void procesar_peticion(t_peticion* peticion) {
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int tamanio_nuevo = peticion->parametros->registroTamanio;
-      
-            if(truncar_archivo(nombre_archivo,tamanio_nuevo,peticion->pid)) {  
-                  log_info(entradasalida_logger, "PID: <%d> - Truncar Archivo: <%s> - Tamaño: <%d>",
+            log_info(entradasalida_logger, "PID: <%d> - Truncar Archivo: <%s> - Tamaño: <%d>",
                   peticion->pid,nombre_archivo,tamanio_nuevo);
-            }else{ log_info(entradasalida_logger, "PID: <%d> - No se pudo truncar Archivo: <%s> - Tamaño: <%d>",
-                  peticion->pid,tamanio_nuevo,nombre_archivo);}
+
+            if(truncar_archivo(nombre_archivo,tamanio_nuevo,peticion->pid)) {  
+                  log_info(entradasalida_log_debug, "PID: <%d> - Se pudo truncar Archivo: <%s> - Tamaño: <%d>",
+                  peticion->pid,nombre_archivo,tamanio_nuevo);
+            }else{ log_info(entradasalida_log_debug, "PID: <%d> - No se pudo truncar Archivo: <%s> - Tamaño: <%d>",
+                  peticion->pid,nombre_archivo,tamanio_nuevo);}
             
 
       }else if (strcmp(instruccion,"IO_FS_WRITE") == 0) // Recibo tamanio del mensaje, el mensaje, archivo.
       {     
-            log_info(entradasalida_logger,"Ejecutando IO_FS_WRITE");
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = peticion->parametros->registroPunteroArchivo; 
             int tamanio_text = peticion->parametros->registroTamanio; // El nombre no corresponde pero si el tipo de dato XD
             
+             log_info(entradasalida_logger,"PID: <%d> - Escribir Archivo: <%s> - Tamaño a Escribir: <%d> - Puntero Archivo: <%d>", 
+                  peticion->pid,nombre_archivo,tamanio_text,registro_archivo);
+            
+
             char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos, peticion->pid);
 
             log_warning(entradasalida_logger,"¨%s¨", escrito);
 
             if(escribir_archivo(nombre_archivo,registro_archivo,escrito,tamanio_text)){
-            log_info(entradasalida_logger,"PID: <%d> - Escribir Archivo: <%s> - Tamaño a Escribir: <%d> - Puntero Archivo: <%d>", 
-                  peticion->pid,nombre_archivo,tamanio_text,registro_archivo);
+            log_info(entradasalida_log_debug,"Se ha podido escribir %s en el archivo %s",escrito,nombre_archivo);
 
             }else{
-                 log_info(entradasalida_logger,"No se ha podido escribir %s en el archivo %s",escrito,nombre_archivo);
+                 log_info(entradasalida_log_debug,"No se ha podido escribir %s en el archivo %s",escrito,nombre_archivo);
             }
 
             free(escrito);
        
       }else //DEFALUT IO_FS_READ
       {                 
-            log_info(entradasalida_logger,"Ejecutando IO_FS_READ");
+            
             usleep(1000*TIEMPO_UNIDAD_TRABAJO);
             char* nombre_archivo = peticion->parametros->archivo;
             int registro_archivo = peticion->parametros->registroPunteroArchivo;
             int tamanio = tamanio_total_del_leido(peticion->parametros->lista_de_accesos);
+
+            log_info(entradasalida_logger,"PID: <%d> - Leer Archivo: <%s> - Tamaño a Leer: <%d> - Puntero Archivo: <%d>",
+            peticion->pid,nombre_archivo,tamanio,registro_archivo);
             
             char* leido = leer_archivo(nombre_archivo,registro_archivo,tamanio); 
             
             if (strcmp(leido,"")==0){ 
-                  log_info(entradasalida_logger,"No se pudo guardar correctamente.\n");
+                  log_info(entradasalida_log_debug,"No se pudo guardar correctamente.\n");
             }else{
                   partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos, peticion->pid);
-                  log_info(entradasalida_logger,"PID: <%d> - Leer Archivo: <%s> - Tamaño a Leer: <%d> - Puntero Archivo: <%d>",
-            peticion->pid,nombre_archivo,tamanio,registro_archivo);
+                  log_info(entradasalida_log_debug,"Se pudo guardar correctamente.\n");
                   
             }     
             free(leido);

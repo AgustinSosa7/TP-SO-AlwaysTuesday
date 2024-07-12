@@ -52,7 +52,7 @@ void iniciar_config(char* path){
 void imprimir_config(){
     log_info(cpu_logger, "IP_MEMORIA: %s", IP_MEMORIA);
     log_warning(cpu_log_debug, "PUERTO_MEMORIA: %s", PUERTO_MEMORIA);
-    log_debug(cpu_log_debug, "PUERTO_ESCUCHA_DISPATCH: %s", PUERTO_ESCUCHA_DISPATCH);
+    log_info(cpu_log_debug, "PUERTO_ESCUCHA_DISPATCH: %s", PUERTO_ESCUCHA_DISPATCH);
     log_trace(cpu_log_debug,"PUERTO_ESCUCHA_INTERRUPT: %s", PUERTO_ESCUCHA_INTERRUPT);
 }
 

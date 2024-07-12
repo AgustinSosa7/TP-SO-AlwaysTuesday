@@ -1,25 +1,19 @@
 #include "../includes/entradasalida.h"
 
 
-//Fijarse los SPRITNF y que hago si le poongo 0 o malloc
-
-
 bool crear_config(char * nombre_archivo){
 	//Todo es un config y se guarda y crea con el nombre del archivo
-	
-
 	
 	char* path_archivo = generar_path_config(nombre_archivo);
 	t_config* config_archivo = config_create(path_archivo);
 
-	if(config_archivo == NULL){     //Verifica si existe un archivo con ese path y si no lo crea :D //Hace falta, no lo debería solo crear osea antes no puede existir?? jaja
+	if(config_archivo == NULL){     //Verifica si existe un archivo con ese path y si no lo crea 
 		FILE* file_fd = fopen(path_archivo, "a+"); 
 		fclose(file_fd);
 		config_archivo = config_create(path_archivo);
 	}
-	//list_add(lista_archivos_existentes,nombre_archivo);
 
-	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0"); // SOLO ES PRUEBA
+	config_set_value(config_archivo, "TAMANIO_ARCHIVO", "0"); 
 
 	pthread_mutex_lock(&mutex_bitmap);
 	int nuevo_bloque_inicial = obtener_bloques_libres(1); // el 1 es hardcodeo para que ocupe un bloque aunque tenga tamaño 0
@@ -36,10 +30,7 @@ bool crear_config(char * nombre_archivo){
 
 	///////// PRUEBA ////////////
 	mostrar_estado_archivo(config_archivo);
-	//for (int i = 0; i < list_size(lista_archivos_existentes); i++)
-	//	{
-	//		log_info(entradasalida_logger,list_get(lista_archivos_existentes,i));
-	//	}
+
 	
 	config_save(config_archivo);
 	config_destroy(config_archivo);
@@ -59,7 +50,7 @@ bool delete_archivo(char* nombre_archivo){
 	}
 	
 	///////// PRUEBA ////////////
-	log_info(entradasalida_logger,"ESTADO INNICIAL ARCHIVO:");
+	log_info(entradasalida_log_debug,"ESTADO INNICIAL ARCHIVO:");
 	mostrar_estado_archivo(config_archivo);
 
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
@@ -70,20 +61,9 @@ bool delete_archivo(char* nombre_archivo){
 	setear_bitmap(bloque_inicial, final_bloques_nuevo, false);
 	pthread_mutex_unlock(&mutex_bitmap);
 
-	//for (int i = 0; i < list_size(lista_archivos_existentes); i++)
-	//	{
-	//		if (list_get(lista_archivos_existentes,i)==nombre_archivo)
-	//		{
-	//			list_remove(lista_archivos_existentes,i);
-	//		}
-		//}
 
 	///////// PRUEBA ////////////
 	mostrar_estado_archivo(config_archivo);
-	//for (int i = 0; i < list_size(lista_archivos_existentes); i++)
-	//	{
-	//		log_info(entradasalida_logger,list_get(lista_archivos_existentes,i));
-	//	}
 
 	remove(path_archivo);
 	free(path_archivo);
@@ -105,10 +85,9 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo, int pid){
 	final_bloques_nuevo = (tamanio_nuevo%BLOCK_SIZE) == 0 ? final_bloques_nuevo-1 : final_bloques_nuevo;
 	final_bloques_viejo = (tamanio_viejo%BLOCK_SIZE== 0 &&tamanio_viejo!=0)  ? final_bloques_viejo-1 : final_bloques_viejo;
 	
-	//int final_bloques_nuevo = bloque_inicial + ceil((tamanio_nuevo)/BLOCK_SIZE) -1;
 
 	////////////      PRUEBA        /////////
-	log_info(entradasalida_logger,"ESTADO INICIAL ARCHIVO:");
+	log_info(entradasalida_log_debug,"ESTADO INICIAL ARCHIVO:");
 	mostrar_estado_archivo(config_archivo);
 	
 	if (final_bloques_nuevo>final_bloques_viejo)
@@ -195,7 +174,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo, int pid){
 			
 	}
 	else // o el tam nuevo es igual o menor así que sirve si o si :D
-	{	char* tamanio_text=malloc(10); //Se guarda bien?
+	{	char* tamanio_text=malloc(10); 
 		sprintf(tamanio_text,"%d",tamanio_nuevo);
 		config_set_value(config_archivo, "TAMANIO_ARCHIVO", tamanio_text);
 		if(final_bloques_nuevo!=final_bloques_viejo){
@@ -211,7 +190,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo, int pid){
 }
 
 bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito, int tamanio_text){
-	//Camino feliz entra todo :D
+
 	char* path_archivo = generar_path_config(nombre_archivo);
 	t_config* config_archivo = config_create(path_archivo);
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
@@ -248,9 +227,8 @@ bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito, i
 	}
 	pthread_mutex_lock(&mutex_bloques);
 	
-	log_info(entradasalida_logger,bloquesEnMemoria+bloque_inicial*BLOCK_SIZE+registro_archivo);  // ELIMINAR
 	memcpy(leido,bloquesEnMemoria+bloque_inicial*BLOCK_SIZE+registro_archivo,tamanio);	
-	log_info(entradasalida_logger,"MENSAJE.%s",leido);
+	log_info(entradasalida_log_debug,"MENSAJE.%s",leido);
 	pthread_mutex_unlock(&mutex_bloques);
 	config_destroy(config_archivo);
 	return leido;
@@ -266,7 +244,7 @@ int obtener_bloques_libres(int cant_bloques){
 	  int bitmap_max_index = BLOCK_COUNT;
 	  
       while (bitmap_max_index>i)
-      {		log_info(entradasalida_logger,"EL bit en la posicion %d , es %d" , i , bitarray_test_bit(bitmap,i));
+      {		log_info(entradasalida_log_debug,"EL bit en la posicion %d , es %d" , i , bitarray_test_bit(bitmap,i));
             if (!bitarray_test_bit(bitmap,i)) //Ta vacio el int i??
             {     bloques_libres=1;
                   j=i+1;
@@ -281,11 +259,7 @@ int obtener_bloques_libres(int cant_bloques){
 
 						bloques_libres++;
 						j++;
-                        //if (bloques_libres==tamanio_bits)
-                        //{     
-                        //      setear_bitmap(i,j-1,true); // Hacer Setear bitmap de tal a tal y sete en 1 // el -1 es poque suma siempre y acá justo no hace falta
-                        //      suficiente = true;
-                        //}
+                    
                   }
                   if(suficiente || bloques_libres == cant_bloques){
                         rta= i;
@@ -343,7 +317,7 @@ bool hay_espacios(int bloques_faltantes){
 
 int compactacion(int bloque_inicial,int final_bloques_viejo, int final_bloques_nuevo,int pid){
 	int tamanio_archivo = (final_bloques_viejo-bloque_inicial+1)*BLOCK_SIZE;
-	int cant_bloques = (final_bloques_nuevo - bloque_inicial+1); //Puedo poner el tamanio viejo D1?
+	int cant_bloques = (final_bloques_nuevo - bloque_inicial+1); 
 	char* archivo_aux= malloc(tamanio_archivo);
 
 	log_info(entradasalida_logger,"PID: <%d> - Inicio Compactación.",pid);
@@ -393,26 +367,21 @@ int mover_archivos(){
 void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int primer_bloque_libre){
 	char* nombre_archivo = malloc(30);
 	char *bloque_text=malloc(10); 
-	int ultimo_bloque_copiado=primer_bloque_ocupado;
+	int ultimo_bloque_copiado=primer_bloque_ocupado-1;
 	int bloque_inicial, tamanio_viejo;
 	char* path = string_new();
-	//int final_bloques_viejo;  //ELIMINAR
+	
 	int cant_bloques;
 	t_config* config_archivo;
 
-	//ELIMINAR
-	for (int i = 0; i < list_size(lista_archivos_existentes); i++)
-		{
-			log_info(entradasalida_logger,list_get(lista_archivos_existentes,i));
-		}
-
+	
 	while (ultimo_bloque_copiado < ultimo_bloque_ocupado)
 	{
 		for (int i = 0; i < list_size(lista_archivos_existentes); i++)
 	{
 		nombre_archivo = list_get(lista_archivos_existentes,i);
 		path = generar_path_config(nombre_archivo);
-		free(nombre_archivo);
+		//free(nombre_archivo);
 		config_archivo = config_create(path);
 		free(path);
 		bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
@@ -426,7 +395,7 @@ void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int 
 			config_destroy(config_archivo);
 			list_remove(lista_archivos_existentes,i);
 			primer_bloque_libre = primer_bloque_libre + cant_bloques;
-			ultimo_bloque_copiado = ultimo_bloque_copiado + cant_bloques ; 
+			ultimo_bloque_copiado = ultimo_bloque_copiado + cant_bloques; 
 			primer_bloque_ocupado = primer_bloque_ocupado + cant_bloques ; //No le resto uno porque es el proximo a copiar
 			
 			break;
@@ -435,7 +404,7 @@ void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int 
 		}
 	}
 
-	free(nombre_archivo);	
+	//free(nombre_archivo);	
 	free(bloque_text);
 }
 
@@ -479,21 +448,24 @@ char* generar_path_config(char* nombre_archivo){
 
 }
 
-//ELIMINAR
+
 void  mostrar_estado_archivo(t_config* config_archivo){
-	log_info(entradasalida_logger,config_get_string_value(config_archivo,"BLOQUE_INICIAL"));
-	log_info(entradasalida_logger, config_get_string_value(config_archivo,"TAMANIO_ARCHIVO"));
 	
-	log_info(entradasalida_logger,"BITMAP");
+	
+	log_info(entradasalida_log_debug,"BITMAP");
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int cant_bloques = ((config_get_int_value(config_archivo,"TAMANIO_ARCHIVO")/BLOCK_SIZE)+1);
 	int rta;
 	int bitmap_index = bloque_inicial;
+
+	log_info(entradasalida_log_debug,"Bloque Inicial : %d ",bloque_inicial);
+	log_info(entradasalida_log_debug,"Cantidad de bloques : %d ", cant_bloques);
+
 	for (int i = 0 ; i < cant_bloques; i++)
 	{	
 		
 		rta = bitarray_test_bit(bitmap,bitmap_index) ? 1 : 0;
-		log_info(entradasalida_logger,"bitmap posicion %d : %d",bitmap_index,rta);
+		log_info(entradasalida_log_debug,"bitmap posicion %d : %d",bitmap_index,rta);
 		bitmap_index++;	
 	}
 }
@@ -517,11 +489,6 @@ int inicializar_lista_archivos(){
         return EXIT_FAILURE;
     }
 
-	//ELIMINAR
-	for (int i = 0; i < list_size(lista_archivos_existentes); i++)
-		{
-			log_info(entradasalida_logger,list_get(lista_archivos_existentes,i));
-		}
 	free(nombre_archivo);
 	return 1;
 }
