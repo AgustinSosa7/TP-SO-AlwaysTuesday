@@ -4,9 +4,10 @@
 void ciclo_instruccion(){                         
     
     while(1){
-	log_warning(cpu_logger, "Esperando una nueva instruccion... \n");
+	printf("\n");
+	log_warning(cpu_logger, "Esperando una nueva instruccion...");
     sem_wait(&sem_ciclo_de_instruccion);
-	log_info(cpu_logger, "Tome el semaforo del ciclo de instruccion.\n");
+	log_info(cpu_logger, "Comienza un ciclo de instrucción!");
 
 	dejar_de_ejecutar = false;
 	pthread_mutex_lock(&mutex_ocurrio_interrupcion);
@@ -14,7 +15,7 @@ void ciclo_instruccion(){
 	pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
     
 	//FETCH 
-	log_info(cpu_logger, "PID: <%d> - FETCH - Program Counter: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC);
+	log_info(cpu_logger, "PID: <%d> - FETCH - Program Counter: <%d>", pcb_global->pid, pcb_global->registros_cpu->PC + 1);
 	pedir_instruccion_pseudocodigo(pcb_global->pid, pcb_global->registros_cpu->PC);
     
 	char *instruccion_con_parametros = recibir_instruccion_pseudocodigo();
@@ -124,7 +125,7 @@ void ciclo_instruccion(){
 				dejar_de_ejecutar = true;
 				devolver_contexto_por_out_of_memory();
 			}
-			log_info(cpu_logger, "Resize: PID: %d - Nuevo tamaño del proceso en Memoria: %d", pcb_global->pid, nuevoTamanioDelProceso);
+			log_info(cpu_logger, "Resize: PID: %d - Nuevo tamaño del proceso en Memoria: %d paginas.", pcb_global->pid, nuevoTamanioDelProceso);
 			pcb_global->registros_cpu->PC++;
 		}
 	else if (strcmp(nombre_instruccion, "COPY_STRING") == 0)
@@ -325,6 +326,7 @@ void ciclo_instruccion(){
 	else {	
 		// Queda bloqueado esperando que vuelvan a ejecutar un proceso en la CPU.
 		log_info(cpu_logger, "FRENO");
+		imprimir_tlb();
 	}
 
 	}
@@ -475,7 +477,7 @@ void devolver_contexto_por_correcta_finalizacion()
 	t_paquete* paquete = crear_paquete(PROCESO_EXIT);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	enviar_paquete(paquete, fd_kernel_dispatch);
-	printf("paquete enviado al kernel por EXIT\n");
+	log_info(cpu_logger, "PCB enviado al Kernel por EXIT!");
     eliminar_paquete(paquete);
 }
 
@@ -621,6 +623,20 @@ int tamanio_del_registro(char* nombre_registro)
 
 // MMU
 
+ void imprimir_tlb()
+{
+	t_list_iterator *iterador = list_iterator_create(tlb);
+	log_info(cpu_logger, "Mostramos las entradas de la TLB:");
+	int i = 1;
+	while (list_iterator_has_next(iterador))
+	{
+		t_entrada_tlb* entrada_a_loguear = list_iterator_next(iterador);
+		log_info(cpu_logger, "Entrada N%d: PID <%d> - Numero de Pagina <%d> - Numero de Marco <%d>", i, entrada_a_loguear->pid, entrada_a_loguear->nro_pagina, entrada_a_loguear->nro_marco);
+		i++;
+	}
+	list_iterator_destroy(iterador);
+}
+
 bool coincide_pid_y_pagina(t_entrada_tlb* entrada, int process_id, int numero_de_pagina)
 {
 	if(entrada->pid == process_id && entrada->nro_pagina == numero_de_pagina)
@@ -648,10 +664,8 @@ int buscar_marco_en_la_tlb(int process_id, int numero_de_pagina)
 	
 	temporal_destroy(entrada_obtenida->tiempo_ultima_ref); 		// Acá reiniciamos el contador.
 	entrada_obtenida->tiempo_ultima_ref = temporal_create();
-	
-	int marco_obtenido = entrada_obtenida->nro_marco;
 
-	return marco_obtenido;
+	return entrada_obtenida->nro_marco;
 }
 
 void agregar_traduccion_a_tlb(int process_id, int numero_de_pagina, int numero_de_marco)
@@ -673,7 +687,7 @@ void agregar_traduccion_a_tlb(int process_id, int numero_de_pagina, int numero_d
 		}
 
 		t_entrada_tlb* comparar_ultima_ref(t_entrada_tlb* entrada1, t_entrada_tlb* entrada2) {
-			return temporal_gettime(entrada1->tiempo_ultima_ref) < temporal_gettime(entrada2->tiempo_ultima_ref) ? entrada1 : entrada2;
+			return temporal_gettime(entrada1->tiempo_ultima_ref) > temporal_gettime(entrada2->tiempo_ultima_ref) ? entrada1 : entrada2;
 		}
 
 		t_entrada_tlb* entrada_victima = NULL;

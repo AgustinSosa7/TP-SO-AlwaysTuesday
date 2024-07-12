@@ -35,6 +35,7 @@ uint32_t leer_valor_de_registro(char* nombre_registro);
 int tamanio_del_registro(char* nombre_registro);
 
 // MMU:
+void imprimir_tlb();
 bool coincide_pid_y_pagina(t_entrada_tlb* entrada, int process_id, int numero_de_pagina);
 bool es_la_entrada_buscada(void* entrada);
 bool existe_en_la_tlb(int process_id, int numero_de_pagina);
