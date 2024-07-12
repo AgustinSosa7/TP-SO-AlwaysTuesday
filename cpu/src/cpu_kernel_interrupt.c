@@ -7,12 +7,11 @@ void atender_interrupt(){
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
         t_paquete* paquete = recibir_paquete(fd_kernel_interrupt);
-        t_buffer* buffer = paquete->buffer;
         
 		switch (cod_op) {
             case SOLICITUD_INTERRUMPIR_PROCESO:
                 log_warning(cpu_logger, "Recibi una interrupción desde Kernel!");
-                motivo_interrupcion = leer_int_del_buffer(buffer);
+                motivo_interrupcion = leer_int_del_buffer(paquete->buffer);
                 if(motivo_interrupcion == 0) {
                     log_warning(cpu_logger, "Motivo de la interrupción = Fin de Quantum (Desalojo)");}
                 else if(motivo_interrupcion == 1) {
@@ -32,5 +31,6 @@ void atender_interrupt(){
                 exit(EXIT_FAILURE);
                 break;
 		}
+        eliminar_paquete(paquete);
     }
 }

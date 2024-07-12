@@ -11,5 +11,7 @@
 
 void conexion_cpu_kernel_dispatch();
 void conexion_cpu_kernel_interrupt();
+void limpiar_tlb();
+void terminar_cpu();
 
 #endif

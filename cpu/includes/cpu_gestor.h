@@ -39,8 +39,6 @@ extern t_config* cpu_config;
 
 extern t_pcb* pcb_global;
 
-extern char ** opcode_cpu;      // Chequear si me sirve o no esta variable.
-
 extern int tamanio_pagina;
 extern int tamanio_memoria;
 

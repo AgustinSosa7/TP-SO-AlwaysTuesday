@@ -11,12 +11,9 @@ void atender_dispatch(){
 
 		switch (cod_op) {
             case PCB:
-                    //Recibe el paquete lo deserealiza y recibe el PCB
-                    log_info(cpu_logger,"LLego un PCB para ser ejecutado en el CPU!");
-                    t_pcb* un_pcb = recibir_pcb(paquete);
-                    //imprimir_pcb(un_pcb, cpu_logger);
-                    pcb_global = un_pcb;
-                    //free(un_pcb);
+                    log_info(cpu_logger,"Llego un nuevo proceso (PCB) para ser ejecutado en el CPU!");
+                    establecer_pcb_global(paquete, pcb_global);
+                    imprimir_pcb(pcb_global, cpu_logger);
                     sem_post(&sem_ciclo_de_instruccion);
                 break;
             
@@ -29,6 +26,7 @@ void atender_dispatch(){
                 exit(EXIT_FAILURE);
                 break;
 		}
+        eliminar_paquete(paquete);
     }
 
 }

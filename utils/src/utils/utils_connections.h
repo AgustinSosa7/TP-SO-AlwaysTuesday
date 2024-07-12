@@ -201,6 +201,7 @@ void agregar_lista_de_accesos_a_paquete(t_paquete* paquete, t_list* lista_de_acc
 void agregar_pcb_a_paquete(t_pcb* un_pcb, t_paquete* un_paquete);
 void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje);
 t_pcb* recibir_pcb(t_paquete* paquete);
+void establecer_pcb_global(t_paquete* paquete, t_pcb* pcb_global);
 void imprimir_pcb(t_pcb* un_pcb,t_log* un_logger);
 char* enum_a_string(estado_pcb estado);
 

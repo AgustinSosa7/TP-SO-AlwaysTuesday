@@ -7,8 +7,6 @@ t_config* cpu_config;
 
 t_pcb* pcb_global;
 
-char ** opcode_cpu;      // Chequear si me sirve o no esta variable.
-
 int tamanio_pagina;
 int tamanio_memoria;
 

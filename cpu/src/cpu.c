@@ -7,6 +7,9 @@ int main(int argc, char** argv){
         return EXIT_FAILURE;
     }
     
+    // Para cerrar los File Descriptors en caso de EXIT.
+    atexit(terminar_cpu);
+    
     // Inicializar CPU
     inicializar_cpu(argv[1]);
     
@@ -77,4 +80,80 @@ void conexion_cpu_kernel_interrupt(){
     log_info(cpu_logger, "Esperando a INTERRUPT...");
     fd_kernel_interrupt = esperar_cliente(fd_cpu_interrupt, cpu_logger, "KERNEL-INTERRUPT");
     gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger, "KERNEL-INTERRUPT");
-}  
+}
+
+void limpiar_tlb()
+{
+    if(list_size(tlb) > 0)
+    {
+        t_list_iterator *iterador = list_iterator_create(tlb);
+	    while (list_iterator_has_next(iterador))
+	    {
+	    	t_entrada_tlb* entrada = list_iterator_next(iterador);
+            temporal_destroy(entrada->tiempo_carga);
+            temporal_destroy(entrada->tiempo_ultima_ref);
+            free(entrada);
+    	}
+	    list_iterator_destroy(iterador);
+        list_clean(tlb);
+    }
+    list_destroy(tlb);
+}
+
+void terminar_cpu()
+{
+	if (cpu_logger != NULL)
+	{
+		log_warning(cpu_logger, "Algo salio mal!");
+		log_warning(cpu_logger, "Finalizando %s", "CPU");
+
+        log_destroy(cpu_logger);
+        log_destroy(cpu_log_debug);
+	}
+
+    if (cpu_config != NULL)
+	{
+		config_destroy(cpu_config);
+        /*
+        free(IP_MEMORIA);
+        free(IP_CPU);
+        free(PUERTO_MEMORIA);
+        free(PUERTO_ESCUCHA_DISPATCH);
+        free(PUERTO_ESCUCHA_INTERRUPT);
+        free(CANTIDAD_ENTRADAS_TLB);
+        free(ALGORITMO_TLB);*/
+	}
+
+    if (pcb_global != NULL)
+    {
+        free(pcb_global->registros_cpu);
+        free(pcb_global);
+    }
+
+    limpiar_tlb();
+
+	if (fd_memoria != -1)
+	{
+		close(fd_memoria);
+	}
+
+	if (fd_cpu_dispatch != -1)
+	{
+		close(fd_cpu_dispatch);
+	}
+
+	if (fd_kernel_dispatch != -1)
+	{
+		close(fd_kernel_dispatch);
+	}
+
+	if (fd_cpu_interrupt != -1)
+	{
+		close(fd_cpu_interrupt);
+	}
+
+	if (fd_kernel_interrupt != -1)
+	{
+		close(fd_kernel_interrupt);
+	}
+}

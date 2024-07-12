@@ -566,6 +566,15 @@ t_pcb* recibir_pcb(t_paquete* paquete){
 	return pcb; 
 }
 
+void establecer_pcb_global(t_paquete* paquete, t_pcb* pcb_global){
+	void* buffer = paquete->buffer;
+	
+	pcb_global->pid = leer_int_del_buffer(buffer);
+	pcb_global->quantum = leer_int_del_buffer(buffer);
+	leer_registros_del_buffer(buffer, pcb_global->registros_cpu);
+	pcb_global->estado_pcb = leer_int_del_buffer(buffer);
+}
+
 void imprimir_pcb(t_pcb* pcb, t_log* un_logger){
 log_info(un_logger,"PCB Pid: %d", pcb->pid);
 log_info(un_logger,"PCB Quantum: %d",pcb->quantum);	
