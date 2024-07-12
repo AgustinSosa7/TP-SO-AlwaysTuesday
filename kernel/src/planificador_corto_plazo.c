@@ -4,7 +4,7 @@
 #include "../includes/kernel_cpu_interrupt.h"
 
 void planif_corto_plazo()
-{
+{ 
     while(1){
         detener_planificacion();
         printf("WAIT del plani CORTO plazo.\n");

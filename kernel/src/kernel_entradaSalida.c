@@ -306,7 +306,6 @@ void enviar_proceso_blocked_a_ready_plus(t_pcb* un_pcb){
 }
 
 void eliminar_peticion(t_peticion* peticion){
-      eliminar_parametros_segun_instruccion(peticion->instruccion, peticion->parametros);
       free(peticion->instruccion);
       free(peticion->interfaz);
       free(peticion->parametros);
