@@ -129,7 +129,7 @@ void enviar_proceso_execute_a_exit(){
 
 void enviar_proceso_a_blocked(t_peticion* peticion, t_pcb* pcb, t_interfaz* interfaz)
 {    
-    printf("Enviando el proceso a blocked...\n"); 
+    //printf("Enviando el proceso a blocked...\n"); 
     pthread_mutex_lock(&(struct_exec->mutex));
     t_pcb* un_pcb = list_remove(struct_exec->lista,0);
     pthread_mutex_unlock(&(struct_exec->mutex));
@@ -163,7 +163,7 @@ bool enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* 
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int); 
 	void* a_enviar = serializar_paquete(paquete, bytes);
       int err = send(interfaz->fd_interfaz, a_enviar, bytes, MSG_NOSIGNAL); 
-      printf("Instruccion enviada...\n");
+      //printf("Instruccion enviada...\n");
 
       if(err == -1){
         close(interfaz->fd_interfaz);

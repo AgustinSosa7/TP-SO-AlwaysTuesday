@@ -162,6 +162,8 @@ void remover_pcb_de_recursos_asignados(t_pcb* pcb){
                 t_pcb* un_pcb = list_remove(recurso->lista_procesos_bloqueados,0);
                 list_add(recurso->lista_procesos_asignados,un_pcb);
                 enviar_proceso_blocked_a_ready(un_pcb);
+                log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",un_pcb->pid, enum_a_string(BLOCKED),enum_a_string(READY));
+                imprimir_lista_ready(struct_ready);
                 sem_post(&sem_planificador_corto_plazo);
             }
         }

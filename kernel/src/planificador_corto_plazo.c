@@ -46,8 +46,8 @@ void planif_fifo_RR()
 
             }
         recibir_pcb_con_motivo();  
-        } else{//printf("La cola de EXECUTE estaba OCUPADA :(\n");}
-    } else{//printf("La cola de READY estaba vacia :(\n");}
+        } //else{//printf("La cola de EXECUTE estaba OCUPADA :(\n");}
+    } //else{//printf("La cola de READY estaba vacia :(\n");}
 }
 void gestionar_quantum(t_pcb* un_pcb){
     int contador_inicial = un_pcb->contador;
