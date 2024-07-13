@@ -13,7 +13,7 @@ void atender_dispatch(){
             case PCB:
                     log_info(cpu_logger,"Llego un nuevo proceso (PCB) para ser ejecutado en el CPU!");
                     establecer_pcb_global(paquete, pcb_global);
-                    imprimir_pcb(pcb_global, cpu_logger);
+                    //imprimir_pcb(pcb_global, cpu_logger);
                     sem_post(&sem_ciclo_de_instruccion);
                 break;
             

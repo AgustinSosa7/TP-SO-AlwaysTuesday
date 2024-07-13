@@ -7,8 +7,8 @@ void atender_entradasalida_kernel(){
     while (control_key) {
         int cod_op = recibir_operacion(fd_kernel);
         t_paquete* paquete = recibir_paquete(fd_kernel);
-	  log_info(entradasalida_logger, "Se recibio algo de Kernel..");
-        log_info(entradasalida_logger, "CODIGO DE OPERACION: %d", cod_op);
+	  //log_info(entradasalida_logger, "Se recibio algo de Kernel..");
+        //log_info(entradasalida_logger, "CODIGO DE OPERACION: %d", cod_op);
 
         switch (cod_op)
         {
@@ -91,9 +91,9 @@ void procesar_peticion(t_peticion* peticion) {
       log_info(entradasalida_logger,"PID: <%d> - Operacion: <%s>",peticion->pid,peticion->instruccion);
       if(strcmp(instruccion,"IO_GEN_SLEEP") == 0){
             int tiempo_espera = TIEMPO_UNIDAD_TRABAJO * peticion->parametros->tiempo_espera; 
-            printf("Estoy durmiendo...ZZZ...\n");
+            //printf("Estoy durmiendo...ZZZ...\n");
             usleep(tiempo_espera*1000); 
-            printf("Ya dormi mi tiempo.\n");
+            //printf("Ya dormi mi tiempo.\n");
 
       }else if (strcmp(instruccion,"IO_STDIN_READ") == 0)
       {
@@ -101,17 +101,17 @@ void procesar_peticion(t_peticion* peticion) {
                        
             partir_y_guardar_en_memoria(leido, peticion->parametros->lista_de_accesos, peticion->pid);
 
-            log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente.\n", leido);
+            //log_info(entradasalida_logger,"¨%s¨ se gurardo correctamente.\n", leido);
 
             free(leido);
 
       }else if (strcmp(instruccion,"IO_STDOUT_WRITE") == 0)
       {     
-            log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
+            //log_info(entradasalida_logger,"Voy a pedirle algo a memoria");
 
             char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos, peticion->pid);
 
-            log_warning(entradasalida_logger,"¨%s¨", escrito);
+            log_info(entradasalida_logger,"%s", escrito);
 
             free(escrito);      
 

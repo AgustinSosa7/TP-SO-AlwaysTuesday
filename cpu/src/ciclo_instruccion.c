@@ -72,12 +72,12 @@ void ciclo_instruccion(){
 			
 			if(tamanio_del_registro(registro_datos) == 1){
 				u_int8_t valor_a_escribir = leer_valor_de_registro(registro_datos);
-				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir); // Chequear si va o no el & antes de "valor_a_escribir"
+				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir);
 				log_info(cpu_logger, "Se guardo el valor %d en Memoria!!!", valor_a_escribir);
 			}
 			else if(tamanio_del_registro(registro_datos) == 4){
 				u_int32_t valor_a_escribir = leer_valor_de_registro(registro_datos);
-				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir); // Chequear si va o no el & antes de "valor_a_escribir"
+				gestionar_escritura_memoria(direccion_logica, cant_bytes_a_escribir, &valor_a_escribir);
 				log_info(cpu_logger, "Se guardo el valor %d en Memoria!!!", valor_a_escribir);
 			}
 			pcb_global->registros_cpu->PC++;
@@ -257,19 +257,11 @@ void ciclo_instruccion(){
 			int tamanio = leer_valor_de_registro(registro_tamanio);
 			t_list* lista_de_accesos = gestionar_accesos_para_io(direccion_logica, tamanio);
 
-			int puntero = leer_valor_de_registro(registro_puntero); // Consultar a los chicos si el puntero es un int o qué tipo de dato sería... Yo entiendo que hay que escribir a partir de ese byte dentro del archivo (por eso lo paso como int).
+			int puntero = leer_valor_de_registro(registro_puntero);
 			pcb_global->contador++;
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
 			devolver_contexto_por_fs_write(nombre_instruccion, nombre_interfaz, nombre_archivo, lista_de_accesos, tamanio, puntero);
-
-			/*
-			if (direccion_fisica != -1)
-			{
-				pcb_global->registros_cpu->PC++;
-				dejar_de_ejecutar = true;
-				devolver_contexto_por_fs_write(nombre_instruccion, nombre_interfaz, nombre_archivo, direccion_fisica, tamanio, puntero);
-			}*/
 		}
 	else if (strcmp(nombre_instruccion, "IO_FS_READ") == 0)
 		{
@@ -284,19 +276,11 @@ void ciclo_instruccion(){
 			int tamanio = leer_valor_de_registro(registro_tamanio);
 			t_list* lista_de_accesos = gestionar_accesos_para_io(direccion_logica, tamanio);
 			
-			int puntero = leer_valor_de_registro(registro_puntero); // Consultar a los chicos si el puntero es un int o qué tipo de dato sería... Yo entiendo que hay que escribir a partir de ese byte dentro del archivo (por eso lo paso como int).
+			int puntero = leer_valor_de_registro(registro_puntero);
 			pcb_global->contador++;
 			pcb_global->registros_cpu->PC++;
 			dejar_de_ejecutar = true;
 			devolver_contexto_por_fs_read(nombre_instruccion, nombre_interfaz, nombre_archivo, lista_de_accesos, tamanio, puntero);
-
-			/*
-			if (direccion_fisica != -1)
-			{
-				pcb_global->registros_cpu->PC++;
-				dejar_de_ejecutar = true;
-				devolver_contexto_por_fs_read(nombre_instruccion, nombre_interfaz, nombre_archivo, lista_de_accesos, tamanio, puntero);
-			}*/
 		}
 	else if (strcmp(nombre_instruccion, "EXIT") == 0)
 		{
@@ -354,12 +338,13 @@ void devolver_contexto_por_page_fault(int numero_de_pagina)
     eliminar_paquete(paquete);
 }
 
-void devolver_contexto_por_out_of_memory() // Si Kernel lo necesitara, podría pasarle además del PCB, el tamaño al cual se intentó agrandar el tamaño del proceso en Memoria.
+void devolver_contexto_por_out_of_memory()
 {
 	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_OUT_OF_MEMORY);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
+	// Si Kernel lo necesitara, podría pasarle además del PCB, el tamaño al cual se intentó agrandar el tamaño del proceso en Memoria.
 }
 
 void devolver_contexto_por_wait(char* nombre_recurso)

@@ -40,7 +40,7 @@ char* recibir_instruccion_pseudocodigo(){
     t_buffer* buffer = paquete_recibido->buffer;
     if(code_op == PSEUDOCODIGO)
     {
-        char* instruccion_pseudocodigo = leer_string_del_buffer(buffer);//REVISAR POR QUE NO FUNCIONA. Si no funciona es por lo mismo que el pcb_global!
+        char* instruccion_pseudocodigo = leer_string_del_buffer(buffer);
         //printf("Instruccion_pseudocodigo: %s \n", instruccion_pseudocodigo);
         eliminar_paquete(paquete_recibido);
         return instruccion_pseudocodigo;

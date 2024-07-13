@@ -12,6 +12,7 @@ void atender_interrupt(){
             case SOLICITUD_INTERRUMPIR_PROCESO:
                 log_warning(cpu_logger, "Recibi una interrupción desde Kernel!");
                 motivo_interrupcion = leer_int_del_buffer(paquete->buffer);
+                
                 if(motivo_interrupcion == 0) {
                     log_warning(cpu_logger, "Motivo de la interrupción = Fin de Quantum (Desalojo)");}
                 else if(motivo_interrupcion == 1) {
