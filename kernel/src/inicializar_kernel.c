@@ -104,7 +104,6 @@ void inicializar_semaforos(){
 	sem_init(&sem_new_a_ready,0,0);
 	sem_init(&sem_planificador_corto_plazo,0,0);
 	printf("listo las sem_planificador_corto_plazo\n");
-	sem_init(&sem_detener_planificacion,0,0);
 	
 	pthread_mutex_init(&mutex_pid, NULL);
 	printf("listo las mutex_pid\n");

@@ -86,7 +86,6 @@ extern pthread_mutex_t mutex_detener_blocked_recurso;
 extern sem_t sem_grado_multiprogram;
 extern sem_t sem_new_a_ready;
 extern sem_t sem_planificador_corto_plazo;
-extern sem_t sem_detener_planificacion;
 ////////////////////RECURSOS////////////////////////////////
 typedef struct{
     char* nombre_recurso;

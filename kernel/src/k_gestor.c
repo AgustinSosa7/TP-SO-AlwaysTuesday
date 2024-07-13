@@ -37,7 +37,6 @@ pthread_mutex_t mutex_detener_blocked_recurso;
 sem_t sem_grado_multiprogram;
 sem_t sem_new_a_ready;
 sem_t sem_planificador_corto_plazo;
-sem_t sem_detener_planificacion;
 bool flag_detener_planificacion = false;
 
 void enviar_interrupción_a_cpu(op_code tipo_interrupción, int motivo){

@@ -168,8 +168,8 @@ void atender_instruccion_validada(char* leido){
 			flag_detener_planificacion = false;
 			pthread_mutex_unlock(&mutex_detener_planificacion);
 			activar_planificadores();
-			sem_post(&sem_detener_planificacion);
 		}
+			pthread_mutex_unlock(&mutex_detener_planificacion);
 		break;
 	case MULTIPROGRAMACION:
 		int nuevo_valor = atoi(array_leido[1]);
