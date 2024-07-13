@@ -1,7 +1,7 @@
 #ifndef CPU_H_
 #define CPU_H_
 
-#include <../src/utils/utils_connections.h>     // La ruta de este include me parece que está mal...
+#include <../src/utils/utils_connections.h>
 #include "cpu_gestor.h"
 #include "inicializar_cpu.h"
 #include "cpu_kernel_dispatch.h"

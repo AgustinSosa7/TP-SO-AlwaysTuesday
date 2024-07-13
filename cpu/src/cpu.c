@@ -12,25 +12,6 @@ int main(int argc, char** argv){
     
     // Inicializar CPU
     inicializar_cpu(argv[1]);
-    
-    //ESTO ME SIRVE PARA VER COMO FUNCIONAN LOS CASTEOS:
-    /*
-    char * a = "256";
-    int i = atoi(a);
-    u_int8_t ax = 0;
-    u_int32_t eax = 0;
-    printf("El valor de i es %d, el valor de AX es %d, el valor de EAX es %d y el valor de a es %d \n", i, ax, eax, a);
-    ax = i;
-    eax = i;
-    printf("El valor de i es %d, el valor de AX es %d, el valor de EAX es %d y el valor de a es %d \n", i, ax, eax, a);
-    
-    u_int8_t ax = 200;
-    int bx = 50;
-    u_int8_t cx = 0;
-    printf("El valor de AX es %d, el valor de BX es %d y el valor de CX es %d \n", ax, bx, cx);
-    cx = ax+bx;
-    printf("El valor de AX es %d, el valor de BX es %d y el valor de CX es %d \n", ax, bx, cx);
-    */
 
     // Conectarnos como cliente a MEMORIA
     log_info(cpu_logger, "Creando conexion con MEMORIA...");
