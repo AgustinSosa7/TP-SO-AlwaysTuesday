@@ -39,7 +39,7 @@ void inicializar_registros(t_pcb* un_pcb){
 void cambiar_de_estado_y_de_lista(estado_pcb estado_anterior, estado_pcb nuevo_estado){
     t_pcb* un_pcb = sacar_de_la_lista_vieja(estado_anterior);
 	un_pcb->estado_pcb = nuevo_estado;
-    log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
+    log_info(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",un_pcb->pid, enum_a_string(estado_anterior),enum_a_string(nuevo_estado));
 
 	switch(nuevo_estado)
     {
@@ -115,12 +115,3 @@ void eliminar_pcb(t_pcb* un_pcb){
     free(un_pcb);
 }
 
-void imprimir_lista_ready(t_listas_estados* lista_a_mostrar){
-	t_list_iterator* lista = list_iterator_create(lista_a_mostrar->lista);
-	t_pcb* un_pcb;
-	while(list_iterator_has_next(lista)){
-		un_pcb = list_iterator_next(lista);
-		printf("%18s PID: %d \n"," ", un_pcb->pid);
-	}
-	list_iterator_destroy(lista);
-}

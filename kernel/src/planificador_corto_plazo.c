@@ -7,15 +7,12 @@ void planif_corto_plazo()
 { 
     while(1){
         detener_plani_corto_plazo();
-        printf("WAIT del plani CORTO plazo.\n");
         sem_wait(&sem_planificador_corto_plazo);
-        printf("Entro al plani corto plazo.\n");
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch ( algoritmo)
             {
             case FIFO:
                 planif_fifo_RR();
-                printf("FIFO realizado.\n");
                 break;
             case RR:
                 planif_fifo_RR();
@@ -31,13 +28,12 @@ void planif_corto_plazo()
 
 void planif_fifo_RR()
 {
-    printf("Entro a FIFO/RR.\n");
     if(!list_is_empty(struct_ready->lista)){
         if(list_is_empty(struct_exec->lista)){
             cambiar_de_estado_y_de_lista(READY,EXEC);
             t_pcb* un_pcb = list_get(struct_exec->lista,0);
             enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);
-            printf("Envie el pcb a DISPATCH. \n");
+            log_debug(kernel_log_debug,"Envie el pcb a DISPATCH. \n");
             if(strcmp(ALGORITMO_PLANIFICACION,"RR") == 0){
                 pthread_t hilo_quantum;
                 pthread_create(&hilo_quantum, NULL, (void*)gestionar_quantum, un_pcb);
@@ -46,8 +42,8 @@ void planif_fifo_RR()
 
             }
         recibir_pcb_con_motivo();  
-        } else{printf("La cola de EXECUTE estaba OCUPADA :(\n");}
-    } else{printf("La cola de READY estaba vacia :(\n");}
+        } 
+    } 
 }
 void gestionar_quantum(t_pcb* un_pcb){
     int contador_inicial = un_pcb->contador;

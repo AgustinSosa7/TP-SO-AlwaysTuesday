@@ -37,7 +37,7 @@ void leer_comandos(){
 	leido = readline("> ");
 	while(strcmp(leido,"\0") != 0){
 		if(validar_instruccion(leido)){
-			printf("Comando válido\n");
+			log_info(kernel_logger,"Comando válido\n");
 			atender_instruccion_validada(leido);
 		}
 
@@ -70,8 +70,6 @@ bool validar_nombre_y_parametros(char* nombre_instruccion,int cant_parametros) {
 bool esta_o_noo(char* nombre_instruccion, int cant_parametros, t_instruccion* instruccion){ 
 		
         if(strcmp(nombre_instruccion, instruccion->nombre) == 0){  
-			//printf("parametros posibles:%d \n",instruccion->cant_parametros);
-			//printf("parametros recibidos:%d \n",cant_parametros);
 			return (instruccion->cant_parametros == cant_parametros);
 
 		} else return false; 
@@ -85,10 +83,10 @@ void atender_instruccion_validada(char* leido){
 	bool encontrar_instruccion(void* instruccion){
 		return (estaa_o_no(instruccion, nombre_instruccion));
 	}
-	printf("voy a buscar la instruccion:\n");
+	log_debug(kernel_log_debug,"voy a buscar la instruccion:\n");
 	t_instruccion* instruccion = list_find(lista_instrucciones,encontrar_instruccion);
 	op_code_instruccion op_code_encontrado = instruccion->op_code_instruccion;
-	printf("codigo encontrado: %d \n",op_code_encontrado);
+	log_debug(kernel_log_debug,"codigo encontrado: %d \n",op_code_encontrado);
 	switch (op_code_encontrado)
 	{
 	case EJECUTAR_SCRIPT:
@@ -101,7 +99,7 @@ void atender_instruccion_validada(char* leido){
 		list_destroy(lista_comandos);
 		break;
 	case INICIAR_PROCESO:
-		printf("Entre a iniciar proceso. \n");
+		log_debug(kernel_log_debug,"Entre a iniciar proceso. \n");
 		t_pcb* nuevo_pcb = crearPcb();
 		enviar_path_a_memoria(array_leido[1],nuevo_pcb->pid,fd_memoria);
 		//verificar si memoria creo el proceso 
@@ -110,7 +108,7 @@ void atender_instruccion_validada(char* leido){
 			pthread_mutex_lock(&(struct_new->mutex));
 			list_add(struct_new->lista, nuevo_pcb);
 			pthread_mutex_unlock(&(struct_new->mutex));	
-			log_warning(kernel_logger,"Se crea el proceso < %d > en NEW. \n",nuevo_pcb->pid);
+			log_info(kernel_logger,"Se crea el proceso < %d > en NEW. \n",nuevo_pcb->pid);
 			sem_post(&sem_new_a_ready);
 		}
 		else{

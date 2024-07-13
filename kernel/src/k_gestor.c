@@ -257,3 +257,13 @@ void detener_blocked_recurso(){
         pthread_mutex_unlock(&mutex_detener_planificacion);
         }
 }
+
+void imprimir_lista_ready(t_listas_estados* lista_a_mostrar){
+	t_list_iterator* lista = list_iterator_create(lista_a_mostrar->lista);
+	t_pcb* un_pcb;
+	while(list_iterator_has_next(lista)){
+		un_pcb = list_iterator_next(lista);
+		printf("%18s PID: %d \n"," ", un_pcb->pid);
+	}
+	list_iterator_destroy(lista);
+}

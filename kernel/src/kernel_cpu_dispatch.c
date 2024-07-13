@@ -2,7 +2,7 @@
 
 void recibir_pcb_con_motivo(){   
 
-      printf("Esperando un PCB con MOTIVO.\n");
+      log_debug(kernel_log_debug,"Esperando un PCB con MOTIVO.\n");
       int code_op;
       t_paquete* paquete;
       t_pcb* pcb_recibido;
@@ -12,7 +12,7 @@ void recibir_pcb_con_motivo(){
             code_op = recibir_operacion(fd_cpu_dispatch);
             paquete = recibir_paquete(fd_cpu_dispatch);
             pcb_recibido = recibir_pcb(paquete); 
-            log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
+            log_debug(kernel_log_debug, "Se recibio algo de CPU_Dispatch : %d", code_op);
             temporal_stop(quantum_vrr);
             pcb_recibido->tiempo_transcurrido = temporal_gettime(quantum_vrr);
             temporal_destroy(quantum_vrr);
@@ -21,7 +21,7 @@ void recibir_pcb_con_motivo(){
             code_op = recibir_operacion(fd_cpu_dispatch);
             paquete = recibir_paquete(fd_cpu_dispatch);
             pcb_recibido = recibir_pcb(paquete); 
-            log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
+            log_debug(kernel_log_debug, "Se recibio algo de CPU_Dispatch : %d", code_op);
       }
 
       detener_recibir_pcb();
@@ -32,18 +32,22 @@ void recibir_pcb_con_motivo(){
             switch (motivo){
             case INTERRUPCION_POR_DESALOJO:
                   log_info(kernel_logger,"PID: <%d> - Desalojado por fin de Quantum.\n",pcb_recibido->pid);
+                  pthread_mutex_lock(&(struct_exec->mutex));
                   t_pcb* un_pcb = list_remove(struct_exec->lista,0);
                   eliminar_pcb(un_pcb);
                   pcb_recibido->tiempo_transcurrido=0;
                   pcb_recibido->quantum = QUANTUM;
                   list_add(struct_exec->lista,pcb_recibido);
+                  pthread_mutex_unlock(&(struct_exec->mutex));
                   cambiar_de_estado_y_de_lista(EXEC,READY);
                   sem_post(&sem_planificador_corto_plazo);
                   break;
             case INTERRUPCION_POR_KILL:
+                  pthread_mutex_lock(&(struct_exec->mutex));
                   t_pcb* pcb_desactualizado = list_remove(struct_exec->lista,0);
-                  eliminar_pcb(pcb_desactualizado);
                   list_add(struct_exec->lista,pcb_recibido);
+                  pthread_mutex_unlock(&(struct_exec->mutex));
+                  eliminar_pcb(pcb_desactualizado);
                   cambiar_de_estado_y_de_lista(EXEC,EXIT);
                   eliminar_proceso(pcb_recibido,INTERRUPTED_BY_USER);
             default:
@@ -51,9 +55,11 @@ void recibir_pcb_con_motivo(){
             }  
       break;
       case PROCESO_EXIT:
+            pthread_mutex_lock(&(struct_exec->mutex));
             t_pcb* pcb_desactualizadoo = list_remove(struct_exec->lista,0);
-            eliminar_pcb(pcb_desactualizadoo);
             list_add(struct_exec->lista,pcb_recibido);
+            pthread_mutex_lock(&(struct_exec->mutex));
+            eliminar_pcb(pcb_desactualizadoo);
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
             
@@ -81,35 +87,44 @@ void recibir_pcb_con_motivo(){
                   if(recurso->instancias <0){
                        pthread_mutex_lock(&(struct_exec->mutex));
                        t_pcb* pcb = list_remove(struct_exec->lista,0);
-                       eliminar_pcb(pcb);
                        pthread_mutex_unlock(&(struct_exec->mutex));
+                        eliminar_pcb(pcb);
                        pcb_recibido->estado_pcb = BLOCKED;
                        if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
                         pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
                        }
                        list_add(recurso->lista_procesos_bloqueados,pcb_recibido);
-                       log_warning(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb_recibido->pid, enum_a_string(EXEC),enum_a_string(pcb_recibido->estado_pcb));
-                       log_warning(kernel_logger,"PID: <%d> - Bloqueado por: <%s>\n",pcb_recibido->pid,recurso_solicitado);
+                       log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb_recibido->pid, enum_a_string(EXEC),enum_a_string(pcb_recibido->estado_pcb));
+                       log_info(kernel_logger,"PID: <%d> - Bloqueado por: <%s>\n",pcb_recibido->pid,recurso_solicitado);
                        sem_post(&sem_planificador_corto_plazo);
-                  
+                       free(recurso_solicitado);
                   } else{ 
                         list_add(recurso->lista_procesos_asignados,pcb_recibido);  
                         //t_pcb* pcb = list_get(recurso->lista_procesos_asignados,0);  
                         //log_warning(kernel_logger,"Lista de recuros tiene pcb:%d \n", pcb->pid);                         
-                        log_warning(kernel_logger,"Se agrega a la lista de recursos: <%s>.\n",recurso_solicitado);
+                        //log_warning(kernel_logger,"Se agrega a la lista de recursos: <%s>.\n",recurso_solicitado);
                         //t_pcb* pcb = list_get(lista_exec,0);
-                        printf("Vuelvo a mandar el proceso <%d> a ejecutar\n",pcb_recibido->pid);
+                        //printf("Vuelvo a mandar el proceso <%d> a ejecutar\n",pcb_recibido->pid);
                         if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
                         pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
                         }
-                        enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
+                        pthread_mutex_lock(&(struct_exec->mutex));
+                        t_pcb* pcb_desactualizadoooo = list_remove(struct_exec->lista,0);
+                        list_add(struct_exec->lista,pcb_recibido);
+                        t_pcb* pcb_actualizado = list_get(struct_exec->lista,0);
+                        pthread_mutex_unlock(&(struct_exec->mutex));
+                        eliminar_pcb(pcb_desactualizadoooo);
+                        free(recurso_solicitado);
+                        enviar_pcb_a(pcb_actualizado,fd_cpu_dispatch,PCB);
                         recibir_pcb_con_motivo();
                         //log_warning(kernel_logger,"Lista de exec, pid:%d \n", pcb->pid);
                   }
             } else{
                        cambiar_de_estado_y_de_lista(EXEC,EXIT);
                        eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
+                       free(recurso_solicitado);
             }
+            
            break;
       case SIGNAL:
             void* buffer = paquete->buffer;
@@ -125,23 +140,38 @@ void recibir_pcb_con_motivo(){
                         t_pcb* un_pcb = list_remove(recurso->lista_procesos_bloqueados,0);
                         list_add(recurso->lista_procesos_asignados,un_pcb);
                         enviar_proceso_blocked_a_ready(un_pcb);
+                        log_info(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",un_pcb->pid, enum_a_string(BLOCKED),enum_a_string(READY));
+                        pthread_mutex_lock(&(struct_ready->mutex));
+                        imprimir_lista_ready(struct_ready);
+                        pthread_mutex_unlock(&(struct_ready->mutex));
                         sem_post(&sem_planificador_corto_plazo);
                         
                   } 
                   if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
                         pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
-                       }
-                  enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
+                  }
+                  pthread_mutex_lock(&(struct_exec->mutex));
+                  t_pcb* pcb_desactualizadooooo = list_remove(struct_exec->lista,0);
+                  list_add(struct_exec->lista,pcb_recibido);
+                  t_pcb* pcb_actualizadoo = list_get(struct_exec->lista,0);
+                  pthread_mutex_unlock(&(struct_exec->mutex));
+                  eliminar_pcb(pcb_desactualizadooooo);
+                  free(recurso_solicitadoo);
+                  enviar_pcb_a(pcb_actualizadoo,fd_cpu_dispatch,PCB);
                   recibir_pcb_con_motivo();
                   }else{
                         cambiar_de_estado_y_de_lista(EXEC,EXIT);
                         eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
+                        free(recurso_solicitadoo);
                   }
+            
             break;
       case DEVOLVER_PROCESO_POR_OUT_OF_MEMORY:
+            pthread_mutex_lock(&(struct_exec->mutex));
             t_pcb* pcb_desactualizadooo = list_remove(struct_exec->lista,0);
-            eliminar_pcb(pcb_desactualizadooo);
             list_add(struct_exec->lista,pcb_recibido);
+            pthread_mutex_unlock(&(struct_exec->mutex));
+            eliminar_pcb(pcb_desactualizadooo);
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,OUT_OF_MEMORY);
             break;
