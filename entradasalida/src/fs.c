@@ -75,7 +75,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo, int pid){
 	
 	char* path_archivo = generar_path_config(nombre_archivo);
 	t_config* config_archivo = config_create(path_archivo);
-	string_array_destroy((char**)path_archivo);
+	//string_array_destroy((char**)path_archivo);
 
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int tamanio_viejo= config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
@@ -113,11 +113,18 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo, int pid){
 				if(nuevo_bloque_inicial!=-1){
 				char* archivo_aux= malloc(tamanio_viejo);
 				setear_bitmap(bloque_inicial,final_bloques_viejo,false);
-				for (int i = 0; i < tamanio_viejo; i++)
-					{
-					strcat(archivo_aux+i,bloquesEnMemoria+(bloque_inicial*BLOCK_SIZE+i));
-					}
-				strcat(bloquesEnMemoria+(nuevo_bloque_inicial*BLOCK_SIZE),archivo_aux);  //copio lo que esté escrito
+				//for (int i = 0; i < tamanio_viejo; i++)
+				//	{
+					char* auxiliar;
+					auxiliar = bloquesEnMemoria+(nuevo_bloque_inicial*BLOCK_SIZE);
+					memcpy(&auxiliar, (&bloquesEnMemoria+(bloque_inicial*BLOCK_SIZE)), tamanio_viejo);
+					//string_append(archivo_aux+i,bloquesEnMemoria+(bloque_inicial*BLOCK_SIZE+i), );
+				//	}
+
+				//char* auxiliar;
+				//auxiliar = bloquesEnMemoria+(nuevo_bloque_inicial*BLOCK_SIZE);
+//
+				//memcpy(&auxiliar, &archivo_aux, strlen(archivo_aux) + 1);  //copio lo que esté escrito
 				setear_bitmap(nuevo_bloque_inicial,nuevo_bloque_inicial+cant_bloques-1,true);
 				pthread_mutex_unlock(&mutex_bitmap);
 				char *bloque_text= malloc(10); 
@@ -228,7 +235,7 @@ bool escribir_archivo(char* nombre_archivo,int registro_archivo,char* escrito, i
 	pthread_mutex_lock(&mutex_bloques);
 	
 	memcpy(leido,bloquesEnMemoria+bloque_inicial*BLOCK_SIZE+registro_archivo,tamanio);	
-	log_info(entradasalida_log_debug,"MENSAJE.%s",leido);
+	//log_info(entradasalida_logger,"MENSAJE.%s",leido);
 	pthread_mutex_unlock(&mutex_bloques);
 	config_destroy(config_archivo);
 	return leido;
@@ -244,7 +251,7 @@ int obtener_bloques_libres(int cant_bloques){
 	  int bitmap_max_index = BLOCK_COUNT;
 	  
       while (bitmap_max_index>i)
-      {		log_info(entradasalida_log_debug,"EL bit en la posicion %d , es %d" , i , bitarray_test_bit(bitmap,i));
+      {		//log_info(entradasalida_log_debug,"EL bit en la posicion %d , es %d" , i , bitarray_test_bit(bitmap,i));
             if (!bitarray_test_bit(bitmap,i)) //Ta vacio el int i??
             {     bloques_libres=1;
                   j=i+1;
@@ -444,13 +451,13 @@ int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultim
 
 char* generar_path_config(char* nombre_archivo){
 	char* path_archivo = string_new();
-	char* string_borrar = path_archivo;
-	strcat(path_archivo,"/");
-	strcat(path_archivo,nombre_archivo);
-	path_archivo = crear_path(path_archivo);
-	string_array_destroy((char**)string_borrar);
-	return path_archivo;
+	//char* string_borrar = path_archivo;
+	string_append(&path_archivo,"/");
+	string_append(&path_archivo, nombre_archivo);
 
+	path_archivo = crear_path(path_archivo);
+	//string_array_destroy((char**)string_borrar);
+	return path_archivo;
 }
 
 
@@ -470,7 +477,7 @@ void  mostrar_estado_archivo(t_config* config_archivo){
 	{	
 		
 		rta = bitarray_test_bit(bitmap,bitmap_index) ? 1 : 0;
-		log_info(entradasalida_log_debug,"bitmap posicion %d : %d",bitmap_index,rta);
+		//log_info(entradasalida_log_debug,"bitmap posicion %d : %d",bitmap_index,rta);
 		bitmap_index++;	
 	}
 }
