@@ -85,10 +85,10 @@ void atender_instruccion_validada(char* leido){
 	bool encontrar_instruccion(void* instruccion){
 		return (estaa_o_no(instruccion, nombre_instruccion));
 	}
-	printf("voy a buscar la instruccion:\n");
+	//printf("voy a buscar la instruccion:\n");
 	t_instruccion* instruccion = list_find(lista_instrucciones,encontrar_instruccion);
 	op_code_instruccion op_code_encontrado = instruccion->op_code_instruccion;
-	printf("codigo encontrado: %d \n",op_code_encontrado);
+	//printf("codigo encontrado: %d \n",op_code_encontrado);
 	switch (op_code_encontrado)
 	{
 	case EJECUTAR_SCRIPT:
