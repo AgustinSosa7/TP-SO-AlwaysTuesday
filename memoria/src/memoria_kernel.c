@@ -46,6 +46,7 @@ void finalizar_proceso(){
         log_info(memoria_logger, "PID: %d - Tamaño: %d ",proceso_eliminado->pid,proceso_eliminado->long_tabla_pags);// Evaluar si setear la long a 0 o mostrar las que tenia el proceso antes.
         
         free(proceso_eliminado->direccion_pseudocodigo);//valgrind
+        //free(proceso_eliminado->long_tabla_pags);
         free(proceso_eliminado->tabla_de_paginas);//valgrind
         list_destroy_and_destroy_elements(proceso_eliminado->instrucciones,(void*)eliminar_instruccion);//valgrind (Ver como funciona el destroy elements)
         free(proceso_eliminado);

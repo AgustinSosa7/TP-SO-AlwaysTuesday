@@ -141,6 +141,11 @@ void recibir_pcb_con_motivo(){
       case DEVOLVER_PROCESO_POR_PAGEFAULT:
             break;
       case DEVOLVER_PROCESO_POR_OUT_OF_MEMORY:
+            t_pcb* pcb_desactualizadooo = list_remove(struct_exec->lista,0);
+                  eliminar_pcb(pcb_desactualizadooo);
+                  list_add(struct_exec->lista,pcb_recibido);
+            cambiar_de_estado_y_de_lista(EXEC,EXIT);
+            eliminar_proceso(pcb_recibido,OUT_OF_MEMORY);
             break;
 
       case -1:
