@@ -43,7 +43,11 @@ int buscar_marco_libre(){
 
 void cambiar_tamanio_proceso(t_proceso* proceso,int tamanio_nuevo){
     if(proceso->long_tabla_pags == 0){
+        
+        int* aux = proceso->tabla_de_paginas;
         proceso->tabla_de_paginas = (int *)malloc(tamanio_nuevo * sizeof(int));   
+        free(aux);
+
         if (proceso->tabla_de_paginas == NULL) {
         log_error(memoria_log_debug, "Error al asignar memoria\n");
         }
