@@ -2,7 +2,6 @@
 
 void recibir_pcb_con_motivo(){   
 
-      detener_planificacion();
       printf("Esperando un PCB con MOTIVO.\n");
       int code_op;
       t_paquete* paquete;
@@ -25,7 +24,7 @@ void recibir_pcb_con_motivo(){
             log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
       }
 
-      detener_planificacion();
+      detener_recibir_pcb();
       switch (code_op){
 
       case DESALOJO:
@@ -53,8 +52,8 @@ void recibir_pcb_con_motivo(){
       break;
       case PROCESO_EXIT:
             t_pcb* pcb_desactualizadoo = list_remove(struct_exec->lista,0);
-                  eliminar_pcb(pcb_desactualizadoo);
-                  list_add(struct_exec->lista,pcb_recibido);
+            eliminar_pcb(pcb_desactualizadoo);
+            list_add(struct_exec->lista,pcb_recibido);
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
             
@@ -122,6 +121,7 @@ void recibir_pcb_con_motivo(){
                  t_recursos* recurso = list_find(lista_recursos, estaa_o_no_el_recurso);
                  recurso->instancias = recurso->instancias +1;
                  if(!list_is_empty(recurso->lista_procesos_bloqueados)){
+                        detener_blocked_recurso();
                         t_pcb* un_pcb = list_remove(recurso->lista_procesos_bloqueados,0);
                         list_add(recurso->lista_procesos_asignados,un_pcb);
                         enviar_proceso_blocked_a_ready(un_pcb);
@@ -138,9 +138,12 @@ void recibir_pcb_con_motivo(){
                         eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
                   }
             break;
-      case DEVOLVER_PROCESO_POR_PAGEFAULT:
-            break;
       case DEVOLVER_PROCESO_POR_OUT_OF_MEMORY:
+            t_pcb* pcb_desactualizadooo = list_remove(struct_exec->lista,0);
+            eliminar_pcb(pcb_desactualizadooo);
+            list_add(struct_exec->lista,pcb_recibido);
+            cambiar_de_estado_y_de_lista(EXEC,EXIT);
+            eliminar_proceso(pcb_recibido,OUT_OF_MEMORY);
             break;
 
       case -1:

@@ -116,6 +116,12 @@ void inicializar_semaforos(){
 	pthread_mutex_init(&mutex_exit, NULL);
 	pthread_mutex_init(&mutex_detener_planificacion,NULL);
 	pthread_mutex_init(&mutex_VRR,NULL);
+
+	pthread_mutex_init(&mutex_detener_recibir_pcb, NULL);
+	pthread_mutex_init(&mutex_detener_plani_corto_plazo, NULL);
+	pthread_mutex_init(&mutex_detener_plani_largo_plazo, NULL);
+	pthread_mutex_init(&mutex_detener_blocked_io, NULL);
+	pthread_mutex_init(&mutex_detener_blocked_recurso, NULL);
 	printf("listo las mutex_exit\n");
 }
 

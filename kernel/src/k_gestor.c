@@ -28,6 +28,12 @@ pthread_mutex_t mutex_io;
 pthread_mutex_t mutex_detener_planificacion;
 pthread_mutex_t mutex_VRR;
 
+pthread_mutex_t mutex_detener_recibir_pcb;
+pthread_mutex_t mutex_detener_plani_corto_plazo;
+pthread_mutex_t mutex_detener_plani_largo_plazo;
+pthread_mutex_t mutex_detener_blocked_io;
+pthread_mutex_t mutex_detener_blocked_recurso;
+
 sem_t sem_grado_multiprogram;
 sem_t sem_new_a_ready;
 sem_t sem_planificador_corto_plazo;
@@ -55,15 +61,6 @@ void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
         log_error(kernel_logger,"No se finalizo el proceso correctamente en memoria \n");
     }
 
-}
-
-
-void detener_planificacion(){
-    pthread_mutex_lock(&mutex_detener_planificacion);
-    if(flag_detener_planificacion){
-        sem_wait(&sem_detener_planificacion);
-    }
-    pthread_mutex_unlock(&mutex_detener_planificacion);
 }
 
 
@@ -187,4 +184,77 @@ void enviar_proceso_blocked_a_ready(t_pcb* un_pcb){
       pthread_mutex_lock(&(struct_ready->mutex));
       list_add(struct_ready->lista,un_pcb); 
       pthread_mutex_unlock(&(struct_ready->mutex));
+}
+
+/// /////DETENER PLANIFICACION//
+void detener_planificadores(){
+	pthread_mutex_lock(&mutex_detener_recibir_pcb);
+	pthread_mutex_lock(&mutex_detener_plani_corto_plazo);
+	pthread_mutex_lock(&mutex_detener_plani_largo_plazo);
+	pthread_mutex_lock(&mutex_detener_blocked_io);
+	pthread_mutex_lock(&mutex_detener_blocked_recurso);
+	 
+}
+//////////////INICIAR PLANIFICACION///////////
+void activar_planificadores(){
+	pthread_mutex_unlock(&mutex_detener_recibir_pcb);
+	pthread_mutex_unlock(&mutex_detener_plani_corto_plazo);
+	pthread_mutex_unlock(&mutex_detener_plani_largo_plazo);
+	pthread_mutex_unlock(&mutex_detener_blocked_io);
+	pthread_mutex_unlock(&mutex_detener_blocked_recurso);
+
+}
+
+void detener_recibir_pcb(){
+    pthread_mutex_lock(&mutex_detener_planificacion);
+    if(flag_detener_planificacion){
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+	    pthread_mutex_lock(&mutex_detener_recibir_pcb);
+	    pthread_mutex_unlock(&mutex_detener_recibir_pcb);
+    }else{
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+    }
+}
+
+void detener_plani_corto_plazo(){
+    pthread_mutex_lock(&mutex_detener_planificacion);
+    if(flag_detener_planificacion){
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+	    pthread_mutex_lock(&mutex_detener_plani_corto_plazo);
+	    pthread_mutex_unlock(&mutex_detener_plani_corto_plazo);
+    }else{
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+    }
+}
+
+void detener_plani_largo_plazo(){
+    pthread_mutex_lock(&mutex_detener_planificacion);
+    if(flag_detener_planificacion){
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+	    pthread_mutex_lock(&mutex_detener_plani_largo_plazo);
+	    pthread_mutex_unlock(&mutex_detener_plani_largo_plazo);
+    }else{
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+        }
+}
+void detener_blocked_io(){
+    pthread_mutex_lock(&mutex_detener_planificacion);
+    if(flag_detener_planificacion){
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+	    pthread_mutex_lock(&mutex_detener_blocked_io);
+	    pthread_mutex_unlock(&mutex_detener_blocked_io);
+    }else{
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+        }
+}
+
+void detener_blocked_recurso(){
+    pthread_mutex_lock(&mutex_detener_planificacion);
+    if(flag_detener_planificacion){
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+	    pthread_mutex_lock(&mutex_detener_blocked_recurso);
+	    pthread_mutex_unlock(&mutex_detener_blocked_recurso);
+    }else{
+        pthread_mutex_unlock(&mutex_detener_planificacion);
+        }
 }

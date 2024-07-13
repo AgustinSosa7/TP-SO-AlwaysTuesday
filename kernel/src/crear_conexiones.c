@@ -119,6 +119,7 @@ void gestionar_procesos_io(t_interfaz* interfaz){
           if(ocurrio_otro_error){
                   break;
             } else{
+                  detener_blocked_io();
                   desbloquear_proceso(interfaz);
                   }
         }

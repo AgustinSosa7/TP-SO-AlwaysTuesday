@@ -5,7 +5,7 @@
 void planif_largo_plazo(){
    while(1){
       printf("Entro al plani largo plazo.\n");
-      detener_planificacion();
+      detener_plani_largo_plazo();
       printf("Pase funcion detener plani.\n");
       printf("WAIT del plani LARGO plazo.\n");
       sem_wait(&sem_new_a_ready);
@@ -19,3 +19,4 @@ void planif_largo_plazo(){
          }
       }
    }
+

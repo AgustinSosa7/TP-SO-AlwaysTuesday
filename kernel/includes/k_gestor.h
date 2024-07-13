@@ -77,6 +77,12 @@ extern pthread_mutex_t mutex_io;
 extern pthread_mutex_t mutex_detener_planificacion;
 extern pthread_mutex_t mutex_VRR;
 
+extern pthread_mutex_t mutex_detener_recibir_pcb;
+extern pthread_mutex_t mutex_detener_plani_corto_plazo;
+extern pthread_mutex_t mutex_detener_plani_largo_plazo;
+extern pthread_mutex_t mutex_detener_blocked_io;
+extern pthread_mutex_t mutex_detener_blocked_recurso;
+
 extern sem_t sem_grado_multiprogram;
 extern sem_t sem_new_a_ready;
 extern sem_t sem_planificador_corto_plazo;
@@ -118,7 +124,6 @@ extern char * IP_KERNEL;
 
 void enviar_interrupción_a_cpu(op_code interrupción,int motivo);
 void eliminar_proceso(t_pcb* un_pcb, motivo_fin_de_proceso motivo);
-void detener_planificacion();
 t_pcb* buscar_pcb(int pid);
 bool encontre_el_pcb(t_pcb* pcb, int pid);
 t_pcb* buscar_pcb_en_bloqueados(int pid);
@@ -128,4 +133,11 @@ void remover_pcb_de_recursos_bloqueados(t_pcb* pcb);
 void liberar_estructuras_en_memoria(op_code code_op ,int pid);
 void enviar_proceso_blocked_a_ready(t_pcb* un_pcb);
 bool remover_pcb(t_pcb* un_pcb, t_pcb* otro_pcb);
+void detener_planificadores();
+void activar_planificadores();
+void detener_plani_corto_plazo();
+void detener_plani_largo_plazo();
+void detener_recibir_pcb();
+void detener_blocked_io();
+void detener_blocked_recurso();
 #endif

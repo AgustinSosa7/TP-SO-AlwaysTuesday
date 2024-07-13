@@ -6,7 +6,7 @@
 void planif_corto_plazo()
 { 
     while(1){
-        detener_planificacion();
+        detener_plani_corto_plazo();
         printf("WAIT del plani CORTO plazo.\n");
         sem_wait(&sem_planificador_corto_plazo);
         printf("Entro al plani corto plazo.\n");

@@ -26,7 +26,7 @@ void leer_consola(){
     pthread_t hilo_consola;
     pthread_create(&hilo_consola, NULL, (void*) leer_comandos, NULL);
 	pthread_join(hilo_consola,NULL);
-	printf("finalizo la consola\n");
+	printf("Finalizo la consola.\n");
 	finalizar_consola();
 
 };
@@ -151,16 +151,24 @@ void atender_instruccion_validada(char* leido){
 	case DETENER_PLANIFICACION:
 			pthread_mutex_lock(&mutex_detener_planificacion);
 			if(flag_detener_planificacion ){
-				printf("la planificación ya se encuentra pausada \n");
+				printf("La planificación ya se encuentra pausada. \n");
+				pthread_mutex_unlock(&mutex_detener_planificacion);
+				break;
 			}
 			flag_detener_planificacion = true;
+
 			pthread_mutex_unlock(&mutex_detener_planificacion);
+
+			detener_planificadores();
+
 		break;
 	case INICIAR_PLANIFICACION:
 			pthread_mutex_lock(&mutex_detener_planificacion);
 			if(flag_detener_planificacion){
 			flag_detener_planificacion = false;
 			pthread_mutex_unlock(&mutex_detener_planificacion);
+			activar_planificadores();
+			sem_post(&sem_detener_planificacion);
 		}
 		break;
 	case MULTIPROGRAMACION:
@@ -222,6 +230,7 @@ void atender_instruccion_validada(char* leido){
 	string_array_destroy(array_leido);
 }
 
+
 bool estaa_o_no(t_instruccion* instruccion, char* nombre_instruccion){
 	return (strcmp(instruccion->nombre,nombre_instruccion)==0);
 }
@@ -265,8 +274,6 @@ t_list* leer_archivo(char* archivo){
 	return lista_comandos;
 	
 } 
-
-// ///FINALIZAR_PROCESO
 
 
 
