@@ -150,7 +150,7 @@ void inicializar_archivos(){
 		exit(1);
 	}
 	
-	char* bitmap_inicializado = fopen (PATH_BITMAP,"r");  
+	FILE* bitmap_inicializado = fopen (PATH_BITMAP,"r");  
 	if (bitmap_inicializado!=NULL)
 	{	
 		log_info(entradasalida_log_debug, "El Archivo ya existía");
@@ -165,7 +165,7 @@ void inicializar_archivos(){
 		exit(1);
 	}
 
-	bitmap = malloc(tamanio_bitmap);
+	//bitmap = malloc(tamanio_bitmap);
 
 	// USO bitmapSWAP para el tema del bitmap
 	bitmap = bitarray_create_with_mode(pre_bitmap, tamanio_bitmap, LSB_FIRST); 
@@ -182,10 +182,10 @@ void inicializar_archivos(){
 	for (int i = 0 ; i < 32; i++)
 	{	
 		rta = bitarray_test_bit(bitmap,i) ? 1 : 0;
-		//log_info(entradasalida_log_debug,"bitmap posicion %d : %d",i,rta);	
+		log_info(entradasalida_log_debug,"bitmap posicion %d : %d",i,rta);	
 	}
-	//string_array_destroy(PATH_BLOQUES);
-	//string_array_destroy(PATH_BITMAP);
+	free(PATH_BLOQUES);
+	free(PATH_BITMAP);
 	//LSB_FIRST Completa los bits en un byte priorizando el bit menos significativo 00000001
 }
 

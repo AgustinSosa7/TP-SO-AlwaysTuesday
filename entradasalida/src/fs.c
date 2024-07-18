@@ -75,7 +75,7 @@ bool truncar_archivo(char* nombre_archivo,int tamanio_nuevo, int pid){
 	
 	char* path_archivo = generar_path_config(nombre_archivo);
 	t_config* config_archivo = config_create(path_archivo);
-	//string_array_destroy((char**)path_archivo);
+	free(path_archivo);
 
 	int bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 	int tamanio_viejo= config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
@@ -372,7 +372,6 @@ int mover_archivos(){
 }
 
 void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int primer_bloque_libre){
-	//char* nombre_archivo = malloc(30);
 	char* nombre_archivo;
 	//char* nombre_archivo_borrar = nombre_archivo;
 	char *bloque_text=malloc(10); 
@@ -380,7 +379,6 @@ void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int 
 	int bloque_inicial, tamanio_viejo;
 	//char* path = string_new();
 	char* path;
-	
 	int cant_bloques;
 	t_config* config_archivo;
 
@@ -388,12 +386,13 @@ void modificar_config (int primer_bloque_ocupado, int ultimo_bloque_ocupado,int 
 	while (ultimo_bloque_copiado < ultimo_bloque_ocupado)
 	{
 		for (int i = 0; i < list_size(lista_archivos_existentes); i++)
-	{
+		{
+		//nombre_archivo = malloc (strlen(list_get(lista_archivos_existentes,i)));
 		nombre_archivo = list_get(lista_archivos_existentes,i);
 		path = generar_path_config(nombre_archivo);
-		free(nombre_archivo);
+		//free(nombre_archivo);
 		config_archivo = config_create(path);
-		string_array_destroy((char**)path);
+		free(path);
 		bloque_inicial = config_get_int_value(config_archivo,"BLOQUE_INICIAL");
 		if(bloque_inicial==primer_bloque_ocupado){
 			tamanio_viejo= config_get_int_value(config_archivo,"TAMANIO_ARCHIVO");
@@ -450,14 +449,17 @@ int copiar_archivo(int primer_bloque_libre, int primer_bloque_ocupado, int ultim
 }
 
 char* generar_path_config(char* nombre_archivo){
-	char* path_archivo = string_new();
+	char* path_archivo = malloc(strlen(nombre_archivo)+2);
 	//char* string_borrar = path_archivo;
-	string_append(&path_archivo,"/");
-	string_append(&path_archivo, nombre_archivo);
+	strcpy(path_archivo, "/");
+    strcat(path_archivo, nombre_archivo);
+	//string_append(&path_archivo,"/");
+	//string_append(&path_archivo, nombre_archivo);
 
-	path_archivo = crear_path(path_archivo);
+	char* path_completo = crear_path(path_archivo);
+	free(path_archivo);
 	//string_array_destroy((char**)string_borrar);
-	return path_archivo;
+	return path_completo;
 }
 
 
@@ -473,35 +475,42 @@ void  mostrar_estado_archivo(t_config* config_archivo){
 	log_info(entradasalida_log_debug,"Bloque Inicial : %d ",bloque_inicial);
 	log_info(entradasalida_log_debug,"Cantidad de bloques : %d ", cant_bloques);
 
+
+
+	// PONER DEBUG
 	for (int i = 0 ; i < cant_bloques; i++)
 	{	
 		
 		rta = bitarray_test_bit(bitmap,bitmap_index) ? 1 : 0;
-		//log_info(entradasalida_log_debug,"bitmap posicion %d : %d",bitmap_index,rta);
+		log_info(entradasalida_log_debug,"bitmap posicion %d : %d",bitmap_index,rta);
 		bitmap_index++;	
 	}
 }
 
 int inicializar_lista_archivos(){
 	lista_archivos_existentes = list_create();
-	DIR* fd_directorio = opendir(PATH_BASE_DIALFS);
+	fd_directorio = opendir(PATH_BASE_DIALFS);
     struct dirent *ent;
-	char* nombre_archivo = malloc(30);
-	if (fd_directorio) {
-        // Lee todos los archivos y directorios dentro del directorio
-        while ((ent = readdir(fd_directorio)) != NULL) {
-        	if (ent->d_type == DT_REG && !ignorar(ent->d_name)) {  // Si es un archivo regular
-                list_add(lista_archivos_existentes, ent->d_name);  // Agrega el nombre del archivo a la lista
-            }
-        }
-        closedir(fd_directorio);
-    } else {
-        // Si no se puede abrir el directorio
-        perror("Error al abrir el directorio");
-        return EXIT_FAILURE;
-    }
+	//char* nombre_archivo = malloc(30);
+	if (fd_directorio)
+	{
+		// Lee todos los archivos y directorios dentro del directorio
+		while ((ent = readdir(fd_directorio)) != NULL)
+		{
+			if (ent->d_type == DT_REG && !ignorar(ent->d_name))
+			{													  // Si es un archivo regular
+				list_add(lista_archivos_existentes, ent->d_name); // Agrega el nombre del archivo a la lista
+			}
+		}
+	}
+	else
+	{
+		// Si no se puede abrir el directorio
+		perror("Error al abrir el directorio");
+		return EXIT_FAILURE;
+	}
 
-	free(nombre_archivo);
+	//free(nombre_archivo);
 	return 1;
 }
 
