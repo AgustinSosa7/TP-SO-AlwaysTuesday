@@ -20,7 +20,8 @@ void atender_entradasalida_kernel(){
         case -1:
           //  log_error(logger, "Desconexion de CPU - DISPATCH");  
          
-            bitarray_destroy(bitmap);    
+            free(bitmap);   
+            //closedir(fd_directorio);
             control_key = 0;
         default:
            // log_warning(logger, "Operacion desconocida de CPU - DISPATCH");

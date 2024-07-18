@@ -8,7 +8,8 @@ t_config* entradasalida_config;
 
 int fd_entradasalida;  
 int fd_archivoBloques;
-int fd_archivoBitmap; 
+int fd_archivoBitmap;
+DIR* fd_directorio;
 int fd_memoria;
 int fd_kernel;
 char* pre_bitmap;

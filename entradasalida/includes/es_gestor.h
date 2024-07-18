@@ -30,6 +30,7 @@ extern t_config* entradasalida_config;
 extern int fd_entradasalida; 
 extern int fd_archivoBloques;
 extern int fd_archivoBitmap;
+extern DIR* fd_directorio;
 extern int fd_memoria;
 extern int fd_kernel;
 
