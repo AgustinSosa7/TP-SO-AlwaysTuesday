@@ -49,6 +49,7 @@ int main(int argc, char** argv){
     return EXIT_SUCCESS;
 }
 
+// Conexiones
 void conexion_cpu_kernel_dispatch(){
     fd_cpu_dispatch = iniciar_servidor(PUERTO_ESCUCHA_DISPATCH, cpu_logger, IP_CPU);
     log_info(cpu_logger, "Esperando a DISPATCH...");
@@ -63,6 +64,7 @@ void conexion_cpu_kernel_interrupt(){
     gestionar_handshake_como_server(fd_kernel_interrupt, cpu_logger, "KERNEL-INTERRUPT");
 }
 
+// Liberación de recursos
 void limpiar_tlb()
 {
     if(list_size(tlb) > 0)
@@ -83,36 +85,38 @@ void limpiar_tlb()
 
 void terminar_cpu()
 {
-	if (cpu_logger != NULL)
+	// Destruimos los loggers
+    if (cpu_logger != NULL)
 	{
-		log_warning(cpu_logger, "Algo salio mal!");
-		log_warning(cpu_logger, "Finalizando %s", "CPU");
+		log_warning(cpu_logger, "Finalizando %s.", "CPU");
 
         log_destroy(cpu_logger);
         log_destroy(cpu_log_debug);
 	}
 
+    // Destruimos la config
     if (cpu_config != NULL)
 	{
 		config_destroy(cpu_config);
-        /*
         free(IP_MEMORIA);
         free(IP_CPU);
         free(PUERTO_MEMORIA);
         free(PUERTO_ESCUCHA_DISPATCH);
         free(PUERTO_ESCUCHA_INTERRUPT);
-        free(CANTIDAD_ENTRADAS_TLB);
-        free(ALGORITMO_TLB);*/
+        free(ALGORITMO_TLB);
 	}
 
+    // Liberamos el PCB Global
     if (pcb_global != NULL)
     {
         free(pcb_global->registros_cpu);
         free(pcb_global);
     }
 
+    // Liberamos y destruimos la TLB
     limpiar_tlb();
 
+    // Cerramos las conexiones/sockets
 	if (fd_memoria != -1)
 	{
 		close(fd_memoria);

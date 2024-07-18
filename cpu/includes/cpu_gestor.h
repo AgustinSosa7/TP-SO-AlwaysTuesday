@@ -8,30 +8,6 @@
 #include <commons/log.h>
 #include <commons/config.h>
 
-// Enum con las Instrucciones
-typedef enum 
-{
-    SET,
-    MOV_IN,
-    MOV_OUT,
-    SUM,
-    SUB,
-    JNZ,
-    RESIZE,
-    COPY_STRING,
-    //WAIT,   ya definidos en utils.h
-    //SIGNAL,
-    IO_GEN_SLEEP,
-    IO_STDIN_READ,
-    IO_STDOUT_WRITE,
-    IO_FS_CREATE,
-    IO_FS_DELETE,
-    IO_FS_TRUNCATE,
-    IO_FS_WRITE,
-    IO_FS_READ,
-    EXIT_CPU
-}cod_instruccion;
-
 // Variables globales
 extern t_log* cpu_logger;
 extern t_log* cpu_log_debug;

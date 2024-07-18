@@ -124,7 +124,7 @@ void ciclo_instruccion(){
 			bool outOfMemory = nuevoTamanioDelProceso == -1;
 			pcb_global->contador++;
 			if(outOfMemory){
-				log_info(cpu_logger, "Out of Memory: PID: <%d> - Nuevo tamaño intentado: <%d>", pcb_global->pid, tamanio);
+				log_warning(cpu_logger, "Out of Memory: PID: <%d> - Nuevo tamaño intentado: <%d bytes>", pcb_global->pid, tamanio);
 				dejar_de_ejecutar = true;
 				devolver_contexto_por_out_of_memory();
 			}
@@ -297,7 +297,6 @@ void ciclo_instruccion(){
 	if (ocurrio_interrupcion && !dejar_de_ejecutar)
 	{
 		pthread_mutex_unlock(&mutex_ocurrio_interrupcion);
-		//log_info(cpu_logger, "DEVUELVO INTERRUPT");
 		dejar_de_ejecutar = true;
 		devolver_contexto_por_ser_interrumpido();
 	}
@@ -313,7 +312,7 @@ void ciclo_instruccion(){
 	else {	
 		// Queda bloqueado esperando que vuelvan a ejecutar un proceso en la CPU.
 		log_info(cpu_logger, "FRENO LA CPU!");
-		//imprimir_tlb();
+		imprimir_tlb();
 	}
 
 	}
@@ -329,22 +328,12 @@ void devolver_contexto_por_ser_interrumpido()
     eliminar_paquete(paquete);
 }
 
-void devolver_contexto_por_page_fault(int numero_de_pagina)
-{
-	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_PAGEFAULT);
-	agregar_pcb_a_paquete(pcb_global, paquete);
-	agregar_int_a_paquete(paquete, numero_de_pagina);
-	enviar_paquete(paquete, fd_kernel_dispatch);
-    eliminar_paquete(paquete);
-}
-
 void devolver_contexto_por_out_of_memory()
 {
 	t_paquete* paquete = crear_paquete(DEVOLVER_PROCESO_POR_OUT_OF_MEMORY);
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	enviar_paquete(paquete, fd_kernel_dispatch);
     eliminar_paquete(paquete);
-	// Si Kernel lo necesitara, podría pasarle además del PCB, el tamaño al cual se intentó agrandar el tamaño del proceso en Memoria.
 }
 
 void devolver_contexto_por_wait(char* nombre_recurso)
@@ -476,57 +465,57 @@ void escribir_valor_a_registro(char* nombre_registro, u_int32_t valor)
 	if (strcmp(nombre_registro, "AX") == 0)
 	{
 		pcb_global->registros_cpu->AX = (u_int8_t)valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "BX") == 0)
 	{
 		pcb_global->registros_cpu->BX = (u_int8_t)valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "CX") == 0)
 	{
 		pcb_global->registros_cpu->CX = (u_int8_t)valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "DX") == 0)
 	{
 		pcb_global->registros_cpu->DX = (u_int8_t)valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "EAX") == 0)
 	{
 		pcb_global->registros_cpu->EAX = valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "EBX") == 0)
 	{
 		pcb_global->registros_cpu->EBX = valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "ECX") == 0)
 	{
 		pcb_global->registros_cpu->ECX = valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "EDX") == 0)
 	{
 		pcb_global->registros_cpu->EDX = valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "PC") == 0)
 	{
 		pcb_global->registros_cpu->PC = valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "SI") == 0)
 	{
 		pcb_global->registros_cpu->SI = valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else if (strcmp(nombre_registro, "DI") == 0)
 	{
 		pcb_global->registros_cpu->DI = valor;
-		log_info(cpu_logger, "Se le asigno al registro '%s' el valor %d.", nombre_registro, valor);
+		log_info(cpu_logger, "Se le asigno al registro '%s' el valor '%d'.", nombre_registro, valor);
 	}
 	else
 	{
@@ -615,12 +604,12 @@ int tamanio_del_registro(char* nombre_registro)
  void imprimir_tlb()
 {
 	t_list_iterator *iterador = list_iterator_create(tlb);
-	log_info(cpu_logger, "Mostramos las entradas de la TLB:");
+	printf("Mostramos las entradas de la TLB:\n");
 	int i = 1;
 	while (list_iterator_has_next(iterador))
 	{
 		t_entrada_tlb* entrada_a_loguear = list_iterator_next(iterador);
-		log_info(cpu_logger, "Entrada N%d: PID <%d> - Numero de Pagina <%d> - Numero de Marco <%d>", i, entrada_a_loguear->pid, entrada_a_loguear->nro_pagina, entrada_a_loguear->nro_marco);
+		printf("Entrada N%d: PID <%d> - Numero de Pagina <%d> - Numero de Marco <%d>\n", i, entrada_a_loguear->pid, entrada_a_loguear->nro_pagina, entrada_a_loguear->nro_marco);
 		i++;
 	}
 	list_iterator_destroy(iterador);
@@ -738,14 +727,6 @@ t_direccion_a_operar* mmu(int direccion_logica)
 	int numero_de_pagina = floor(direccion_logica / tamanio_pagina);
 	int numero_de_marco = obtener_marco(numero_de_pagina);
 	log_info(cpu_logger, "PID: <%d> - OBTENER MARCO - Página: <%d> - Marco: <%d>", pcb_global->pid, numero_de_pagina, numero_de_marco);
-	
-	if (numero_de_marco == -1)
-	{
-		log_info(cpu_logger, "Page Fault: Page Fault PID: %d - Pagina: %d", pcb_global->pid, numero_de_pagina);
-		dejar_de_ejecutar = true;
-		devolver_contexto_por_page_fault(numero_de_pagina);
-		return NULL;
-	}
 
 	int desplazamiento = direccion_logica - numero_de_pagina * tamanio_pagina;
 
@@ -845,22 +826,3 @@ void agregar_acceso_a_lista(t_list* listado_accesos, int direccion, int bytes){
 	direc->bytes_disponibles = bytes;
 	list_add(listado_accesos, direc);
 }
-
-
-
-
-
-
-
-
-/* Formato del Paquete: OP_CODE, BUFFER(PCB, INSTRUCCION, PARAMETROS)
-
-OP_CODE's que envía CPU a Kernel:
-	DESALOJO
-	DEVOLVER_PROCESO_POR_PAGEFAULT
-	DEVOLVER_PROCESO_POR_OUT_OF_MEMORY
-	WAIT
-	SIGNAL
-	PEDIDO_IO
-	PROCESO_EXIT
-*/

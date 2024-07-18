@@ -8,11 +8,11 @@ void pedir_info_inicial_a_memoria(){
     // Recibir
     op_code code_op = recibir_operacion(fd_memoria);
     t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete_recibido->buffer;
+
     if(code_op == RESPUESTA_INFO_INICIAL_A_CPU)
     {
-        tamanio_pagina = leer_int_del_buffer(buffer);
-        tamanio_memoria = leer_int_del_buffer(buffer);
+        tamanio_pagina = leer_int_del_buffer(paquete_recibido->buffer);
+        tamanio_memoria = leer_int_del_buffer(paquete_recibido->buffer);
         log_info(cpu_log_debug, "Tamanio de las Paginas de Memoria = %d", tamanio_pagina);
         log_info(cpu_log_debug, "Tamanio de la Memoria = %d", tamanio_memoria);
         eliminar_paquete(paquete_recibido);
@@ -37,10 +37,10 @@ void pedir_instruccion_pseudocodigo(int pid,int pc){
 char* recibir_instruccion_pseudocodigo(){
     op_code code_op = recibir_operacion(fd_memoria);
     t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete_recibido->buffer;
+
     if(code_op == PSEUDOCODIGO)
     {
-        char* instruccion_pseudocodigo = leer_string_del_buffer(buffer);
+        char* instruccion_pseudocodigo = leer_string_del_buffer(paquete_recibido->buffer);
         //printf("Instruccion_pseudocodigo: %s \n", instruccion_pseudocodigo);
         eliminar_paquete(paquete_recibido);
         return instruccion_pseudocodigo;
@@ -63,10 +63,10 @@ int pedir_ajustar_tamanio_del_proceso(int pid, int tamanioNuevo){
     // Recibir
     op_code code_op_recibido = recibir_operacion(fd_memoria);
     t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete_recibido->buffer;
+
     if(code_op_recibido == RESPUESTA_MODIFICAR_TAMANIO)
     {
-        int nuevo_tamanio = leer_int_del_buffer(buffer);
+        int nuevo_tamanio = leer_int_del_buffer(paquete_recibido->buffer);
         eliminar_paquete(paquete_recibido);
         return nuevo_tamanio;
     }
@@ -90,10 +90,10 @@ int pedir_numero_de_marco_a_memoria(int numero_de_pagina){
 	// Recibir
     op_code code_op = recibir_operacion(fd_memoria);
     t_paquete* paquete_recibido = recibir_paquete(fd_memoria);
-    t_buffer* buffer = paquete_recibido->buffer;
+
     if(code_op == RESPUESTA_NUMERO_DE_MARCO_A_CPU)
     {
-        int numero_de_marco = leer_int_del_buffer(buffer);
+        int numero_de_marco = leer_int_del_buffer(paquete_recibido->buffer);
         //log_info(cpu_log_debug, "Numero de marco obtenido = %d", numero_de_marco);
         eliminar_paquete(paquete_recibido);
         return numero_de_marco;
@@ -184,5 +184,6 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void*
     else
     {
         log_error(cpu_logger, "No se escribio correctamente en memoria!");
+        exit(EXIT_FAILURE);
     }
 }

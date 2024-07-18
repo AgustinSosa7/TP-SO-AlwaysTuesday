@@ -48,24 +48,29 @@ void iniciar_config(char* path){
 }
 
 void imprimir_config(){
-    log_info(cpu_logger, "IP_MEMORIA: %s", IP_MEMORIA);
-    log_warning(cpu_log_debug, "PUERTO_MEMORIA: %s", PUERTO_MEMORIA);
+    log_info(cpu_log_debug, "IP_MEMORIA: %s", IP_MEMORIA);
+    log_info(cpu_log_debug, "PUERTO_MEMORIA: %s", PUERTO_MEMORIA);
     log_info(cpu_log_debug, "PUERTO_ESCUCHA_DISPATCH: %s", PUERTO_ESCUCHA_DISPATCH);
-    log_trace(cpu_log_debug,"PUERTO_ESCUCHA_INTERRUPT: %s", PUERTO_ESCUCHA_INTERRUPT);
+    log_info(cpu_log_debug,"PUERTO_ESCUCHA_INTERRUPT: %s", PUERTO_ESCUCHA_INTERRUPT);
 }
 
 void inicializar_estructuras(){
+    //PCB
     pcb_global = malloc(sizeof(t_pcb));
     pcb_global->registros_cpu = malloc(sizeof(t_registros_cpu));
 
+    // Info de la Memoria
     tamanio_pagina = -1;
     tamanio_memoria = -1;
 
+    // Flags del CPU
     dejar_de_ejecutar = false;
     ocurrio_interrupcion = false;
     
+    // Motivo de Interrupción
     motivo_interrupcion = -1;
 
+    // TLB
     tlb = list_create();
 }
 

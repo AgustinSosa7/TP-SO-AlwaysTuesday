@@ -9,8 +9,11 @@
 #include "ciclo_instruccion.h"
 #include "cpu_memoria.h"
 
+// Conexiones
 void conexion_cpu_kernel_dispatch();
 void conexion_cpu_kernel_interrupt();
+
+// Liberación de recursos
 void limpiar_tlb();
 void terminar_cpu();
 

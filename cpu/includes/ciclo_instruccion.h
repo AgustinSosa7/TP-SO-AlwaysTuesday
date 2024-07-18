@@ -13,7 +13,6 @@
 void ciclo_instruccion();
 
 void devolver_contexto_por_ser_interrumpido();
-void devolver_contexto_por_page_fault(int numero_de_pagina);
 void devolver_contexto_por_out_of_memory();
 
 void devolver_contexto_por_wait(char* nombre_recurso);
