@@ -58,7 +58,7 @@ void recibir_pcb_con_motivo(){
             pthread_mutex_lock(&(struct_exec->mutex));
             t_pcb* pcb_desactualizadoo = list_remove(struct_exec->lista,0);
             list_add(struct_exec->lista,pcb_recibido);
-            pthread_mutex_lock(&(struct_exec->mutex));
+            pthread_mutex_unlock(&(struct_exec->mutex));
             eliminar_pcb(pcb_desactualizadoo);
             cambiar_de_estado_y_de_lista(EXEC,EXIT);
             eliminar_proceso(pcb_recibido,SUCCESS);
@@ -71,7 +71,7 @@ void recibir_pcb_con_motivo(){
             enviar_proceso_a_blocked(peticion,pcb_recibido,interfaz); 
             sem_post(&sem_planificador_corto_plazo);
             }
-
+      
             break;
       case WAIT:
             void* buff = paquete->buffer;
@@ -97,7 +97,7 @@ void recibir_pcb_con_motivo(){
                        log_info(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb_recibido->pid, enum_a_string(EXEC),enum_a_string(pcb_recibido->estado_pcb));
                        log_info(kernel_logger,"PID: <%d> - Bloqueado por: <%s>\n",pcb_recibido->pid,recurso_solicitado);
                        sem_post(&sem_planificador_corto_plazo);
-                       free(recurso_solicitado);
+                       //free(recurso_solicitado);
                   } else{ 
                         list_add(recurso->lista_procesos_asignados,pcb_recibido);  
                         //t_pcb* pcb = list_get(recurso->lista_procesos_asignados,0);  
@@ -114,7 +114,7 @@ void recibir_pcb_con_motivo(){
                         t_pcb* pcb_actualizado = list_get(struct_exec->lista,0);
                         pthread_mutex_unlock(&(struct_exec->mutex));
                         eliminar_pcb(pcb_desactualizadoooo);
-                        free(recurso_solicitado);
+                        //free(recurso_solicitado);
                         enviar_pcb_a(pcb_actualizado,fd_cpu_dispatch,PCB);
                         recibir_pcb_con_motivo();
                         //log_warning(kernel_logger,"Lista de exec, pid:%d \n", pcb->pid);
@@ -122,7 +122,7 @@ void recibir_pcb_con_motivo(){
             } else{
                        cambiar_de_estado_y_de_lista(EXEC,EXIT);
                        eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
-                       free(recurso_solicitado);
+                       //free(recurso_solicitado);
             }
             
            break;
@@ -156,13 +156,13 @@ void recibir_pcb_con_motivo(){
                   t_pcb* pcb_actualizadoo = list_get(struct_exec->lista,0);
                   pthread_mutex_unlock(&(struct_exec->mutex));
                   eliminar_pcb(pcb_desactualizadooooo);
-                  free(recurso_solicitadoo);
+                  //free(recurso_solicitadoo);
                   enviar_pcb_a(pcb_actualizadoo,fd_cpu_dispatch,PCB);
                   recibir_pcb_con_motivo();
                   }else{
                         cambiar_de_estado_y_de_lista(EXEC,EXIT);
                         eliminar_proceso(pcb_recibido, INVALID_RESOURCE);
-                        free(recurso_solicitadoo);
+                        //free(recurso_solicitadoo);
                   }
             
             break;
