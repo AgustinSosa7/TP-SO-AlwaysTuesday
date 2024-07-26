@@ -545,6 +545,8 @@ void agregar_pcb_a_paquete(t_pcb* un_pcb, t_paquete* un_paquete) {
   	agregar_int_a_paquete(un_paquete, un_pcb->quantum);
   	agregar_registro_a_paquete(un_paquete, un_pcb->registros_cpu);
 	agregar_int_a_paquete(un_paquete,un_pcb->estado_pcb);
+	agregar_int_a_paquete(un_paquete, un_pcb->contador);
+	agregar_int_a_paquete(un_paquete, un_pcb->tiempo_transcurrido);
 }
 
 void enviar_pcb_a(t_pcb* un_pcb, int socket, op_code mensaje){
@@ -563,6 +565,8 @@ t_pcb* recibir_pcb(t_paquete* paquete){
 	pcb->quantum =leer_int_del_buffer(buffer);
 	leer_registros_del_buffer(buffer, pcb->registros_cpu);
 	pcb->estado_pcb= leer_int_del_buffer(buffer);
+	pcb->contador= leer_int_del_buffer(buffer);
+	pcb->tiempo_transcurrido= leer_int_del_buffer(buffer);
 	return pcb; 
 }
 
@@ -573,6 +577,8 @@ void establecer_pcb_global(t_paquete* paquete, t_pcb* pcb_global){
 	pcb_global->quantum = leer_int_del_buffer(buffer);
 	leer_registros_del_buffer(buffer, pcb_global->registros_cpu);
 	pcb_global->estado_pcb = leer_int_del_buffer(buffer);
+	pcb_global->contador = leer_int_del_buffer(buffer);
+	pcb_global->tiempo_transcurrido = leer_int_del_buffer(buffer);
 }
 
 void imprimir_pcb(t_pcb* pcb, t_log* un_logger){

@@ -128,7 +128,7 @@ typedef struct{
     t_registros_cpu* registros_cpu;
     estado_pcb estado_pcb;
     int contador;
-    int64_t tiempo_transcurrido;
+    int tiempo_transcurrido;
 } t_pcb;
 
 typedef enum{

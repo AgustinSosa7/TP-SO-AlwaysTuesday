@@ -677,7 +677,7 @@ void agregar_traduccion_a_tlb(int process_id, int numero_de_pagina, int numero_d
 		}
 		else if(strcmp(ALGORITMO_TLB, "LRU") == 0)
 		{
-			entrada_victima = list_get_minimum(tlb, (void*)comparar_ultima_ref);
+			entrada_victima = list_get_maximum(tlb, (void*)comparar_ultima_ref);
 		}
 		else
 		{
