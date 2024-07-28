@@ -7,13 +7,14 @@ void recibir_pcb_con_motivo(){
       t_paquete* paquete;
       t_pcb* pcb_recibido;
 
-      if(iniciar_tiempo_VRR){
+      if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
             t_temporal* quantum_vrr = temporal_create();
             code_op = recibir_operacion(fd_cpu_dispatch);
+            temporal_stop(quantum_vrr);
             paquete = recibir_paquete(fd_cpu_dispatch);
             pcb_recibido = recibir_pcb(paquete); 
             log_info(kernel_logger, "Se recibio algo de CPU_Dispatch : %d", code_op);
-            temporal_stop(quantum_vrr);
+            
             pcb_recibido->tiempo_transcurrido = temporal_gettime(quantum_vrr);
             temporal_destroy(quantum_vrr);
       }else{    
@@ -90,8 +91,10 @@ void recibir_pcb_con_motivo(){
                        eliminar_pcb(pcb);
                        pthread_mutex_unlock(&(struct_exec->mutex));
                        pcb_recibido->estado_pcb = BLOCKED;
-                       if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
-                        pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
+                       if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
+                        if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
+                              pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
+                        }
                        }
                        list_add(recurso->lista_procesos_bloqueados,pcb_recibido);
                        log_warning(kernel_logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb_recibido->pid, enum_a_string(EXEC),enum_a_string(pcb_recibido->estado_pcb));
@@ -105,8 +108,10 @@ void recibir_pcb_con_motivo(){
                         log_warning(kernel_logger,"Se agrega a la lista de recursos: <%s>.\n",recurso_solicitado);
                         //t_pcb* pcb = list_get(lista_exec,0);
                         printf("Vuelvo a mandar el proceso <%d> a ejecutar\n",pcb_recibido->pid);
+                        if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
                         if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
                         pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
+                        }
                         }
                         enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
                         recibir_pcb_con_motivo();
@@ -136,9 +141,11 @@ void recibir_pcb_con_motivo(){
                         sem_post(&sem_planificador_corto_plazo);
                         
                   } 
+                  if(strcmp(ALGORITMO_PLANIFICACION,"VRR") == 0){
                   if(pcb_recibido->tiempo_transcurrido < pcb_recibido->quantum){
                         pcb_recibido->quantum = (pcb_recibido->quantum -pcb_recibido->tiempo_transcurrido);
                        }
+                  }
                   enviar_pcb_a(pcb_recibido,fd_cpu_dispatch,PCB);
                   recibir_pcb_con_motivo();
                   }else{

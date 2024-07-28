@@ -127,11 +127,14 @@ void atender_cpu(){
     log_info(memoria_logger, "Atendiendo CPU...");
     sem_wait(&ejecucion);//ESTO SOLO SE HACE 1 VEZ PARA EL CPU
     enviar_info_inicial();
-    sem_post(&retardo);
+    //sem_post(&retardo);
     while(control_key){
         int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
         log_info(memoria_log_debug, "Se recibio algo de CPU: %d", code_op);
         sem_wait(&ejecucion);
+        //sem_post(&retardo); //Cambio de lugar este post
+        usleep(RETARDO_RESPUESTA * 1000);
+        sem_post(&ejecucion);
         switch (code_op)
             {
             case PEDIDO_PSEUDOCODIGO:
@@ -157,7 +160,7 @@ void atender_cpu(){
                 log_warning(memoria_logger, "Operacion desconocida de CPU");
                 break;
             }
-        sem_post(&retardo);   
+        //sem_post(&retardo);   
     }
 }
 

@@ -210,6 +210,7 @@ void detener_recibir_pcb(){
     pthread_mutex_lock(&mutex_detener_planificacion);
     if(flag_detener_planificacion){
         pthread_mutex_unlock(&mutex_detener_planificacion);
+        
 	    pthread_mutex_lock(&mutex_detener_recibir_pcb);
 	    pthread_mutex_unlock(&mutex_detener_recibir_pcb);
     }else{
