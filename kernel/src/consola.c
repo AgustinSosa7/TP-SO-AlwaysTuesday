@@ -220,8 +220,6 @@ void atender_instruccion_validada(char* leido){
 		imprimir_lista(struct_exit);
 		pthread_mutex_unlock(&(struct_exit->mutex));
 
-
-
 		break;
 	default:
 		break;

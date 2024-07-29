@@ -139,4 +139,5 @@ void detener_plani_largo_plazo();
 void detener_recibir_pcb();
 void detener_blocked_io();
 void detener_blocked_recurso();
+void imprimir_lista_ready(t_listas_estados* lista_a_mostrar);
 #endif

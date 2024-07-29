@@ -112,7 +112,7 @@ void procesar_peticion(t_peticion* peticion) {
 
             char* escrito = pedir_a_memoria_y_unir(peticion->parametros->lista_de_accesos, peticion->pid);
 
-            log_info(entradasalida_logger,"%s", escrito);
+            log_warning(entradasalida_logger,"%s", escrito);
 
             free(escrito);      
 

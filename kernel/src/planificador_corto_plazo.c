@@ -6,16 +6,13 @@
 void planif_corto_plazo()
 { 
     while(1){
-        //printf("WAIT del plani CORTO plazo.\n");
         sem_wait(&sem_planificador_corto_plazo);
-        //printf("Entro al plani corto plazo.\n");
         detener_plani_corto_plazo();
         algoritmos_enum algoritmo = algoritmo_string_a_enum(ALGORITMO_PLANIFICACION);   
             switch ( algoritmo)
             {
             case FIFO:
                 planif_fifo_RR();
-                //printf("FIFO realizado.\n");
                 break;
             case RR:
                 planif_fifo_RR();
@@ -31,7 +28,6 @@ void planif_corto_plazo()
 
 void planif_fifo_RR()
 {
-    //printf("Entro a FIFO/RR.\n");
     if(!list_is_empty(struct_ready->lista)){
         if(list_is_empty(struct_exec->lista)){
             cambiar_de_estado_y_de_lista(READY,EXEC);
@@ -45,21 +41,13 @@ void planif_fifo_RR()
             }
         enviar_pcb_a(un_pcb, fd_cpu_dispatch, PCB);  
         recibir_pcb_con_motivo();  
-        } //else{//printf("La cola de EXECUTE estaba OCUPADA :(\n");}
-    } //else{//printf("La cola de READY estaba vacia :(\n");}
+        } 
+    } 
 }
 void gestionar_quantum(t_pcb* un_pcb){
-    //int contador_inicial = un_pcb->contador;
-    //usleep(un_pcb->quantum*1000);
     usleep(un_pcb->quantum*1000);
-    printf("Dormi 2750 \n");
- 
-
     if(!list_is_empty(struct_exec->lista)){
-        //bool validar(void* otro_pcb){
-        //return mismo_contador(otro_pcb,contador_inicial);
-    //}
-        if(contains_algo(struct_exec->lista, &(un_pcb->pid))/*&& (list_any_satisfy(struct_exec->lista,validar))*/ ){ 
+        if(contains_algo(struct_exec->lista, &(un_pcb->pid))){ 
         enviar_interrupción_a_cpu(SOLICITUD_INTERRUMPIR_PROCESO, INTERRUPCION_POR_DESALOJO); 
     }
     }
@@ -81,9 +69,6 @@ void planif_VRR(){
         pthread_t hilo_quantum_vrr;
         pthread_create(&hilo_quantum_vrr, NULL, (void*)gestionar_quantum, un_pcb);
         pthread_detach(hilo_quantum_vrr);
-        // pthread_mutex_lock(&mutex_VRR);
-        // iniciar_tiempo_VRR = true;
-        // pthread_mutex_unlock(&mutex_VRR);
         enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
         recibir_pcb_con_motivo();
         }
@@ -96,9 +81,6 @@ void planif_VRR(){
         pthread_t hilo_quantum_vrr;
         pthread_create(&hilo_quantum_vrr, NULL, (void*)gestionar_quantum, un_pcb);
         pthread_detach(hilo_quantum_vrr);
-        // pthread_mutex_lock(&mutex_VRR);
-        // iniciar_tiempo_VRR = true;
-        // pthread_mutex_unlock(&mutex_VRR);
         enviar_pcb_a(un_pcb,fd_cpu_dispatch,PCB);
         recibir_pcb_con_motivo();
         }

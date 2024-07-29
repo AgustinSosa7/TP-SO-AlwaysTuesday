@@ -109,7 +109,7 @@ bool encontre_el_pcb(t_pcb* pcb, int pid){
 }
 
 t_pcb* buscar_pcb_en_bloqueados(int pid){
-    t_pcb* pcb_encontrado;
+    t_pcb* pcb_encontrado = NULL;
 	bool esta_el_pcb(void* pcb){
 		return encontre_el_pcb(pcb, pid);
 	}
@@ -118,10 +118,10 @@ t_pcb* buscar_pcb_en_bloqueados(int pid){
         t_recursos* recurso = list_iterator_next(lista); 
         if(list_any_satisfy(recurso->lista_procesos_bloqueados, esta_el_pcb)){
             pcb_encontrado = list_find(recurso->lista_procesos_bloqueados, esta_el_pcb);
-            return pcb_encontrado;
-        }   
+        }
     }
     list_iterator_destroy(lista);
+    return pcb_encontrado;
 }
 
 /////liberación de recursos
@@ -259,4 +259,14 @@ void detener_blocked_recurso(){
     }else{
         pthread_mutex_unlock(&mutex_detener_planificacion);
         }
+}
+
+void imprimir_lista_ready(t_listas_estados* lista_a_mostrar){
+	t_list_iterator* lista = list_iterator_create(lista_a_mostrar->lista);
+	t_pcb* un_pcb;
+	while(list_iterator_has_next(lista)){
+		un_pcb = list_iterator_next(lista);
+		printf("%18s PID: %d \n"," ", un_pcb->pid);
+	}
+	list_iterator_destroy(lista);
 }

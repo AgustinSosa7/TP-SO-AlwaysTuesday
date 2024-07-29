@@ -101,10 +101,8 @@ t_listas_estados* buscar_lista(estado_pcb estado_anterior){
     case EXEC:
         return struct_exec;
         break;
-    case EXIT:
-        return struct_exit;
-        break;
     default:
+        return struct_exit;
         break;
     }
     
@@ -115,12 +113,3 @@ void eliminar_pcb(t_pcb* un_pcb){
     free(un_pcb);
 }
 
-void imprimir_lista_ready(t_listas_estados* lista_a_mostrar){
-	t_list_iterator* lista = list_iterator_create(lista_a_mostrar->lista);
-	t_pcb* un_pcb;
-	while(list_iterator_has_next(lista)){
-		un_pcb = list_iterator_next(lista);
-		printf("%18s PID: %d \n"," ", un_pcb->pid);
-	}
-	list_iterator_destroy(lista);
-}
