@@ -62,6 +62,8 @@ void atender_kernel(){
     while(1){
         op_code code_op_recibido = recibir_operacion(fd_kernel);
         sem_wait(&ejecucion);
+        usleep(RETARDO_RESPUESTA * 1000);
+
         if(code_op_recibido == CREAR_PROCESO_MEMORIA){
             list_add(procesos_memoria, crear_proceso_nuevo());
 

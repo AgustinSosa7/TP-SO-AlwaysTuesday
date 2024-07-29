@@ -291,6 +291,7 @@ void enviar_proceso_a_ready_o_ready_plus(t_pcb* un_pcb){
                   enviar_proceso_blocked_a_ready(un_pcb);
                   }
       } else{ 
+            un_pcb->quantum = QUANTUM;
             enviar_proceso_blocked_a_ready(un_pcb);
             
             }

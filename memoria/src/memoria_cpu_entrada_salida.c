@@ -127,7 +127,7 @@ void atender_cpu(){
     log_info(memoria_logger, "Atendiendo CPU...");
     sem_wait(&ejecucion);//ESTO SOLO SE HACE 1 VEZ PARA EL CPU
     enviar_info_inicial();
-    //sem_post(&retardo);
+    sem_post(&retardo);
     while(control_key){
         int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
         log_info(memoria_log_debug, "Se recibio algo de CPU: %d", code_op);
@@ -165,13 +165,16 @@ void atender_cpu(){
 }
 
 
-void atender_entradasalida(int fd_entradasalida)
-{     int control_key = 1;
+void atender_entradasalida(void* fd_io){
+      int fd_entradasalida = *((int*)fd_io);
+      int control_key = 1;
       log_info(memoria_logger, "Atendiendo Entradasalida...");
       while (control_key){
       int code_op = recibir_operacion(fd_entradasalida);
       log_info(memoria_log_debug, "Se recibio algo de EntradaSalida: %d. \n", code_op);
       sem_wait(&ejecucion);
+      usleep(RETARDO_RESPUESTA * 1000);
+
       switch (code_op)
       {
       case PEDIR_REGISTRO:
@@ -191,4 +194,5 @@ void atender_entradasalida(int fd_entradasalida)
         }
         sem_post(&retardo);   
       }
+      //retornar el void* definido en la función para que no genere warning
 }

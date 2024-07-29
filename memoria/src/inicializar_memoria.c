@@ -95,11 +95,11 @@ void _inicializar_semaforos(){
 }
 
 void hilo_retardo(){
-    float tiempo_retardo = RETARDO_RESPUESTA;
+   // float tiempo_retardo = RETARDO_RESPUESTA;
     while(1){
         sem_wait(&retardo);
         //sleep(tiempo_retardo/1000); // El programa se suspende durante RETARDO_RESPUESTA milisegundos (RETARDO_RESPUESTA/1000 segundos)
-        usleep(tiempo_retardo * 1000);
+        //usleep(tiempo_retardo * 1000);
         printf("Dormi un tiempo de retardo.\n");
         sem_post(&ejecucion);
     }
