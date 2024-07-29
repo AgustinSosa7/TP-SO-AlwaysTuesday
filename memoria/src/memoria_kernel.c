@@ -40,14 +40,15 @@ void finalizar_proceso(){
 
 
     if(list_remove_element(procesos_memoria,proceso_eliminado)){
-        //log_info(memoria_log_debug, "Finalizo el proceso: %d",proceso_eliminado->pid);
-        
         //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
         log_info(memoria_logger, "PID: %d - Tamaño: %d ",proceso_eliminado->pid,proceso_eliminado->long_tabla_pags);// Evaluar si setear la long a 0 o mostrar las que tenia el proceso antes.
         
         free(proceso_eliminado->direccion_pseudocodigo);//valgrind
-        //free(proceso_eliminado->long_tabla_pags);
+
+        //pthread_mutex_lock(&mutex_tabla_paginas);
         free(proceso_eliminado->tabla_de_paginas);//valgrind
+        //pthread_mutex_unlock(&mutex_tabla_paginas);
+
         list_destroy_and_destroy_elements(proceso_eliminado->instrucciones,(void*)eliminar_instruccion);//valgrind (Ver como funciona el destroy elements)
         free(proceso_eliminado);
     }
@@ -61,7 +62,7 @@ void finalizar_proceso(){
 void atender_kernel(){
     while(1){
         op_code code_op_recibido = recibir_operacion(fd_kernel);
-        sem_wait(&ejecucion);
+
         usleep(RETARDO_RESPUESTA * 1000);
 
         if(code_op_recibido == CREAR_PROCESO_MEMORIA){
@@ -80,6 +81,6 @@ void atender_kernel(){
             log_error(memoria_logger, "No se recibio un pedido correcto de kernel.");
             exit(EXIT_FAILURE);
         }
-        sem_post(&retardo);
+        
     }
 }

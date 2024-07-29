@@ -125,16 +125,16 @@ void recibir_solicitud_de_escritura(int socket){
 void atender_cpu(){
     int control_key = 1;
     log_info(memoria_logger, "Atendiendo CPU...");
-    sem_wait(&ejecucion);//ESTO SOLO SE HACE 1 VEZ PARA EL CPU
+
+    usleep(RETARDO_RESPUESTA * 1000); //retardo
     enviar_info_inicial();
-    sem_post(&retardo);
+
     while(control_key){
         int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
         log_info(memoria_log_debug, "Se recibio algo de CPU: %d", code_op);
-        sem_wait(&ejecucion);
-        //sem_post(&retardo); //Cambio de lugar este post
-        usleep(RETARDO_RESPUESTA * 1000);
-        sem_post(&ejecucion);
+
+        usleep(RETARDO_RESPUESTA * 1000); //retardo
+        
         switch (code_op)
             {
             case PEDIDO_PSEUDOCODIGO:
@@ -172,7 +172,7 @@ void atender_entradasalida(void* fd_io){
       while (control_key){
       int code_op = recibir_operacion(fd_entradasalida);
       log_info(memoria_log_debug, "Se recibio algo de EntradaSalida: %d. \n", code_op);
-      sem_wait(&ejecucion);
+      
       usleep(RETARDO_RESPUESTA * 1000);
 
       switch (code_op)
@@ -192,7 +192,7 @@ void atender_entradasalida(void* fd_io){
             log_warning(memoria_logger, "Operacion desconocida de ENTRADASALIDA");
             break;
         }
-        sem_post(&retardo);   
+        
       }
       //retornar el void* definido en la función para que no genere warning
 }

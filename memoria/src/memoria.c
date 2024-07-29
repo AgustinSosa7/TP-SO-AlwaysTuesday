@@ -37,12 +37,12 @@ pthread_detach(hilo_atender_kernel);
 // Esperar conexion de ENTRADASALIDA
 pthread_t hilo_generador_de_io;
 pthread_create(&hilo_generador_de_io, NULL, (void*)gestionar_entrada_salida, NULL);
-pthread_detach(hilo_generador_de_io);
+pthread_join(hilo_generador_de_io, NULL);
 
 //Hilo que gestiona el RETARDO de la memoria.
-pthread_t hilo_tiempo_retardo;
-pthread_create(&hilo_tiempo_retardo, NULL, (void*)hilo_retardo, NULL);
-pthread_join(hilo_tiempo_retardo, NULL);
+//pthread_t hilo_tiempo_retardo;
+//pthread_create(&hilo_tiempo_retardo, NULL, (void*)hilo_retardo, NULL);
+//pthread_join(hilo_tiempo_retardo, NULL);
 
 return EXIT_SUCCESS;
 }
