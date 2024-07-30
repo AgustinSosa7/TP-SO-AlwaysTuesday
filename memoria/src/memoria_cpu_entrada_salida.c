@@ -38,7 +38,10 @@ void recibir_pedido_marco_y_enviar(){
     t_buffer* buffer = paquete->buffer;
     int pid = leer_int_del_buffer(buffer);
     int numero_de_pagina = leer_int_del_buffer(buffer);
+
+    pthread_mutex_lock(&mutex_tabla_paginas);
     int marco_pedido = traer_numero_marco(buscar_proceso_en_memoria(pid),numero_de_pagina);
+    pthread_mutex_unlock(&mutex_tabla_paginas);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_NUMERO_DE_MARCO_A_CPU);
     agregar_int_a_paquete(paquete_a_enviar, marco_pedido);
@@ -125,16 +128,16 @@ void recibir_solicitud_de_escritura(int socket){
 void atender_cpu(){
     int control_key = 1;
     log_info(memoria_logger, "Atendiendo CPU...");
-    sem_wait(&ejecucion);//ESTO SOLO SE HACE 1 VEZ PARA EL CPU
+
+    usleep(RETARDO_RESPUESTA * 1000); //retardo
     enviar_info_inicial();
-    sem_post(&retardo);
+
     while(control_key){
         int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
         log_info(memoria_log_debug, "Se recibio algo de CPU: %d", code_op);
-        sem_wait(&ejecucion);
-        //sem_post(&retardo); //Cambio de lugar este post
-        usleep(RETARDO_RESPUESTA * 1000);
-        sem_post(&ejecucion);
+
+        usleep(RETARDO_RESPUESTA * 1000); //retardo
+        
         switch (code_op)
             {
             case PEDIDO_PSEUDOCODIGO:
@@ -172,7 +175,7 @@ void atender_entradasalida(void* fd_io){
       while (control_key){
       int code_op = recibir_operacion(fd_entradasalida);
       log_info(memoria_log_debug, "Se recibio algo de EntradaSalida: %d. \n", code_op);
-      sem_wait(&ejecucion);
+      
       usleep(RETARDO_RESPUESTA * 1000);
 
       switch (code_op)
@@ -192,7 +195,7 @@ void atender_entradasalida(void* fd_io){
             log_warning(memoria_logger, "Operacion desconocida de ENTRADASALIDA");
             break;
         }
-        sem_post(&retardo);   
+        
       }
       //retornar el void* definido en la función para que no genere warning
 }

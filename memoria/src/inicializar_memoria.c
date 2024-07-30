@@ -90,10 +90,10 @@ void _inicializar_semaforos(){
     pthread_mutex_init(&mutex_tabla_paginas, NULL);
     pthread_mutex_init(&mutex_espacio_memoria, NULL);
 
-	sem_init(&retardo,0,0); //inicializado en 0
-	sem_init(&ejecucion,0,1); //inicializado en 1
+	//sem_init(&retardo,0,0); //inicializado en 0
+	//sem_init(&ejecucion,0,1); //inicializado en 1
 }
-
+/*
 void hilo_retardo(){
    // float tiempo_retardo = RETARDO_RESPUESTA;
     while(1){
@@ -103,4 +103,4 @@ void hilo_retardo(){
         printf("Dormi un tiempo de retardo.\n");
         sem_post(&ejecucion);
     }
-}
+}*/
