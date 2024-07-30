@@ -36,8 +36,10 @@ void finalizar_proceso(){
     int pid = leer_int_del_buffer(buffer);
 
     t_proceso* proceso_eliminado = buscar_proceso_en_memoria(pid);
-    liberar_marcos_memoria(proceso_eliminado,0); //el tamanio nuevo es 0 para que libere todos los marcos
 
+    pthread_mutex_lock(&mutex_tabla_paginas);
+    liberar_marcos_memoria(proceso_eliminado,0); //el tamanio nuevo es 0 para que libere todos los marcos
+    pthread_mutex_unlock(&mutex_tabla_paginas);
 
     if(list_remove_element(procesos_memoria,proceso_eliminado)){
         //Log obligatorio. (Creación / destrucción de Tabla de Páginas:)
@@ -45,9 +47,9 @@ void finalizar_proceso(){
         
         free(proceso_eliminado->direccion_pseudocodigo);//valgrind
 
-        //pthread_mutex_lock(&mutex_tabla_paginas);
+        pthread_mutex_lock(&mutex_tabla_paginas);
         free(proceso_eliminado->tabla_de_paginas);//valgrind
-        //pthread_mutex_unlock(&mutex_tabla_paginas);
+        pthread_mutex_unlock(&mutex_tabla_paginas);
 
         list_destroy_and_destroy_elements(proceso_eliminado->instrucciones,(void*)eliminar_instruccion);//valgrind (Ver como funciona el destroy elements)
         free(proceso_eliminado);

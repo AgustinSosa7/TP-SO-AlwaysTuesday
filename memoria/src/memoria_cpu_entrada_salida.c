@@ -38,7 +38,10 @@ void recibir_pedido_marco_y_enviar(){
     t_buffer* buffer = paquete->buffer;
     int pid = leer_int_del_buffer(buffer);
     int numero_de_pagina = leer_int_del_buffer(buffer);
+
+    pthread_mutex_lock(&mutex_tabla_paginas);
     int marco_pedido = traer_numero_marco(buscar_proceso_en_memoria(pid),numero_de_pagina);
+    pthread_mutex_unlock(&mutex_tabla_paginas);
 
     t_paquete* paquete_a_enviar = crear_paquete(RESPUESTA_NUMERO_DE_MARCO_A_CPU);
     agregar_int_a_paquete(paquete_a_enviar, marco_pedido);
