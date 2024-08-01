@@ -133,6 +133,7 @@ void atender_instruccion_validada(char* leido){
 					t_listas_estados* lista_encontrada = buscar_lista(estado_anterior);
 					list_remove_element(lista_encontrada->lista,pcb);
 					pcb->estado_pcb = EXIT;
+					list_add(struct_exit->lista,pcb);
 					eliminar_proceso(pcb,INTERRUPTED_BY_USER);
 					log_warning(kernel_logger,"Cambio de Estado: PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s> \n",pcb->pid, enum_a_string(estado_anterior),enum_a_string(pcb->estado_pcb));	
 				
