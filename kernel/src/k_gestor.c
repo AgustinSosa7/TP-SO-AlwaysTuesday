@@ -46,12 +46,12 @@ void enviar_interrupción_a_cpu(op_code tipo_interrupción, int motivo){
     eliminar_paquete(un_paquete);
 } 
 void eliminar_proceso(t_pcb* pcb, motivo_fin_de_proceso motivo){
-    printf("liberando estructuras en memoria.\n");
+    //printf("liberando estructuras en memoria.\n");
     liberar_estructuras_en_memoria(FINALIZAR_PROCESO_MEMORIA, pcb->pid);
     op_code code_op_recibido = recibir_operacion(fd_memoria);
 	if(code_op_recibido == RESPUESTA_FINALIZAR_PROCESO_MEMORIA){
     log_warning(kernel_logger,"Finaliza el proceso <%d> - Motivo: <%s> \n",pcb->pid, enum_a_string_fin_de_proceso(motivo));
-    printf("liberando recursos.\n");
+    //printf("liberando recursos.\n");
     liberar_recursos(pcb);
     sem_post(&sem_grado_multiprogram);
     }
@@ -124,9 +124,9 @@ t_pcb* buscar_pcb_en_bloqueados(int pid){
     return pcb_encontrado;
 }
 
-/////liberación de recursos
+/////liberación de recursos//////////////////////////////
 void liberar_recursos(t_pcb* un_pcb){
-    remover_pcb_de_recursos_bloqueados(un_pcb);
+    remover_pcb_de_recursos_bloqueados(un_pcb); 
     remover_pcb_de_recursos_asignados(un_pcb);
 }
 void remover_pcb_de_recursos_bloqueados(t_pcb* pcb){
@@ -137,7 +137,11 @@ void remover_pcb_de_recursos_bloqueados(t_pcb* pcb){
     while(list_iterator_has_next(lista)){
         t_recursos* recurso =list_iterator_next(lista); 
         pthread_mutex_lock(&(recurso->mutex_recurso));
-        list_remove_by_condition(recurso->lista_procesos_bloqueados,remover); 
+        if(list_any_satisfy(recurso->lista_procesos_bloqueados,remover)){
+        list_remove_by_condition(recurso->lista_procesos_bloqueados,remover);
+        log_warning(kernel_logger,"Se quitó el proceso <%d> de la lista de recursos %s\n",pcb->pid,recurso->nombre_recurso);
+        recurso->instancias = recurso->instancias +1;
+        }
         pthread_mutex_unlock(&(recurso->mutex_recurso));
     }
     list_iterator_destroy(lista);
@@ -172,6 +176,8 @@ void remover_pcb_de_recursos_asignados(t_pcb* pcb){
     list_iterator_destroy(lista);
 }
 
+
+//////////////////////////////////////////////////////////////
 void liberar_estructuras_en_memoria(op_code code_op ,int pid){
     t_paquete* paquete = crear_paquete(code_op);
     agregar_int_a_paquete(paquete,pid);
@@ -268,5 +274,6 @@ void imprimir_lista_ready(t_listas_estados* lista_a_mostrar){
 		un_pcb = list_iterator_next(lista);
 		printf("%18s PID: %d \n"," ", un_pcb->pid);
 	}
+    printf("\n");
 	list_iterator_destroy(lista);
 }
