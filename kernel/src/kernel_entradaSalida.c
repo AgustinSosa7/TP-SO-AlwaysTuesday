@@ -65,8 +65,8 @@ t_interfaz* validar_peticion(t_peticion* peticion){
       t_interfaz* interfaz = existe_la_interfaz(nombre_io); 
       if (interfaz == NULL) {
             enviar_proceso_execute_a_exit();
-            eliminar_peticion(peticion);
             log_error(kernel_logger, "No se ha encontrado la interfaz: %s.\n", nombre_io);
+            eliminar_peticion(peticion);
             return NULL;
       } else if(!(interfaz->esta_conectada)){
             enviar_proceso_execute_a_exit();
@@ -158,7 +158,6 @@ bool enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* 
       agregar_int_a_paquete(paquete, proceso_blocked->un_pcb->pid);
       agregar_string_a_paquete(paquete, proceso_blocked->peticion->instruccion); 
       agregar_parametros_a_paquete(paquete, proceso_blocked->peticion);
-      eliminar_peticion(proceso_blocked->peticion); 
 
       int bytes = paquete->buffer->size + sizeof(op_code) + sizeof(int); 
 	void* a_enviar = serializar_paquete(paquete, bytes);
@@ -172,6 +171,7 @@ bool enviar_peticion_a_interfaz(t_proceso_blocked* proceso_blocked, t_interfaz* 
         eliminar_interfaz(interfaz);
       return true; //salgo del while de "gestionar_procesos_io"
     } else{
+      eliminar_peticion(proceso_blocked->peticion);
 	free(a_enviar);
       eliminar_paquete(paquete);
       return false;
@@ -236,9 +236,11 @@ void enviar_cola_de_procesos_blocked_io_a_exit(t_interfaz* interfaz){
 
 void enviar_proceso_blocked_io_a_exit(t_proceso_blocked* proceso_blocked){
       
-      eliminar_peticion(proceso_blocked->peticion);
+      //eliminar_peticion(proceso_blocked->peticion);
 
       t_pcb* pcb = proceso_blocked->un_pcb;
+
+      free(proceso_blocked);
 
       estado_pcb estado_anterior = pcb->estado_pcb;
 
