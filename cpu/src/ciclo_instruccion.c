@@ -324,7 +324,7 @@ void devolver_contexto_por_ser_interrumpido()
 	agregar_pcb_a_paquete(pcb_global, paquete);
 	agregar_int_a_paquete(paquete, motivo_interrupcion);
 	enviar_paquete(paquete, fd_kernel_dispatch);
-	log_warning(cpu_logger,"Devuelvo el PCB por ser interrumpido! (Motivo = %d)\n",motivo_interrupcion); // Sacar este log más adelante.
+	//log_warning(cpu_logger,"Devuelvo el PCB por ser interrumpido! (Motivo = %d)\n",motivo_interrupcion); // Sacar este log más adelante.
     eliminar_paquete(paquete);
 }
 
