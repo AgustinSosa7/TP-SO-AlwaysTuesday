@@ -30,7 +30,7 @@ void recibir_pedido_instruccion_y_enviar(){
     enviar_instruccion_pesudocodigo((proceso->instrucciones),pc);
     //free(buffer);
     eliminar_paquete(paquete);//valgrind
-    log_info(memoria_log_debug,"Pseudocodigo enviado. PID: %d PROGRAM COUNTER: %d",pid,pc); //BORRAR
+    log_info(memoria_log_debug,"PID: %d PROGRAM COUNTER: %d",pid,pc); //BORRAR
 };
 
 void recibir_pedido_marco_y_enviar(){
@@ -134,7 +134,7 @@ void atender_cpu(){
 
     while(control_key){
         int code_op = recibir_operacion(fd_cpu); //ver de cambiar a opcode
-        log_info(memoria_log_debug, "Se recibio algo de CPU: %d", code_op);
+        //log_info(memoria_log_debug, "Se recibio algo de CPU: %d", code_op);
 
         usleep(RETARDO_RESPUESTA * 1000); //retardo
         
