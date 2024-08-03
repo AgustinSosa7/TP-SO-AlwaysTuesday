@@ -134,7 +134,7 @@ void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio)
         Alternativa 2:
         int valor_a_loggear;
         memcpy(&valor_a_loggear, valor, tamanio);*/
-
+        /*
         if(tamanio == 1){
 			u_int8_t valor_a_loggear;
 			memcpy(&valor_a_loggear, valor, tamanio);
@@ -145,6 +145,11 @@ void* leer_valor_de_memoria(int pid, int direccion_fisica, int tamanio)
 			memcpy(&valor_a_loggear, valor, tamanio);
 			log_info(cpu_logger, "PID: <%d> - Acción: LEER - Dirección Física: <%d> - Valor: <%d>", pid, direccion_fisica, valor_a_loggear);
 		}
+        else{
+            int* valor_a_loggear = malloc(tamanio);
+            memcpy(valor_a_loggear, valor, tamanio);
+            log_info(cpu_logger, "PID: <%d> - Acción: LEER - Dirección Física: <%d> - Valor: <%d>", pid, direccion_fisica, valor_a_loggear);
+        }*/
 	    return valor; // Este valor tiene que ser liberado en donde sea llamada esta función.
     }
     else
@@ -170,7 +175,7 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void*
     op_code code_op = recibir_operacion(fd_memoria);
     if(code_op == RESPUESTA_ESCRIBIR_VALOR_EN_MEMORIA)
     {
-        if(tamanio == 1){
+        /*if(tamanio == 1){
 			u_int8_t valor_a_loggear;
 			memcpy(&valor_a_loggear, valor_a_escribir, tamanio);
 			log_info(cpu_logger, "PID: <%d> - Acción: ESCRIBIR - Dirección Física: <%d> - Valor: <%d>", pid, direccion_fisica, valor_a_loggear);
@@ -180,6 +185,11 @@ void escribir_valor_en_memoria(int pid, int direccion_fisica, int tamanio, void*
 			memcpy(&valor_a_loggear, valor_a_escribir, tamanio);
 			log_info(cpu_logger, "PID: <%d> - Acción: ESCRIBIR - Dirección Física: <%d> - Valor: <%d>", pid, direccion_fisica, valor_a_loggear);
 		}
+        else{
+            int* valor_a_loggear = malloc(tamanio);
+            memcpy(valor_a_loggear, valor_a_escribir, tamanio);
+            log_info(cpu_logger, "PID: <%d> - Acción: LEER - Dirección Física: <%d> - Valor: <%d>", pid, direccion_fisica, valor_a_loggear);
+        }*/
     }
     else
     {

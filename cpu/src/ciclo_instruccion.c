@@ -749,6 +749,9 @@ void* gestionar_lectura_memoria(int direccion_logica, int cant_bytes_a_leer){
 	int corrimiento = 0;
 	void* lectura_total = malloc(cant_bytes_a_leer);
 
+	int direccion_fisica_log;
+	int cantidad_bytes_log = cant_bytes_a_leer;
+
 	for(int i = 1; i <= cantidad_accesos; i++){
 		t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
 		void* lectura_parcial;
@@ -764,15 +767,47 @@ void* gestionar_lectura_memoria(int direccion_logica, int cant_bytes_a_leer){
 			cant_bytes_a_leer -= direc->bytes_disponibles;
 			corrimiento += direc->bytes_disponibles;
 		}
+
+		if(i==1){
+			direccion_fisica_log = direc->direccion_fisica;
+		}
+
 		free(lectura_parcial);
 		free(direc); // Chequear si hace falta.
 	}
+
+	if(cantidad_bytes_log == 1){
+		u_int8_t valor_a_loggear;
+		memcpy(&valor_a_loggear, lectura_total, cantidad_bytes_log);
+		log_info(cpu_logger, "PID: <%d> - Acción: LEER - Dirección Física: <%d> - Valor: <%d>", pcb_global->pid, direccion_fisica_log, valor_a_loggear);
+	}
+	else if(cantidad_bytes_log == 4){
+		u_int32_t valor_a_loggear;
+		memcpy(&valor_a_loggear, lectura_total, cantidad_bytes_log);
+		log_info(cpu_logger, "PID: <%d> - Acción: LEER - Dirección Física: <%d> - Valor: <%d>", pcb_global->pid, direccion_fisica_log, valor_a_loggear);
+	}
+	else{
+		char* leidoFinal = malloc(cantidad_bytes_log + 1);
+
+    	void* leido = (char*) lectura_total;
+
+    	memcpy(leidoFinal, leido, cantidad_bytes_log);
+
+    	leidoFinal[cantidad_bytes_log] = '\0';
+
+		log_info(cpu_logger, "PID: <%d> - Acción: LEER - Dirección Física: <%d> - Valor: <%s>", pcb_global->pid, direccion_fisica_log, leidoFinal);
+	}
+
 	return lectura_total;
 }
 
 void gestionar_escritura_memoria(int direccion_logica,int cant_bytes_a_escribir, void* a_escribir){
 	int cantidad_accesos = calcular_cantidad_de_accesos(direccion_logica, cant_bytes_a_escribir);
 	int corrimiento = 0;
+
+	int direccion_fisica_log;
+	int cantidad_bytes_log = cant_bytes_a_escribir;
+	
 
 	for(int i = 1; i <= cantidad_accesos; i++){
 		t_direccion_a_operar* direc = mmu(direccion_logica + corrimiento);
@@ -792,8 +827,35 @@ void gestionar_escritura_memoria(int direccion_logica,int cant_bytes_a_escribir,
 			cant_bytes_a_escribir -= direc->bytes_disponibles;
 			corrimiento += direc->bytes_disponibles;
 		}
+		
+		if(i==1){
+			direccion_fisica_log = direc->direccion_fisica;
+		}
+
 		free(escritura);
 		free(direc); // Chequear si hace falta.
+	}
+
+	if(cantidad_bytes_log == 1){
+		u_int8_t valor_a_loggear;
+		memcpy(&valor_a_loggear, a_escribir, cantidad_bytes_log);
+		log_info(cpu_logger, "PID: <%d> - Acción: ESCRIBIR - Dirección Física: <%d> - Valor: <%d>", pcb_global->pid, direccion_fisica_log, valor_a_loggear);
+	}
+	else if(cantidad_bytes_log == 4){
+		u_int32_t valor_a_loggear;
+		memcpy(&valor_a_loggear, a_escribir, cantidad_bytes_log);
+		log_info(cpu_logger, "PID: <%d> - Acción: ESCRIBIR - Dirección Física: <%d> - Valor: <%d>", pcb_global->pid, direccion_fisica_log, valor_a_loggear);
+	}
+	else{
+		char* leidoFinal = malloc(cantidad_bytes_log + 1);
+
+    	void* leido = (char*) a_escribir;
+
+    	memcpy(leidoFinal, leido, cantidad_bytes_log);
+
+    	leidoFinal[cantidad_bytes_log] = '\0';
+
+		log_info(cpu_logger, "PID: <%d> - Acción: ESCRIBIR - Dirección Física: <%d> - Valor: <%s>", pcb_global->pid, direccion_fisica_log, leidoFinal);
 	}
 }
 
