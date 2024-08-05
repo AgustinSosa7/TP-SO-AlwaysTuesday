@@ -1,4 +1,4 @@
-# tp-scaffold
+# TP-scaffold
 
 Esta es una plantilla de proyecto diseñada para generar un TP de Sistemas
 Operativos de la UTN FRBA.
@@ -74,3 +74,8 @@ Ante cualquier duda, podés consultar la documentación en el repositorio de
 
 [so-commons-library]: https://github.com/sisoputnfrba/so-commons-library
 [so-deploy]: https://github.com/sisoputnfrba/so-deploy
+
+# Pruebas pre-eliminares
+
+Documento de pruebas: https://docs.google.com/document/d/1XsBsJynoN5A9PTsTEaZsj0q3zsEtcnLgdAHOQ4f_4-g/edit o sinó https://docs.google.com/document/d/1qsrrWUtHseDlwgBja-GMCvXWNK9wExWemqODgsLq0vQ/edit
+Repo de pruebas: https://github.com/sisoputnfrba/c-comenta-pruebas
